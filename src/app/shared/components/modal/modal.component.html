@@ -1,0 +1,49 @@
+@if (open()) {
+  <!-- Animated overlay wrapper -->
+  <div @modalAnimation class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Backdrop (targeted by animation query) -->
+    <div
+      class="modal-backdrop absolute inset-0 bg-black/50"
+      (click)="onBackdropClick()"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Dialog panel (targeted by animation query) -->
+    <div
+      #dialogPanel
+      class="modal-panel relative z-10 w-full max-w-lg rounded-lg bg-white shadow-xl focus:outline-none dark:bg-gray-800"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="title() ? 'modal-title' : null"
+      [attr.aria-label]="title() ? null : 'Dialog'"
+      tabindex="-1"
+      (keydown.escape)="close()"
+    >
+      <!-- Header (shown only when title is provided) -->
+      @if (title()) {
+        <div class="flex items-center justify-between border-b px-4 py-3 dark:border-gray-700">
+          <h2 id="modal-title" class="text-lg font-semibold dark:text-white">
+            {{ title() }}
+          </h2>
+          <button
+            type="button"
+            (click)="close()"
+            class="rounded p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label="Close dialog"
+            i18n-aria-label="@@shared.modal.closeLabel"
+          >
+            <app-icon name="close" size="sm" />
+          </button>
+        </div>
+      }
+
+      <!-- Body — projected content -->
+      <div class="px-4 py-4 dark:text-gray-200">
+        <ng-content />
+      </div>
+
+      <!-- Footer — optional projected content with [modal-footer] selector -->
+      <ng-content select="[modal-footer]" />
+    </div>
+  </div>
+}

@@ -1,0 +1,79 @@
+<div>
+  <!-- ═══════ LABEL ═══════ -->
+  @if (label()) {
+    <label [for]="inputId()" class="mb-1 block text-sm font-medium dark:text-gray-200">
+      {{ label() }}
+      <ng-content select="[label-hint]" />
+    </label>
+  }
+
+  <!-- ═══════ TEXTAREA or INPUT ═══════ -->
+  @if (isTextarea()) {
+    <textarea
+      [id]="inputId()"
+      [formField]="$any(field())"
+      [placeholder]="placeholder()"
+      [rows]="rows()"
+      [class]="classes()"
+    ></textarea>
+  } @else {
+    <div class="relative">
+      <input
+        #inputEl
+        [id]="inputId()"
+        [type]="type()"
+        [formField]="$any(field())"
+        [placeholder]="placeholder()"
+        [attr.step]="step() || null"
+        [class]="classes()"
+      />
+
+      <!-- ═══════ CUSTOM SPIN BUTTONS ═══════ -->
+      @if (showCustomSpinners()) {
+        <div
+          class="absolute inset-y-0 right-0 flex flex-col border-l dark:border-gray-600"
+          aria-hidden="true"
+        >
+          <button
+            type="button"
+            tabindex="-1"
+            (click)="increment()"
+            class="flex flex-1 items-center justify-center px-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 active:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200 dark:active:bg-gray-600"
+            aria-label="Increment"
+            i18n-aria-label="@@shared.input.increment"
+          >
+            <app-icon name="chevron-up" size="xs" />
+          </button>
+          <div class="border-t dark:border-gray-600"></div>
+          <button
+            type="button"
+            tabindex="-1"
+            (click)="decrement()"
+            class="flex flex-1 items-center justify-center px-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 active:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200 dark:active:bg-gray-600"
+            aria-label="Decrement"
+            i18n-aria-label="@@shared.input.decrement"
+          >
+            <app-icon name="chevron-down" size="xs" />
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ═══════ HINT TEXT ═══════ -->
+  @if (hint()) {
+    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ hint() }}</p>
+  }
+
+  <!-- ═══════ CUSTOM CONTENT (e.g. disabled reason) ═══════ -->
+  <ng-content />
+
+  <!-- ═══════ VALIDATION ERRORS ═══════ -->
+  @if (touched() && invalid()) {
+    <ul role="alert" class="mt-1 text-xs text-red-600 dark:text-red-400">
+      @for (err of errors(); track $index) {
+        <li>{{ err.message }}</li>
+      }
+    </ul>
+  }
+</div>

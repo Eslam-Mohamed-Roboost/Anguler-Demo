@@ -1,0 +1,35 @@
+<div>
+  @if (label() || showPercent()) {
+    <div class="mb-1 flex items-center justify-between text-sm">
+      @if (label()) {
+        <span class="font-medium dark:text-gray-200">{{ label() }}</span>
+      }
+      @if (showPercent() && !indeterminate()) {
+        <span class="text-gray-500 dark:text-gray-400">{{ clampedValue() }}%</span>
+      }
+    </div>
+  }
+
+  <div
+    class="w-full overflow-hidden rounded-full"
+    [class]="trackColor + ' ' + barHeight()"
+    role="progressbar"
+    [attr.aria-valuenow]="indeterminate() ? null : clampedValue()"
+    [attr.aria-valuemin]="indeterminate() ? null : 0"
+    [attr.aria-valuemax]="indeterminate() ? null : 100"
+    [attr.aria-label]="label() || 'Progress'"
+  >
+    @if (indeterminate()) {
+      <div
+        class="h-full w-1/3 animate-indeterminate rounded-full"
+        [class]="barColor()"
+      ></div>
+    } @else {
+      <div
+        class="h-full rounded-full transition-all duration-300 ease-out"
+        [class]="barColor()"
+        [style.width.%]="clampedValue()"
+      ></div>
+    }
+  </div>
+</div>

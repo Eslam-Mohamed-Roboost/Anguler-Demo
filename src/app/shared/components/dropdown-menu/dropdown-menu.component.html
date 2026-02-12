@@ -1,0 +1,18 @@
+<div class="relative inline-block text-left" (appClickOutside)="close()">
+  <!-- Trigger slot — clicking it toggles the menu -->
+  <div (click)="toggle()">
+    <ng-content select="[trigger]" />
+  </div>
+
+  <!-- Menu panel -->
+  @if (isOpen()) {
+    <div
+      @menuAnimation
+      class="absolute right-0 z-50 mt-1 min-w-[10rem] origin-top-right rounded-lg border bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+      role="menu"
+      aria-orientation="vertical"
+    >
+      <ng-content />
+    </div>
+  }
+</div>

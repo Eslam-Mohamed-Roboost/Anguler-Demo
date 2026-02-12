@@ -1,0 +1,13 @@
+/* Indeterminate animation — slides a bar left-to-right continuously */
+@keyframes indeterminate-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+:host .animate-indeterminate {
+  animation: indeterminate-slide 1.5s ease-in-out infinite;
+}

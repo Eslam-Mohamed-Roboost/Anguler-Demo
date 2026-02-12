@@ -1,0 +1,63 @@
+@if (loading()) {
+  <app-skeleton-table [rows]="skeletonRows()" [columns]="columns().length" />
+} @else {
+  <div class="overflow-x-auto">
+    <table
+      class="w-full text-left text-sm dark:text-gray-200"
+      [attr.aria-label]="ariaLabel() || null"
+    >
+      <thead>
+        <tr class="border-b text-gray-600 dark:border-gray-700 dark:text-gray-400">
+          @for (col of columns(); track col.key) {
+            <th
+              scope="col"
+              [class]="headerClasses(col)"
+              [attr.aria-sort]="col.sortable ? (getSortDirection(col.key) === 'asc' ? 'ascending' : getSortDirection(col.key) === 'desc' ? 'descending' : 'none') : null"
+              (click)="toggleSort(col)"
+              (keydown.enter)="toggleSort(col)"
+              (keydown.space)="toggleSort(col); $event.preventDefault()"
+              [attr.tabindex]="col.sortable ? 0 : null"
+              [attr.role]="col.sortable ? 'columnheader button' : null"
+            >
+              <span class="inline-flex items-center gap-1">
+                {{ col.header }}
+                @if (col.sortable) {
+                  <span class="inline-flex flex-col text-gray-300 dark:text-gray-600" aria-hidden="true">
+                    <app-icon
+                      name="chevron-up"
+                      size="xs"
+                      [class]="getSortDirection(col.key) === 'asc' ? 'text-blue-600 dark:text-blue-400' : ''"
+                    />
+                    <app-icon
+                      name="chevron-down"
+                      size="xs"
+                      [class]="getSortDirection(col.key) === 'desc' ? 'text-blue-600 dark:text-blue-400' : ''"
+                    />
+                  </span>
+                }
+              </span>
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of data(); track trackByFn(row)) {
+          <tr class="border-b transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50">
+            @for (col of columns(); track col.key) {
+              <td class="px-2 py-2" [class]="col.cellClass ?? ''">
+                @if (templateMap().get(col.key); as tmpl) {
+                  <ng-container
+                    [ngTemplateOutlet]="tmpl"
+                    [ngTemplateOutletContext]="{ $implicit: row, row: row }"
+                  />
+                } @else {
+                  {{ getCellValue(row, col.key) }}
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

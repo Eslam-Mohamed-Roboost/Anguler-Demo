@@ -1,0 +1,23 @@
+<div
+  role="tablist"
+  [class]="variant() === 'pills'
+    ? 'flex flex-wrap gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800'
+    : 'flex border-b dark:border-gray-700'"
+>
+  @for (tab of tabs(); track tab.key) {
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="activeTab() === tab.key"
+      [attr.aria-disabled]="tab.disabled || null"
+      [disabled]="tab.disabled ?? false"
+      [class]="tabClasses(tab)"
+      (click)="selectTab(tab)"
+    >
+      @if (tab.icon) {
+        <app-icon [name]="tab.icon" size="sm" />
+      }
+      {{ tab.label }}
+    </button>
+  }
+</div>

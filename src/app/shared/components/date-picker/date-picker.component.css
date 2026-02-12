@@ -1,0 +1,26 @@
+/* ── Calendar dropdown animation ─────────────────────────── */
+:host .calendar-dropdown {
+  animation: calendar-open 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top center;
+}
+
+@keyframes calendar-open {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ── Day cell hover / active effects ─────────────────────── */
+:host .day-cell:not(:disabled):active {
+  transform: scale(0.9);
+}
+
+/* ── Trigger focus polish ─────────────────────────────────── */
+:host .date-trigger {
+  min-height: 42px;
+}

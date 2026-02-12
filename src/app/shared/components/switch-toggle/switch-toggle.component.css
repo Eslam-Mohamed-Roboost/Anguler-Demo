@@ -1,0 +1,6 @@
+/* Switch toggle — slide the thumb when checked via CSS custom property.
+   peer-checked: won't work on the thumb because it's nested inside the track,
+   not a direct sibling of the input. So we use plain CSS instead. */
+:host input:checked + .switch-track .switch-thumb {
+  transform: translateX(var(--thumb-offset));
+}

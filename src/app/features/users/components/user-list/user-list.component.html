@@ -1,0 +1,77 @@
+<div class="mx-auto max-w-4xl p-4">
+  <header class="mb-4 flex items-center justify-between">
+    <h1 class="text-2xl font-bold dark:text-white" i18n="@@users.list.title">Users</h1>
+    <a routerLink="new">
+      <app-btn variant="primary" size="sm">
+        <app-icon name="plus" size="sm" />
+        <span i18n="@@users.list.addUser">Add User</span>
+      </app-btn>
+    </a>
+  </header>
+
+  <!-- Search -->
+  <div class="mb-4 max-w-sm">
+    <app-search-input
+      placeholder="Search by name or email..."
+      i18n-placeholder="@@users.list.searchPlaceholder"
+      (searchChange)="onSearch($event)"
+    />
+  </div>
+
+  @if (isLoading()) {
+    <app-data-table [data]="[]" [columns]="columns" [loading]="true" [skeletonRows]="5" />
+  } @else if (filteredItems().length === 0) {
+    <app-empty-state
+      icon="users"
+      title="No users found"
+      i18n-title="@@users.list.emptyTitle"
+      description="Try a different search or add a new user."
+      i18n-description="@@users.list.emptyDesc"
+    >
+      <a routerLink="new">
+        <app-btn variant="primary" size="sm">
+          <app-icon name="plus" size="sm" />
+          <span i18n="@@users.list.addUser">Add User</span>
+        </app-btn>
+      </a>
+    </app-empty-state>
+  } @else {
+    <app-data-table
+      [data]="paginatedItems()"
+      [columns]="columns"
+      trackByKey="id"
+      ariaLabel="Users table"
+      i18n-ariaLabel="@@users.list.tableLabel"
+    >
+      <ng-template cellDef="actions" let-row>
+        <div class="flex gap-2">
+          <a
+            [routerLink]="[row.id, 'edit']"
+            class="inline-flex items-center gap-1 text-blue-600 hover:underline dark:text-blue-400"
+            [appTooltip]="'Edit user'"
+          >
+            <app-icon name="edit" size="xs" />
+            <span i18n="@@users.list.edit">Edit</span>
+          </a>
+          <button
+            type="button"
+            (click)="confirmDelete(row)"
+            class="inline-flex items-center gap-1 text-red-600 hover:underline disabled:opacity-50 dark:text-red-400"
+            [disabled]="deleteLoading() === row.id"
+            [appTooltip]="'Delete user'"
+          >
+            <app-icon name="trash" size="xs" />
+            <span i18n="@@users.list.delete">Delete</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-data-table>
+
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalItems]="filteredItems().length"
+      [pageSize]="pageSize()"
+      (pageChange)="currentPage.set($event)"
+    />
+  }
+</div>

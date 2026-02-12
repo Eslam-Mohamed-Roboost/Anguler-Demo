@@ -1,0 +1,43 @@
+/* ── Custom checkbox animations ────────────────────────────── */
+
+/* Check-mark icon: hidden by default, animated on check */
+:host .check-icon {
+  transform: scale(0);
+  opacity: 0;
+  transition:
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 100ms ease-out;
+}
+
+:host .peer:checked ~ span .check-icon {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Smooth border + background color transition is handled by Tailwind's
+   transition-all on the box span. The color classes are applied dynamically
+   via the component's colorClasses() computed signal. We use a trick:
+   inject color classes via the [class] binding and apply them here as well
+   via the peer-checked selector already in the template. */
+
+/* Box shadow pulse on check (micro-interaction) */
+:host .peer:checked ~ span:first-of-type {
+  animation: checkbox-pop 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes checkbox-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.88);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ── Color variant injection ──────────────────────────────── */
+/* Applied via [class] binding from colorClasses() computed signal,
+   but we must also target the peer-checked border/bg colors here
+   to ensure the Tailwind classes work with the peer relationship. */

@@ -1,0 +1,33 @@
+<div>
+  @if (label() || showValue()) {
+    <div class="mb-2 flex items-center justify-between">
+      @if (label()) {
+        <label [for]="inputId()" class="text-sm font-medium dark:text-gray-200">{{ label() }}</label>
+      }
+      @if (showValue()) {
+        <span class="text-sm font-semibold tabular-nums text-gray-700 dark:text-gray-300">{{ value() }}</span>
+      }
+    </div>
+  }
+
+  <input
+    [id]="inputId()"
+    type="range"
+    [value]="value()"
+    [min]="min()"
+    [max]="max()"
+    [step]="step()"
+    (input)="onInput($event)"
+    class="slider-input w-full cursor-pointer"
+    [class]="accentClass()"
+  />
+
+  <div class="mt-1 flex justify-between text-xs text-gray-400 dark:text-gray-500">
+    <span>{{ min() }}</span>
+    <span>{{ max() }}</span>
+  </div>
+
+  @if (hint()) {
+    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ hint() }}</p>
+  }
+</div>

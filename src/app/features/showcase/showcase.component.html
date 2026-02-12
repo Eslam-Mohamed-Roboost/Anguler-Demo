@@ -1,0 +1,848 @@
+<div class="mx-auto max-w-5xl space-y-6 p-4">
+  <!-- ═══════ PAGE TITLE ═══════ -->
+  <div>
+    <h1 class="text-3xl font-bold dark:text-white" i18n="@@showcase.title">Component Showcase</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" i18n="@@showcase.subtitle">
+      Interactive demo of every shared component, directive, pipe, and service.
+    </p>
+  </div>
+
+  <!-- ═══════ TAB NAVIGATION ═══════ -->
+  <app-tabs [tabs]="tabs" [(activeTab)]="activeTab" />
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 1: FORM CONTROLS
+       ══════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'forms') {
+    <div class="space-y-6">
+
+      <!-- FormGroup + Input -->
+      <app-card>
+        <h3 card-header>FormGroupComponent + InputComponent</h3>
+        <div class="space-y-4">
+          <app-form-group legend="Basic Fields" description="Demonstrates Input variants with Signal Forms.">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <app-input label="Text Input (required)" inputId="demo-text" [field]="f.text" placeholder="Type something..." hint="Uses required() validator" />
+              <app-input label="Email (required)" inputId="demo-email" type="email" [field]="f.email" placeholder="user@example.com" />
+            </div>
+            <app-input label="Textarea" inputId="demo-textarea" [field]="f.textarea" [rows]="3" placeholder="Write a description..." />
+          </app-form-group>
+
+          <app-form-group legend="Number Inputs — Spin Button Modes">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <app-input label="Native Arrows" inputId="demo-num-native" type="number" [field]="f.numNative" placeholder="0" hint="spinButtons=native (default)" />
+              <app-input label="Custom Arrows" inputId="demo-num-custom" type="number" [field]="f.numCustom" placeholder="0" spinButtons="custom" hint="spinButtons=custom" />
+              <app-input label="No Arrows" inputId="demo-num-none" type="number" [field]="f.numNone" placeholder="0" spinButtons="none" hint="spinButtons=none" />
+            </div>
+          </app-form-group>
+
+          <app-form-group legend="Collapsible Section" [collapsible]="true" description="Click the legend to toggle">
+            <app-input label="Hidden Field" inputId="demo-hidden" [field]="f.hidden" placeholder="Inside collapsible section" />
+          </app-form-group>
+        </div>
+      </app-card>
+
+      <!-- Select -->
+      <app-card>
+        <h3 card-header>SelectComponent — Dropdown Arrow Modes</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <app-select label="Native Arrow" inputId="demo-sel-native" [field]="f.selectNative" [options]="categories" placeholder="Select..." hint="dropdownArrow=native" />
+          <app-select label="Custom Arrow" inputId="demo-sel-custom" [field]="f.selectCustom" [options]="categories" placeholder="Select..." dropdownArrow="custom" hint="dropdownArrow=custom" />
+          <app-select label="No Arrow" inputId="demo-sel-none" [field]="f.selectNone" [options]="categories" placeholder="Select..." dropdownArrow="none" hint="dropdownArrow=none" />
+        </div>
+      </app-card>
+
+      <!-- Checkbox -->
+      <app-card>
+        <h3 card-header>CheckboxComponent</h3>
+        <div class="space-y-5">
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Default (md)</p>
+            <div class="space-y-3">
+              <app-checkbox label="Accept terms and conditions" inputId="demo-check1" [field]="f.checkbox1" description="You must agree before submitting" />
+              <app-checkbox label="Subscribe to newsletter" inputId="demo-check2" [field]="f.checkbox2" />
+            </div>
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Sizes</p>
+            <div class="flex flex-wrap items-start gap-6">
+              <app-checkbox label="Small" inputId="demo-check-sm" [field]="f.checkbox1" size="sm" />
+              <app-checkbox label="Medium" inputId="demo-check-md" [field]="f.checkbox1" size="md" />
+              <app-checkbox label="Large" inputId="demo-check-lg" [field]="f.checkbox1" size="lg" />
+            </div>
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Color Variants</p>
+            <div class="flex flex-wrap items-start gap-6">
+              <app-checkbox label="Primary" inputId="demo-check-primary" [field]="f.checkbox1" variant="primary" />
+              <app-checkbox label="Success" inputId="demo-check-success" [field]="f.checkbox1" variant="success" />
+              <app-checkbox label="Warning" inputId="demo-check-warn" [field]="f.checkbox1" variant="warning" />
+              <app-checkbox label="Danger" inputId="demo-check-danger" [field]="f.checkbox1" variant="danger" />
+            </div>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- RadioGroup -->
+      <app-card>
+        <h3 card-header>RadioGroupComponent</h3>
+        <div class="space-y-5">
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <app-radio-group label="Vertical Layout" inputId="demo-radio-v" [field]="f.radioVertical" [options]="radioOptionsV" hint="Select one option" />
+            <app-radio-group label="Horizontal Layout" inputId="demo-radio-h" [field]="f.radioHorizontal" [options]="radioOptionsH" layout="horizontal" />
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Sizes</p>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <app-radio-group label="Small" inputId="demo-radio-sm" [field]="f.radioVertical" [options]="radioOptionsV" size="sm" />
+              <app-radio-group label="Medium (default)" inputId="demo-radio-md" [field]="f.radioVertical" [options]="radioOptionsV" size="md" />
+              <app-radio-group label="Large" inputId="demo-radio-lg" [field]="f.radioVertical" [options]="radioOptionsV" size="lg" />
+            </div>
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Color Variants (horizontal)</p>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <app-radio-group label="Primary" inputId="demo-radio-cpri" [field]="f.radioHorizontal" [options]="radioOptionsH" layout="horizontal" variant="primary" />
+              <app-radio-group label="Success" inputId="demo-radio-csuc" [field]="f.radioHorizontal" [options]="radioOptionsH" layout="horizontal" variant="success" />
+              <app-radio-group label="Warning" inputId="demo-radio-cwrn" [field]="f.radioHorizontal" [options]="radioOptionsH" layout="horizontal" variant="warning" />
+              <app-radio-group label="Danger" inputId="demo-radio-cdgr" [field]="f.radioHorizontal" [options]="radioOptionsH" layout="horizontal" variant="danger" />
+            </div>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- DatePicker -->
+      <app-card>
+        <h3 card-header>DatePickerComponent</h3>
+        <div class="space-y-5">
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Default (Primary)</p>
+            <div class="max-w-sm">
+              <app-date-picker label="Event Date" inputId="demo-date" [field]="f.date" placeholder="Pick a date..." hint="Click to open calendar dropdown" />
+            </div>
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Color Variants</p>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <app-date-picker label="Success" inputId="demo-date-suc" [field]="f.dateSuccess" variant="success" placeholder="Success variant" />
+              <app-date-picker label="Danger" inputId="demo-date-dgr" [field]="f.dateDanger" variant="danger" placeholder="Danger variant" />
+              <app-date-picker label="Warning" inputId="demo-date-wrn" [field]="f.date" variant="warning" placeholder="Warning variant" />
+            </div>
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">With min/max constraints</p>
+            <div class="max-w-sm">
+              <app-date-picker label="Restricted Range" inputId="demo-date-range" [field]="f.date" minDate="2026-01-01" maxDate="2026-12-31" placeholder="2026 only" hint="Only dates within 2026 are selectable" />
+            </div>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- TagInput -->
+      <app-card>
+        <h3 card-header>TagInputComponent</h3>
+        <div class="max-w-md">
+          <app-tag-input label="Tags" inputId="demo-tags" [tags]="tags()" (tagsChange)="tags.set($event)" placeholder="Type + Enter..." [maxTags]="5" />
+        </div>
+      </app-card>
+
+      <!-- SwitchToggle -->
+      <app-card>
+        <h3 card-header>SwitchToggleComponent</h3>
+        <div class="space-y-5">
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Default</p>
+            <div class="space-y-3">
+              <app-switch-toggle label="Enable notifications" inputId="demo-switch1" [field]="f.switch1" description="Receive push notifications" />
+              <app-switch-toggle label="Dark mode" inputId="demo-switch2" [field]="f.switch2" />
+            </div>
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Sizes</p>
+            <div class="flex flex-wrap items-start gap-6">
+              <app-switch-toggle label="Small" inputId="demo-sw-sm" [field]="f.switch1" size="sm" />
+              <app-switch-toggle label="Medium" inputId="demo-sw-md" [field]="f.switch1" size="md" />
+              <app-switch-toggle label="Large" inputId="demo-sw-lg" [field]="f.switch1" size="lg" />
+            </div>
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Color Variants</p>
+            <div class="flex flex-wrap items-start gap-6">
+              <app-switch-toggle label="Primary" inputId="demo-sw-pri" [field]="f.switch1" variant="primary" />
+              <app-switch-toggle label="Success" inputId="demo-sw-suc" [field]="f.switch1" variant="success" />
+              <app-switch-toggle label="Warning" inputId="demo-sw-wrn" [field]="f.switch1" variant="warning" />
+              <app-switch-toggle label="Danger" inputId="demo-sw-dgr" [field]="f.switch1" variant="danger" />
+            </div>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- PasswordInput -->
+      <app-card>
+        <h3 card-header>PasswordInputComponent</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <app-password-input label="Password" inputId="demo-password" [field]="f.password" placeholder="Enter your password..." [showStrength]="true" hint="Toggle visibility with the eye icon" />
+          <app-password-input label="Confirm Password (no strength)" inputId="demo-password2" [field]="f.password" placeholder="Re-enter your password..." />
+        </div>
+      </app-card>
+
+      <!-- Slider -->
+      <app-card>
+        <h3 card-header>SliderComponent</h3>
+        <div class="space-y-5">
+          <app-slider label="Volume" inputId="demo-slider" [(value)]="sliderValue" [min]="0" [max]="100" hint="Drag to adjust" />
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Color Variants</p>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <app-slider label="Primary" inputId="demo-sl-pri" [(value)]="sliderValue" variant="primary" />
+              <app-slider label="Success" inputId="demo-sl-suc" [(value)]="sliderValue" variant="success" />
+              <app-slider label="Warning" inputId="demo-sl-wrn" [(value)]="sliderValue" variant="warning" />
+              <app-slider label="Danger" inputId="demo-sl-dgr" [(value)]="sliderValue" variant="danger" />
+            </div>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- FileUpload -->
+      <app-card>
+        <h3 card-header>FileUploadComponent</h3>
+        <app-file-upload label="Upload Files" inputId="demo-upload" accept="image/*,.pdf" [multiple]="true" [maxSizeMb]="5" hint="Images or PDF, max 5 MB each" />
+      </app-card>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 2: UI COMPONENTS
+       ══════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'ui') {
+    <div class="space-y-6">
+
+      <!-- Buttons -->
+      <app-card>
+        <h3 card-header>BtnComponent</h3>
+        <div class="space-y-4">
+          <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Variants</p>
+          <div class="flex flex-wrap gap-2">
+            <app-btn variant="primary">Primary</app-btn>
+            <app-btn variant="secondary">Secondary</app-btn>
+            <app-btn variant="danger">Danger</app-btn>
+            <app-btn variant="primary" [disabled]="true">Disabled</app-btn>
+            <app-btn variant="primary" [loading]="true" [showLoader]="true">Loading</app-btn>
+          </div>
+          <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Sizes with icon</p>
+          <div class="flex flex-wrap items-center gap-2">
+            <app-btn variant="primary" size="sm"><app-icon name="plus" size="xs" /> Small</app-btn>
+            <app-btn variant="primary" size="md"><app-icon name="plus" size="sm" /> Medium</app-btn>
+            <app-btn variant="primary" size="lg"><app-icon name="plus" /> Large</app-btn>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- Badge -->
+      <app-card>
+        <h3 card-header>BadgeComponent</h3>
+        <div class="flex flex-wrap gap-2">
+          <app-badge variant="success">Active</app-badge>
+          <app-badge variant="danger">Error</app-badge>
+          <app-badge variant="warning">Pending</app-badge>
+          <app-badge variant="info">Info</app-badge>
+          <app-badge variant="neutral">Draft</app-badge>
+          <app-badge variant="success" size="md">Large Badge</app-badge>
+        </div>
+      </app-card>
+
+      <!-- Avatar -->
+      <app-card>
+        <h3 card-header>AvatarComponent</h3>
+        <div class="flex flex-wrap items-end gap-4">
+          <div class="text-center">
+            <app-avatar name="Alice Johnson" size="xs" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">xs</p>
+          </div>
+          <div class="text-center">
+            <app-avatar name="Bob Smith" size="sm" [online]="true" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">sm + online</p>
+          </div>
+          <div class="text-center">
+            <app-avatar name="Carol White" size="md" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">md</p>
+          </div>
+          <div class="text-center">
+            <app-avatar name="David Brown" size="lg" [online]="false" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">lg + offline</p>
+          </div>
+          <div class="text-center">
+            <app-avatar name="Eve Davis" size="xl" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">xl</p>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- Icons -->
+      <app-card>
+        <h3 card-header>IconComponent — All Available Icons</h3>
+        <div class="flex flex-wrap gap-3">
+          @for (name of ['spinner','close','plus','edit','trash','check','alert-triangle','chevron-left','chevron-right','chevron-up','chevron-down','minus','info','check-circle','search','sun','moon','menu','home','users','package','shield','log-out','log-in','filter','x-circle','upload','file','calendar','user','eye','eye-off','layers','star','clipboard','copy']; track name) {
+            <div class="flex flex-col items-center gap-1 rounded border p-2 dark:border-gray-700" [appTooltip]="name">
+              <app-icon [name]="$any(name)" />
+              <span class="text-[10px] text-gray-400">{{ name }}</span>
+            </div>
+          }
+        </div>
+      </app-card>
+
+      <!-- Card variants -->
+      <app-card>
+        <h3 card-header>CardComponent — Variants</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <app-card variant="default">
+            <span card-header>Default</span>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Standard bordered card.</p>
+          </app-card>
+          <app-card variant="elevated">
+            <span card-header>Elevated</span>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Shadow with hover effect.</p>
+          </app-card>
+          <app-card variant="outlined">
+            <span card-header>Outlined</span>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Dashed border, transparent.</p>
+          </app-card>
+        </div>
+      </app-card>
+
+      <!-- Progress Bar -->
+      <app-card>
+        <h3 card-header>ProgressBarComponent</h3>
+        <div class="space-y-4">
+          <app-progress-bar [value]="progress()" label="Upload Progress" [showPercent]="true" />
+          <div class="flex gap-2">
+            <app-btn size="sm" variant="secondary" (click)="decrementProgress()"><app-icon name="minus" size="xs" /> -10%</app-btn>
+            <app-btn size="sm" variant="secondary" (click)="incrementProgress()"><app-icon name="plus" size="xs" /> +10%</app-btn>
+          </div>
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <app-progress-bar [value]="70" variant="success" label="Success" size="sm" />
+            <app-progress-bar [value]="40" variant="warning" label="Warning" size="lg" [showPercent]="true" />
+            <app-progress-bar [value]="90" variant="danger" label="Danger" />
+            <app-progress-bar [indeterminate]="true" label="Indeterminate" />
+          </div>
+        </div>
+      </app-card>
+
+      <!-- Timeline -->
+      <app-card>
+        <h3 card-header>TimelineComponent</h3>
+        <app-timeline [items]="timelineItems" />
+      </app-card>
+
+      <!-- Stepper -->
+      <app-card>
+        <h3 card-header>StepperComponent</h3>
+        <div class="space-y-4">
+          <app-stepper [steps]="stepDefs" [(activeStep)]="activeStep" />
+          <div class="rounded border p-4 text-center dark:border-gray-700">
+            <p class="text-sm dark:text-gray-300">
+              Current step: <strong class="dark:text-white">{{ activeStep() }}</strong>
+            </p>
+          </div>
+          <div class="flex justify-center gap-2">
+            <app-btn size="sm" variant="secondary" (click)="activeStep.set(stepDefs[0].key)"><app-icon name="chevron-left" size="xs" /> First</app-btn>
+            <app-btn size="sm" variant="secondary" (click)="activeStep.set(stepDefs[stepDefs.length - 1].key)">Last <app-icon name="chevron-right" size="xs" /></app-btn>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- DropdownMenu -->
+      <app-card>
+        <h3 card-header>DropdownMenuComponent</h3>
+        <app-dropdown-menu>
+          <app-btn trigger variant="secondary" size="sm">
+            <app-icon name="menu" size="sm" /> Actions
+          </app-btn>
+          <app-dropdown-item (action)="logAction('View')"><app-icon name="eye" size="sm" /> View Details</app-dropdown-item>
+          <app-dropdown-item (action)="logAction('Edit')"><app-icon name="edit" size="sm" /> Edit</app-dropdown-item>
+          <app-dropdown-divider />
+          <app-dropdown-item (action)="logAction('Delete')" variant="danger"><app-icon name="trash" size="sm" /> Delete</app-dropdown-item>
+        </app-dropdown-menu>
+      </app-card>
+
+      <!-- Image -->
+      <app-card>
+        <h3 card-header>ImageComponent — Variants</h3>
+        <div class="flex flex-wrap items-end gap-4">
+          <div class="text-center">
+            <app-image src="https://picsum.photos/seed/demo1/120/120" alt="Default" [width]="120" [height]="120" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">default</p>
+          </div>
+          <div class="text-center">
+            <app-image src="https://picsum.photos/seed/demo2/120/120" alt="Rounded" [width]="120" [height]="120" variant="rounded" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">rounded</p>
+          </div>
+          <div class="text-center">
+            <app-image src="https://picsum.photos/seed/demo3/120/120" alt="Avatar" [width]="120" [height]="120" variant="avatar" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">avatar</p>
+          </div>
+          <div class="text-center">
+            <app-image src="https://invalid-url.test/broken.jpg" alt="Fallback" [width]="120" [height]="120" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">fallback (broken URL)</p>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- Rating -->
+      <app-card>
+        <h3 card-header>RatingComponent</h3>
+        <div class="space-y-5">
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Interactive (click to rate)</p>
+            <app-rating label="Your Rating" [(value)]="ratingValue" [max]="5" />
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Read-only</p>
+            <app-rating [value]="ratingReadonly()" [readonly]="true" />
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Sizes</p>
+            <div class="flex flex-wrap items-start gap-6">
+              <app-rating [(value)]="ratingValue" size="sm" label="Small" />
+              <app-rating [(value)]="ratingValue" size="md" label="Medium" />
+              <app-rating [(value)]="ratingValue" size="lg" label="Large" />
+            </div>
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Color Variants</p>
+            <div class="flex flex-wrap items-start gap-6">
+              <app-rating [(value)]="ratingValue" variant="yellow" label="Yellow" />
+              <app-rating [(value)]="ratingValue" variant="red" label="Red" />
+              <app-rating [(value)]="ratingValue" variant="blue" label="Blue" />
+            </div>
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Custom max (10 stars)</p>
+            <app-rating [(value)]="ratingValue" [max]="10" label="Out of 10" />
+          </div>
+        </div>
+      </app-card>
+
+      <!-- Accordion -->
+      <app-card>
+        <h3 card-header>AccordionComponent</h3>
+        <div class="space-y-6">
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Default (single-open, first panel expanded)</p>
+            <app-accordion [items]="accordionFaq" />
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Multi-open + Bordered</p>
+            <app-accordion [items]="accordionFaq" mode="multi" variant="bordered" />
+          </div>
+          <div>
+            <p class="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">Separated</p>
+            <app-accordion [items]="accordionFaq" mode="multi" variant="separated" />
+          </div>
+        </div>
+      </app-card>
+
+      <!-- ImageSlider -->
+      <app-card>
+        <h3 card-header>ImageSliderComponent</h3>
+        <div class="space-y-6">
+          <div>
+            <p class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">Slide transition (default)</p>
+            <app-image-slider
+              [slides]="demoSlides"
+              [autoPlay]="true"
+              [interval]="6000"
+              [showDots]="true"
+              [showArrows]="true"
+              [showCaptions]="true"
+              variant="card"
+            />
+          </div>
+
+          <div>
+            <p class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">Fade transition &middot; rounded variant &middot; 4/3 aspect ratio</p>
+            <app-image-slider
+              [slides]="demoSlides"
+              transition="fade"
+              aspectRatio="4/3"
+              variant="rounded"
+              [showCaptions]="true"
+            />
+          </div>
+
+          <div>
+            <p class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">Minimal &middot; no captions &middot; no dots</p>
+            <app-image-slider
+              [slides]="demoSlides"
+              [showDots]="false"
+              [showCaptions]="false"
+              aspectRatio="21/9"
+            />
+          </div>
+        </div>
+      </app-card>
+
+      <!-- EmptyState -->
+      <app-card>
+        <h3 card-header>EmptyStateComponent</h3>
+        <app-empty-state icon="search" title="No results found" description="Try adjusting your search or filters to find what you're looking for.">
+          <app-btn variant="primary" size="sm"><app-icon name="filter" size="sm" /> Clear Filters</app-btn>
+        </app-empty-state>
+      </app-card>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 3: DATA DISPLAY
+       ══════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'data') {
+    <div class="space-y-6">
+      <app-card>
+        <h3 card-header>DataTableComponent — with Sorting, Search, Pagination</h3>
+        <div class="space-y-4">
+          <div class="max-w-sm">
+            <app-search-input placeholder="Search by name or email..." (searchChange)="onTableSearch($event)" />
+          </div>
+
+          <app-data-table
+            [data]="filteredTableData()"
+            [columns]="tableColumns"
+            trackByKey="id"
+            ariaLabel="Demo users table"
+            (sortChange)="onSort($event)"
+          >
+            <ng-template cellDef="role" let-row>
+              <app-badge [variant]="row.role === 'Admin' ? 'success' : row.role === 'Editor' ? 'info' : 'neutral'">
+                {{ row.role }}
+              </app-badge>
+            </ng-template>
+            <ng-template cellDef="actions" let-row>
+              <app-dropdown-menu>
+                <app-btn trigger variant="secondary" size="sm">
+                  <app-icon name="menu" size="xs" />
+                </app-btn>
+                <app-dropdown-item (action)="logAction('View ' + row.name)"><app-icon name="eye" size="sm" /> View</app-dropdown-item>
+                <app-dropdown-item (action)="logAction('Edit ' + row.name)"><app-icon name="edit" size="sm" /> Edit</app-dropdown-item>
+                <app-dropdown-divider />
+                <app-dropdown-item (action)="logAction('Delete ' + row.name)" variant="danger"><app-icon name="trash" size="sm" /> Delete</app-dropdown-item>
+              </app-dropdown-menu>
+            </ng-template>
+          </app-data-table>
+
+          <app-pagination [currentPage]="tablePage()" [totalItems]="filteredTableData().length" [pageSize]="3" (pageChange)="tablePage.set($event)" />
+        </div>
+      </app-card>
+
+      <!-- Tabs variants -->
+      <app-card>
+        <h3 card-header>TabsComponent — Variants</h3>
+        <div class="space-y-6">
+          <div>
+            <p class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">Underline (default)</p>
+            <app-tabs [tabs]="[{ key: 'a', label: 'Tab A' }, { key: 'b', label: 'Tab B' }, { key: 'c', label: 'Tab C', disabled: true }]" [activeTab]="'a'" />
+          </div>
+          <div>
+            <p class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">Pills</p>
+            <app-tabs [tabs]="[{ key: 'x', label: 'Overview', icon: 'home' }, { key: 'y', label: 'Details', icon: 'info' }, { key: 'z', label: 'Settings' }]" [activeTab]="'x'" variant="pills" />
+          </div>
+        </div>
+      </app-card>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 4: FEEDBACK
+       ══════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'feedback') {
+    <div class="space-y-6">
+
+      <!-- Toasts -->
+      <app-card>
+        <h3 card-header>Toast Notifications (NotificationStore)</h3>
+        <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">Click a button to trigger a toast notification.</p>
+        <div class="flex flex-wrap gap-2">
+          <app-btn variant="primary" size="sm" (click)="showToast('success')"><app-icon name="check-circle" size="sm" /> Success</app-btn>
+          <app-btn variant="danger" size="sm" (click)="showToast('error')"><app-icon name="alert-triangle" size="sm" /> Error</app-btn>
+          <app-btn variant="secondary" size="sm" (click)="showToast('warning')"><app-icon name="alert-triangle" size="sm" /> Warning</app-btn>
+          <app-btn variant="secondary" size="sm" (click)="showToast('info')"><app-icon name="info" size="sm" /> Info</app-btn>
+        </div>
+      </app-card>
+
+      <!-- Modal -->
+      <app-card>
+        <h3 card-header>ModalComponent</h3>
+        <app-btn variant="primary" size="sm" (click)="modalOpen.set(true)">
+          <app-icon name="eye" size="sm" /> Open Modal
+        </app-btn>
+        <app-modal [open]="modalOpen()" title="Demo Modal" (closed)="modalOpen.set(false)">
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            This is a reusable modal with animated open/close, focus trapping, and escape key support.
+          </p>
+          <div modal-footer class="flex justify-end gap-2 border-t px-4 py-3 dark:border-gray-700">
+            <app-btn variant="secondary" size="sm" (click)="modalOpen.set(false)">Cancel</app-btn>
+            <app-btn variant="primary" size="sm" (click)="modalOpen.set(false)">Confirm</app-btn>
+          </div>
+        </app-modal>
+      </app-card>
+
+      <!-- Confirm Dialog -->
+      <app-card>
+        <h3 card-header>ConfirmDialogService</h3>
+        <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">Promise-based confirmation that returns true/false.</p>
+        <app-btn variant="danger" size="sm" (click)="showConfirm()">
+          <app-icon name="trash" size="sm" /> Delete (with confirmation)
+        </app-btn>
+      </app-card>
+
+      <!-- Logger -->
+      <app-card>
+        <h3 card-header>LoggerService</h3>
+        <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">Open your browser DevTools console to see log output.</p>
+        <div class="flex flex-wrap gap-2">
+          <app-btn size="sm" variant="secondary" (click)="logger.debug('Debug message', { demo: true })">logger.debug()</app-btn>
+          <app-btn size="sm" variant="secondary" (click)="logger.info('Info message', { page: 'showcase' })">logger.info()</app-btn>
+          <app-btn size="sm" variant="secondary" (click)="logger.warn('Warning message')">logger.warn()</app-btn>
+          <app-btn size="sm" variant="danger" (click)="logError()">logger.error()</app-btn>
+        </div>
+      </app-card>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 5: PIPES & DIRECTIVES
+       ══════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'pipes') {
+    <div class="space-y-6">
+
+      <!-- Pipes -->
+      <app-card>
+        <h3 card-header>Pipes</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm dark:text-gray-200">
+            <thead>
+              <tr class="border-b text-gray-600 dark:border-gray-700 dark:text-gray-400">
+                <th class="px-2 py-2">Pipe</th>
+                <th class="px-2 py-2">Input</th>
+                <th class="px-2 py-2">Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b dark:border-gray-700">
+                <td class="px-2 py-2 font-medium">truncate</td>
+                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">"{{ longText }}"</td>
+                <td class="px-2 py-2"><app-badge variant="info">{{ longText | truncate:40 }}</app-badge></td>
+              </tr>
+              <tr class="border-b dark:border-gray-700">
+                <td class="px-2 py-2 font-medium">relativeTime</td>
+                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">3 hours in the past</td>
+                <td class="px-2 py-2"><app-badge variant="success">{{ pastDate | relativeTime }}</app-badge></td>
+              </tr>
+              <tr class="border-b dark:border-gray-700">
+                <td class="px-2 py-2 font-medium">fileSize</td>
+                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">{{ fileBytes }} bytes</td>
+                <td class="px-2 py-2"><app-badge variant="warning">{{ fileBytes | fileSize }}</app-badge></td>
+              </tr>
+              <tr class="border-b dark:border-gray-700">
+                <td class="px-2 py-2 font-medium">initials</td>
+                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">"Alice Johnson"</td>
+                <td class="px-2 py-2"><app-badge variant="neutral">{{ 'Alice Johnson' | initials }}</app-badge></td>
+              </tr>
+              <tr class="border-b dark:border-gray-700">
+                <td class="px-2 py-2 font-medium">initials:3</td>
+                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">"John Michael Doe"</td>
+                <td class="px-2 py-2"><app-badge variant="neutral">{{ 'John Michael Doe' | initials:3 }}</app-badge></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </app-card>
+
+      <!-- Tooltip -->
+      <app-card>
+        <h3 card-header>TooltipDirective</h3>
+        <div class="flex flex-wrap gap-3">
+          <app-btn variant="secondary" size="sm" [appTooltip]="'Tooltip on top'" tooltipPosition="top">Hover me (top)</app-btn>
+          <app-btn variant="secondary" size="sm" [appTooltip]="'Tooltip on bottom'" tooltipPosition="bottom">Hover me (bottom)</app-btn>
+          <span
+            class="inline-flex cursor-help items-center gap-1 rounded border px-3 py-1.5 text-sm dark:border-gray-600 dark:text-gray-300"
+            [appTooltip]="'Works on any element!'"
+          >
+            <app-icon name="info" size="sm" /> Any element
+          </span>
+        </div>
+      </app-card>
+
+      <!-- ClickOutside -->
+      <app-card>
+        <h3 card-header>ClickOutsideDirective</h3>
+        <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">
+          Click inside the blue box — nothing happens. Click outside it — counter increments.
+        </p>
+        <div class="flex items-center gap-4">
+          <div
+            (appClickOutside)="onClickOutside()"
+            class="flex h-24 w-48 items-center justify-center rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 text-sm font-medium text-blue-700 dark:border-blue-500 dark:bg-blue-900/20 dark:text-blue-300"
+          >
+            Click outside me
+          </div>
+          <p class="text-sm dark:text-gray-300">
+            Clicks outside: <strong class="text-lg dark:text-white">{{ clickOutsideCount() }}</strong>
+          </p>
+        </div>
+      </app-card>
+
+      <!-- SkeletonDirective -->
+      <app-card>
+        <h3 card-header>SkeletonDirective</h3>
+        <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">
+          Structural directive — shows pulsing skeletons while loading, real content when done.
+        </p>
+        <div class="mb-3">
+          <app-btn variant="secondary" size="sm" (click)="toggleSkeletonLoading()">
+            <app-icon name="spinner" size="sm" /> Toggle Loading ({{ skeletonLoading() ? 'ON' : 'OFF' }})
+          </app-btn>
+        </div>
+        <div class="space-y-3">
+          <div *appSkeleton="skeletonLoading(); height: '1.5rem'; width: '60%'" class="text-sm font-medium dark:text-gray-200">
+            This is the actual text content!
+          </div>
+          <div *appSkeleton="skeletonLoading(); height: '4rem'" class="rounded border p-3 text-sm dark:border-gray-700 dark:text-gray-300">
+            A full paragraph of content that replaces the skeleton block once loading is complete. It can contain any elements.
+          </div>
+          <div *appSkeleton="skeletonLoading(); height: '1rem'; width: '40%; count: 3'" class="text-xs text-gray-500 dark:text-gray-400">
+            Multi-line skeleton with count parameter.
+          </div>
+        </div>
+      </app-card>
+
+      <!-- CopyToClipboardDirective -->
+      <app-card>
+        <h3 card-header>CopyToClipboardDirective</h3>
+        <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">
+          Click to copy text to clipboard. Shows a success toast automatically.
+        </p>
+        <div class="flex flex-wrap items-center gap-3">
+          <code class="rounded bg-gray-100 px-3 py-1.5 font-mono text-xs dark:bg-gray-700 dark:text-gray-300" [appCopyToClipboard]="copyText">
+            {{ copyText }}
+            <app-icon name="copy" size="xs" class="ml-1 inline-block align-middle text-gray-400" />
+          </code>
+          <app-btn variant="secondary" size="sm" [appCopyToClipboard]="'Hello from Clipboard!'" copySuccessMessage="Custom message copied!">
+            <app-icon name="clipboard" size="sm" /> Copy Custom Text
+          </app-btn>
+        </div>
+      </app-card>
+
+      <!-- LocalStorageSignal -->
+      <app-card>
+        <h3 card-header>localStorageSignal() Utility</h3>
+        <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">
+          A writable signal that auto-persists to localStorage. Refresh the page — the counter value is preserved.
+        </p>
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2 rounded-lg border p-3 dark:border-gray-700">
+            <span class="text-sm font-medium dark:text-gray-200">Counter:</span>
+            <span class="min-w-[2rem] text-center text-2xl font-bold tabular-nums text-blue-600 dark:text-blue-400">{{ storedCounter() }}</span>
+          </div>
+          <div class="flex gap-2">
+            <app-btn variant="primary" size="sm" (click)="incrementCounter()"><app-icon name="plus" size="xs" /> Increment</app-btn>
+            <app-btn variant="secondary" size="sm" (click)="resetCounter()"><app-icon name="x-circle" size="xs" /> Reset</app-btn>
+          </div>
+        </div>
+        <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+          Stored under key: <code class="font-mono">showcase-counter</code> — Check DevTools &gt; Application &gt; LocalStorage
+        </p>
+      </app-card>
+
+      <!-- FormDirtyGuard info -->
+      <app-card>
+        <h3 card-header>formDirtyGuard</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          A route guard that warns users about unsaved form changes before navigating away.
+          Add <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-700 dark:text-gray-300">canDeactivate: [formDirtyGuard]</code>
+          to any route with a form. The component must implement the
+          <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs dark:bg-gray-700 dark:text-gray-300">FormDirtyCheck</code> interface.
+        </p>
+      </app-card>
+
+      <!-- InitialsPipe extra demo -->
+      <app-card>
+        <h3 card-header>InitialsPipe — More Examples</h3>
+        <div class="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+          <div class="rounded border p-2 text-center dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">"Alice"</p>
+            <p class="font-medium dark:text-gray-200">{{ 'Alice' | initials }}</p>
+          </div>
+          <div class="rounded border p-2 text-center dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">"Bob Smith"</p>
+            <p class="font-medium dark:text-gray-200">{{ 'Bob Smith' | initials }}</p>
+          </div>
+          <div class="rounded border p-2 text-center dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">"Carol Ann White"</p>
+            <p class="font-medium dark:text-gray-200">{{ 'Carol Ann White' | initials }}</p>
+          </div>
+          <div class="rounded border p-2 text-center dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">"Carol Ann White" :3</p>
+            <p class="font-medium dark:text-gray-200">{{ 'Carol Ann White' | initials:3 }}</p>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- FeatureFlagService -->
+      <app-card>
+        <h3 card-header>FeatureFlagService</h3>
+        <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">
+          Toggle feature flags at runtime. Values persist to localStorage. Flags are reactive signals — the UI updates instantly.
+        </p>
+        <div class="space-y-2">
+          @for (flag of demoFlags; track flag.name) {
+            <div class="flex items-center justify-between rounded-lg border p-3 dark:border-gray-700">
+              <div>
+                <p class="text-sm font-medium dark:text-gray-200">{{ flag.name }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ flag.description }}</p>
+              </div>
+              <div class="flex items-center gap-3">
+                @if (featureFlags.isEnabled(flag.name)()) {
+                  <app-badge variant="success">ON</app-badge>
+                } @else {
+                  <app-badge variant="neutral">OFF</app-badge>
+                }
+                <app-btn size="sm" variant="secondary" (click)="featureFlags.toggle(flag.name)">Toggle</app-btn>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="mt-3 flex gap-2">
+          <app-btn size="sm" variant="danger" (click)="featureFlags.resetAll()">
+            <app-icon name="x-circle" size="xs" /> Reset All
+          </app-btn>
+        </div>
+        <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+          Stored under key: <code class="font-mono">feature-flags</code> — Refresh the page to verify persistence.
+        </p>
+      </app-card>
+
+      <!-- FileSizePipe extra demo -->
+      <app-card>
+        <h3 card-header>FileSizePipe — More Examples</h3>
+        <div class="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+          <div class="rounded border p-2 text-center dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">512 B</p>
+            <p class="font-medium dark:text-gray-200">{{ 512 | fileSize }}</p>
+          </div>
+          <div class="rounded border p-2 text-center dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">1024 B</p>
+            <p class="font-medium dark:text-gray-200">{{ 1024 | fileSize }}</p>
+          </div>
+          <div class="rounded border p-2 text-center dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">1,048,576 B</p>
+            <p class="font-medium dark:text-gray-200">{{ 1048576 | fileSize }}</p>
+          </div>
+          <div class="rounded border p-2 text-center dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">1,073,741,824 B</p>
+            <p class="font-medium dark:text-gray-200">{{ 1073741824 | fileSize }}</p>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  }
+</div>

@@ -1,0 +1,13 @@
+/* ── Hide native number input spin buttons ── */
+
+/* Chrome, Safari, Edge, Opera */
+:host .hide-spin-buttons::-webkit-outer-spin-button,
+:host .hide-spin-buttons::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+:host .hide-spin-buttons {
+  -moz-appearance: textfield;
+}

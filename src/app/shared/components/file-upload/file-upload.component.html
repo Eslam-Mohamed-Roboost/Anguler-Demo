@@ -1,0 +1,79 @@
+<div>
+  @if (label()) {
+    <span class="mb-1 block text-sm font-medium dark:text-gray-200">{{ label() }}</span>
+  }
+
+  <!-- Hidden file input (placed BEFORE the label so [for] can reference it) -->
+  <input
+    #fileInput
+    type="file"
+    [id]="inputId()"
+    [accept]="accept()"
+    [multiple]="multiple()"
+    (change)="onFileSelect($event)"
+    class="sr-only"
+  />
+
+  <!-- ═══════ DROP ZONE — uses <label for="…"> for reliable native file-input triggering ═══════ -->
+  <label
+    [for]="inputId()"
+    (drop)="onDrop($event)"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave()"
+    class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-8 text-center transition-colors"
+    [class]="isDragOver()
+      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+      : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'"
+    tabindex="0"
+    role="button"
+    (keydown.space)="$event.preventDefault()"
+    [attr.aria-label]="label() || 'Upload files'"
+  >
+    <app-icon name="upload" size="lg" />
+    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+      <span class="font-medium text-blue-600 dark:text-blue-400" i18n="@@shared.fileUpload.click">Click to upload</span>
+      <span i18n="@@shared.fileUpload.orDrag"> or drag and drop</span>
+    </p>
+    @if (hint()) {
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ hint() }}</p>
+    }
+  </label>
+
+  <!-- ═══════ FILE LIST ═══════ -->
+  @if (files().length > 0) {
+    <ul class="mt-3 space-y-2">
+      @for (item of files(); track item.file.name + '-' + $index) {
+        <li
+          class="flex items-center gap-3 rounded-lg border px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+          [class]="item.error ? 'border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-900/20' : ''"
+        >
+          @if (item.previewUrl) {
+            <img [src]="item.previewUrl" [alt]="item.file.name" class="size-10 rounded object-cover" />
+          } @else {
+            <app-icon name="file" />
+          }
+
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-medium dark:text-gray-200">{{ item.file.name }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatSize(item.file.size) }}</p>
+            @if (item.error) {
+              <p class="text-xs text-red-600 dark:text-red-400">{{ item.error }}</p>
+            }
+          </div>
+
+          <button
+            type="button"
+            (click)="removeFile($index); $event.stopPropagation()"
+            class="shrink-0 rounded p-1 text-gray-400 transition-colors hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+            aria-label="Remove file"
+            i18n-aria-label="@@shared.fileUpload.removeLabel"
+          >
+            <app-icon name="close" size="sm" />
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <ng-content />
+</div>

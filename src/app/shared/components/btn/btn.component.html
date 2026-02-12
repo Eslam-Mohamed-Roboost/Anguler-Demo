@@ -1,0 +1,10 @@
+<button
+  [type]="type()"
+  [disabled]="isDisabled()"
+  [class]="buttonClasses()"
+>
+  @if (loading() && showLoader()) {
+    <app-icon name="spinner" size="sm" />
+  }
+  <ng-content />
+</button>

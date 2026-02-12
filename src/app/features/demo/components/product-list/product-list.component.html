@@ -1,0 +1,130 @@
+<div class="mx-auto max-w-5xl p-4">
+  <!-- ═══════ HEADER ═══════ -->
+  <header class="mb-4 flex flex-wrap items-center justify-between gap-2">
+    <h1 class="text-2xl font-bold dark:text-white" i18n="@@demo.list.title">Products</h1>
+    <div class="flex gap-2">
+      <app-btn variant="secondary" size="sm" (click)="simulateError()" [appTooltip]="'Triggers a mock 500 error'">
+        <app-icon name="alert-triangle" size="sm" />
+        <span i18n="@@demo.list.simulateError">Simulate Error</span>
+      </app-btn>
+      <a routerLink="new">
+        <app-btn variant="primary" size="sm">
+          <app-icon name="plus" size="sm" />
+          <span i18n="@@demo.list.addProduct">Add Product</span>
+        </app-btn>
+      </a>
+    </div>
+  </header>
+
+  <!-- ═══════ SEARCH ═══════ -->
+  <div class="mb-4 max-w-sm">
+    <app-search-input
+      placeholder="Search by name, SKU or category..."
+      i18n-placeholder="@@demo.list.searchPlaceholder"
+      (searchChange)="onSearch($event)"
+    />
+  </div>
+
+  @if (isLoading()) {
+    <app-data-table [data]="[]" [columns]="columns" [loading]="true" [skeletonRows]="5" />
+  } @else {
+    <!-- ═══════ ICU PLURAL ═══════ -->
+    <p class="mb-4 text-sm text-gray-500 dark:text-gray-400" aria-live="polite">
+      <span i18n="@@demo.list.count">
+        {itemCount(), plural, =0 {No products found} =1 {1 product found} other {{{ itemCount() }} products found}}
+      </span>
+    </p>
+
+    @if (filteredItems().length === 0) {
+      <app-empty-state
+        icon="package"
+        title="No products found"
+        i18n-title="@@demo.list.emptyTitle"
+        description="Try a different search or click 'Add Product' to create one."
+        i18n-description="@@demo.list.emptyDesc"
+      >
+        <a routerLink="new">
+          <app-btn variant="primary" size="sm">
+            <app-icon name="plus" size="sm" />
+            <span i18n="@@demo.list.addProduct">Add Product</span>
+          </app-btn>
+        </a>
+      </app-empty-state>
+    } @else {
+      <!-- ═══════ DATA TABLE ═══════ -->
+      <app-data-table
+        [data]="paginatedItems()"
+        [columns]="columns"
+        trackByKey="id"
+        ariaLabel="Products table"
+        i18n-ariaLabel="@@demo.list.tableLabel"
+      >
+        <!-- Custom cell: price -->
+        <ng-template cellDef="price" let-row>
+          {{ row.price | currency : 'USD' }}
+        </ng-template>
+
+        <!-- Custom cell: active status badge -->
+        <ng-template cellDef="isActive" let-row>
+          @if (row.isActive) {
+            <app-badge variant="success" i18n="@@demo.list.active">Yes</app-badge>
+          } @else {
+            <app-badge variant="neutral" i18n="@@demo.list.inactive">No</app-badge>
+          }
+        </ng-template>
+
+        <!-- Custom cell: actions -->
+        <ng-template cellDef="actions" let-row>
+          <div class="flex gap-2">
+            <a
+              [routerLink]="[row.id, 'edit']"
+              class="inline-flex items-center gap-1 text-blue-600 hover:underline dark:text-blue-400"
+              [appTooltip]="'Edit this product'"
+            >
+              <app-icon name="edit" size="xs" />
+              <span i18n="@@demo.list.edit">Edit</span>
+            </a>
+            <button
+              type="button"
+              (click)="confirmDelete(row)"
+              class="inline-flex items-center gap-1 text-red-600 hover:underline disabled:opacity-50 dark:text-red-400"
+              [disabled]="deleteLoading() === row.id"
+              [appTooltip]="'Delete this product'"
+            >
+              <app-icon name="trash" size="xs" />
+              <span i18n="@@demo.list.delete">Delete</span>
+            </button>
+          </div>
+        </ng-template>
+      </app-data-table>
+
+      <!-- ═══════ PAGINATION ═══════ -->
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalItems]="filteredItems().length"
+        [pageSize]="pageSize()"
+        (pageChange)="currentPage.set($event)"
+      />
+
+      <!-- ═══════ @DEFER: ProductStatsComponent ═══════ -->
+      <section class="mt-8" aria-labelledby="stats-heading">
+        <h2 id="stats-heading" class="mb-3 text-lg font-semibold dark:text-white" i18n="@@demo.stats.heading">
+          Product Statistics
+        </h2>
+        @defer (on viewport; prefetch on idle) {
+          <app-product-stats [products]="items()" />
+        } @placeholder {
+          <div class="flex h-24 items-center justify-center rounded border border-dashed border-gray-300 text-sm text-gray-400 dark:border-gray-600 dark:text-gray-500">
+            <p i18n="@@demo.stats.placeholder">Scroll down to load product statistics</p>
+          </div>
+        } @loading (minimum 300ms) {
+          <app-skeleton-block width="100%" height="6rem" />
+        } @error {
+          <p class="text-sm text-red-500 dark:text-red-400" role="alert" i18n="@@demo.stats.error">
+            Failed to load statistics.
+          </p>
+        }
+      </section>
+    }
+  }
+</div>

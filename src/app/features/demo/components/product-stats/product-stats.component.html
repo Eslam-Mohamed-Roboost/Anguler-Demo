@@ -1,0 +1,27 @@
+<!-- ═══════ @defer target component — loaded lazily when scrolled into viewport ═══════ -->
+<div
+  class="grid grid-cols-2 gap-4 sm:grid-cols-4"
+  role="region"
+  aria-label="Product statistics"
+  i18n-aria-label="@@demo.stats.regionLabel"
+>
+  <div class="rounded border p-4 text-center dark:border-gray-700 dark:bg-gray-800">
+    <p class="text-2xl font-bold dark:text-white">{{ totalProducts() }}</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@demo.stats.totalLabel">Total Products</p>
+  </div>
+
+  <div class="rounded border p-4 text-center dark:border-gray-700 dark:bg-gray-800">
+    <p class="text-2xl font-bold dark:text-white">{{ averagePrice() | currency : 'USD' }}</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@demo.stats.avgPriceLabel">Average Price</p>
+  </div>
+
+  <div class="rounded border p-4 text-center dark:border-gray-700 dark:bg-gray-800">
+    <p class="text-2xl font-bold dark:text-white">{{ totalInventoryValue() | currency : 'USD' }}</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@demo.stats.totalValueLabel">Total Inventory Value</p>
+  </div>
+
+  <div class="rounded border p-4 text-center dark:border-gray-700 dark:bg-gray-800">
+    <p class="text-2xl font-bold dark:text-white">{{ activeCount() }}</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@demo.stats.activeLabel">Active Products</p>
+  </div>
+</div>

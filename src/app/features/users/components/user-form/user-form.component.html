@@ -1,0 +1,45 @@
+<div class="mx-auto max-w-2xl p-4">
+  <h1 class="mb-4 text-2xl font-bold dark:text-white">
+    @if (isEditMode()) {
+      <span i18n="@@users.form.editTitle">Edit User</span>
+    } @else {
+      <span i18n="@@users.form.createTitle">Create User</span>
+    }
+  </h1>
+
+  @if (isEditMode() && editResource.isLoading()) {
+    <app-skeleton-form [fields]="2" />
+  } @else {
+    <form (submit)="handleSubmit($event)" class="space-y-4" novalidate>
+      <app-input
+        label="Name"
+        i18n-label="@@users.form.nameLabel"
+        inputId="user-name"
+        [field]="fieldTree.name"
+        placeholder="Enter name"
+        i18n-placeholder="@@users.form.namePlaceholder"
+      />
+
+      <app-input
+        label="Email"
+        i18n-label="@@users.form.emailLabel"
+        inputId="user-email"
+        type="email"
+        [field]="fieldTree.email"
+        placeholder="Enter email"
+        i18n-placeholder="@@users.form.emailPlaceholder"
+      />
+
+      <div class="flex gap-2">
+        <app-btn type="submit" variant="primary" [loading]="submitLoading()" [showLoader]="true">
+          <app-icon name="check" size="sm" />
+          <span i18n="@@users.form.save">Save</span>
+        </app-btn>
+        <app-btn variant="secondary" (click)="cancel()">
+          <app-icon name="chevron-left" size="sm" />
+          <span i18n="@@users.form.cancel">Cancel</span>
+        </app-btn>
+      </div>
+    </form>
+  }
+</div>

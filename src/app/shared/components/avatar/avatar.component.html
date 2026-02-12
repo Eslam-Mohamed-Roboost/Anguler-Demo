@@ -1,0 +1,24 @@
+<div class="relative inline-flex" [attr.aria-label]="name()" role="img">
+  @if (showImage()) {
+    <img
+      [ngSrc]="src()"
+      [alt]="name()"
+      [width]="imgDimension()"
+      [height]="imgDimension()"
+      class="rounded-full object-cover"
+      [class]="sizeClasses()"
+      (error)="onImageError()"
+    />
+  } @else {
+    <span
+      class="inline-flex items-center justify-center rounded-full font-medium text-white"
+      [class]="sizeClasses() + ' ' + bgColor()"
+    >
+      {{ initials() }}
+    </span>
+  }
+
+  @if (online() !== null) {
+    <span [class]="dotClasses()" aria-hidden="true"></span>
+  }
+</div>

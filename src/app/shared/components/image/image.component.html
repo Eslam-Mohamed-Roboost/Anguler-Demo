@@ -1,0 +1,45 @@
+@if (showFallback()) {
+  <!-- ═══ Fallback placeholder (icon) ═══ -->
+  <div
+    [class]="fallbackClasses()"
+    [style]="fallbackStyle()"
+    role="img"
+    [attr.aria-label]="alt()"
+  >
+    <app-icon name="x-circle" size="lg" />
+  </div>
+} @else if (showFallbackImage()) {
+  <!-- ═══ Fallback image ═══ -->
+  <img
+    [ngSrc]="fallbackSrc()"
+    [alt]="alt()"
+    [width]="width() || undefined"
+    [height]="height() || undefined"
+    [fill]="isFill()"
+    [class]="classes()"
+    (error)="onFallbackError()"
+  />
+} @else if (isFill()) {
+  <!-- ═══ Fill mode (image fills positioned parent) ═══ -->
+  <img
+    [ngSrc]="src()"
+    [alt]="alt()"
+    fill
+    [priority]="priority()"
+    [placeholder]="resolvedPlaceholder()"
+    [class]="classes() + ' object-cover'"
+    (error)="onError()"
+  />
+} @else {
+  <!-- ═══ Fixed size mode ═══ -->
+  <img
+    [ngSrc]="src()"
+    [alt]="alt()"
+    [width]="width()"
+    [height]="height()"
+    [priority]="priority()"
+    [placeholder]="resolvedPlaceholder()"
+    [class]="classes()"
+    (error)="onError()"
+  />
+}

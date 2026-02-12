@@ -1,0 +1,70 @@
+<fieldset>
+  @if (label()) {
+    <legend class="mb-3 text-sm font-semibold text-gray-800 dark:text-gray-200">
+      {{ label() }}
+      <ng-content select="[label-hint]" />
+    </legend>
+  }
+
+  <div [class]="layoutClass()" role="radiogroup">
+    @for (opt of options(); track getValue(opt); let i = $index) {
+      <label
+        [for]="radioId(i)"
+        class="group relative inline-flex cursor-pointer select-none"
+        [class]="sizeClasses().gap"
+      >
+        <!-- ═══════ HIDDEN NATIVE RADIO ═══════ -->
+        <input
+          [id]="radioId(i)"
+          type="radio"
+          [value]="getValue(opt)"
+          [formField]="$any(field())"
+          class="peer sr-only !absolute !overflow-hidden"
+          style="scroll-margin: 0; top: 0; left: 0;"
+        />
+
+        <!-- ═══════ CUSTOM RADIO CIRCLE ═══════ -->
+        <span
+          class="radio-circle relative mt-0.5 inline-flex shrink-0 items-center justify-center rounded-full border-2 border-gray-300 bg-white transition-all duration-200 ease-out
+                 peer-focus-visible:ring-4
+                 peer-disabled:cursor-not-allowed peer-disabled:opacity-50
+                 group-hover:border-gray-400
+                 dark:border-gray-600 dark:bg-gray-800 dark:group-hover:border-gray-500"
+          [class]="sizeClasses().outer + ' ' + colorClasses().border + ' ' + colorClasses().ring"
+          aria-hidden="true"
+        >
+          <!-- Inner dot — animated in/out via CSS -->
+          <span
+            class="radio-dot rounded-full transition-all duration-200 ease-out"
+            [class]="sizeClasses().inner + ' ' + colorClasses().dot"
+          ></span>
+        </span>
+
+        <!-- ═══════ LABEL ═══════ -->
+        <span
+          class="font-medium leading-snug text-gray-700 dark:text-gray-300"
+          [class]="sizeClasses().label"
+        >
+          {{ getLabel(opt) }}
+        </span>
+      </label>
+    }
+  </div>
+
+  @if (hint()) {
+    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">{{ hint() }}</p>
+  }
+
+  <ng-content />
+
+  @if (touched() && invalid()) {
+    <ul role="alert" class="mt-1.5 space-y-0.5 text-xs text-red-600 dark:text-red-400">
+      @for (err of errors(); track $index) {
+        <li class="flex items-center gap-1">
+          <app-icon name="alert-triangle" size="xs" />
+          {{ err.message }}
+        </li>
+      }
+    </ul>
+  }
+</fieldset>

@@ -1,0 +1,47 @@
+<div>
+  @if (label()) {
+    <label [for]="inputId()" class="mb-1 block text-sm font-medium dark:text-gray-200">
+      {{ label() }}
+      <ng-content select="[label-hint]" />
+    </label>
+  }
+
+  <div class="relative">
+    <select
+      [id]="inputId()"
+      [formField]="$any(field())"
+      [class]="classes()"
+    >
+      @if (placeholder()) {
+        <option value="" disabled>{{ placeholder() }}</option>
+      }
+      @for (opt of options(); track getValue(opt)) {
+        <option [value]="getValue(opt)">{{ getLabel(opt) }}</option>
+      }
+    </select>
+
+    <!-- ═══════ CUSTOM DROPDOWN ARROW ═══════ -->
+    @if (showCustomArrow()) {
+      <span
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500 dark:text-gray-400"
+        aria-hidden="true"
+      >
+        <app-icon name="chevron-down" size="sm" />
+      </span>
+    }
+  </div>
+
+  @if (hint()) {
+    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ hint() }}</p>
+  }
+
+  <ng-content />
+
+  @if (touched() && invalid()) {
+    <ul role="alert" class="mt-1 text-xs text-red-600 dark:text-red-400">
+      @for (err of errors(); track $index) {
+        <li>{{ err.message }}</li>
+      }
+    </ul>
+  }
+</div>

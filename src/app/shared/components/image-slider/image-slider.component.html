@@ -1,0 +1,132 @@
+<div
+  [class]="containerClasses()"
+  [style.aspect-ratio]="aspectRatio()"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Image slider"
+  tabindex="0"
+>
+  <!-- ═══════ SLIDES ═══════ -->
+  @if (transition() === 'fade') {
+    <!-- Fade transition -->
+    @for (slide of slides(); track trackByIndex($index)) {
+      <div
+        class="image-slider__slide absolute inset-0"
+        [class.image-slider__slide--active]="$index === currentIndex()"
+        [class.image-slider__slide--fade]="true"
+        role="group"
+        [attr.aria-roledescription]="'slide'"
+        [attr.aria-label]="'Slide ' + ($index + 1) + ' of ' + slideCount()"
+        [attr.aria-hidden]="$index !== currentIndex()"
+      >
+        <img
+          [src]="slide.src"
+          [alt]="slide.alt"
+          class="h-full w-full object-cover"
+          draggable="false"
+        />
+
+        @if (showCaptions() && slide.caption) {
+          <div class="image-slider__caption absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-6 pb-5 pt-10">
+            <p class="text-sm font-medium text-white drop-shadow-md sm:text-base">{{ slide.caption }}</p>
+          </div>
+        }
+      </div>
+    }
+  } @else {
+    <!-- Slide transition -->
+    <div
+      class="image-slider__track flex h-full transition-transform duration-500 ease-in-out"
+      [style.transform]="'translateX(-' + currentIndex() * 100 + '%)'"
+    >
+      @for (slide of slides(); track trackByIndex($index)) {
+        <div
+          class="image-slider__slide h-full w-full shrink-0"
+          role="group"
+          [attr.aria-roledescription]="'slide'"
+          [attr.aria-label]="'Slide ' + ($index + 1) + ' of ' + slideCount()"
+          [attr.aria-hidden]="$index !== currentIndex()"
+        >
+          <img
+            [src]="slide.src"
+            [alt]="slide.alt"
+            class="h-full w-full object-cover"
+            draggable="false"
+          />
+
+          @if (showCaptions() && slide.caption) {
+            <div class="image-slider__caption absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-6 pb-5 pt-10"
+              [style.transform]="'translateX(' + currentIndex() * 100 + '%)'"
+            >
+              <p class="text-sm font-medium text-white drop-shadow-md sm:text-base">{{ slide.caption }}</p>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ═══════ PREV / NEXT ARROWS ═══════ -->
+  @if (showArrows() && slideCount() > 1) {
+    <button
+      type="button"
+      class="image-slider__arrow image-slider__arrow--prev
+             absolute left-2 top-1/2 z-10 -translate-y-1/2
+             rounded-full bg-black/30 p-2 text-white backdrop-blur-sm
+             transition-all hover:bg-black/50
+             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+      (click)="prev(); $event.stopPropagation()"
+      aria-label="Previous slide"
+      i18n-aria-label="@@shared.imageSlider.prevLabel"
+    >
+      <app-icon name="chevron-left" size="md" />
+    </button>
+
+    <button
+      type="button"
+      class="image-slider__arrow image-slider__arrow--next
+             absolute right-2 top-1/2 z-10 -translate-y-1/2
+             rounded-full bg-black/30 p-2 text-white backdrop-blur-sm
+             transition-all hover:bg-black/50
+             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+      (click)="next(); $event.stopPropagation()"
+      aria-label="Next slide"
+      i18n-aria-label="@@shared.imageSlider.nextLabel"
+    >
+      <app-icon name="chevron-right" size="md" />
+    </button>
+  }
+
+  <!-- ═══════ DOT INDICATORS ═══════ -->
+  @if (showDots() && slideCount() > 1) {
+    <div
+      class="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-2"
+      role="tablist"
+      aria-label="Slide indicators"
+    >
+      @for (slide of slides(); track trackByIndex($index)) {
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="$index === currentIndex()"
+          [attr.aria-label]="'Go to slide ' + ($index + 1)"
+          class="image-slider__dot size-2.5 rounded-full transition-all duration-300
+                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          [class]="$index === currentIndex()
+            ? 'bg-white scale-110 shadow-md'
+            : 'bg-white/50 hover:bg-white/75'"
+          (click)="goTo($index); $event.stopPropagation()"
+        ></button>
+      }
+    </div>
+  }
+
+  <!-- ═══════ SLIDE COUNTER ═══════ -->
+  @if (slideCount() > 1) {
+    <div class="absolute right-3 top-3 z-10 rounded-full bg-black/40 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+      {{ currentIndex() + 1 }} / {{ slideCount() }}
+    </div>
+  }
+</div>

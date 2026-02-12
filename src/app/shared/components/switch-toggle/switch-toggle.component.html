@@ -1,0 +1,36 @@
+<label [for]="inputId()" class="group relative inline-flex cursor-pointer select-none items-center gap-3">
+  <input
+    [id]="inputId()"
+    type="checkbox"
+    [formField]="$any(field())"
+    class="peer sr-only !absolute !overflow-hidden"
+    style="scroll-margin: 0; top: 0; left: 0;"
+    role="switch"
+  />
+
+  <!-- Track -->
+  <span
+    class="switch-track relative inline-flex shrink-0 items-center rounded-full bg-gray-300 transition-colors duration-200 ease-in-out
+           peer-focus-visible:ring-4 peer-focus-visible:ring-blue-500/25
+           dark:bg-gray-600"
+    [class]="sizeClasses().track + ' ' + colorClass()"
+    [style.--thumb-offset]="thumbOffset()"
+    aria-hidden="true"
+  >
+    <!-- Thumb -->
+    <span
+      class="switch-thumb translate-x-0.5 rounded-full bg-white shadow-md transition-transform duration-200 ease-in-out"
+      [class]="sizeClasses().thumb"
+    ></span>
+  </span>
+
+  <!-- Label -->
+  <span class="flex flex-col">
+    <span class="font-medium text-gray-800 dark:text-gray-200" [class]="sizeClasses().label">
+      {{ label() }}
+    </span>
+    @if (description()) {
+      <span class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ description() }}</span>
+    }
+  </span>
+</label>

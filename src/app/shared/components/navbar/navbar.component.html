@@ -1,0 +1,56 @@
+<header class="flex h-16 items-center justify-between border-b bg-white px-4 dark:border-gray-700 dark:bg-gray-800">
+  <!-- Left side: mobile menu + breadcrumbs -->
+  <div class="flex items-center gap-4">
+    <button
+      type="button"
+      (click)="menuToggle.emit()"
+      class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 lg:hidden dark:text-gray-400 dark:hover:bg-gray-700"
+      aria-label="Toggle sidebar"
+      i18n-aria-label="@@nav.toggleSidebar"
+    >
+      <app-icon name="menu" />
+    </button>
+    <app-breadcrumb />
+  </div>
+
+  <!-- Right side: theme toggle + auth -->
+  <div class="flex items-center gap-3">
+    <!-- Theme toggle -->
+    <button
+      type="button"
+      (click)="themeService.toggleTheme()"
+      class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+      [appTooltip]="themeService.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+      aria-label="Toggle theme"
+      i18n-aria-label="@@nav.toggleTheme"
+    >
+      <app-icon [name]="themeService.isDark() ? 'sun' : 'moon'" size="sm" />
+    </button>
+
+    <!-- Auth info -->
+    @if (authService.isAuthenticated()) {
+      <span class="hidden text-sm text-gray-600 sm:block dark:text-gray-300">
+        {{ authService.userName() }}
+      </span>
+      <button
+        type="button"
+        (click)="authService.logout()"
+        class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+        [appTooltip]="'Log out'"
+        aria-label="Log out"
+        i18n-aria-label="@@nav.logout"
+      >
+        <app-icon name="log-out" size="sm" />
+      </button>
+    } @else {
+      <button
+        type="button"
+        (click)="mockLogin()"
+        class="inline-flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700"
+      >
+        <app-icon name="log-in" size="xs" />
+        <span i18n="@@nav.login">Log in</span>
+      </button>
+    }
+  </div>
+</header>

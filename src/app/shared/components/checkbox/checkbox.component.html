@@ -1,0 +1,62 @@
+<div>
+  <label
+    [for]="inputId()"
+    class="group relative inline-flex cursor-pointer select-none"
+    [class]="sizeClasses().gap + (disabled() ? ' pointer-events-none opacity-50' : '')"
+  >
+    <!-- ═══════ HIDDEN NATIVE INPUT ═══════ -->
+    <input
+      [id]="inputId()"
+      type="checkbox"
+      [formField]="$any(field())"
+      class="peer sr-only !absolute !overflow-hidden"
+      style="scroll-margin: 0; top: 0; left: 0;"
+    />
+
+    <!-- ═══════ CUSTOM CHECKBOX BOX ═══════ -->
+    <span
+      class="checkbox-box relative mt-0.5 inline-flex shrink-0 items-center justify-center rounded-md border-2 border-gray-300 bg-white transition-all duration-200 ease-out
+             peer-focus-visible:ring-4
+             peer-disabled:cursor-not-allowed peer-disabled:opacity-50
+             group-hover:border-gray-400
+             dark:border-gray-600 dark:bg-gray-800 dark:group-hover:border-gray-500"
+      [class]="sizeClasses().box + ' ' + colorClasses()"
+      aria-hidden="true"
+    >
+      <!-- Check icon — animated in/out via CSS -->
+      <app-icon
+        name="check"
+        [size]="sizeClasses().icon"
+        class="check-icon text-white"
+      />
+    </span>
+
+    <!-- ═══════ LABEL + DESCRIPTION ═══════ -->
+    <span class="flex flex-col">
+      <span
+        class="font-medium leading-snug text-gray-800 dark:text-gray-200"
+        [class]="sizeClasses().label"
+      >
+        {{ label() }}
+      </span>
+      @if (description()) {
+        <span class="mt-0.5 text-xs leading-tight text-gray-500 dark:text-gray-400">
+          {{ description() }}
+        </span>
+      }
+    </span>
+  </label>
+
+  <ng-content />
+
+  @if (touched() && invalid()) {
+    <ul role="alert" class="mt-1.5 space-y-0.5 text-xs text-red-600 dark:text-red-400">
+      @for (err of errors(); track $index) {
+        <li class="flex items-center gap-1">
+          <app-icon name="alert-triangle" size="xs" />
+          {{ err.message }}
+        </li>
+      }
+    </ul>
+  }
+</div>

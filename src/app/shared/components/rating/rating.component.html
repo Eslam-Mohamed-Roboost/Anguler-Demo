@@ -1,0 +1,34 @@
+<div>
+  @if (label()) {
+    <span class="mb-1.5 block text-sm font-medium dark:text-gray-200">{{ label() }}</span>
+  }
+
+  <div
+    class="inline-flex items-center gap-0.5"
+    role="radiogroup"
+    [attr.aria-label]="label() || 'Rating'"
+    (mouseleave)="onMouseLeave()"
+    (keydown)="onKeydown($event)"
+  >
+    @for (star of stars(); track star) {
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="star <= value()"
+        [attr.aria-label]="star + ' star' + (star > 1 ? 's' : '')"
+        [tabindex]="star === value() || (value() === 0 && star === 1) ? 0 : -1"
+        [class]="'star-btn cursor-pointer transition-all duration-150 ' + starClass(star) + (readonly() ? ' pointer-events-none' : ' hover:scale-110')"
+        (mouseenter)="onMouseEnter(star)"
+        (click)="onClick(star)"
+      >
+        <app-icon name="star" [size]="iconSize()" />
+      </button>
+    }
+
+    @if (value() > 0) {
+      <span class="ml-1.5 text-sm font-medium tabular-nums text-gray-600 dark:text-gray-400">
+        {{ value() }}/{{ max() }}
+      </span>
+    }
+  </div>
+</div>

@@ -1,0 +1,22 @@
+<div @fadeSlideIn class="flex flex-col items-center justify-center py-12 text-center">
+  @if (icon()) {
+    <div class="mb-4 rounded-full bg-gray-100 p-4 dark:bg-gray-800">
+      <app-icon [name]="$any(icon())" size="lg" />
+    </div>
+  }
+
+  @if (title()) {
+    <h3 class="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+      {{ title() }}
+    </h3>
+  }
+
+  @if (description()) {
+    <p class="mb-4 max-w-sm text-sm text-gray-500 dark:text-gray-400">
+      {{ description() }}
+    </p>
+  }
+
+  <!-- Action slot (e.g. a button) -->
+  <ng-content />
+</div>

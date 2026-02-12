@@ -1,0 +1,39 @@
+<nav aria-label="Progress steps">
+  <ol class="flex items-center">
+    @for (step of steps(); track step.key; let i = $index; let last = $last) {
+      <li class="flex items-center" [class]="last ? '' : 'flex-1'">
+        <!-- Step indicator -->
+        <button
+          type="button"
+          class="flex flex-col items-center gap-1"
+          (click)="goTo(i)"
+          [attr.aria-current]="stepStatus(i) === 'active' ? 'step' : null"
+        >
+          <span [class]="dotClasses(i)">
+            @if (stepStatus(i) === 'completed') {
+              <app-icon name="check" size="xs" />
+            } @else {
+              {{ i + 1 }}
+            }
+          </span>
+          <span
+            class="mt-1 text-center text-xs"
+            [class]="stepStatus(i) === 'active'
+              ? 'font-semibold text-blue-600 dark:text-blue-400'
+              : 'text-gray-500 dark:text-gray-400'"
+          >
+            {{ step.label }}
+            @if (step.optional) {
+              <span class="block text-[10px] text-gray-400 dark:text-gray-500">Optional</span>
+            }
+          </span>
+        </button>
+
+        <!-- Connector line -->
+        @if (!last) {
+          <div class="mx-2 h-0.5 flex-1 rounded" [class]="lineClasses(i)"></div>
+        }
+      </li>
+    }
+  </ol>
+</nav>

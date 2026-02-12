@@ -1,0 +1,27 @@
+<div class="relative">
+  <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
+    <app-icon name="search" size="sm" />
+  </span>
+
+  <input
+    type="text"
+    [value]="query()"
+    (input)="onInput($event)"
+    [placeholder]="placeholder()"
+    class="w-full rounded-lg border py-2 pl-10 pr-9 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+    aria-label="Search"
+    i18n-aria-label="@@shared.search.label"
+  />
+
+  @if (query()) {
+    <button
+      type="button"
+      (click)="clear()"
+      class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+      aria-label="Clear search"
+      i18n-aria-label="@@shared.search.clear"
+    >
+      <app-icon name="close" size="xs" />
+    </button>
+  }
+</div>

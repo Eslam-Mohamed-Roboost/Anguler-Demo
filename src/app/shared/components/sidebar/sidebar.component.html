@@ -1,0 +1,54 @@
+<!-- ═══════ MOBILE OVERLAY SIDEBAR (animated) ═══════ -->
+@if (open()) {
+  <div @sidebarAnimation class="fixed inset-0 z-40 lg:hidden">
+    <!-- Backdrop -->
+    <div
+      class="sidebar-backdrop absolute inset-0 bg-black/50"
+      (click)="closed.emit()"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Mobile sidebar panel -->
+    <aside class="sidebar-panel relative z-50 flex h-full w-64 flex-col border-r bg-white dark:border-gray-700 dark:bg-gray-800">
+      <div class="flex h-16 items-center gap-2 border-b px-4 dark:border-gray-700">
+        <app-icon name="package" size="lg" />
+        <span class="text-lg font-bold dark:text-white">Angular Demo</span>
+      </div>
+      <nav class="flex-1 space-y-1 p-4" aria-label="Main navigation">
+        @for (link of links; track link.path) {
+          <a
+            [routerLink]="link.path"
+            routerLinkActive="bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400"
+            [routerLinkActiveOptions]="{ exact: false }"
+            (click)="closed.emit()"
+            class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+          >
+            <app-icon [name]="link.icon" size="sm" />
+            {{ link.label }}
+          </a>
+        }
+      </nav>
+    </aside>
+  </div>
+}
+
+<!-- ═══════ DESKTOP SIDEBAR (always visible on lg+) ═══════ -->
+<aside class="hidden w-64 flex-col border-r bg-white lg:flex dark:border-gray-700 dark:bg-gray-800">
+  <div class="flex h-16 items-center gap-2 border-b px-4 dark:border-gray-700">
+    <app-icon name="package" size="lg" />
+    <span class="text-lg font-bold dark:text-white">Angular Demo</span>
+  </div>
+  <nav class="flex-1 space-y-1 p-4" aria-label="Main navigation">
+    @for (link of links; track link.path) {
+      <a
+        [routerLink]="link.path"
+        routerLinkActive="bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400"
+        [routerLinkActiveOptions]="{ exact: false }"
+        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+      >
+        <app-icon [name]="link.icon" size="sm" />
+        {{ link.label }}
+      </a>
+    }
+  </nav>
+</aside>

@@ -1,0 +1,30 @@
+<fieldset class="rounded border p-4 dark:border-gray-700">
+  <legend class="px-2 dark:text-gray-200">
+    @if (collapsible()) {
+      <button
+        type="button"
+        class="inline-flex items-center gap-1 font-semibold transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+        (click)="toggle()"
+        [attr.aria-expanded]="!actuallyCollapsed"
+      >
+        <app-icon
+          [name]="actuallyCollapsed ? 'chevron-right' : 'chevron-down'"
+          size="sm"
+        />
+        {{ legend() }}
+      </button>
+    } @else {
+      <span class="font-semibold">{{ legend() }}</span>
+    }
+  </legend>
+
+  @if (description() && !actuallyCollapsed) {
+    <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">{{ description() }}</p>
+  }
+
+  @if (!actuallyCollapsed) {
+    <div class="space-y-4">
+      <ng-content />
+    </div>
+  }
+</fieldset>

@@ -1,0 +1,13 @@
+<div class="flex h-screen bg-gray-50 dark:bg-gray-900">
+  <!-- Sidebar -->
+  <app-sidebar [open]="sidebarOpen()" (closed)="closeSidebar()" />
+
+  <!-- Main content area -->
+  <div class="flex flex-1 flex-col overflow-hidden">
+    <app-navbar (menuToggle)="toggleSidebar()" />
+
+    <main id="main-content" class="flex-1 overflow-y-auto" @routeAnimation>
+      <router-outlet />
+    </main>
+  </div>
+</div>

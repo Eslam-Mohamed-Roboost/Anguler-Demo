@@ -1,0 +1,13 @@
+/* Global styles — Tailwind v4 CSS-based config */
+
+@import "tailwindcss";
+
+/* Enable class-based dark mode (.dark on <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Prevent double scrollbar — only <main> should scroll */
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+}

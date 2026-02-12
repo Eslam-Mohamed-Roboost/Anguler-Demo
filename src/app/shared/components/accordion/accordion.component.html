@@ -1,0 +1,42 @@
+<div [class]="containerClasses()">
+  @for (item of items(); track item.key) {
+    <div [class]="panelClasses(item)">
+      <!-- Header -->
+      <button
+        type="button"
+        [class]="headerClasses(item)"
+        [attr.aria-expanded]="isExpanded(item.key)"
+        [attr.aria-controls]="'accordion-panel-' + item.key"
+        [id]="'accordion-header-' + item.key"
+        [disabled]="item.disabled ?? false"
+        (click)="toggle(item)"
+      >
+        <span class="flex items-center gap-2">
+          @if (item.icon) {
+            <app-icon [name]="$any(item.icon)" size="sm" />
+          }
+          <span>{{ item.title }}</span>
+        </span>
+        <span
+          class="shrink-0 text-gray-400 transition-transform duration-300 dark:text-gray-500"
+          [class.rotate-180]="isExpanded(item.key)"
+        >
+          <app-icon name="chevron-down" size="sm" />
+        </span>
+      </button>
+
+      <!-- Panel body -->
+      <div
+        [id]="'accordion-panel-' + item.key"
+        role="region"
+        [attr.aria-labelledby]="'accordion-header-' + item.key"
+        class="accordion-body"
+        [class.accordion-body--open]="isExpanded(item.key)"
+      >
+        <div class="px-4 pb-4 pt-1 text-sm text-gray-600 dark:text-gray-400">
+          {{ item.content }}
+        </div>
+      </div>
+    </div>
+  }
+</div>

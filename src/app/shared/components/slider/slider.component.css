@@ -1,0 +1,50 @@
+/* ── Custom range slider styling ──────────────────────────── */
+:host .slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, currentColor 0%, currentColor var(--pct, 0%), #d1d5db var(--pct, 0%), #d1d5db 100%);
+  outline: none;
+  transition: background 150ms ease;
+}
+
+:host .slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 150ms ease;
+  border: 2px solid currentColor;
+}
+
+:host .slider-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+:host .slider-input::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  border: 2px solid currentColor;
+}
+
+:host .slider-input:focus-visible {
+  outline: none;
+}
+
+:host .slider-input:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+}
+
+/* Dark mode track */
+:host-context(.dark) .slider-input {
+  background: linear-gradient(to right, currentColor 0%, currentColor var(--pct, 0%), #374151 var(--pct, 0%), #374151 100%);
+}

@@ -1,0 +1,13 @@
+/* ── Hide native select dropdown arrow ── */
+
+:host .hide-native-arrow {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none;
+}
+
+/* IE 10+ */
+:host .hide-native-arrow::-ms-expand {
+  display: none;
+}
