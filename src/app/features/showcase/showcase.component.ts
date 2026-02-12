@@ -53,6 +53,8 @@ import { SwitchToggleComponent } from '../../shared/components/switch-toggle/swi
 import { PasswordInputComponent } from '../../shared/components/password-input/password-input.component';
 import { SliderComponent } from '../../shared/components/slider/slider.component';
 import { RatingComponent } from '../../shared/components/rating/rating.component';
+import { MapComponent } from '../../shared/components/map/map.component';
+import { WeatherWidgetComponent } from '../../shared/components/weather-widget/weather-widget.component';
 
 // ── Shared directives ──────────────────────────────────────
 import { TooltipDirective } from '../../shared/directives/tooltip.directive';
@@ -136,6 +138,8 @@ interface DemoFormModel {
     PasswordInputComponent,
     SliderComponent,
     RatingComponent,
+    MapComponent,
+    WeatherWidgetComponent,
     TooltipDirective,
     ClickOutsideDirective,
     SkeletonDirective,
@@ -235,6 +239,16 @@ export class ShowcaseComponent {
     { src: 'https://picsum.photos/id/1039/800/400', alt: 'Misty hills', caption: 'Rolling hills blanketed in morning mist' },
     { src: 'https://picsum.photos/id/1043/800/400', alt: 'City skyline', caption: 'Modern city skyline reflected on water' },
   ];
+
+  /* ── Map ──────────────────────────────────────────────── */
+  protected readonly mapCenter = signal<[number, number]>([40.7128, -74.006]);
+  protected readonly mapWeatherLat = signal(40.7128);
+  protected readonly mapWeatherLng = signal(-74.006);
+
+  onMapCenterChange(center: { lat: number; lng: number }): void {
+    this.mapWeatherLat.set(center.lat);
+    this.mapWeatherLng.set(center.lng);
+  }
 
   /* ── Data Table ────────────────────────────────────────── */
   readonly tableColumns: ColumnDef[] = [

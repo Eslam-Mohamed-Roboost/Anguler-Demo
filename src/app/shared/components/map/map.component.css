@@ -1,0 +1,10 @@
+/* Leaflet base styles */
+@import "leaflet/dist/leaflet.css";
+
+:host {
+  display: block;
+}
+
+:host .map-container {
+  z-index: 0;
+}

@@ -482,6 +482,33 @@
         </div>
       </app-card>
 
+      <!-- Map + WeatherWidget -->
+      <app-card>
+        <h3 card-header>MapComponent + WeatherWidget</h3>
+        <div class="space-y-3">
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Interactive OpenStreetMap with CartoDB Voyager tiles and a live weather overlay.
+            Pan the map to update weather for the new location.
+          </p>
+          <div class="relative overflow-hidden rounded-xl">
+            <app-map
+              [center]="mapCenter()"
+              [zoom]="13"
+              height="420px"
+              tileStyle="voyager"
+              (centerChange)="onMapCenterChange($event)"
+            />
+            <!-- Weather widget — positioned top-right over the map -->
+            <div class="absolute right-3 top-3 z-[1000]">
+              <app-weather-widget [lat]="mapWeatherLat()" [lng]="mapWeatherLng()" />
+            </div>
+          </div>
+          <p class="text-xs text-gray-400 dark:text-gray-500">
+            Add your OpenWeatherMap API key in <code class="rounded bg-gray-100 px-1 dark:bg-gray-800">environment.ts</code> to enable the weather widget.
+          </p>
+        </div>
+      </app-card>
+
       <!-- EmptyState -->
       <app-card>
         <h3 card-header>EmptyStateComponent</h3>
