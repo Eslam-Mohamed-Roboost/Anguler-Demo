@@ -5,6 +5,18 @@
 /* Enable class-based dark mode (.dark on <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --font-sans: "Poppins", sans-serif;
+
+  --color-primary: #00A63E;
+  --color-warning: #E76500;
+  --color-danger: #EF4343;
+  --color-surface: #FFFFFFF7;
+  --color-success-light: #F0FDF4;
+  --color-warning-light: #FFFCEC;
+  --color-gold-light: #FFF8D6;
+}
+
 /* Prevent double scrollbar — only <main> should scroll */
 html,
 body {

@@ -5,6 +5,12 @@ import { NotFoundComponent } from './features/not-found/not-found.component';
 
 export const routes: Routes = [
   {
+    path: 'booking',
+    data: { breadcrumb: $localize`:@@breadcrumb.booking:Booking` },
+    loadChildren: () =>
+      import('./features/booking/booking.routes').then((m) => m.bookingRoutes),
+  },
+  {
     path: '',
     component: LayoutComponent,
     children: [

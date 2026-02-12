@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  height: 100vh;
+  overflow: auto;
+}
+
+.booking-page {
+  background-color: #f8faf8;
+  height: 100%;
+}
