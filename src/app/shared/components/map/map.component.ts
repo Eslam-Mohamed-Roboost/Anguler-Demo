@@ -17,6 +17,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   input,
@@ -25,6 +26,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
 
 @Component({
   selector: 'app-map',
@@ -48,6 +50,9 @@ export class MapComponent {
   /** Tile style: 'voyager' for colorful CartoDB tiles, 'default' for standard OSM */
   readonly tileStyle = input<'voyager' | 'default'>('voyager');
 
+  /** Whether the map is interactive (dragging, zooming, scrolling). Defaults to true. */
+  readonly interactive = input(true);
+
   /** Emitted when map is ready with the Leaflet map instance */
   readonly mapReady = output<unknown>();
 
@@ -55,34 +60,61 @@ export class MapComponent {
   readonly centerChange = output<{ lat: number; lng: number }>();
 
   private readonly mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapEl');
-  private map: unknown = null;
+  private mapInstance: LeafletMap | null = null;
+  private markerInstance: LeafletMarker | null = null;
+  private leafletPromise: Promise<typeof import('leaflet')> | null = null;
 
   constructor() {
+    // Start loading Leaflet immediately (don't wait for DOM)
+    if (isPlatformBrowser(this.platformId)) {
+      this.leafletPromise = import('leaflet');
+    }
+
     afterNextRender(() => {
       if (isPlatformBrowser(this.platformId)) {
         this.initMap();
       }
     });
 
+    // Watch for center input changes and pan the map + move marker
+    effect(() => {
+      const [lat, lng] = this.center();
+      if (this.mapInstance) {
+        this.mapInstance.setView([lat, lng], this.zoom());
+        if (this.markerInstance) {
+          this.markerInstance.setLatLng([lat, lng]);
+        }
+      }
+    });
+
     this.destroyRef.onDestroy(() => {
-      if (this.map && typeof (this.map as Record<string, unknown>)['remove'] === 'function') {
-        (this.map as { remove: () => void }).remove();
+      if (this.mapInstance) {
+        this.mapInstance.remove();
       }
     });
   }
 
   private async initMap(): Promise<void> {
-    const L = await import('leaflet');
+    const L = await this.leafletPromise!;
 
     const container = this.mapContainer()?.nativeElement;
     if (!container) return;
 
     const [lat, lng] = this.center();
+    const isInteractive = this.interactive();
     const map = L.map(container, {
       center: [lat, lng],
       zoom: this.zoom(),
-      zoomControl: true,
+      zoomControl: isInteractive,
       attributionControl: true,
+      dragging: isInteractive,
+      touchZoom: isInteractive,
+      doubleClickZoom: isInteractive,
+      scrollWheelZoom: isInteractive,
+      boxZoom: isInteractive,
+      keyboard: isInteractive,
+      fadeAnimation: isInteractive,
+      zoomAnimation: isInteractive,
     });
 
     // Choose tile layer based on style
@@ -114,7 +146,7 @@ export class MapComponent {
     L.Marker.prototype.options.icon = iconDefault;
 
     // Add a marker at center
-    L.marker([lat, lng]).addTo(map);
+    this.markerInstance = L.marker([lat, lng]).addTo(map);
 
     // Emit center changes on map move
     map.on('moveend', () => {
@@ -122,10 +154,11 @@ export class MapComponent {
       this.centerChange.emit({ lat: c.lat, lng: c.lng });
     });
 
-    this.map = map;
+    this.mapInstance = map;
     this.mapReady.emit(map);
 
-    // Force a resize after a short delay to handle container sizing
-    setTimeout(() => map.invalidateSize(), 100);
+    // Force resize — call twice to ensure tiles fill after layout settles
+    map.invalidateSize();
+    setTimeout(() => map.invalidateSize(), 200);
   }
 }

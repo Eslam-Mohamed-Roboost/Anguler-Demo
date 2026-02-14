@@ -1,6 +1,7 @@
 /* Global styles — Tailwind v4 CSS-based config */
 
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 /* Enable class-based dark mode (.dark on <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -9,9 +10,12 @@
   --font-sans: "Poppins", sans-serif;
 
   --color-primary: #00A63E;
+  --color-primary-text: #223548;
   --color-warning: #E76500;
   --color-danger: #EF4343;
   --color-surface: #FFFFFFF7;
+  --color-input-border: #A9B4BE;
+  --color-input-bg: #F9FAFAB2;
   --color-success-light: #F0FDF4;
   --color-warning-light: #FFFCEC;
   --color-gold-light: #FFF8D6;

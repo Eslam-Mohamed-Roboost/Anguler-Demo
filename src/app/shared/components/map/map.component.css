@@ -1,8 +1,7 @@
-/* Leaflet base styles */
-@import "leaflet/dist/leaflet.css";
-
 :host {
   display: block;
+  height: 100%;
+  width: 100%;
 }
 
 :host .map-container {

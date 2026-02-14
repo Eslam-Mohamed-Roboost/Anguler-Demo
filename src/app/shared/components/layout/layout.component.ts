@@ -2,6 +2,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
+  input,
   signal,
 } from '@angular/core';
 import {
@@ -15,6 +17,8 @@ import {
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { NavbarBookingComponent } from '../navbar-booking/navbar-booking.component';
+import { JoinUsService } from '../../../features/booking/components/services/join-us.service';
 
 const ROUTE_ANIMATION = trigger('routeAnimation', [
   transition('* <=> *', [
@@ -35,12 +39,17 @@ const ROUTE_ANIMATION = trigger('routeAnimation', [
 @Component({
   selector: 'app-layout',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, SidebarComponent, NavbarComponent],
+  imports: [RouterOutlet, SidebarComponent, NavbarComponent, NavbarBookingComponent],
   animations: [ROUTE_ANIMATION],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
 })
 export class LayoutComponent {
+  private readonly joinUsService = inject(JoinUsService);
+
+  /** Type of navbar to display: 'default' or 'booking' */
+  readonly navbarStyle = input<'default' | 'booking'>('default');
+
   protected readonly sidebarOpen = signal(false);
 
   toggleSidebar(): void {
@@ -49,5 +58,13 @@ export class LayoutComponent {
 
   closeSidebar(): void {
     this.sidebarOpen.set(false);
+  }
+
+  onJoinUsClick(): void {
+    this.joinUsService.requestOpen();
+  }
+
+  onSignInClick(): void {
+    this.joinUsService.requestSignIn();
   }
 }

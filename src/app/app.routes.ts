@@ -1,14 +1,21 @@
 // Top-level routes — features are lazy-loaded inside the layout shell
 import { Routes } from '@angular/router';
 import { LayoutComponent } from './shared/components/layout/layout.component';
+import { LayoutBookingComponent } from './shared/components/layout-booking/layout-booking.component';
 import { NotFoundComponent } from './features/not-found/not-found.component';
 
 export const routes: Routes = [
   {
     path: 'booking',
+    component: LayoutBookingComponent,
     data: { breadcrumb: $localize`:@@breadcrumb.booking:Booking` },
-    loadChildren: () =>
-      import('./features/booking/booking.routes').then((m) => m.bookingRoutes),
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/booking/booking.routes').then((m) => m.bookingRoutes),
+      },
+    ],
   },
   {
     path: '',

@@ -1,0 +1,868 @@
+<!-- ═══════ HERO — full-screen map with overlaid content ═══════ -->
+<section class="relative h-full">
+  <!-- Map background -->
+  <div class="absolute inset-0 z-0">
+    <app-map
+      [center]="mapCenter()"
+      [zoom]="13"
+      height="100%"
+      tileStyle="voyager"
+      [interactive]="false"
+    />
+  </div>
+
+  <!-- Content overlay — scrollable on mobile, fixed on desktop -->
+  <div class="relative z-10 flex h-full flex-col overflow-y-auto p-3 sm:p-5 lg:flex-row lg:items-start lg:justify-between lg:overflow-hidden lg:p-8 xl:p-10">
+
+    <!-- ═══════ LEFT COLUMN — Form + Bottom bar ═══════ -->
+    <div class="w-full shrink-0 space-y-2 sm:space-y-3 lg:max-w-[480px] xl:max-w-[520px] mt-5">
+
+      <!-- ── Booking form card ── -->
+      <app-card variant="booking" bodyClass="space-y-3 sm:space-y-4 lg:space-y-5" [showHeader]="false">
+        <div class="space-y-3 sm:space-y-4 lg:space-y-5">
+          <!-- Drop off Location -->
+          <app-select
+            label="Drop off Location"
+            i18n-label="@@booking.form.dropOff"
+            inputId="destination"
+            [field]="f.destination"
+            [options]="destinations"
+            placeholder="Choose Your Destination"
+            i18n-placeholder="@@booking.form.chooseDest"
+            dropdownArrow="custom"
+            selectClass="rounded-full focus-visible:outline-hidden border-input-border bg-input-bg placeholder:text-primary-text"
+          >
+            <span class="text-danger" label-hint> *</span>
+          </app-select>
+
+          <!-- Client Name + Room No -->
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_100px] sm:gap-4">
+            <app-input
+              label="Client Name"
+              i18n-label="@@booking.form.clientName"
+              inputId="client-name"
+              [field]="f.clientName"
+              placeholder="ex: Hesham Mousa"
+              i18n-placeholder="@@booking.form.clientNamePlaceholder"
+              inputClass="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
+            <app-input
+              label="Room No."
+              i18n-label="@@booking.form.roomNo"
+              inputId="room-no"
+              [field]="f.roomNo"
+              placeholder="ex: 24"
+              i18n-placeholder="@@booking.form.roomNoPlaceholder"
+              inputClass="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
+          </div>
+
+          <!-- Many bags checkbox -->
+          <app-checkbox
+            label="Many bags, or more than 4 people"
+            i18n-label="@@booking.form.manyBags"
+            inputId="many-bags"
+            [field]="f.manyBags"
+            variant="success"
+          />
+
+          <!-- Choose Your Car -->
+          <app-car-selector
+            label="Choose Your Car"
+            i18n-label="@@booking.form.chooseCar"
+            [options]="carTypes"
+            [(selected)]="selectedCar"
+          />
+
+          <!-- Action Buttons -->
+          <div class="space-y-2 pt-1 sm:space-y-3">
+            <button
+              type="button"
+              (click)="openJoinModal()"
+              class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-90 sm:px-6 sm:py-3 sm:text-base"
+            >
+              <app-icon name="zap" size="sm" />
+              <span i18n="@@booking.form.bookNow">Book Your Ride Now</span>
+            </button>
+            <button
+              type="button"
+              (click)="openPickupTimeModal()"
+              class="flex w-full items-center justify-center gap-2 rounded-full border-2 border-warning px-4 py-2.5 text-sm font-semibold text-warning transition hover:bg-warning-light sm:px-6 sm:py-3 sm:text-base"
+            >
+              <app-icon name="calendar" size="sm" />
+              <span i18n="@@booking.form.schedule">Schedule Your Ride</span>
+            </button>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- ── Bottom bar: Contact + App links ── -->
+      <div class="flex flex-col gap-2 sm:flex-row sm:gap-3 mt-3">
+        <!-- Contact Us -->
+        <div class="flex-1 rounded-2xl bg-white/[0.92] px-3 pb-2 pt-2.5 sm:pt-3">
+          <p class="mb-1.5 text-center text-xs font-semibold tracking-wide text-[#5B738B] sm:mb-2 sm:text-sm" i18n="@@booking.contact.title">
+            Contact Us
+          </p>
+          <div class="flex gap-2">
+            <a
+              href="mailto:info@lines.com"
+              class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-400 px-2 py-2 text-sm transition hover:bg-gray-50 sm:px-3 sm:py-2.5 sm:text-base"
+            >
+              <img src="assets/booking/icon-gmail.svg" alt="Gmail" class="size-5 sm:size-6" />
+              <span class="font-semibold text-primary-text" i18n="@@booking.contact.gmail">Gmail</span>
+            </a>
+            <a
+              href="https://wa.me/"
+              target="_blank"
+              rel="noopener"
+              class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-400 px-2 py-2 text-sm transition hover:bg-gray-50 sm:px-3 sm:py-2.5 sm:text-base"
+            >
+              <img src="assets/booking/icon-whatsapp.svg" alt="WhatsApp" class="size-4 sm:size-5" />
+              <span class="font-semibold text-primary-text" i18n="@@booking.contact.whatsapp">Whatsapp</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- App Store / QR -->
+        <div class="mx-auto flex w-fit items-center gap-1.5 rounded-xl bg-white/[0.92] p-2 sm:mx-0 sm:gap-2 sm:rounded-2xl sm:p-2.5">
+          <div class="flex flex-col justify-between gap-1.5 sm:gap-2">
+            <a href="#" class="flex size-5 items-center justify-center rounded-full bg-success-light sm:size-6" aria-label="Google Play">
+              <img src="assets/booking/icon-google-play.svg" alt="Google Play" class="size-2.5 sm:size-3" />
+            </a>
+            <a href="#" aria-label="App Store">
+              <img src="assets/booking/icon-app-store.svg" alt="App Store" class="size-5 sm:size-6" />
+            </a>
+          </div>
+          <img src="assets/booking/qr-code.png" alt="QR Code" class="size-12 rounded shadow-md sm:size-14" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ Weather widget ═══════ -->
+    <div class="order-first mb-2 self-end sm:mb-0 lg:order-none lg:self-auto mt-5">
+      <app-weather-widget [lat]="weatherLat()" [lng]="weatherLng()" />
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ Join Us Modal ═══════ -->
+<app-modal [open]="showJoinModal()" (closed)="closeJoinModal()">
+  <!-- Custom header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <app-icon name="zap" size="sm" class="text-primary" />
+      <h2 class="text-xl font-bold text-primary-text">Join Us Now</h2>
+    </div>
+    <button
+      type="button"
+      (click)="closeJoinModal()"
+      class="flex size-10 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:bg-gray-200"
+      aria-label="Close dialog"
+    >
+      <app-icon name="close" size="sm" />
+    </button>
+  </div>
+
+  <!-- Info banner -->
+  <div class="mt-3 flex items-start gap-3 rounded-lg bg-gray-50 p-3">
+    <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+      <app-icon name="zap" size="xs" class="text-primary" />
+    </div>
+    <p class="text-sm leading-relaxed text-[#5B738B]">
+      Join us today to start earning commissions ( <strong class="text-primary-text">2%</strong> ) on every ride you book for your guests. More bookings, more rewards.
+    </p>
+  </div>
+
+  <!-- Progress bar (2 segments) -->
+  <div class="mt-3 flex gap-1">
+    <div class="h-1 flex-1 rounded-full bg-primary"></div>
+    <div class="h-1 flex-1 rounded-full" [class]="joinStep() === 2 ? 'bg-primary' : 'bg-gray-200'"></div>
+  </div>
+
+  <!-- ═══ Step 1: Hotel Details ═══ -->
+  @if (joinStep() === 1) {
+    <div class="mt-4 rounded-xl border border-gray-200 p-4">
+      <div class="mb-4 flex justify-center">
+        <img
+          src="assets/booking/hotel-illustration.png"
+          alt="Hotel illustration"
+          class="h-20 w-auto object-contain"
+        />
+      </div>
+      <div class="space-y-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <app-input
+            label="Hotel Name"
+            inputId="hotel-name"
+            [field]="jf.hotelName"
+            placeholder="Put Hotel Name here"
+            inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+          />
+          <app-select
+            label="City"
+            inputId="join-city"
+            [field]="jf.city"
+            [options]="cities"
+            placeholder="Select city"
+            dropdownArrow="custom"
+            selectClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+          />
+        </div>
+        <app-input
+          label="Address"
+          inputId="join-address"
+          [field]="jf.address"
+          placeholder="Put Hotel location link here or type it in details"
+          inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+        />
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <app-input
+            label="Hotel Phone Number"
+            inputId="join-phone"
+            type="tel"
+            [field]="jf.phoneNumber"
+            placeholder="Put Hotel Phone Number here"
+            inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+          />
+          <app-input
+            label="Hotel Email"
+            inputId="join-email"
+            type="email"
+            [field]="jf.email"
+            placeholder="example@gmail.com"
+            inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+          />
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ═══ Step 2: Withdrawal Details ═══ -->
+  @if (joinStep() === 2) {
+    <div class="mt-4 rounded-xl border border-gray-200 p-4">
+      <h3 class="mb-3 text-base font-bold text-primary-text">Withdrawal Details</h3>
+      <!-- Warning banner -->
+      <div class="mb-4 rounded-lg border border-warning/30 bg-[#FFFCEC] p-3">
+        <p class="text-xs leading-relaxed text-warning">
+          Secure your payouts. Add your details to receive your 2% commissions automatically on the 1st of every month via our encrypted system.
+        </p>
+      </div>
+      <div class="space-y-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <app-input
+            label="Account Holder Name"
+            inputId="account-holder"
+            [field]="wf.accountHolderName"
+            placeholder="Put Account Holder Name"
+            inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+          />
+          <app-select
+            label="Bank Name"
+            inputId="bank-name"
+            [field]="wf.bankName"
+            [options]="banks"
+            placeholder="Select bank"
+            dropdownArrow="custom"
+            selectClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+          />
+        </div>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <app-input
+            label="IBAN"
+            inputId="iban"
+            [field]="wf.iban"
+            placeholder="Put Your IBAN here"
+            inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+          />
+          <app-input
+            label="Swift Code / BIC"
+            inputId="swift-code"
+            [field]="wf.swiftCode"
+            placeholder="Put Your Swift Code here"
+            inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+          />
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Footer -->
+  <div modal-footer class="flex items-center justify-end gap-3 px-4 pb-4 pt-2">
+    @if (joinStep() === 1) {
+      <button
+        type="button"
+        (click)="nextStep()"
+        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+      >
+        <app-icon name="zap" size="sm" />
+        <span>Next</span>
+      </button>
+    } @else {
+      <button
+        type="button"
+        (click)="prevStep()"
+        class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
+      >
+        Back
+      </button>
+      <button
+        type="button"
+        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+      >
+        <app-icon name="zap" size="sm" />
+        <span>Join Us Now</span>
+      </button>
+    }
+  </div>
+</app-modal>
+
+
+
+<!-- Sign In Modal-->
+<app-modal [open]="showSiginInModal()" (closed)="closeSignInModal()">
+  <!-- Header -->
+  <div modal-header class="flex items-center justify-between px-4 pt-4">
+    <h2 class="flex gap-2 items-center text-xl font-bold text-primary-text w-full">
+      <span>
+        <svg width="17" height="18" viewBox="0 0 17 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.08543 10.4491H5.77945C4.7903 10.4491 4.29572 10.4491 4.08491 10.1229C3.87409 9.79687 4.07496 9.34253 4.47669 8.43389L5.68445 5.70215C6.04971 4.876 6.23235 4.46292 6.58665 4.23146C6.94095 4 7.3906 4 8.29 4H9.68293C10.7755 4 11.3217 4 11.5277 4.3569C11.7338 4.7138 11.4628 5.19059 10.9207 6.14415L10.2061 7.40125C9.93667 7.8753 9.80193 8.11233 9.8038 8.30635C9.80627 8.5585 9.94033 8.7908 10.1569 8.918C10.3236 9.01593 10.5951 9.01593 11.1383 9.01593C11.8249 9.01593 12.1682 9.01593 12.347 9.1348C12.5793 9.2892 12.7009 9.56547 12.6583 9.84213C12.6255 10.0551 12.3945 10.3104 11.9327 10.8211L8.2426 14.9015C7.5178 15.703 7.1554 16.1037 6.91205 15.9769C6.66869 15.8501 6.78555 15.3215 7.01927 14.2641L7.47713 12.1931C7.65507 11.388 7.74407 10.9855 7.53007 10.7173C7.31607 10.4491 6.90585 10.4491 6.08543 10.4491Z" stroke="#00C950" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span>Welcome Again!</span></h2>
+    <button
+      type="button"
+      (click)="closeSignInModal()"
+      class="rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+    >
+      <app-icon name="close" size="sm" />
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div modal-content class="flex flex-col gap-3 p-4">
+    <app-input
+      label="Hotel Email"
+      inputId="email"
+      [field]="SignInFormF.email"
+      type="email"
+      placeholder="example@gmail.com"
+      inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+      placeholderClass="placeholder:text-gray-400  placeholder:text-xs"
+      labelClass="text-[#5B738B]"
+    />
+    <app-password-input
+      label="Password"
+      inputId="password"
+      [field]="SignInFormF.password"
+      placeholder="Type Your Password"
+      inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+      placeholderClass="placeholder:text-gray-400  placeholder:text-xs"
+      labelClass="text-[#5B738B]"
+    />
+    <a (click) = "openForgotPasswordMode()" class="text-end text-gray-400 text-sm">Forget Your Password ?</a>
+  </div>
+
+  <!-- Footer -->
+  <div modal-footer class="flex items-center justify-center gap-3 px-4 pb-4 pt-2">
+    <!-- <button
+      type="button"
+      (click)="closeSignInModal()"
+      class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
+    >
+      Cancel
+    </button> -->
+    <button
+      type="button"
+      class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+    >
+      <app-icon name="log-in" size="sm" />
+      <span>Sign In</span>
+    </button>
+  </div>
+</app-modal>
+
+
+<!-- forgot Password Model  -->
+ <app-modal [open]="ForgotPasswordMode()" (closed)="ColseForgotPasswordMode()">
+   <!-- Header -->
+  <div modal-header class="flex items-center justify-between px-4 pt-4">
+    <div>
+        <h2 class="flex gap-2 items-center text-xl font-bold text-primary-text w-full">
+          <span>
+          <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.33312 15.2776C12.1684 15.2776 15.2776 12.1684 15.2776 8.33312C15.2776 4.49781 12.1684 1.38867 8.33312 1.38867C4.49781 1.38867 1.38867 4.49781 1.38867 8.33312C1.38867 12.1684 4.49781 15.2776 8.33312 15.2776Z" stroke="#00C950" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6.59766 6.59744C6.59766 5.63861 7.37495 4.86133 8.33377 4.86133C9.29259 4.86133 10.0699 5.63861 10.0699 6.59744C10.0699 7.19251 9.77051 7.71765 9.31412 8.0305C8.83953 8.3557 8.33377 8.79994 8.33377 9.37522" stroke="#00C950" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8.33301 11.8057H8.33919" stroke="#00C950" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+
+          </span>
+          <span>Forget Password ?</span>
+        </h2>
+        <span class="text-sm text-[#5B738B]">Enter your email to receive reset instructions.</span>
+
+      </div>
+
+
+    <button
+      type="button"
+      (click)="closeSignInModal()"
+      class="rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+    >
+      <app-icon name="close" size="sm" />
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div modal-content class="flex flex-col gap-3 p-4">
+    <app-input
+      label="Hotel Email"
+      inputId="email"
+      [field]="SignInFormF.email"
+      type="email"
+      placeholder="example@gmail.com"
+      inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+      placeholderClass="placeholder:text-gray-400  placeholder:text-xs"
+      labelClass="text-[#5B738B]"
+    />    
+   </div>
+
+  <!-- Footer -->
+  <div modal-footer class="flex items-center justify-center gap-3 px-4 pb-4 pt-2 w-full">
+    <button
+      type="button"
+      (click)="ColseForgotPasswordMode()"
+      class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50 w-50"
+    >
+      Go Back
+    </button>
+    <button
+      type="button"
+      (click)="openVerificationModal()"
+      class="flex items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 w-50"
+    >
+      Send Code
+    </button>
+  </div>
+ </app-modal>
+
+<!-- ═══════ Enter Verification Code Modal ═══════ -->
+<app-modal [open]="showVerificationModal()" (closed)="closeVerificationModal()">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="flex items-center gap-2 text-xl font-bold text-primary-text">
+        <span>
+          <svg width="17" height="18" viewBox="0 0 17 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.08543 10.4491H5.77945C4.7903 10.4491 4.29572 10.4491 4.08491 10.1229C3.87409 9.79687 4.07496 9.34253 4.47669 8.43389L5.68445 5.70215C6.04971 4.876 6.23235 4.46292 6.58665 4.23146C6.94095 4 7.3906 4 8.29 4H9.68293C10.7755 4 11.3217 4 11.5277 4.3569C11.7338 4.7138 11.4628 5.19059 10.9207 6.14415L10.2061 7.40125C9.93667 7.8753 9.80193 8.11233 9.8038 8.30635C9.80627 8.5585 9.94033 8.7908 10.1569 8.918C10.3236 9.01593 10.5951 9.01593 11.1383 9.01593C11.8249 9.01593 12.1682 9.01593 12.347 9.1348C12.5793 9.2892 12.7009 9.56547 12.6583 9.84213C12.6255 10.0551 12.3945 10.3104 11.9327 10.8211L8.2426 14.9015C7.5178 15.703 7.1554 16.1037 6.91205 15.9769C6.66869 15.8501 6.78555 15.3215 7.01927 14.2641L7.47713 12.1931C7.65507 11.388 7.74407 10.9855 7.53007 10.7173C7.31607 10.4491 6.90585 10.4491 6.08543 10.4491Z" stroke="#00C950" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span>Enter Verification Code</span>
+      </h2>
+      <p class="mt-1 text-sm text-[#5B738B]">
+        We have sent a code to your hotel mail <strong class="text-primary-text">you&#64;example.com</strong>
+      </p>
+    </div>
+    <button
+      type="button"
+      (click)="closeVerificationModal()"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:bg-gray-200"
+      aria-label="Close dialog"
+    >
+      <app-icon name="close" size="sm" />
+    </button>
+  </div>
+
+  <!-- OTP Card -->
+  <div class="mt-4 rounded-xl border border-gray-200 p-4">
+    <label class="mb-2 block text-sm text-[#5B738B]">Enter Verification Code</label>
+    <div class="flex justify-between gap-2">
+      @for (digit of otpDigits(); track $index) {
+        <input
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          [value]="digit"
+          (input)="onOtpInput($event, $index)"
+          (keydown)="onOtpKeydown($event, $index)"
+          class="size-12 rounded-lg border border-[#A9B4BE] bg-white text-center text-lg font-semibold text-primary-text outline-none transition focus:border-primary focus:ring-1 focus:ring-primary sm:size-14"
+          [attr.aria-label]="'Digit ' + ($index + 1)"
+        />
+      }
+    </div>
+    <p class="mt-3 text-center text-sm text-[#5B738B]">
+      Didn't receive any code?
+      <button type="button" class="font-semibold text-danger transition hover:underline">Resend code</button>
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div modal-footer class="flex items-center justify-center gap-3 px-4 pb-4 pt-2 w-full">
+    <button
+      type="button"
+      (click)="closeVerificationModal()"
+      class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50 w-50"
+    >
+      Go Back
+    </button>
+    <button
+      type="button"
+      (click)="openWelcomeModal()"
+      class="flex items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 w-50"
+    >
+      Send Code
+    </button>
+  </div>
+</app-modal>
+
+<!-- ═══════ Welcome Aboard Modal ═══════ -->
+<app-modal [open]="showWelcomeModal()" (closed)="closeWelcomeModal()">
+  <div class="flex flex-col items-center text-center">
+    <!-- Celebration illustration -->
+    <img
+      src="assets/booking/welcome-aboard.svg"
+      alt="Welcome aboard celebration"
+      class="mb-4 h-40 w-auto object-contain"
+    />
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-primary-text">Welcome Aboard!</h2>
+    <p class="mt-1 text-sm font-medium text-[#5B738B]">Your Hotel Account Is Ready</p>
+
+    <!-- Description -->
+    <p class="mt-3 text-sm leading-relaxed text-[#5B738B]">
+      Your account has been successfully created,<br />
+      thank you for joining our partner network.
+    </p>
+
+    <!-- Got it button -->
+    <button
+      type="button"
+      (click)="closeWelcomeModal()"
+      class="mt-6 flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+    >
+      <app-icon name="zap" size="sm" />
+      <span>Got it!</span>
+    </button>
+  </div>
+</app-modal>
+
+
+
+<!-- ShowComfirmBookingModel-->
+ <!-- "ShowComfirmBookingModel()" -->
+ <app-modal [open]="ShowComfirmBookingModel()" (closed)="CloseComfirmBookingModel()">  
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="flex items-center gap-2 text-xl font-bold text-primary-text">
+        <span>
+        <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.1991 18.2083H18.2082M18.1991 18.2083C17.6023 18.8001 16.5208 18.6527 15.7624 18.6527C14.8315 18.6527 14.3832 18.8348 13.7188 19.4992C13.1531 20.065 12.3946 21.0833 11.4998 21.0833C10.605 21.0833 9.84662 20.065 9.28088 19.4992C8.61648 18.8348 8.16818 18.6527 7.23723 18.6527C6.47882 18.6527 5.39734 18.8001 4.8006 18.2083C4.19907 17.6119 4.34711 16.5259 4.34711 15.7626C4.34711 14.798 4.13616 14.3545 3.44924 13.6676C2.42743 12.6458 1.91652 12.1348 1.9165 11.5C1.91651 10.8651 2.42741 10.3542 3.44921 9.33241C4.0624 8.71922 4.34711 8.1116 4.34711 7.23739C4.34711 6.47895 4.19972 5.39746 4.7915 4.80071C5.388 4.1992 6.47395 4.34725 7.23725 4.34725C8.11143 4.34725 8.71906 4.06256 9.33223 3.44939C10.3541 2.42757 10.8649 1.91666 11.4998 1.91666C12.1347 1.91666 12.6456 2.42757 13.6674 3.44939C14.2804 4.06244 14.888 4.34725 15.7624 4.34725C16.5208 4.34725 17.6024 4.19986 18.1992 4.79166C18.8006 5.38816 18.6525 6.4741 18.6525 7.23739C18.6525 8.20197 18.8636 8.64548 19.5504 9.33241C20.5723 10.3542 21.0832 10.8651 21.0832 11.5C21.0832 12.1348 20.5723 12.6458 19.5504 13.6676C18.8635 14.3545 18.6525 14.798 18.6525 15.7626C18.6525 16.5259 18.8006 17.6119 18.1991 18.2083Z" stroke="#00C950" stroke-width="2.5"/>
+        <path d="M8.625 12.3557C8.625 12.3557 9.775 12.9803 10.35 13.8958C10.35 13.8958 12.075 10.3021 14.375 9.10416" stroke="#00C950" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        </span>
+        <span>Booking Confirmation</span>
+      </h2>
+      
+    </div>
+    <button
+      type="button"
+      (click)="CloseComfirmBookingModel()"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:bg-gray-200"
+      aria-label="Close dialog"
+    >
+      <app-icon name="close" size="sm" />
+    </button>
+  </div>
+
+  
+  <div class="mt-4 rounded-xl border border-gray-200 p-4">
+    <p class="text-[#223548] text-sm">Drop Off Location</p>
+    <h3>Choose Your Destination</h3>    
+  </div>
+ <div class="flex gap-3 justify-between  mt-4 rounded-xl border border-gray-200 p-4">
+   <div class="w-35">
+      <p class="text-[#223548] text-sm">Client Name</p>
+      <h3>Eslam Mohamed</h3>    
+   </div>
+    <div class="w-35">
+      <p class="text-[#223548] text-sm">Room No.</p>
+      <h3>24</h3>    
+   </div>
+   <div class="w-35">
+      <p class="text-[#223548] text-sm">Many bags,or More than 4 people</p>
+   </div>
+  </div>
+
+  <div class="mt-4 rounded-xl border border-gray-200 p-4">
+    
+               <!-- Choose Your Car -->
+          <app-car-selector
+            label="Choose Your Car"
+            i18n-label="@@booking.form.chooseCar"
+            [options]="carTypes"
+            [(selected)]="selectedCar"
+          />
+  </div>
+
+  <div class="flex mt-4 gap-3 justify-center  items-center w-full">
+    <div class=" rounded-xl border border-gray-200 p-4 w-full">
+       <p class="text-[#223548] text-sm">Trip Cost</p>
+       <h3>214.50 CHF</h3>   
+    </div>
+
+    <div class=" rounded-xl border border-gray-200 p-4 w-full">
+       <p class="text-[#223548] text-sm">Trip Duration</p>
+       <h3>00:30:10</h3>   
+    </div>
+    
+  </div>
+
+  <!-- Footer -->
+  <div modal-footer class="flex flex-col items-center justify-center gap-3 px-4 pb-4 pt-2 w-full">
+       <button
+      type="button"
+      (click)="openWelcomeModal()"
+      class="flex items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 w-full"
+    >
+     
+        <span>
+        <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.1991 18.2083H18.2082M18.1991 18.2083C17.6023 18.8001 16.5208 18.6527 15.7624 18.6527C14.8315 18.6527 14.3832 18.8348 13.7188 19.4992C13.1531 20.065 12.3946 21.0833 11.4998 21.0833C10.605 21.0833 9.84662 20.065 9.28088 19.4992C8.61648 18.8348 8.16818 18.6527 7.23723 18.6527C6.47882 18.6527 5.39734 18.8001 4.8006 18.2083C4.19907 17.6119 4.34711 16.5259 4.34711 15.7626C4.34711 14.798 4.13616 14.3545 3.44924 13.6676C2.42743 12.6458 1.91652 12.1348 1.9165 11.5C1.91651 10.8651 2.42741 10.3542 3.44921 9.33241C4.0624 8.71922 4.34711 8.1116 4.34711 7.23739C4.34711 6.47895 4.19972 5.39746 4.7915 4.80071C5.388 4.1992 6.47395 4.34725 7.23725 4.34725C8.11143 4.34725 8.71906 4.06256 9.33223 3.44939C10.3541 2.42757 10.8649 1.91666 11.4998 1.91666C12.1347 1.91666 12.6456 2.42757 13.6674 3.44939C14.2804 4.06244 14.888 4.34725 15.7624 4.34725C16.5208 4.34725 17.6024 4.19986 18.1992 4.79166C18.8006 5.38816 18.6525 6.4741 18.6525 7.23739C18.6525 8.20197 18.8636 8.64548 19.5504 9.33241C20.5723 10.3542 21.0832 10.8651 21.0832 11.5C21.0832 12.1348 20.5723 12.6458 19.5504 13.6676C18.8635 14.3545 18.6525 14.798 18.6525 15.7626C18.6525 16.5259 18.8006 17.6119 18.1991 18.2083Z" stroke="#00C950" stroke-width="2.5"/>
+        <path d="M8.625 12.3557C8.625 12.3557 9.775 12.9803 10.35 13.8958C10.35 13.8958 12.075 10.3021 14.375 9.10416" stroke="#00C950" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        </span>
+      Confirm Booking & Send Request
+    </button>
+    <button
+      type="button"
+      (click)="CloseComfirmBookingModel()"
+      class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50 w-full"
+    >
+      Go Back
+    </button>
+ 
+  </div>
+
+
+
+ </app-modal>
+
+
+
+
+
+
+<!-- ═══════ Comfirm Aboard Modal ═══════ -->
+<app-modal [open]="ShowRideRequestSentModel()" (closed)="closeRideRequestSentModel()">
+  <div class="flex flex-col items-center text-center">
+    <!-- Celebration illustration -->
+    <img
+      src="assets/booking/Ride-Request-Sent.svg"
+      alt="Welcome aboard celebration"
+      class="mb-4 h-40 w-auto object-contain"
+    />
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-primary-text">Ride Request Sent!</h2>
+ 
+    <!-- Description -->
+    <p class="mt-3 text-sm leading-relaxed text-[#5B738B] text-center">
+        Your request has been successfully dispatched to drivers. We're finding you a driver and expect your ride to be accepted shortly.
+    </p>
+
+    <!-- Got it button -->
+    <div class="mt-6 flex flex-col w-full gap-2">
+    <button
+      type="button"
+      (click)="closeRideRequestSentModel()"
+      class="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+    >
+      <app-icon name="zap" size="sm" />
+      <span>Got it!</span>
+    </button>
+     <button
+      type="button"
+      (click)="closeRideRequestSentModel()"
+      class="flex items-center justify-center gap-1.5 rounded-full border-2 border-gray-300 px-6 py-3 text-base font-semibold text-primary-text transition hover:bg-gray-50 w-full"
+    >
+     
+        <span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11.0832 6.12454V5.83285C11.0832 3.63301 11.0831 2.53306 10.3998 1.84965C9.71634 1.16626 8.61642 1.16626 6.41658 1.16626C4.21679 1.16626 3.11685 1.16629 2.43344 1.84968C1.75005 2.53308 1.75004 3.63299 1.75002 5.83281L1.75 8.45785C1.74998 10.3755 1.74998 11.3343 2.27959 11.9797C2.37656 12.0979 2.48491 12.2062 2.60308 12.3032C3.24843 12.8328 4.20726 12.8328 6.12492 12.8328" stroke="#223548" stroke-width="1.07694" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.0835 4.08313H8.75011M4.0835 6.41644H6.4168" stroke="#223548" stroke-width="1.07694" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M10.5 10.7914L9.62497 10.4706V9.04145M7 10.2081C7 11.6578 8.17523 12.8331 9.62497 12.8331C11.0747 12.8331 12.2499 11.6578 12.2499 10.2081C12.2499 8.75836 11.0747 7.58313 9.62497 7.58313C8.17523 7.58313 7 8.75836 7 10.2081Z" stroke="#223548" stroke-width="1.07694" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
+        </span>
+      View My Ride Details
+    </button>
+ 
+    </div>
+  </div>
+</app-modal>
+
+<!-- ═══════ Choose Pickup Time Modal ═══════ -->
+<app-modal [open]="showPickupTimeModal()" (closed)="closePickupTimeModal()">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <h2 class="flex items-center gap-2 text-xl font-bold text-primary-text">
+      <span>
+        <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15.3332 1.91667V5.75M7.6665 1.91667V5.75" stroke="#E76500" stroke-width="1.725" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12.4583 3.83333H10.5417C6.92756 3.83333 5.12052 3.83333 3.99775 4.95609C2.875 6.07885 2.875 7.88589 2.875 11.5V13.4167C2.875 17.0307 2.875 18.8379 3.99775 19.9605C5.12052 21.0833 6.92756 21.0833 10.5417 21.0833H12.4583C16.0724 21.0833 17.8795 21.0833 19.0022 19.9605C20.125 18.8379 20.125 17.0307 20.125 13.4167V11.5C20.125 7.88589 20.125 6.07885 19.0022 4.95609C17.8795 3.83333 16.0724 3.83333 12.4583 3.83333Z" stroke="#E76500" stroke-width="1.725" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2.875 9.58334H20.125" stroke="#E76500" stroke-width="1.725" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10.5415 13.4167H15.3332M7.6665 13.4167H7.67511M12.4582 17.25H7.6665M15.3332 17.25H15.3245" stroke="#E76500" stroke-width="1.725" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+      </span>
+      <span>Choose Pickup Time</span>
+    </h2>
+    <button
+      type="button"
+      (click)="closePickupTimeModal()"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:bg-gray-200"
+      aria-label="Close dialog"
+    >
+      <app-icon name="close" size="sm" />
+    </button>
+  </div>
+
+  <!-- Picker area -->
+  <div class="mt-5 flex items-center justify-center gap-2">
+    <!-- Date picker column -->
+    <div class="pickup-picker-wrapper">
+      <div class="pickup-picker-highlight"></div>
+      <div
+        class="pickup-picker-scroll"
+        (scroll)="onPickerScroll('date', $event)"
+      >
+        <div class="pickup-picker-spacer"></div>
+        @for (dateOpt of pickupDateOptions; track $index) {
+          <div
+            class="pickup-picker-item"
+            [class.pickup-picker-item--selected]="$index === selectedPickupDateIndex()"
+          >
+            {{ dateOpt }}
+          </div>
+        }
+        <div class="pickup-picker-spacer"></div>
+      </div>
+    </div>
+
+    <!-- Hour picker column -->
+    <div class="pickup-picker-wrapper pickup-picker-wrapper--narrow">
+      <div class="pickup-picker-highlight"></div>
+      <div
+        class="pickup-picker-scroll"
+        (scroll)="onPickerScroll('hour', $event)"
+      >
+        <div class="pickup-picker-spacer"></div>
+        @for (hourOpt of pickupHourOptions; track $index) {
+          <div
+            class="pickup-picker-item"
+            [class.pickup-picker-item--selected]="$index === selectedPickupHourIndex()"
+          >
+            {{ hourOpt }}
+          </div>
+        }
+        <div class="pickup-picker-spacer"></div>
+      </div>
+    </div>
+
+    <!-- Colon separator -->
+    <span class="text-2xl font-bold text-primary-text">:</span>
+
+    <!-- Minute picker column -->
+    <div class="pickup-picker-wrapper pickup-picker-wrapper--narrow">
+      <div class="pickup-picker-highlight"></div>
+      <div
+        class="pickup-picker-scroll"
+        (scroll)="onPickerScroll('minute', $event)"
+      >
+        <div class="pickup-picker-spacer"></div>
+        @for (minOpt of pickupMinuteOptions; track $index) {
+          <div
+            class="pickup-picker-item"
+            [class.pickup-picker-item--selected]="$index === selectedPickupMinuteIndex()"
+          >
+            {{ minOpt }}
+          </div>
+        }
+        <div class="pickup-picker-spacer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div modal-footer class="flex flex-col items-center gap-3 px-4 pb-4 pt-4 w-full">
+    <button
+      type="button"
+      (click)="closePickupTimeModal()"
+      class="flex w-full items-center justify-center gap-1.5 rounded-full bg-warning px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+    >
+      Schedule
+    </button>
+    <button
+      type="button"
+      (click)="closePickupTimeModal()"
+      class="w-full rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
+    >
+      Go Back
+    </button>
+  </div>
+</app-modal>
+
+
+
+
+<!-- ═══════ Scheduled Ride Modal ═══════ -->
+ <!-- ShowScheduledRiderModel() -->
+<app-modal [open]="ShowScheduledRiderModel()" (closed)="closeScheduledRiderModel()">
+  <div class="flex flex-col items-center text-center">
+    <!-- Celebration illustration -->
+    <img
+      src="assets/booking/Ride-Scheduled.svg"
+      alt="Welcome aboard celebration"
+      class="mb-4 h-40 w-auto object-contain"
+    />
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-primary-text">Ride Scheduled & Dispatched</h2>
+ 
+    <!-- Description -->
+    <p class="mt-3 text-sm leading-relaxed text-[#5B738B] text-center">
+Done! Your trip is successfully scheduled and dispatched to drivers. A driver will confirm and arrive precisely at your selected time.    </p>
+
+    <!-- Got it button -->
+    <div class="mt-6 flex flex-col w-full gap-2">
+    <button
+      type="button"
+      (click)="closeScheduledRiderModel()"
+      class="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+    >
+      <app-icon name="zap" size="sm" />
+      <span>Got it!</span>
+    </button>
+     <button
+      type="button"
+      (click)="closeScheduledRiderModel()"
+      class="flex items-center justify-center gap-1.5 rounded-full border-2 border-gray-300 px-6 py-3 text-base font-semibold text-primary-text transition hover:bg-gray-50 w-full"
+    >
+     
+        <span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11.0832 6.12454V5.83285C11.0832 3.63301 11.0831 2.53306 10.3998 1.84965C9.71634 1.16626 8.61642 1.16626 6.41658 1.16626C4.21679 1.16626 3.11685 1.16629 2.43344 1.84968C1.75005 2.53308 1.75004 3.63299 1.75002 5.83281L1.75 8.45785C1.74998 10.3755 1.74998 11.3343 2.27959 11.9797C2.37656 12.0979 2.48491 12.2062 2.60308 12.3032C3.24843 12.8328 4.20726 12.8328 6.12492 12.8328" stroke="#223548" stroke-width="1.07694" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.0835 4.08313H8.75011M4.0835 6.41644H6.4168" stroke="#223548" stroke-width="1.07694" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M10.5 10.7914L9.62497 10.4706V9.04145M7 10.2081C7 11.6578 8.17523 12.8331 9.62497 12.8331C11.0747 12.8331 12.2499 11.6578 12.2499 10.2081C12.2499 8.75836 11.0747 7.58313 9.62497 7.58313C8.17523 7.58313 7 8.75836 7 10.2081Z" stroke="#223548" stroke-width="1.07694" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
+        </span>
+      View My Ride Details
+    </button>
+ 
+    </div>
+  </div>
+</app-modal>

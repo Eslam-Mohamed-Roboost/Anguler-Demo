@@ -1,7 +1,7 @@
 <div>
   <!-- ═══════ LABEL ═══════ -->
   @if (label()) {
-    <label [for]="inputId()" class="mb-1 block text-sm font-medium dark:text-gray-200">
+    <label [for]="inputId()" class="mb-1 block text-sm font-medium dark:text-gray-200" [class]="labelClass()">
       {{ label() }}
       <ng-content select="[label-hint]" />
     </label>
@@ -31,7 +31,7 @@
       <!-- ═══════ CUSTOM SPIN BUTTONS ═══════ -->
       @if (showCustomSpinners()) {
         <div
-          class="absolute inset-y-0 right-0 flex flex-col border-l dark:border-gray-600"
+          class="absolute inset-y-0 end-0 flex flex-col border-s dark:border-gray-600"
           aria-hidden="true"
         >
           <button

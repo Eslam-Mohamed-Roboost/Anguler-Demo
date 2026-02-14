@@ -118,10 +118,10 @@ export class SelectComponent {
 
   protected readonly classes = computed(() => {
     const base =
-      'w-full rounded border px-3 py-2 text-sm transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 disabled:bg-gray-100 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
+      'w-full rounded border px-3 py-2 text-sm transition-colors placeholder:text-primary-text dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 disabled:bg-gray-100 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
 
     const hideArrow = this.hideNativeArrow() ? 'hide-native-arrow' : '';
-    const customPadding = this.showCustomArrow() ? 'pr-9' : '';
+    const customPadding = this.showCustomArrow() ? 'pe-9' : '';
     const extra = this.selectClass();
 
     return [base, hideArrow, customPadding, extra].filter(Boolean).join(' ');

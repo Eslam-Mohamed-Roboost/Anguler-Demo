@@ -1,8 +1,10 @@
 <div [class]="cardClasses()">
   <!-- Header slot -->
-  <div class="border-b px-4 py-3 font-semibold dark:border-gray-700 dark:text-white">
-    <ng-content select="[card-header]" />
-  </div>
+  @if (showHeader()) {
+    <div class="border-b px-4 py-3 font-semibold dark:border-gray-700 dark:text-white">
+      <ng-content select="[card-header]" />
+    </div>
+  }
 
   <!-- Body -->
   <div [class]="bodyClasses()">

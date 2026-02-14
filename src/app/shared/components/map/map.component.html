@@ -1,7 +1,8 @@
 <div
   #mapEl
-  class="map-container w-full rounded-lg"
+  class="map-container w-full"
   [style.height]="height()"
+  [class.rounded-lg]="height() !== '100%'"
   role="application"
   aria-label="Interactive map"
 ></div>

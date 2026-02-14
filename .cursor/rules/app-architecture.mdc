@@ -1,0 +1,188 @@
+---
+alwaysApply: true
+---
+
+# App Architecture & Implementation Guide
+
+This project is an Angular 21, **standalone-components**, **signal-based** demo app with a feature‑first folder structure, Tailwind CSS v4, and reusable shared UI primitives.
+Follow these rules whenever you add or change pages, features, or components under `src/app`.
+
+## Entry Points & Global Wiring
+
+- **Bootstrap**: [`main.ts`](mdc:src/main.ts) bootstraps [`App`](mdc:src/app/app.ts) with [`appConfig`](mdc:src/app/app.config.ts) using `bootstrapApplication`.
+- **Routing**: Global routes are defined in [`app.routes.ts`](mdc:src/app/app.routes.ts) and use:
+  - `LayoutComponent` shell: [`layout.component.ts`](mdc:src/app/shared/components/layout/layout.component.ts)
+  - Lazy‑loaded feature routes (e.g. [`demo.routes.ts`](mdc:src/app/features/demo/demo.routes.ts), [`users.routes.ts`](mdc:src/app/features/users/users.routes.ts)).
+- **Global UI**: `App` mounts:
+  - Toasts: [`toast.component.ts`](mdc:src/app/shared/components/toast/toast.component.ts)
+  - Spinner: [`spinner.component.ts`](mdc:src/app/shared/components/spinner/spinner.component.ts)
+  - Confirm dialog: [`confirm-dialog.component.ts`](mdc:src/app/shared/components/confirm-dialog/confirm-dialog.component.ts)
+
+## Project Structure (Feature‑First)
+
+Under [`src/app`](mdc:src/app):
+
+- `core/`: cross‑cutting concerns (auth, API, feature flags, loading, theme, weather, interceptors, guards, stores, tokens).
+- `shared/`: base abstractions + design system components used everywhere.
+  - `base/`: [`base.component.ts`](mdc:src/app/shared/base/base.component.ts), [`base-list.component.ts`](mdc:src/app/shared/base/base-list.component.ts), [`base-crud.component.ts`](mdc:src/app/shared/base/base-crud.component.ts), [`base-form.component.ts`](mdc:src/app/shared/base/base-form.component.ts).
+  - `components/`: layout, navbar, sidebar, data‑table, inputs, buttons, cards, modal, toast, spinner, skeleton, etc. (see **Shared UI Library** section below).
+  - `directives/`: tooltip, click‑outside, skeleton, copy‑to‑clipboard.
+  - `pipes/`: truncate, relative‑time, file‑size, initials.
+  - `utils/`: local‑storage signal helper.
+- `features/`: each feature in its own folder (`demo`, `users`, `showcase`, `not-found`) with:
+  - `*.routes.ts` for lazy routes
+  - `components/`, `models/`, `services/` subfolders.
+
+### When Creating a New Feature
+
+1. **Folder**: `src/app/features/<feature>/`.
+2. **Routes**: create `<feature>.routes.ts` similar to [`demo.routes.ts`](mdc:src/app/features/demo/demo.routes.ts) using `loadComponent` and lazy loading.
+3. **Wire in app routes**: add a child route under `LayoutComponent` in [`app.routes.ts`](mdc:src/app/app.routes.ts) with:
+   - `path`
+   - `data: { breadcrumb: $localize\`:@@breadcrumb.<key>:Label\` }`
+   - `loadChildren` pointing to your `<feature>.routes.ts`.
+4. **Use shared base classes**:
+   - Lists/CRUD: extend `BaseListComponent<T>` or `BaseCrudComponent<T>`.
+   - Forms: extend `BaseFormComponent<T>` and use Angular **signal‑based forms** (`@angular/forms/signals`) like in [`product-form.component.ts`](mdc:src/app/features/demo/components/product-form/product-form.component.ts).
+
+## Component Rules (Hard Requirements)
+
+When you create a new component:
+
+- **Standalone**:
+  - Do NOT create NgModules.
+  - Add dependencies via `imports: []` in the `@Component` metadata.
+- **Files**:
+  - Always create the three files: `name.component.ts`, `name.component.html`, `name.component.css`.
+  - No inline `template` or `styles` in decorators.
+- **Change Detection**:
+  - Set `changeDetection: ChangeDetectionStrategy.OnPush`.
+- **Inputs/Outputs**:
+  - Use the `input()` and `output()` functions, not `@Input`/`@Output`.
+  - Prefer `input.required<Type>()` for required inputs.
+- **State**:
+  - Use `signal()` and `computed()` for local state.
+  - Do NOT use `mutate` on signals; use `set()` or `update()` instead.
+- **Base classes**:
+  - For reusable logic, inherit from `BaseComponent`, `BaseListComponent`, `BaseCrudComponent`, or `BaseFormComponent` instead of duplicating code.
+
+## Templates & Forms
+
+- Use **signal forms** (`@angular/forms/signals`) for new forms (see [`product-form.component.ts`](mdc:src/app/features/demo/components/product-form/product-form.component.ts)).
+- Keep templates declarative:
+  - Use **built‑in control flow**: `@if`, `@for`, `@switch` only (no `*ngIf`, `*ngFor`, `*ngSwitch`).
+  - No arrow functions or heavy logic in templates; compute state in TS via `computed()`.
+- Use shared form components:
+  - Inputs: [`input.component.ts`](mdc:src/app/shared/components/input/input.component.ts)
+  - Selects, checkboxes, radio group, slider, date‑picker, etc.
+- For list/grid UIs, prefer [`data-table.component.ts`](mdc:src/app/shared/components/data-table/data-table.component.ts) with `ColumnDef` and `CellDefDirective`.
+
+## Tailwind CSS v4 Usage
+
+- Global Tailwind entry: [`styles.css`](mdc:src/styles.css) with `@import "tailwindcss";`.
+- Do **not** add a traditional `tailwind.config.js`; Tailwind v4 uses CSS‑first configuration.
+- All layout and visual styling should primarily use Tailwind utility classes:
+  - In templates (`class="flex gap-4 ..."`) for most cases.
+  - In `.component.css` only for small custom rules that are hard with utilities.
+- Dark mode:
+  - Uses **class‑based** strategy: `.dark` on `<html>` (managed by [`ThemeService`](mdc:src/app/core/services/theme.service.ts)).
+  - New styles must respect the `dark:` variant when relevant (e.g., `dark:bg-gray-900`).
+
+## Routing & Navigation Patterns
+
+- All **top‑level** pages sit under the layout shell:
+  - `''` → `LayoutComponent` with `children` routes.
+  - Default redirect: `''` → `'demo'`.
+- Feature routes:
+  - Use `loadChildren` with dynamic import for entire feature (`<feature>.routes.ts`).
+  - Inside the feature, use `loadComponent` for individual pages.
+- Use the shared `BreadcrumbComponent` to display route breadcrumbs based on `data.breadcrumb`.
+- 404 route is handled by [`not-found.component.ts`](mdc:src/app/features/not-found/not-found.component.ts); any new wildcard behavior must not conflict with this.
+
+## Core & Shared Services
+
+- HTTP & API:
+  - Use [`ApiService`](mdc:src/app/core/services/api.service.ts) for HTTP calls.
+  - For CRUD features, extend [`BaseCrudService`](mdc:src/app/core/services/base-crud.service.ts) and set `endpoint`.
+  - Respect the `SKIP_LOADING` token when making background requests (see [`ProductService`](mdc:src/app/features/demo/services/product.service.ts)).
+- Auth:
+  - Use [`AuthService`](mdc:src/app/core/services/auth.service.ts) and guards in `core/guards` for protected routes.
+- Notifications:
+  - Use [`NotificationStore`](mdc:src/app/core/stores/notification.store.ts) for toasts.
+  - Use [`ConfirmDialogService`](mdc:src/app/shared/components/confirm-dialog/confirm-dialog.service.ts) for destructive confirmations.
+
+## When Adding New Code
+
+Before adding any new component, service, or feature:
+
+1. **Check shared first**:
+   - Reuse existing shared components, directives, and pipes where possible.
+   - If something is generic, put it in `shared/` not in a feature.
+2. **Follow patterns from existing features**:
+   - For list + CRUD pages, mirror [`user-list.component.ts`](mdc:src/app/features/users/components/user-list/user-list.component.ts) or [`product-list.component.ts`](mdc:src/app/features/demo/components/product-list/product-list.component.ts).
+   - For complex forms, mirror [`product-form.component.ts`](mdc:src/app/features/demo/components/product-form/product-form.component.ts).
+3. **Respect all constraints** in [`AGENTS.md`](mdc:AGENTS.md) and [`cursor.mdc`](mdc:.cursor/rules/cursor.mdc) in addition to this file.
+
+## Shared UI Library (src/app/shared/components)
+
+Always prefer these shared components over creating new ones with similar behavior:
+
+- **Buttons**
+  - [`btn`](mdc:src/app/shared/components/btn/btn.component.ts): primary/secondary/danger variants, sizes, loading state with optional spinner.
+
+- **Form Controls**
+  - [`input`](mdc:src/app/shared/components/input/input.component.ts): text/number/email/textarea with label, errors, hints; binds to signal‑form fields.
+  - [`select`](mdc:src/app/shared/components/select/select.component.ts): dropdown with options, placeholder, custom arrow.
+  - [`checkbox`](mdc:src/app/shared/components/checkbox/checkbox.component.ts)
+  - [`radio-group`](mdc:src/app/shared/components/radio-group/radio-group.component.ts)
+  - [`password-input`](mdc:src/app/shared/components/password-input/password-input.component.ts)
+  - [`slider`](mdc:src/app/shared/components/slider/slider.component.ts)
+  - [`date-picker`](mdc:src/app/shared/components/date-picker/date-picker.component.ts)
+  - [`tag-input`](mdc:src/app/shared/components/tag-input/tag-input.component.ts)
+  - Wrap groups of controls with [`form-group`](mdc:src/app/shared/components/form-group/form-group.component.ts) when you need a labeled section.
+
+- **Layout & Navigation**
+  - [`layout`](mdc:src/app/shared/components/layout/layout.component.ts): application shell (sidebar + navbar + content).
+  - [`sidebar`](mdc:src/app/shared/components/sidebar/sidebar.component.ts): main navigation.
+  - [`navbar`](mdc:src/app/shared/components/navbar/navbar.component.ts): top bar with breadcrumbs, theme toggle, auth actions.
+  - [`breadcrumb`](mdc:src/app/shared/components/breadcrumb/breadcrumb.component.ts)
+  - [`tabs`](mdc:src/app/shared/components/tabs/tabs.component.ts)
+  - [`stepper`](mdc:src/app/shared/components/stepper/stepper.component.ts)
+
+- **Data Display**
+  - [`data-table`](mdc:src/app/shared/components/data-table/data-table.component.ts): tabular lists with `ColumnDef`, sorting, skeletons, and `CellDef` templates.
+  - [`card`](mdc:src/app/shared/components/card/card.component.ts)
+  - [`badge`](mdc:src/app/shared/components/badge/badge.component.ts)
+  - [`avatar`](mdc:src/app/shared/components/avatar/avatar.component.ts)
+  - [`timeline`](mdc:src/app/shared/components/timeline/timeline.component.ts)
+  - [`progress-bar`](mdc:src/app/shared/components/progress-bar/progress-bar.component.ts)
+  - [`rating`](mdc:src/app/shared/components/rating/rating.component.ts)
+  - [`pagination`](mdc:src/app/shared/components/pagination/pagination.component.ts)
+  - [`empty-state`](mdc:src/app/shared/components/empty-state/empty-state.component.ts): use whenever lists have no data.
+  - [`accordion`](mdc:src/app/shared/components/accordion/accordion.component.ts)
+
+- **Feedback & Overlay**
+  - [`toast`](mdc:src/app/shared/components/toast/toast.component.ts) + [`NotificationStore`](mdc:src/app/core/stores/notification.store.ts) for non‑blocking messages.
+  - [`spinner`](mdc:src/app/shared/components/spinner/spinner.component.ts) + `LoadingEffect` for global loading.
+  - [`modal`](mdc:src/app/shared/components/modal/modal.component.ts)
+  - [`confirm-dialog`](mdc:src/app/shared/components/confirm-dialog/confirm-dialog.component.ts) + service for confirm flows.
+  - [`skeleton`](mdc:src/app/shared/components/skeleton/skeleton-table.component.ts) and [`skeleton-block`](mdc:src/app/shared/components/skeleton/skeleton-block.component.ts) for loading placeholders.
+
+- **Inputs/Utilities**
+  - [`search-input`](mdc:src/app/shared/components/search-input/search-input.component.ts): debounced search box.
+  - [`dropdown-menu`](mdc:src/app/shared/components/dropdown-menu/dropdown-menu.component.ts)
+  - [`file-upload`](mdc:src/app/shared/components/file-upload/file-upload.component.ts)
+  - [`switch-toggle`](mdc:src/app/shared/components/switch-toggle/switch-toggle.component.ts)
+  - [`icon`](mdc:src/app/shared/components/icon/icon.component.ts): centralized SVG icon system used everywhere.
+
+- **Media & Map**
+  - [`image`](mdc:src/app/shared/components/image/image.component.ts) and [`image-slider`](mdc:src/app/shared/components/image-slider/image-slider.component.ts)
+  - [`map`](mdc:src/app/shared/components/map/map.component.ts) + [`weather-widget`](mdc:src/app/shared/components/weather-widget/weather-widget.component.ts)
+
+When building **any new page or feature**, you MUST:
+
+- Use these shared components instead of raw HTML where they apply.
+- Keep styling in Tailwind utility classes, matching existing components.
+- Only add new shared components when none of the above fit; place them under `src/app/shared/components/<name>/` and follow the same API/style patterns.
+
+

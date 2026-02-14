@@ -52,7 +52,8 @@ export type IconName =
   | 'layers'
   | 'star'
   | 'clipboard'
-  | 'copy';
+  | 'copy'
+  | 'zap';
 
 const ICON_PATHS: Record<string, string[]> = {
   close: ['M6 18 18 6M6 6l12 12'],
@@ -174,6 +175,9 @@ const ICON_PATHS: Record<string, string[]> = {
   copy: [
     'M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2z',
     'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1',
+  ],
+  zap: [
+    'M13 2 3 14h9l-1 8 10-12h-9l1-8z',
   ],
 };
 

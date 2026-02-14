@@ -1,0 +1,25 @@
+<div role="radiogroup" [attr.aria-label]="label()" class="mt-5">
+  @if (label()) {
+    <p class="mb-2 text-sm font-medium text-gray-700">{{ label() }}</p>
+  }
+  <div class="grid grid-cols-3 gap-2 sm:grid-cols-6">
+    @for (car of options(); track car.id) {
+      <button
+        type="button"
+        role="radio"
+        (click)="selectCar(car.id)"
+        class="flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition"
+        [class]="selected() === car.id
+          ? 'border-primary bg-white shadow-sm'
+          : 'border-transparent hover:border-gray-200'"
+        [attr.aria-checked]="selected() === car.id"
+      >
+        <img [src]="car.image" [alt]="car.label" class="h-9 w-16 object-contain" />
+        <span
+          class="text-xs font-medium"
+          [class]="selected() === car.id ? 'text-primary' : 'text-gray-500'"
+        >{{ car.label }}</span>
+      </button>
+    }
+  </div>
+</div>

@@ -34,10 +34,27 @@ export class PasswordInputComponent {
   readonly hint = input('');
   readonly showStrength = input(false);
 
+  /** Extra CSS classes appended to the input element. */
+  readonly inputClass = input('');
+
+  /** Extra CSS classes for placeholder styling (use Tailwind `placeholder:` prefix). */
+  readonly placeholderClass = input('');
+
+  /** Extra CSS classes appended to the label element. */
+  readonly labelClass = input('');
+
   protected readonly visible = signal(false);
   protected readonly passwordValue = signal('');
 
   protected readonly inputType = computed(() => (this.visible() ? 'text' : 'password'));
+
+  protected readonly classes = computed(() => {
+    const base =
+      'w-full rounded border border-gray-300 py-2 pl-3 pr-10 text-sm transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400';
+    const extra = this.inputClass();
+    const phClass = this.placeholderClass();
+    return [base, extra, phClass].filter(Boolean).join(' ');
+  });
 
   protected toggleVisibility(): void {
     this.visible.update((v) => !v);

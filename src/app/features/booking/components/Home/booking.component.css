@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+.booking-page {
+  background-color: #f8faf8;
+  height: 100%;
+}
+
+/* ── Pickup Time Picker ─────────────────────────────── */
+.pickup-picker-wrapper {
+  position: relative;
+  width: 130px;
+  height: 120px;
+  overflow: hidden;
+}
+
+.pickup-picker-wrapper--narrow {
+  width: 60px;
+}
+
+.pickup-picker-highlight {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 40px;
+  transform: translateY(-50%);
+  border-top: 2.5px solid #d1d5db;
+  border-bottom: 2.5px solid #d1d5db;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pickup-picker-scroll {
+  height: 100%;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 35%,
+    black 65%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 35%,
+    black 65%,
+    transparent 100%
+  );
+}
+
+.pickup-picker-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.pickup-picker-spacer {
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.pickup-picker-item {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  color: #9ca3af;
+  scroll-snap-align: center;
+  transition: color 0.15s, font-weight 0.15s;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.pickup-picker-item--selected {
+  color: #223548;
+  font-weight: 700;
+  font-size: 1.05rem;
+}

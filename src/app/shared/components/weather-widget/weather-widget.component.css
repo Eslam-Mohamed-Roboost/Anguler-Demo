@@ -1,4 +1,3 @@
-/* Glassmorphism weather widget */
 :host {
   display: block;
   pointer-events: auto;
@@ -7,29 +6,19 @@
 :host .weather-widget {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.75);
+  padding: 0.625rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.04);
-  animation: widget-fade-in 400ms ease-out both;
-}
-
-:host .weather-widget--loading,
-:host .weather-widget--error {
-  padding: 0.75rem 1rem;
-  min-width: 120px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  animation: widget-fade-in 300ms ease-out both;
 }
 
 @keyframes widget-fade-in {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;

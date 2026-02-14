@@ -106,6 +106,12 @@ export class InputComponent {
   /** Extra CSS classes appended to the input/textarea element. */
   readonly inputClass = input('');
 
+  /** Extra CSS classes for placeholder styling (use Tailwind `placeholder:` prefix). */
+  readonly placeholderClass = input('');
+
+  /** Extra CSS classes appended to the label element. */
+  readonly labelClass = input('');
+
   /**
    * Controls number input arrow visibility.
    *
@@ -169,10 +175,11 @@ export class InputComponent {
       'w-full rounded border px-3 py-2 text-sm transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 disabled:bg-gray-100 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
 
     const spinClass = this.hideNativeSpinners() ? 'hide-spin-buttons' : '';
-    const customSpinPadding = this.showCustomSpinners() ? 'pr-9' : '';
+    const customSpinPadding = this.showCustomSpinners() ? 'pe-9' : '';
     const extra = this.inputClass();
+    const phClass = this.placeholderClass();
 
-    return [base, spinClass, customSpinPadding, extra].filter(Boolean).join(' ');
+    return [base, spinClass, customSpinPadding, extra, phClass].filter(Boolean).join(' ');
   });
 
   /* ── Custom spin button methods ───────────────────────────── */

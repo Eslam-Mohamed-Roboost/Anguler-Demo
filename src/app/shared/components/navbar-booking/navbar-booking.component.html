@@ -1,0 +1,39 @@
+<nav class="flex items-center justify-between px-3 py-2 sm:px-5 sm:py-3 lg:px-8 xl:px-10" aria-label="Main navigation">
+  <!-- Left: Logo + Language toggle -->
+  <div class="flex items-center gap-2 sm:gap-4">
+    <a href="/" class="shrink-0">
+      <img [src]="logoSrc()" [alt]="logoAlt()" class="h-7 w-auto sm:h-8" />
+    </a>
+    <button
+      type="button"
+      (click)="toggleLang()"
+      class="flex items-center gap-1 rounded-full bg-white/80 px-2 py-1 text-xs font-medium text-primary-text shadow-sm backdrop-blur-sm transition hover:bg-white sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-sm"
+      [attr.aria-label]="lang() === 'en' ? 'Switch to Arabic' : 'Switch to English'"
+    >
+      <img [src]="flagSrc()" [alt]="langLabel()" class="size-4 rounded-sm object-cover sm:size-5" />
+      <span>{{ langLabel() }}</span>
+      <app-icon name="chevron-down" size="xs" />
+    </button>
+  </div>
+
+  <!-- Right: Auth buttons -->
+  <div class="flex items-center gap-2 sm:gap-3">
+    <button
+      type="button"
+      (click)="signInClick.emit()"
+      class="hidden rounded-full border-2 border-primary px-4 py-1.5 text-xs font-semibold text-primary transition hover:bg-success-light sm:inline-flex sm:px-5 sm:py-2 sm:text-sm"
+    >
+      {{ signInText() }}
+    </button>
+    <button
+      type="button"
+      (click)="joinUsClick.emit()"
+      class="flex items-center gap-1.5 rounded-full bg-warning px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-90 sm:px-5 sm:py-2 sm:text-sm"
+    >
+      @if (showJoinUsIcon()) {
+        <app-icon name="zap" size="sm" />
+      }
+      {{ joinUsText() }}
+    </button>
+  </div>
+</nav>

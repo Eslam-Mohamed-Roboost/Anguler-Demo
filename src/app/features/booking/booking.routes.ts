@@ -4,6 +4,6 @@ export const bookingRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./booking.component').then((m) => m.BookingComponent),
+      import('./components/Home/booking.component').then((m) => m.BookingComponent),
   },
 ];

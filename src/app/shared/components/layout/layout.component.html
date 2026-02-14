@@ -1,13 +1,32 @@
 <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
   <!-- Sidebar -->
-  <app-sidebar [open]="sidebarOpen()" (closed)="closeSidebar()" />
+  @if (navbarStyle() === 'default') {
+    <app-sidebar [open]="sidebarOpen()" (closed)="closeSidebar()" />
+  }
 
   <!-- Main content area -->
   <div class="flex flex-1 flex-col overflow-hidden">
-    <app-navbar (menuToggle)="toggleSidebar()" />
+    <!-- Conditional navbar -->
+    @if (navbarStyle() === 'default') {
+      <app-navbar (menuToggle)="toggleSidebar()" />
+    } @else if (navbarStyle() === 'booking') {
+      <app-navbar-booking
+        signInText="Sign In"
+        joinUsText="Join Us Now"
+        (joinUsClick)="onJoinUsClick()"
+        (signInClick)="onSignInClick()"
+      />
+    }
 
-    <main id="main-content" class="flex-1 overflow-y-auto" @routeAnimation>
-      <router-outlet />
-    </main>
+    <!-- Main content -->
+    @if (navbarStyle() === 'booking') {
+      <div class="flex-1 overflow-hidden font-sans">
+        <router-outlet />
+      </div>
+    } @else {
+      <main id="main-content" class="flex-1 overflow-y-auto" @routeAnimation>
+        <router-outlet />
+      </main>
+    }
   </div>
 </div>

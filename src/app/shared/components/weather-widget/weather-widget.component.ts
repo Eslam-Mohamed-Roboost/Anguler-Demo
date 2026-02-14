@@ -18,8 +18,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subscription } from 'rxjs';
-import { WeatherService } from '../../../core/services/weather.service';
-import type { WeatherData } from '../../../core/services/weather.service';
+import { WeatherService } from '../../../features/booking/components/services/weather.service';
+import type { WeatherData } from '../../../features/booking/components/services/weather.service';
 
 @Component({
   selector: 'app-weather-widget',
