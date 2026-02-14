@@ -35,20 +35,41 @@ export class PaginationComponent {
     Math.max(1, Math.ceil(this.totalItems() / this.pageSize())),
   );
 
-  /** Visible page numbers (window of up to 5 around current page) */
-  protected readonly pages = computed(() => {
+  /** Visible page items — numbers with optional ellipsis gaps */
+  protected readonly pages = computed<(number | '...')[]>(() => {
     const total = this.totalPages();
     const current = this.currentPage();
-    const pages: number[] = [];
+    const items: (number | '...')[] = [];
 
-    let start = Math.max(1, current - 2);
-    const end = Math.min(total, start + 4);
-    start = Math.max(1, end - 4);
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
+    if (total <= 7) {
+      for (let i = 1; i <= total; i++) items.push(i);
+      return items;
     }
-    return pages;
+
+    // Always show first page
+    items.push(1);
+
+    if (current > 3) {
+      items.push('...');
+    }
+
+    // Pages around current
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+    for (let i = start; i <= end; i++) {
+      items.push(i);
+    }
+
+    if (current < total - 2) {
+      items.push('...');
+    }
+
+    // Always show last page
+    if (!items.includes(total)) {
+      items.push(total);
+    }
+
+    return items;
   });
 
   protected readonly hasPrev = computed(() => this.currentPage() > 1);

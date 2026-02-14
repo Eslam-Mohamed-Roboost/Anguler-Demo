@@ -8,12 +8,13 @@ import {
   signal,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-navbar-booking',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent],
+  imports: [IconComponent, RouterLink],
   templateUrl: './navbar-booking.component.html',
   host: { class: 'relative z-20 block' },
 })
@@ -46,6 +47,22 @@ export class NavbarBookingComponent {
 
   /** Emitted when Join Us is clicked */
   readonly joinUsClick = output<void>();
+
+  /** Whether the user is authenticated */
+  readonly isAuthenticated = input(false);
+
+  /** Hotel name to display in profile pill */
+  readonly hotelName = input('Salam Hotel');
+
+  /** Notification counts */
+  readonly callCount = signal(3);
+  readonly bellCount = signal(3);
+
+  /** Emitted when Trips History is clicked */
+  readonly tripsHistoryClick = output<void>();
+
+  /** Emitted when profile is clicked */
+  readonly profileClick = output<void>();
 
   /** Derived: flag image */
   protected readonly flagSrc = computed(() =>

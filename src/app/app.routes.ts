@@ -14,7 +14,14 @@ export const routes: Routes = [
         path: '',
         loadChildren: () =>
           import('./features/booking/booking.routes').then((m) => m.bookingRoutes),
+        
       },
+      {
+        path: 'RiderHistory',
+        loadChildren: () =>
+          import('./features/RiderHistory/RiderHistory.routes').then((m) => m.RiderHistoryRoutes),
+        
+      }
     ],
   },
   {

@@ -1,13 +1,13 @@
 @if (loading()) {
   <app-skeleton-table [rows]="skeletonRows()" [columns]="columns().length" />
 } @else {
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
     <table
-      class="w-full text-left text-sm dark:text-gray-200"
+      class="w-full text-left text-sm text-gray-700 dark:text-gray-200"
       [attr.aria-label]="ariaLabel() || null"
     >
       <thead>
-        <tr class="border-b text-gray-600 dark:border-gray-700 dark:text-gray-400">
+        <tr class="border-b border-gray-200 bg-gray-50/60 text-xs font-medium uppercase tracking-wider text-gray-400 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-500">
           @for (col of columns(); track col.key) {
             <th
               scope="col"
@@ -42,9 +42,9 @@
       </thead>
       <tbody>
         @for (row of data(); track trackByFn(row)) {
-          <tr class="border-b transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50">
+          <tr class="border-b border-gray-100 transition-colors hover:bg-gray-50/50 dark:border-gray-700 dark:hover:bg-gray-800/50">
             @for (col of columns(); track col.key) {
-              <td class="px-2 py-2" [class]="col.cellClass ?? ''">
+              <td class="whitespace-nowrap px-3 py-3.5 text-sm" [class]="col.cellClass ?? ''">
                 @if (templateMap().get(col.key); as tmpl) {
                   <ng-container
                     [ngTemplateOutlet]="tmpl"

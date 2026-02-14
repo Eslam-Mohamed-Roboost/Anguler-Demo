@@ -385,10 +385,10 @@
 <!-- forgot Password Model  -->
  <app-modal [open]="ForgotPasswordMode()" (closed)="ColseForgotPasswordMode()">
    <!-- Header -->
-  <div modal-header class="flex items-center justify-between px-4 pt-4">
-    <div>
-        <h2 class="flex gap-2 items-center text-xl font-bold text-primary-text w-full">
-          <span>
+  <div modal-header class="flex items-start justify-between gap-3 px-4 pt-4">
+    <div class="min-w-0">
+        <h2 class="flex gap-2 items-center text-xl font-bold text-primary-text">
+          <span class="shrink-0">
           <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M8.33312 15.2776C12.1684 15.2776 15.2776 12.1684 15.2776 8.33312C15.2776 4.49781 12.1684 1.38867 8.33312 1.38867C4.49781 1.38867 1.38867 4.49781 1.38867 8.33312C1.38867 12.1684 4.49781 15.2776 8.33312 15.2776Z" stroke="#00C950" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M6.59766 6.59744C6.59766 5.63861 7.37495 4.86133 8.33377 4.86133C9.29259 4.86133 10.0699 5.63861 10.0699 6.59744C10.0699 7.19251 9.77051 7.71765 9.31412 8.0305C8.83953 8.3557 8.33377 8.79994 8.33377 9.37522" stroke="#00C950" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -406,7 +406,7 @@
     <button
       type="button"
       (click)="closeSignInModal()"
-      class="rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+      class="shrink-0 rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
     >
       <app-icon name="close" size="sm" />
     </button>
@@ -431,14 +431,14 @@
     <button
       type="button"
       (click)="ColseForgotPasswordMode()"
-      class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50 w-50"
+      class="flex-1 rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
     >
       Go Back
     </button>
     <button
       type="button"
       (click)="openVerificationModal()"
-      class="flex items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 w-50"
+      class="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
     >
       Send Code
     </button>
@@ -500,14 +500,14 @@
     <button
       type="button"
       (click)="closeVerificationModal()"
-      class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50 w-50"
+      class="flex-1 rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
     >
       Go Back
     </button>
     <button
       type="button"
       (click)="openWelcomeModal()"
-      class="flex items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 w-50"
+      class="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
     >
       Send Code
     </button>
@@ -581,16 +581,16 @@
     <p class="text-[#223548] text-sm">Drop Off Location</p>
     <h3>Choose Your Destination</h3>    
   </div>
- <div class="flex gap-3 justify-between  mt-4 rounded-xl border border-gray-200 p-4">
-   <div class="w-35">
+ <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+   <div class="rounded-xl border border-gray-200 p-4">
       <p class="text-[#223548] text-sm">Client Name</p>
       <h3>Eslam Mohamed</h3>    
    </div>
-    <div class="w-35">
+    <div class="rounded-xl border border-gray-200 p-4">
       <p class="text-[#223548] text-sm">Room No.</p>
       <h3>24</h3>    
    </div>
-   <div class="w-35">
+   <div class="rounded-xl border border-gray-200 p-4">
       <p class="text-[#223548] text-sm">Many bags,or More than 4 people</p>
    </div>
   </div>
@@ -606,17 +606,16 @@
           />
   </div>
 
-  <div class="flex mt-4 gap-3 justify-center  items-center w-full">
-    <div class=" rounded-xl border border-gray-200 p-4 w-full">
+  <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div class="rounded-xl border border-gray-200 p-4">
        <p class="text-[#223548] text-sm">Trip Cost</p>
        <h3>214.50 CHF</h3>   
     </div>
 
-    <div class=" rounded-xl border border-gray-200 p-4 w-full">
+    <div class="rounded-xl border border-gray-200 p-4">
        <p class="text-[#223548] text-sm">Trip Duration</p>
        <h3>00:30:10</h3>   
     </div>
-    
   </div>
 
   <!-- Footer -->

@@ -13,6 +13,7 @@
       <app-navbar-booking
         signInText="Sign In"
         joinUsText="Join Us Now"
+        [isAuthenticated]="isAuthenticated()"
         (joinUsClick)="onJoinUsClick()"
         (signInClick)="onSignInClick()"
       />

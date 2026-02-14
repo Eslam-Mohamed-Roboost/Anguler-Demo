@@ -52,6 +52,9 @@ export class LayoutComponent {
 
   protected readonly sidebarOpen = signal(false);
 
+  /** Whether the user is authenticated (for booking navbar) */
+  protected readonly isAuthenticated = signal(true);
+
   toggleSidebar(): void {
     this.sidebarOpen.update((v) => !v);
   }

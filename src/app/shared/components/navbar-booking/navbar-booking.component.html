@@ -16,24 +16,95 @@
     </button>
   </div>
 
-  <!-- Right: Auth buttons -->
-  <div class="flex items-center gap-2 sm:gap-3">
-    <button
-      type="button"
-      (click)="signInClick.emit()"
-      class="hidden rounded-full border-2 border-primary px-4 py-1.5 text-xs font-semibold text-primary transition hover:bg-success-light sm:inline-flex sm:px-5 sm:py-2 sm:text-sm"
-    >
-      {{ signInText() }}
-    </button>
-    <button
-      type="button"
-      (click)="joinUsClick.emit()"
-      class="flex items-center gap-1.5 rounded-full bg-warning px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-90 sm:px-5 sm:py-2 sm:text-sm"
-    >
-      @if (showJoinUsIcon()) {
-        <app-icon name="zap" size="sm" />
-      }
-      {{ joinUsText() }}
-    </button>
-  </div>
+  <!-- Right: Guest buttons (unauthenticated) -->
+  @if (!isAuthenticated()) {
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button
+        type="button"
+        (click)="signInClick.emit()"
+        class="hidden rounded-full border-2 border-primary px-4 py-1.5 text-xs font-semibold text-primary transition hover:bg-success-light sm:inline-flex sm:px-5 sm:py-2 sm:text-sm"
+      >
+        {{ signInText() }}
+      </button>
+      <button
+        type="button"
+        (click)="joinUsClick.emit()"
+        class="flex items-center gap-1.5 rounded-full bg-warning px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-90 sm:px-5 sm:py-2 sm:text-sm"
+      >
+        @if (showJoinUsIcon()) {
+          <app-icon name="zap" size="sm" />
+        }
+        {{ joinUsText() }}
+      </button>
+    </div>
+  }
+
+  <!-- Right: Authenticated state -->
+  @if (isAuthenticated()) {
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Phone notification -->
+      <button
+        type="button"
+        class="relative flex size-9 items-center justify-center rounded-full bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition hover:bg-white sm:size-10"
+        aria-label="Phone notifications"
+      >
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        @if (callCount() > 0) {
+          <span class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-white">
+            {{ callCount() }}
+          </span>
+        }
+      </button>
+
+      <!-- Bell notification -->
+      <button
+        type="button"
+        class="relative flex size-9 items-center justify-center rounded-full bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition hover:bg-white sm:size-10"
+        aria-label="Bell notifications"
+      >
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        @if (bellCount() > 0) {
+          <span class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-white">
+            {{ bellCount() }}
+          </span>
+        }
+      </button>
+
+      <!-- Trips History link -->
+      <a
+        routerLink="/RiderHistory"
+        class="hidden items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/10 sm:flex sm:px-4 sm:py-2 sm:text-sm"
+      >
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        <span>Trips History</span>
+      </a>
+
+      <!-- Hotel profile pill -->
+      <button
+        type="button"
+        (click)="profileClick.emit()"
+        class="flex items-center gap-1.5 rounded-full bg-white/80 px-2 py-1.5 shadow-sm backdrop-blur-sm transition hover:bg-white sm:gap-2 sm:px-3 sm:py-2"
+      >
+        <span class="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary sm:size-8">
+          <svg class="size-4 sm:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18"/>
+            <path d="M5 21V7l8-4v18"/>
+            <path d="M19 21V11l-6-4"/>
+            <path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>
+          </svg>
+        </span>
+        <span class="hidden text-sm font-semibold text-primary-text sm:inline">{{ hotelName() }}</span>
+        <app-icon name="chevron-down" size="xs" class="text-gray-400" />
+      </button>
+    </div>
+  }
 </nav>
