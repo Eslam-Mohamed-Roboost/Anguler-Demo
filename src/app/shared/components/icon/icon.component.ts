@@ -53,7 +53,8 @@ export type IconName =
   | 'star'
   | 'clipboard'
   | 'copy'
-  | 'zap';
+  | 'zap'
+  | 'download';
 
 const ICON_PATHS: Record<string, string[]> = {
   close: ['M6 18 18 6M6 6l12 12'],
@@ -178,6 +179,11 @@ const ICON_PATHS: Record<string, string[]> = {
   ],
   zap: [
     'M13 2 3 14h9l-1 8 10-12h-9l1-8z',
+  ],
+  download: [
+    'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4',
+    'M7 10l5 5 5-5',
+    'M12 15V3',
   ],
 };
 
