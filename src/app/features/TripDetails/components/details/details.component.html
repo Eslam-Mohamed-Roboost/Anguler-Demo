@@ -1,0 +1,75 @@
+ <section class="border-1 border-gray-200 rounded-2xl m-5 p-5">
+
+    <h2 class="text-xl font-bold p-4 flex gap-2"> 
+        <span>
+            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+             <path d="M8.81617 15.743C8.81617 16.7864 7.97036 17.6322 6.92701 17.6322C5.88365 17.6322 5.03784 16.7864 5.03784 15.743C5.03784 14.6997 5.88365 13.8539 6.92701 13.8539C7.97036 13.8539 8.81617 14.6997 8.81617 15.743Z" stroke="#00C950" stroke-width="1.42492"/>
+             <path d="M17.6321 15.743C17.6321 16.7864 16.7863 17.6322 15.7429 17.6322C14.6995 17.6322 13.8538 16.7864 13.8538 15.743C13.8538 14.6997 14.6995 13.8539 15.7429 13.8539C16.7863 13.8539 17.6321 14.6997 17.6321 15.743Z" stroke="#00C950" stroke-width="1.42492"/>
+             <path d="M2.52568 9.75938H16.6306M2.52568 9.75938C2.52568 10.4959 2.50806 12.6301 2.52921 14.7264C2.56092 15.4063 2.66663 15.9729 5.17187 16.3695M2.52568 9.75938C2.71596 8.11629 3.54399 6.17101 3.96681 5.43445M8.6966 9.75938V5.03784M13.9772 16.3695H8.6919M2.53978 5.03784H11.546C11.546 5.03784 12.0216 5.03784 12.4444 5.08317C13.2373 5.16249 13.9032 5.54777 14.5692 6.51096C15.2743 7.53082 15.8165 8.82263 16.5353 9.51386C17.7298 10.6625 20.0025 10.3071 20.1293 12.7434C20.1611 13.9899 20.1611 15.3497 20.1082 15.5763C20.0233 16.2437 19.5429 16.3526 18.9454 16.3695C18.4269 16.3843 17.8018 16.3432 17.4973 16.3695" stroke="#00C950" stroke-width="1.42492" stroke-linecap="round"/>
+            </svg>
+        </span> 
+        <span>Trip Details</span>
+    </h2>
+    <div class="grid grid-cols-2 gap-4">
+       <app-input
+              label="Trip ID"
+              i18n-label="@@tripDetails.tripId"
+              inputId="trip-id"
+              [field]="f.TripID"
+              placeholder="ex: 123456"
+              i18n-placeholder="@@tripDetails.tripIdPlaceholder"
+              inputClass=" rounded-lg border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
+
+             <app-input
+              label="Passenger Name"
+              i18n-label="@@tripDetails.passengerName"
+              inputId="passenger-name"
+              [field]="f.PassengerName"
+              placeholder="ex: Hesham Mousa"
+              i18n-placeholder="@@tripDetails.passengerNamePlaceholder"
+              inputClass="rounded-lg border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
+
+             <app-input
+              label="Destinations"
+              i18n-label="@@tripDetails.destinations"
+              inputId="destinations"
+              [field]="f.Destinations"
+              placeholder="ex: Cairo, Alexandria"
+              i18n-placeholder="@@tripDetails.destinationsPlaceholder"
+              inputClass="rounded-lg border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
+
+             <app-input
+              label="Fare (CHF)"
+              i18n-label="@@tripDetails.fare"
+              inputId="fare"
+              [field]="f.Fare"
+              placeholder="ex: 100"
+              i18n-placeholder="@@tripDetails.farePlaceholder"
+              inputClass="rounded-lg border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
+
+             <app-input
+              label="Start Date"
+              i18n-label="@@tripDetails.startDate"
+              inputId="start-date"
+              [field]="f.StartDate"
+              placeholder="ex: 2025-10-20"
+              i18n-placeholder="@@tripDetails.startDatePlaceholder"
+              inputClass="rounded-lg border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
+
+             <app-input
+              label="End Date"
+              i18n-label="@@tripDetails.endDate"
+              inputId="end-date"
+              [field]="f.EndDate"
+              placeholder="ex: 2025-10-25"
+              i18n-placeholder="@@tripDetails.endDatePlaceholder"
+              inputClass="rounded-lg border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
+    </div>
+    
+ </section>

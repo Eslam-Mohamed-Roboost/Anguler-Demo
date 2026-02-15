@@ -48,9 +48,12 @@
         class="relative flex size-9 items-center justify-center rounded-full bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition hover:bg-white sm:size-10"
         aria-label="Phone notifications"
       >
-        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-        </svg>
+     <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7.82202 12.5174H14.0796M7.82202 8.3457H10.9508" stroke="#5B738B" stroke-width="1.56439" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M8.86597 20.861C9.96144 21.768 11.2798 22.3459 12.791 22.445C13.9817 22.5231 15.2248 22.523 16.4131 22.445C16.8223 22.4182 17.2683 22.3218 17.6524 22.1657C18.0797 21.992 18.2935 21.9052 18.4022 21.9183C18.5108 21.9314 18.6684 22.0462 18.9835 22.2755C19.5392 22.6798 20.2392 22.9703 21.2773 22.9454C21.8023 22.9328 22.0648 22.9264 22.1822 22.7288C22.2997 22.531 22.1534 22.2574 21.8607 21.71C21.4547 20.9509 21.1976 20.0818 21.5873 19.3854C22.2585 18.3908 22.8286 17.2129 22.9119 15.9407C22.9567 15.2572 22.9567 14.5493 22.9119 13.8657C22.8564 13.018 22.6507 12.2123 22.321 11.4746" stroke="#5B738B" stroke-width="1.56439" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.8738 18.2398C16.5821 17.9955 19.5358 15.0277 19.7788 11.3018C19.8264 10.5727 19.8264 9.81761 19.7788 9.08847C19.5358 5.36261 16.5821 2.39477 12.8738 2.15055C11.6087 2.06724 10.2879 2.06741 9.0254 2.15055C5.3172 2.39477 2.36344 5.36261 2.12038 9.08847C2.07283 9.81761 2.07283 10.5727 2.12038 11.3018C2.20891 12.6588 2.81468 13.9153 3.52784 14.9762C3.94192 15.7189 3.66864 16.646 3.23734 17.4557C2.92636 18.0395 2.77087 18.3314 2.89572 18.5423C3.02056 18.7532 3.29944 18.76 3.85719 18.7734C4.9602 18.8 5.70397 18.4902 6.29438 18.0589C6.62922 17.8143 6.79665 17.6919 6.91204 17.6779C7.02743 17.6639 7.25452 17.7565 7.70862 17.9418C8.11675 18.1084 8.59064 18.2111 9.0254 18.2398C10.2879 18.3229 11.6087 18.323 12.8738 18.2398Z" stroke="#5B738B" stroke-width="1.56439" stroke-linejoin="round"/>
+    </svg>
+
         @if (callCount() > 0) {
           <span class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-white">
             {{ callCount() }}
@@ -64,10 +67,11 @@
         class="relative flex size-9 items-center justify-center rounded-full bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition hover:bg-white sm:size-10"
         aria-label="Bell notifications"
       >
-        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+       <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.32 20.1136C17.32 22.2736 15.569 24.0246 13.409 24.0246C11.2491 24.0246 9.49805 22.2736 9.49805 20.1136" stroke="#5B738B" stroke-width="1.67614" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21.4893 20.1137H5.32887C4.23724 20.1137 3.35229 19.2287 3.35229 18.137C3.35229 17.6129 3.56054 17.1101 3.93122 16.7394L4.60528 16.0653C5.23396 15.4367 5.58714 14.584 5.58714 13.6949V10.6155C5.58714 6.2956 9.08916 2.79358 13.4091 2.79358C17.7291 2.79358 21.2311 6.29559 21.2311 10.6155V13.6949C21.2311 14.584 21.5843 15.4367 22.213 16.0653L22.887 16.7394C23.2576 17.1101 23.4659 17.6129 23.4659 18.137C23.4659 19.2287 22.5809 20.1137 21.4893 20.1137Z" stroke="#5B738B" stroke-width="1.67614" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
+
         @if (bellCount() > 0) {
           <span class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-white">
             {{ bellCount() }}
@@ -78,7 +82,7 @@
       <!-- Trips History link -->
       <a
         routerLink="/RiderHistory"
-        class="hidden items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/10 sm:flex sm:px-4 sm:py-2 sm:text-sm"
+        class="hidden items-center gap-1.5 rounded-full border border-[#E76500]/30 bg-[#E76500]/5 px-3 py-1.5 text-xs font-semibold text-[#E76500] transition hover:bg-[#E76500]/10 sm:flex sm:px-4 sm:py-2 sm:text-sm"
       >
         <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
@@ -92,7 +96,7 @@
       <button
         type="button"
         (click)="profileClick.emit()"
-        class="flex items-center gap-1.5 rounded-full bg-white/80 px-2 py-1.5 shadow-sm backdrop-blur-sm transition hover:bg-white sm:gap-2 sm:px-3 sm:py-2"
+        class="flex items-center gap-1.5 rounded-full bg-[#F0FDF4] px-2 py-1.5 shadow-sm backdrop-blur-sm transition hover:bg-white sm:gap-2 sm:px-3 sm:py-2"
       >
         <span class="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary sm:size-8">
           <svg class="size-4 sm:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

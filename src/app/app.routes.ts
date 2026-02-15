@@ -6,12 +6,12 @@ import { NotFoundComponent } from './features/not-found/not-found.component';
 
 export const routes: Routes = [
   {
-    path: 'booking',
+    path: '',
     component: LayoutBookingComponent,
     data: { breadcrumb: $localize`:@@breadcrumb.booking:Booking` },
     children: [
       {
-        path: '',
+        path: 'home',
         loadChildren: () =>
           import('./features/booking/booking.routes').then((m) => m.bookingRoutes),
         
@@ -21,11 +21,19 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/RiderHistory/RiderHistory.routes').then((m) => m.RiderHistoryRoutes),
         
-      }
+      },
+      {
+        path: 'TripDetails',
+        loadChildren: () =>
+          import('./features/TripDetails/tripDetails.routs').then((m) => m.tripDetailsRoutes),
+        
+      },
+        { path: '', redirectTo: 'home', pathMatch: 'full' },
+
     ],
   },
   {
-    path: '',
+    path: 'demo',
     component: LayoutComponent,
     children: [
       {
@@ -46,7 +54,7 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/showcase/showcase.routes').then((m) => m.showcaseRoutes),
       },
-      { path: '', redirectTo: 'demo', pathMatch: 'full' },
+      // { path: '', redirectTo: 'demo', pathMatch: 'full' },
     ],
   },
   { path: '**', component: NotFoundComponent },
