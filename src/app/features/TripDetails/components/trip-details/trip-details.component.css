@@ -1,0 +1,7 @@
+/* Trip details layout - responsive flex, fill parent */
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+}

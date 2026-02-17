@@ -1,53 +1,37 @@
-<div class="h-screen flex flex-col p-6">
-
-  <!-- Chat Container -->
-  <div class="flex-1 overflow-y-auto space-y-6 pr-2">
-
-    <!-- LEFT MESSAGE -->
-    <div class="flex flex-col items-start">
-      <span class="text-sm text-gray-500 mb-1">Lines</span>
-
-      <div class="bg-primarytext-gray-800 px-4 py-3 rounded-2xl rounded-tl-md max-w-[60%]">
-        Hi. I was charged $5.00 as a cancellation fee for my last ride (ID: 55B3R),
+<div class="flex flex-col gap-6">
+  @for (msg of messages(); track msg.id) {
+    @if (msg.sender === 'user') {
+      <!-- LEFT MESSAGE (User) - speech bubble: rounded except bottom-left -->
+      <div class="flex flex-col items-start">
+        <div class="mb-1.5 flex items-center gap-2">
+          <span class="flex size-6 items-center justify-center rounded bg-amber-400/80 text-amber-900">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="4" y1="12" x2="20" y2="12"/>
+              <line x1="4" y1="18" x2="20" y2="18"/>
+            </svg>
+          </span>
+          <span class="text-sm font-medium text-primary-text">{{ msg.senderName }}</span>
+        </div>
+        <div class="max-w-[85%] rounded-2xl rounded-bl-sm bg-gray-100 px-4 py-3 text-sm text-primary-text dark:bg-gray-700 dark:text-gray-100 sm:max-w-[75%]">
+          {{ msg.text }}
+        </div>
+        <span class="mt-1 text-xs text-gray-400">{{ msg.timestamp }}</span>
       </div>
-
-      <span class="text-xs text-gray-400 mt-1">04:45 PM</span>
-    </div>
-
-
-    <!-- RIGHT MESSAGE -->
-    <div class="flex flex-col items-end">
-      <span class="text-sm text-gray-500 mb-1">Salam Hotel</span>
-
-      <div class="bg-primary text-white px-5 py-3 rounded-2xl rounded-tr-md max-w-[60%]">
-        Hello! I'm Sarah, and I'd be happy to check that for you.
+    } @else {
+      <!-- RIGHT MESSAGE (Agent) - speech bubble: rounded except bottom-right -->
+      <div class="flex flex-col items-end">
+        <div class="mb-1.5 flex items-center gap-2">
+          <span class="text-sm font-medium text-primary-text">{{ msg.senderName }}</span>
+          <span class="flex size-6 items-center justify-center rounded-full bg-gray-400 text-white">
+            <app-icon name="user" size="xs" class="text-white" />
+          </span>
+        </div>
+        <div class="max-w-[85%] rounded-2xl rounded-br-sm bg-primary px-5 py-3 text-sm text-white sm:max-w-[75%]">
+          {{ msg.text }}
+        </div>
+        <span class="mt-1 text-xs text-gray-400">{{ msg.timestamp }}</span>
       </div>
-
-      <span class="text-xs text-gray-400 mt-1">04:45 PM</span>
-    </div>
-
-  </div>
-
-
-  <!-- INPUT AREA
-  <div class="mt-6 flex items-center gap-4">
-    <input
-      type="text"
-      placeholder="Type your message here ..."
-      class="flex-1 bg-gray-100 px-5 py-3 rounded-full outline-none"
-    />
-
-    <button class="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center">
-      ➤
-    </button>
-
-    <button class="text-gray-500 text-xl">
-      📎
-    </button>
-
-    <button class="text-gray-500 text-xl">
-      🖼
-    </button>
-  </div>
-
-</div> -->
+    }
+  }
+</div>

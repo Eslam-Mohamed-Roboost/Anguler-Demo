@@ -1,0 +1,61 @@
+/* Chat - full width/height, flex layout */
+:host {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Visible scrollbar - always show scroll control on all screen sizes */
+.chat-messages {
+  overflow-y: scroll !important;
+  scrollbar-gutter: stable;
+  /* Force classic scrollbar on WebKit (visible on large screens) */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Wider scrollbar on large screens for visibility */
+.chat-messages::-webkit-scrollbar {
+  width: 12px;
+}
+
+@media (min-width: 1024px) {
+  .chat-messages::-webkit-scrollbar {
+    width: 14px;
+  }
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 6px;
+  margin: 4px 0;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 6px;
+  border: 3px solid #e2e8f0;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #ea580c;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:active {
+  background: #c2410c;
+}
+
+/* Firefox - always show scrollbar */
+.chat-messages {
+  scrollbar-width: auto;
+  scrollbar-color: #f97316 #e2e8f0;
+}
+
+/* Input area - always visible at bottom of chat section */
+.chat-input {
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
