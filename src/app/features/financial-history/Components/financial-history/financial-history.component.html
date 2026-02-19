@@ -9,13 +9,13 @@
 
   <!-- ═══════ Header ═══════ -->
   <header class="flex flex-col gap-3 px-4 pt-6 pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4 md:px-6">
-    <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">Trips History</h1>
+    <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">Financial History</h1>
 
     <div class="flex flex-wrap items-center gap-2 sm:gap-3">
       <!-- Search -->
       <div class="w-full sm:w-64">
         <app-search-input
-          placeholder="Search Trips"
+          placeholder="Search Financial Records"
           (searchChange)="onSearch($event)"
         />
       </div>
@@ -50,7 +50,7 @@
       [data]="paginatedTrips()"
       [columns]="columns"
       trackByKey="id"
-      ariaLabel="Trips history table"
+      ariaLabel="Financial history table"
       (sortChange)="onSort($event)"
     >
       <!-- Custom cell: Driver with avatar -->
@@ -78,11 +78,11 @@
       </ng-template>
 
       <!-- Custom cell: Status badge -->
-      <ng-template cellDef="status" let-row>
+      <!-- <ng-template cellDef="status" let-row>
         <app-badge [variant]="getStatusVariant(row.status)">
           {{ row.status }}
         </app-badge>
-      </ng-template>
+      </ng-template> -->
 
       <!-- Custom cell: Duration -->
       <ng-template cellDef="duration" let-row>
@@ -98,11 +98,17 @@
         </div>
       </ng-template>
 
-      <!-- Custom cell: Fare -->
-      <ng-template cellDef="fare" let-row>
+      <!-- Custom cell: Trip Profit -->
+      <ng-template cellDef="tripProfit" let-row>
         <div class="flex flex-col text-xs">
-          <span class="font-semibold text-gray-800">$ {{ row.fare.toFixed(2) }}</span>
-          <span class="text-gray-400">Comm. : ${{ row.commission.toFixed(2) }}</span>
+          <span class="font-semibold text-gray-800">$ {{ row.tripProfit.toFixed(2) }}</span>
+        </div>
+      </ng-template>
+
+      <!-- Custom cell: Commulative Profit -->
+      <ng-template cellDef="CommulativeProfit" let-row>
+        <div class="flex flex-col text-xs">
+          <span class="font-semibold text-green-600">$ {{ row.CommulativeProfit.toFixed(2) }}</span>
         </div>
       </ng-template>
 

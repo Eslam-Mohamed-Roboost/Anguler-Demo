@@ -28,6 +28,12 @@ export const routes: Routes = [
           import('./features/TripDetails/tripDetails.routs').then((m) => m.tripDetailsRoutes),
         
       },
+       {
+        path: 'FinancialHistory',
+        loadChildren: () =>
+          import('./features/financial-history/financial-history-routes').then((m) => m.financialHistoryRoutes),
+        
+      },
         { path: '', redirectTo: 'home', pathMatch: 'full' },
 
     ],
