@@ -48,12 +48,21 @@
  *     [field]="fieldTree.description"
  *     [rows]="4"
  *   />
+ *
+ *   <!-- Disabled input -->
+ *   <app-input
+ *     label="Read-only field"
+ *     inputId="readonly-field"
+ *     [field]="fieldTree.readonly"
+ *     [disabled]="true"
+ *   />
  */
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
+  effect,
   input,
   viewChild,
 } from '@angular/core';
@@ -112,6 +121,9 @@ export class InputComponent {
   /** Extra CSS classes appended to the label element. */
   readonly labelClass = input('');
 
+  /** Whether the input should be disabled */
+  readonly disabled = input(false);
+
   /**
    * Controls number input arrow visibility.
    *
@@ -126,6 +138,7 @@ export class InputComponent {
   /* ── View queries ─────────────────────────────────────────── */
 
   protected readonly inputRef = viewChild<ElementRef<HTMLInputElement>>('inputEl');
+  protected readonly textareaRef = viewChild<ElementRef<HTMLTextAreaElement>>('textareaEl');
 
   /* ── Derived state ────────────────────────────────────────── */
 
@@ -183,6 +196,25 @@ export class InputComponent {
   });
 
   /* ── Custom spin button methods ───────────────────────────── */
+
+  constructor() {
+    // Effect to handle disabled state
+    effect(() => {
+      const isDisabled = this.disabled();
+      
+      // Handle input element
+      const inputEl = this.inputRef()?.nativeElement;
+      if (inputEl) {
+        inputEl.disabled = isDisabled;
+      }
+      
+      // Handle textarea element
+      const textareaEl = this.textareaRef()?.nativeElement;
+      if (textareaEl) {
+        textareaEl.disabled = isDisabled;
+      }
+    });
+  }
 
   protected increment(): void {
     const el = this.inputRef()?.nativeElement;

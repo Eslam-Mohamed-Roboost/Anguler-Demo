@@ -10,6 +10,7 @@
   <!-- ═══════ TEXTAREA or INPUT ═══════ -->
   @if (isTextarea()) {
     <textarea
+      #textareaEl
       [id]="inputId()"
       [formField]="$any(field())"
       [placeholder]="placeholder()"

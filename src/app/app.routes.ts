@@ -34,6 +34,12 @@ export const routes: Routes = [
           import('./features/financial-history/financial-history-routes').then((m) => m.financialHistoryRoutes),
         
       },
+       {
+        path: 'profile',
+        loadChildren: () =>
+          import('./features/Profile/Profile.routs').then((m) => m.ProfileRoutes),
+        
+      },
         { path: '', redirectTo: 'home', pathMatch: 'full' },
 
     ],

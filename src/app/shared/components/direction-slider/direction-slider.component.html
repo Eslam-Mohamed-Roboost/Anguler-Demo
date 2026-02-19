@@ -1,0 +1,24 @@
+<div class="direction-slider">
+  <!-- Slider Track -->
+  <div class="slider-track" [class.rtl-active]="direction() === 'rtl'">
+    <!-- Slider Thumb -->
+    <div class="slider-thumb" [class.rtl-position]="direction() === 'rtl'">
+      <app-icon [name]="direction() === 'ltr' ? 'chevron-left' : 'chevron-right'" size="sm" />
+    </div>
+    
+    <!-- Direction Labels -->
+    <div class="direction-labels">
+      <span class="label ltr-label" [class.active]="direction() === 'ltr'" (click)="setDirection('ltr')">
+        LTR
+      </span>
+      <span class="label rtl-label" [class.active]="direction() === 'rtl'" (click)="setDirection('rtl')">
+        RTL
+      </span>
+    </div>
+  </div>
+  
+  <!-- Current Direction Display -->
+  <div class="current-direction">
+    <span class="direction-text">{{ currentDirectionInfo()?.label }}</span>
+  </div>
+</div>

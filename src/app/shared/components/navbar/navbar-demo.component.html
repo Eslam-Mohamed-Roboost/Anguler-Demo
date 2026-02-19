@@ -1,0 +1,42 @@
+<div class="navbar-demo">
+  <!-- Enhanced Navbar -->
+  <app-navbar 
+    [messageCount]="messageCount()"
+    [notificationCount]="notificationCount()"
+    [showNavIcons]="showNavIcons()"
+    (messageClick)="onMessageClick()"
+    (notificationClick)="onNotificationClick()"
+    (menuToggle)="onMenuToggle()"
+  />
+
+  <!-- Demo Controls -->
+  <div class="demo-controls">
+    <h3>Navbar Demo Controls</h3>
+    
+    <div class="control-group">
+      <h4>Message Count: {{ messageCount() }}</h4>
+      <button (click)="addMessage()" class="demo-btn">Add Message</button>
+    </div>
+
+    <div class="control-group">
+      <h4>Notification Count: {{ notificationCount() }}</h4>
+      <button (click)="addNotification()" class="demo-btn">Add Notification</button>
+    </div>
+
+    <div class="control-group">
+      <h4>Nav Icons: {{ showNavIcons() ? 'Visible' : 'Hidden' }}</h4>
+      <button (click)="toggleNavIcons()" class="demo-btn">Toggle Icons</button>
+    </div>
+
+    <div class="instructions">
+      <h4>Instructions:</h4>
+      <ul>
+        <li>Click the chat-bubble icon to view messages</li>
+        <li>Click the alert-triangle icon to view notifications</li>
+        <li>Red badges show unread counts</li>
+        <li>Counts over 99 show as "99+"</li>
+        <li>Use controls to test different states</li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,99 @@
+<div class="px-20 flex flex-col justify-center items-center">
+  <!-- Custom Tabs Component -->
+  <div class="flex border-b dark:border-gray-700 border-1 border-[#E76500] p-1 rounded-lg w-full md:w-[60%] lg:w-[41.65%]">
+    @for (tab of tabs; track tab.key) {
+      <button
+        type="button"
+        (click)="activeTab.set(tab.key)"
+        class="flex justify-center flex-1 text-center inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-colors focus:outline-none"
+        [class]="activeTab() === tab.key 
+          ? 'bg-[#FFF8D6] text-center text-[#E76500]' 
+          : 'text-gray-500 hover:border-gray-300 hover:text-gray-700'"
+      >
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Tab Content -->
+  <div class="mt-6 w-full lg:w-full md:w-full">
+    <!-- Hotel Info Tab -->
+    @switch (activeTab()) {
+      @case ('hotel-info') {
+        <div class="space-y-4 w-full">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+            <div class="space-y-2">
+              <app-input label="Name" inputId="hotel-name" [field]="hotelFields.name"  [disabled]="DisableHotleInfo()"  inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+            <div class="space-y-2">
+              <app-input label="City" inputId="hotel-city" [field]="hotelFields.city"  [disabled]="DisableHotleInfo()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+            <div class="space-y-2">
+              <app-input label="Address" inputId="hotel-address" [field]="hotelFields.address"  [disabled]="DisableHotleInfo()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+            <div class="space-y-2">
+              <app-input label="Hotel Phone Number" inputId="hotel-phone" [field]="hotelFields.phone" [disabled]="DisableHotleInfo()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+            <div class="space-y-2 md:col-span-2">
+              <app-input label="Hotel Email" inputId="hotel-email" [field]="hotelFields.email" [disabled]="DisableHotleInfo()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+          </div>
+          
+          <div class="flex justify-end mt-6">
+            <button (click)="ChangeDiableForHotelInfo()" class="px-6 py-2 bg-[#FFF8D6] hover:text-[#FFF8D6] text-[#E76500] rounded-lg hover:bg-[#E76500]/90 transition-colors">
+              Edit Hotel Details
+            </button>
+          </div>
+        </div>
+      }
+
+      @case ('password') {
+        <div class="space-y-4 w-full">
+          <div class="grid grid-cols-1 gap-4 w-full">
+            <div class="space-y-2">
+              <app-password-input label="Current Password" inputId="current-password" [field]="passwordFields.currentPassword" placeholder="Enter current password" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+            <div class="space-y-2">
+              <app-password-input label="New Password" inputId="new-password" [field]="passwordFields.newPassword" placeholder="Enter new password" />
+            </div>
+            <div class="space-y-2">
+              <app-password-input label="Confirm New Password" inputId="confirm-password" [field]="passwordFields.confirmPassword" placeholder="Confirm new password" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+          </div>
+          
+          <div class="flex justify-end mt-6">
+            <button class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+              Update Password
+            </button>
+          </div>
+        </div>
+      }
+
+      @case ('withdrawal') {
+        <div class="space-y-4 w-full">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+            <div class="space-y-2">
+              <app-input label="Bank Name" inputId="bank-name" [field]="withdrawalFields.bankName" [disabled]="Disablewithdrawal()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+            <div class="space-y-2">
+              <app-input label="Account Number" inputId="account-number" [field]="withdrawalFields.accountNumber" [disabled]="Disablewithdrawal()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+            <div class="space-y-2">
+              <app-input label="Account Holder Name" inputId="account-holder" [field]="withdrawalFields.accountHolderName" [disabled]="Disablewithdrawal()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+            <div class="space-y-2">
+              <app-input label="SWIFT Code" inputId="swift-code" [field]="withdrawalFields.swiftCode" [disabled]="Disablewithdrawal()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+            </div>
+          </div>
+          
+          <div class="flex justify-end mt-6 space-x-3">
+            <!-- 'px-6 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed' :  -->
+            <button [class]="'px-6 py-2 bg-[#FFF8D6] hover:text-[#FFF8D6] text-[#E76500] rounded-lg hover:bg-[#E76500]/90 transition-colors'" (click)="ChangeDiableForwithdrawal()">
+              Update Details
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,67 @@
+<div class="demo-container" [dir]="textDirection()">
+  <!-- Direction Slider -->
+  <div class="slider-section">
+    <h3>Text Direction Control</h3>
+    <app-direction-slider 
+      [direction]="textDirection()" 
+      (directionChange)="onDirectionChange($event)"
+    />
+  </div>
+
+  <!-- Form Demo -->
+  <div class="form-section" [class]="directionClass()">
+    <h3>Sample Form</h3>
+    <form class="demo-form">
+      <div class="form-grid">
+        <div class="form-row">
+          <app-input
+            label="First Name"
+            inputId="firstName"
+            [field]="formFields.firstName"
+            placeholder="Enter first name"
+            inputClass="demo-input"
+          />
+          <app-input
+            label="Last Name"
+            inputId="lastName"
+            [field]="formFields.lastName"
+            placeholder="Enter last name"
+            inputClass="demo-input"
+          />
+        </div>
+        
+        <div class="form-row">
+          <app-input
+            label="Email"
+            inputId="email"
+            [field]="formFields.email"
+            placeholder="Enter email address"
+            inputClass="demo-input"
+          />
+          <app-input
+            label="Phone"
+            inputId="phone"
+            [field]="formFields.phone"
+            placeholder="Enter phone number"
+            inputClass="demo-input"
+          />
+        </div>
+        
+        <div class="form-row full-width">
+          <app-input
+            label="Address"
+            inputId="address"
+            [field]="formFields.address"
+            placeholder="Enter full address"
+            inputClass="demo-input"
+          />
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button type="button" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

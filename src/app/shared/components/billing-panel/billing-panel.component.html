@@ -1,0 +1,99 @@
+<!-- Dropdown Panel -->
+@if (isOpen()) {
+  <div class="billing-panel-overlay" (click)="onClose()">
+    <div class="billing-panel" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="panel-header">
+        <div class="header-content">
+          <h3 class="panel-title">
+            <app-icon name="file" size="sm" />
+            Billing & Invoices
+          </h3>
+          @if (getUnpaidCount() > 0) {
+            <span class="unpaid-count">
+              {{ getUnpaidCount() }} unpaid
+            </span>
+          }
+        </div>
+        <button class="close-btn" (click)="onClose()" aria-label="Close billing panel">
+          <app-icon name="close" size="sm" />
+        </button>
+      </div>
+
+      <!-- Summary -->
+      <div class="panel-summary">
+        <div class="summary-item">
+          <span class="summary-label">Total Amount</span>
+          <span class="summary-value">{{ formatCurrency(getTotalAmount()) }}</span>
+        </div>
+      </div>
+
+      <!-- Billing Items -->
+      <div class="panel-content">
+        @if (billingItems().length > 0) {
+          <div class="billing-list">
+            @for (item of billingItems(); track item.id) {
+              <div class="billing-item" [class]="getStatusClass(item.status)">
+                <div class="item-main">
+                  <div class="item-info">
+                    <h4 class="item-title">{{ item.title }}</h4>
+                    @if (item.description) {
+                      <p class="item-description">
+                        {{ item.description }}
+                      </p>
+                    }
+                    <span class="item-date">{{ item.date }}</span>
+                  </div>
+                  <div class="item-amount">
+                    <span class="amount">{{ formatCurrency(item.amount) }}</span>
+                    <span class="status" [class]="getStatusClass(item.status)">
+                      {{ getStatusText(item.status) }}
+                    </span>
+                  </div>
+                </div>
+                <div class="item-actions">
+                  @if (item.status !== 'paid') {
+                    <button 
+                      class="action-btn secondary" 
+                      (click)="onViewBill(item)"
+                    >
+                      <app-icon name="eye" size="xs" />
+                      View
+                    </button>
+                  }
+                  @if (item.status === 'pending' || item.status === 'overdue') {
+                    <button 
+                      class="action-btn primary" 
+                      (click)="onPayBill(item)"
+                    >
+                      <app-icon name="check" size="xs" />
+                      Pay Now
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <app-icon name="file" size="lg" />
+            <h4>No billing items</h4>
+            <p>You don't have any invoices or bills at the moment.</p>
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="panel-footer">
+        <button class="footer-btn secondary" (click)="onClose()">
+          Close
+        </button>
+        @if (getUnpaidCount() > 0) {
+          <button class="footer-btn primary">
+            Pay All Bills
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
