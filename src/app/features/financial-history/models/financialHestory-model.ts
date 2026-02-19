@@ -13,3 +13,12 @@ export interface financialHestory{
     startDate: string;
     endDate: string;
 }
+
+export interface PayoutAlert {
+    id: number;
+    type: 'scheduled' | 'processed';
+    amount: number;
+    message: string;
+}
+
+export type FinancialHistoryItem = financialHestory | PayoutAlert;

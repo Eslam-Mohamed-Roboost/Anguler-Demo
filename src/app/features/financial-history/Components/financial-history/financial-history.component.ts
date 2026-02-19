@@ -1,15 +1,14 @@
 import { Component, computed, signal } from '@angular/core';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { ColumnDef, SortState } from '../../../../shared/components/data-table/column-def';
-import { financialHestory } from '../../models/financialHestory-model';
+import { financialHestory, PayoutAlert, FinancialHistoryItem } from '../../models/financialHestory-model';
 import { PaginationComponent } from "../../../../shared/components/pagination/pagination.component";
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
-import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 import { SearchInputComponent } from '../../../../shared/components/search-input/search-input.component';
 
 @Component({
   selector: 'app-financial-history',
-  imports: [PaginationComponent, IconComponent,DataTableComponent,SearchInputComponent],
+  imports: [PaginationComponent, IconComponent, SearchInputComponent],
   templateUrl: './financial-history.component.html',
   styleUrl: './financial-history.component.css',
 })
@@ -27,8 +26,8 @@ export class FinancialHistoryComponent  extends BaseComponent {
       { key: 'actions', header: 'Actions' },
     ];
     protected readonly sortState = signal<SortState>({ column: '', direction: null });
-private readonly allTrips: financialHestory[] = Array.from({ length: 100 }, (_, i) => {
-     return {
+private readonly allTrips: FinancialHistoryItem[] = Array.from({ length: 100 }, (_, i) => {
+    const tripData: financialHestory = {
       id: i + 1,
       tripId: `TR00${i + 1}`,
       driver: 'Alice Johnson',
@@ -43,8 +42,65 @@ private readonly allTrips: financialHestory[] = Array.from({ length: 100 }, (_, 
       startDate: '2024-01-15 14:30',
       endDate: '--',
     };
+    
+    // Insert alerts after certain rows
+    if (i === 4) {
+      return {
+        id: 1000 + i,
+        type: 'scheduled',
+        amount: 100.00,
+        message: `Your payout of $100.00 has been scheduled. You will receive the funds shortly according to our processing timeline.`
+      } as PayoutAlert;
+    }
+    
+    if (i === 9) {
+      return {
+        id: 2000 + i,
+        type: 'processed',
+        amount: 200.50,
+        message: `Your payout of $200.50 has been successfully processed and sent to your account.`
+      } as PayoutAlert;
+    }
+    
+    if (i === 14) {
+      return {
+        id: 3000 + i,
+        type: 'scheduled',
+        amount: 150.75,
+        message: `Your payout of $150.75 has been scheduled. You will receive the funds shortly according to our processing timeline.`
+      } as PayoutAlert;
+    }
+    
+    if (i === 19) {
+      return {
+        id: 4000 + i,
+        type: 'processed',
+        amount: 325.25,
+        message: `Your payout of $325.25 has been successfully processed and sent to your account.`
+      } as PayoutAlert;
+    }
+    
+    if (i === 24) {
+      return {
+        id: 5000 + i,
+        type: 'scheduled',
+        amount: 89.99,
+        message: `Your payout of $89.99 has been scheduled. You will receive the funds shortly according to our processing timeline.`
+      } as PayoutAlert;
+    }
+    
+    if (i === 29) {
+      return {
+        id: 6000 + i,
+        type: 'processed',
+        amount: 412.80,
+        message: `Your payout of $412.80 has been successfully processed and sent to your account.`
+      } as PayoutAlert;
+    }
+    
+    return tripData;
   });
- protected readonly trips = signal<financialHestory[]>(this.allTrips);
+ protected readonly trips = signal<FinancialHistoryItem[]>(this.allTrips);
   protected readonly searchQuery = signal('');
   protected readonly currentPage = signal(1);
   protected readonly pageSize = signal(10);
@@ -53,24 +109,36 @@ private readonly allTrips: financialHestory[] = Array.from({ length: 100 }, (_, 
     const query = this.searchQuery().toLowerCase();
     let result = this.trips();
     if (query) {
-      result = result.filter(
-        (t) =>
-          t.tripId.toLowerCase().includes(query) ||
-          t.driver.toLowerCase().includes(query) ||
-          t.guestName.toLowerCase().includes(query),
-      );
+      result = result.filter((item) => {
+        // Only filter trip data, not alerts
+        if ('tripId' in item) {
+          const trip = item as financialHestory;
+          return (
+            trip.tripId.toLowerCase().includes(query) ||
+            trip.driver.toLowerCase().includes(query) ||
+            trip.guestName.toLowerCase().includes(query)
+          );
+        }
+        // Always include alerts in search results
+        return true;
+      });
     }
 
     const { column, direction } = this.sortState();
     if (column && direction) {
       result = [...result].sort((a, b) => {
-        const aVal = (a as unknown as Record<string, unknown>)[column];
-        const bVal = (b as unknown as Record<string, unknown>)[column];
-        if (typeof aVal === 'string' && typeof bVal === 'string') {
-          return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-        }
-        if (typeof aVal === 'number' && typeof bVal === 'number') {
-          return direction === 'asc' ? aVal - bVal : bVal - aVal;
+        // Only sort trip data, keep alerts in place
+        if ('tripId' in a && 'tripId' in b) {
+          const tripA = a as financialHestory;
+          const tripB = b as financialHestory;
+          const aVal = (tripA as unknown as Record<string, unknown>)[column];
+          const bVal = (tripB as unknown as Record<string, unknown>)[column];
+          if (typeof aVal === 'string' && typeof bVal === 'string') {
+            return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+          }
+          if (typeof aVal === 'number' && typeof bVal === 'number') {
+            return direction === 'asc' ? aVal - bVal : bVal - aVal;
+          }
         }
         return 0;
       });
@@ -107,5 +175,14 @@ private readonly allTrips: financialHestory[] = Array.from({ length: 100 }, (_, 
       case 'Active': return 'success';
       default: return 'neutral';
     }
+  }
+
+  // Helper functions to determine item type
+  isAlert(item: FinancialHistoryItem): item is PayoutAlert {
+    return 'type' in item;
+  }
+
+  isTrip(item: FinancialHistoryItem): item is financialHestory {
+    return 'tripId' in item;
   }
 }

@@ -46,91 +46,96 @@
 
   <!-- ═══════ Data Table ═══════ -->
   <div class="px-4 md:px-6 flex-1 overflow-auto">
-    <app-data-table
-      [data]="paginatedTrips()"
-      [columns]="columns"
-      trackByKey="id"
-      ariaLabel="Financial history table"
-      (sortChange)="onSort($event)"
-    >
-      <!-- Custom cell: Driver with avatar -->
-      <ng-template cellDef="driver" let-row>
-        <div class="flex items-center gap-2">
-          <span class="flex size-7 items-center justify-center rounded-full bg-gray-200 text-gray-500">
-            <app-icon name="user" size="xs" />
-          </span>
-          <span class="text-sm text-gray-700">{{ row.driver }}</span>
-        </div>
-      </ng-template>
+    <!-- Custom table implementation -->
+    <div class="w-full">
+      <!-- Table Header -->
+      <div class="grid grid-cols-12 gap-4 pb-3 border-b border-gray-200 text-xs font-medium text-gray-500">
+        <div class="col-span-1">Trip ID</div>
+        <div class="col-span-2">Driver</div>
+        <div class="col-span-2">Guest</div>
+        <div class="col-span-1">Room No.</div>
+        <div class="col-span-2">Route</div>
+        <div class="col-span-1">Duration</div>
+        <div class="col-span-1">Start/End Date</div>
+        <div class="col-span-1">Trip Profit</div>
+        <div class="col-span-1">Commulative Profit</div>
+      </div>
 
-      <!-- Custom cell: Route (two lines with colored dots) -->
-      <ng-template cellDef="route" let-row>
-        <div class="flex flex-col gap-1 text-xs">
-          <span class="flex items-center gap-1.5">
-            <span class="inline-block size-2.5 rounded-full border-2 border-green-500 bg-green-500"></span>
-            {{ row.routeFrom }}
-          </span>
-          <span class="flex items-center gap-1.5">
-            <span class="inline-block size-2.5 rounded-full border-2 border-red-500 bg-red-500"></span>
-            {{ row.routeTo }}
-          </span>
-        </div>
-      </ng-template>
-
-      <!-- Custom cell: Status badge -->
-      <!-- <ng-template cellDef="status" let-row>
-        <app-badge [variant]="getStatusVariant(row.status)">
-          {{ row.status }}
-        </app-badge>
-      </ng-template> -->
-
-      <!-- Custom cell: Duration -->
-      <ng-template cellDef="duration" let-row>
-        <div class="flex flex-col text-xs text-gray-600">
-          <span class="flex items-center gap-1">
-            <svg class="size-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            {{ row.durationMin }} min
-          </span>
-          <span class="text-gray-400 pl-[18px]">{{ row.distanceKm }} km</span>
-        </div>
-      </ng-template>
-
-      <!-- Custom cell: Trip Profit -->
-      <ng-template cellDef="tripProfit" let-row>
-        <div class="flex flex-col text-xs">
-          <span class="font-semibold text-gray-800">$ {{ row.tripProfit.toFixed(2) }}</span>
-        </div>
-      </ng-template>
-
-      <!-- Custom cell: Commulative Profit -->
-      <ng-template cellDef="CommulativeProfit" let-row>
-        <div class="flex flex-col text-xs">
-          <span class="font-semibold text-green-600">$ {{ row.CommulativeProfit.toFixed(2) }}</span>
-        </div>
-      </ng-template>
-
-      <!-- Custom cell: Start/End Date -->
-      <ng-template cellDef="startEndDate" let-row>
-        <div class="flex flex-col text-xs text-gray-600">
-          <span>{{ row.startDate }}</span>
-          <span class="text-gray-400">{{ row.endDate }}</span>
-        </div>
-      </ng-template>
-
-      <!-- Custom cell: Actions -->
-      <ng-template cellDef="actions" let-row>
-        <a
-          routerLink="/TripDetails"
-          class="flex size-8 items-center justify-center rounded-full text-primary transition hover:bg-gray-100"
-          aria-label="View trip details"
-        >
-          <app-icon name="eye" size="sm" />
-        </a>
-      </ng-template>
-    </app-data-table>
+      <!-- Table Body -->
+      <div class="divide-y divide-gray-100">
+        @for (item of paginatedTrips(); track item.id) {
+          @if (isAlert(item)) {
+            <!-- Alert Row -->
+            <div class="col-span-12 py-4">
+              <div class="flex items-center gap-3 p-4 rounded-lg" 
+                   [class]="item.type === 'scheduled' 
+                     ? 'bg-yellow-50 border border-yellow-200' 
+                     : 'bg-gray-50 border border-gray-200'">
+                <app-icon 
+                  [name]="item.type === 'scheduled' ? 'info' : 'check'" 
+                  size="sm"
+                  [class]="item.type === 'scheduled' ? 'text-yellow-600' : 'text-gray-600'" />
+                <span class="text-sm" 
+                      [class]="item.type === 'scheduled' ? 'text-yellow-800' : 'text-gray-700'">
+                  {{ item.message }}
+                </span>
+              </div>
+            </div>
+          } @else if (isTrip(item)) {
+            <!-- Trip Row -->
+            <div class="grid grid-cols-12 gap-4 py-3 items-center text-xs">
+              <div class="col-span-1 font-medium">{{ item.tripId }}</div>
+              <div class="col-span-2">
+                <div class="flex items-center gap-2">
+                  <span class="flex size-6 items-center justify-center rounded-full bg-gray-200 text-gray-500">
+                    <app-icon name="user" size="xs" />
+                  </span>
+                  <span class="text-gray-700">{{ item.driver }}</span>
+                </div>
+              </div>
+              <div class="col-span-2">{{ item.guestName }}</div>
+              <div class="col-span-1">{{ item.roomNo }}</div>
+              <div class="col-span-2">
+                <div class="flex flex-col gap-1">
+                  <span class="flex items-center gap-1">
+                    <span class="inline-block size-2 rounded-full border-2 border-green-500 bg-green-500"></span>
+                    {{ item.routeFrom }}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <span class="inline-block size-2 rounded-full border-2 border-red-500 bg-red-500"></span>
+                    {{ item.routeTo }}
+                  </span>
+                </div>
+              </div>
+              <div class="col-span-1">
+                <div class="flex flex-col text-gray-600">
+                  <span class="flex items-center gap-1">
+                    <svg class="size-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    {{ item.durationMin }} min
+                  </span>
+                  <span class="text-gray-400 pl-[14px]">{{ item.distanceKm }} km</span>
+                </div>
+              </div>
+              <div class="col-span-1">
+                <div class="flex flex-col text-gray-600">
+                  <span>{{ item.startDate }}</span>
+                  <span class="text-gray-400">{{ item.endDate }}</span>
+                </div>
+              </div>
+              <div class="col-span-1">
+                <span class="font-semibold text-gray-800">$ {{ item.tripProfit.toFixed(2) }}</span>
+              </div>
+              <div class="col-span-1">
+                <span class="font-semibold text-green-600">$ {{ item.CommulativeProfit.toFixed(2) }}</span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
   </div>
 
   <!-- ═══════ Pagination ═══════ -->
