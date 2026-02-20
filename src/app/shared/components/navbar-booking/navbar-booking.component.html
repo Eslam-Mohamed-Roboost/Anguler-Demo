@@ -45,6 +45,7 @@
       <!-- Phone notification -->
       <button
         type="button"
+        (click)="onMessageClick()"
         class="relative flex size-9 items-center justify-center rounded-full bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition hover:bg-white sm:size-10"
         aria-label="Phone notifications"
       >
@@ -64,6 +65,7 @@
       <!-- Bell notification -->
       <button
         type="button"
+        (click)="onBillingClick()"
         class="relative flex size-9 items-center justify-center rounded-full bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition hover:bg-white sm:size-10"
         aria-label="Bell notifications"
       >
@@ -112,3 +114,20 @@
     </div>
   }
 </nav>
+
+<!-- Message Panel -->
+<app-message-panel 
+  [isOpen]="messagePanelOpen()"
+  [messages]="messages()"
+  (closePanel)="closeAllPanels()"
+  (messageClick)="onMessageItemClick($event)"
+/>
+
+<!-- Billing Panel -->
+<app-billing-panel 
+  [isOpen]="billingPanelOpen()"
+  [billingItems]="billingItems()"
+  (closePanel)="onCloseBillingPanel()"
+  (payBill)="onPayBill($event)"
+  (viewBill)="onViewBill($event)"
+/>
