@@ -1,0 +1,72 @@
+<app-card variant="elevated" class="hotel-details-form">
+  <div class="section-header">
+    <div class="section-icon-circle">
+      <app-icon name="home" size="sm" />
+    </div>
+    <h3 class="section-title">Hotel Details</h3>
+  </div>
+
+  <form class="form-content" (submit)="handleSubmit($event)">
+    <!-- Row 1: Hotel Name | Address | Email -->
+    <div class="form-row">
+      <div class="form-field">
+        <app-input
+          label="Hotel Name"
+          inputId="name"
+          type="text"
+          placeholder="User entered text"
+          [field]="fieldTree.name"
+        />
+      </div>
+      <div class="form-field">
+        <app-input
+          label="Address"
+          inputId="address"
+          type="text"
+          placeholder="User entered text"
+          [field]="fieldTree.address"
+        />
+      </div>
+      <div class="form-field">
+        <app-input
+          label="Email"
+          inputId="email"
+          type="email"
+          placeholder="User entered text"
+          [field]="fieldTree.email"
+        />
+      </div>
+    </div>
+
+    <!-- Row 2: Phone Number | Hotel Code | Joining Date -->
+    <div class="form-row">
+      <div class="form-field">
+        <app-input
+          label="Phone Number"
+          inputId="phone"
+          type="tel"
+          placeholder="User entered text"
+          [field]="fieldTree.phone"
+        />
+      </div>
+      <div class="form-field">
+        <app-input
+          label="Hotel Code"
+          inputId="hotelCode"
+          type="text"
+          placeholder="User entered text"
+          [field]="fieldTree.hotelCode"
+        />
+      </div>
+      <div class="form-field">
+        <app-input
+          label="Joining Date"
+          inputId="joiningDate"
+          type="date"
+          placeholder=""
+          [field]="fieldTree.joiningDate"
+        />
+      </div>
+    </div>
+  </form>
+</app-card>

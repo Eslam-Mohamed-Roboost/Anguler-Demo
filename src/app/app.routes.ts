@@ -40,6 +40,12 @@ export const routes: Routes = [
           import('./features/Profile/Profile.routs').then((m) => m.ProfileRoutes),
         
       },
+      {
+        path: 'hotel-details',
+        loadChildren: () =>
+          import('./features/hotel-details/hotel-details.routes').then((m) => m.HOTEL_DETAILS_ROUTES),
+        
+      },
         { path: '', redirectTo: 'home', pathMatch: 'full' },
 
     ],

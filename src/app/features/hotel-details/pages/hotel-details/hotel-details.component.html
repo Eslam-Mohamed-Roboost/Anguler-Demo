@@ -1,0 +1,41 @@
+<div class="hotel-integration-page">
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="error-message">
+      <span class="error-text">{{ error() }}</span>
+      <button class="retry-button" type="button" (click)="refreshData()">Retry</button>
+    </div>
+  }
+
+  <!-- Page Title -->
+  <h1 class="page-title">Hotel Integration</h1>
+
+  <!-- Statistics Grid -->
+  <section class="statistics-section">
+    <div class="statistics-grid">
+      @for (stat of statisticsCards(); track stat.label) {
+        <app-statistics-card [statistic]="stat" />
+      }
+    </div>
+  </section>
+
+  <!-- Info Banner -->
+  <div class="info-banner" role="note">
+    <app-icon name="info" size="sm" aria-hidden="true" />
+    <span>Monthly payouts: Scheduled for the 1st. Deadline for completion is 3 business days.</span>
+  </div>
+
+  <!-- Trips History Table -->
+  <section class="trips-section">
+    <app-trips-history-table
+      [trips]="filteredTrips()"
+      [hotels]="hotels()"
+      [loading]="loading()"
+      [searchQuery]="searchQuery()"
+      [totalTrips]="totalTrips()"
+      [totalHotels]="totalHotels()"
+      (searchChange)="onSearchChange($event)"
+      (tripAction)="onTripAction($event)"
+    />
+  </section>
+</div>

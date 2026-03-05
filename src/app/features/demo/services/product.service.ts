@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { BaseCrudService } from '../../../core/services/base-crud.service';
 import { SKIP_LOADING } from '../../../core/tokens/skip-loading.token';
 import type { Product } from '../models/product.model';
+import { Result } from '../../../core/models/result.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService extends BaseCrudService<Product> {
@@ -14,7 +15,7 @@ export class ProductService extends BaseCrudService<Product> {
    * Demonstrates SKIP_LOADING — fetches categories without triggering
    * the global spinner. Useful for background/silent requests.
    */
-  getCategories(): Observable<string[]> {
+  getCategories(): Observable<Result<string[]>> {
     const context = new HttpContext().set(SKIP_LOADING, true);
     return this.api.get<string[]>('/categories', undefined, context);
   }

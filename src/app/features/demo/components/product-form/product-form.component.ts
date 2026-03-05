@@ -53,6 +53,7 @@ import { InputComponent } from '../../../../shared/components/input/input.compon
 import { SelectComponent } from '../../../../shared/components/select/select.component';
 import { CheckboxComponent } from '../../../../shared/components/checkbox/checkbox.component';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { ResultHandlerService } from '../../../../core/services/result-handler.service';
 import { ProductService } from '../../services/product.service';
 import { PRODUCT_CATEGORIES } from '../../models/product.model';
 import type { Product } from '../../models/product.model';
@@ -75,6 +76,7 @@ export class ProductFormComponent extends BaseFormComponent<Product> {
   private readonly productService = inject(ProductService);
   private readonly router = inject(Router);
   private readonly notifications = inject(NotificationStore);
+  private readonly resultHandler = inject(ResultHandlerService);
 
   /** Route param bound via withComponentInputBinding() */
   readonly id = input<string>();
@@ -86,7 +88,7 @@ export class ProductFormComponent extends BaseFormComponent<Product> {
   /** rxResource — loads existing product for edit mode */
   protected readonly editResource = rxResource<Product, string | undefined>({
     params: () => this.id(),
-    stream: ({ params: id }) => this.productService.getById(id!),
+    stream: ({ params: id }) => this.resultHandler.mapForRxResource(this.productService.getById(id!)),
   });
 
   /** Effect — patches form when edit data arrives */

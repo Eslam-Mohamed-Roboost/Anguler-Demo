@@ -4,6 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
+import { Result } from '../models/result.model';
 
 export interface AuthUser {
   id: number;
@@ -49,14 +50,16 @@ export class AuthService {
     }
   }
 
-  login(email: string, password: string): Observable<LoginResponse> {
+  login(email: string, password: string): Observable<Result<LoginResponse>> {
     return this.api.post<LoginResponse>('/auth/login', { email, password }).pipe(
-      tap((response) => {
-        this._token.set(response.token);
-        this._user.set(response.user);
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('auth_token', response.token);
-          localStorage.setItem('auth_user', JSON.stringify(response.user));
+      tap((result) => {
+        if (result.isSuccess && result.data) {
+          this._token.set(result.data.token);
+          this._user.set(result.data.user);
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('auth_token', result.data.token);
+            localStorage.setItem('auth_user', JSON.stringify(result.data.user));
+          }
         }
       }),
     );

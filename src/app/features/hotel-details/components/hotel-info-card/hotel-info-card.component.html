@@ -1,0 +1,41 @@
+<app-card variant="elevated" class="hotel-info-card">
+  <div class="hotel-info-content">
+    <!-- Hotel Image -->
+    <div class="hotel-image">
+      <img
+        [src]="hotel().imageUrl || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=400&fit=crop'"
+        [alt]="hotel().name"
+        class="rounded-lg object-cover w-full h-full"
+        loading="lazy"
+      />
+    </div>
+
+    <!-- Hotel Information -->
+    <div class="hotel-details">
+      <h2 class="hotel-name">{{ hotel().name }}</h2>
+
+      <div class="contact-list">
+        @for (contact of contactInfo(); track contact.icon) {
+          <div class="contact-item">
+            <app-icon
+              [name]="contact.icon"
+              class="contact-icon"
+              size="sm"
+            />
+            <span class="contact-text">{{ contact.text }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Delete Button -->
+    <button
+      class="delete-btn"
+      type="button"
+      (click)="deleteClick.emit()"
+      aria-label="Delete hotel"
+    >
+      <app-icon name="x-circle" size="sm" />
+    </button>
+  </div>
+</app-card>

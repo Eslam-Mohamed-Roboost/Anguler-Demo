@@ -201,8 +201,10 @@
           <app-select
             label="City"
             inputId="join-city"
-            [field]="jf.city"
+            [field]="jf.cityId"
             [options]="cities"
+            optionValue="id"
+            optionLabel="name"
             placeholder="Select city"
             dropdownArrow="custom"
             selectClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
@@ -306,11 +308,18 @@
         Back
       </button>
       <button
+       (click)="Regiester()"
         type="button"
-        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+        [disabled]="isRegistering()"
+        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <app-icon name="zap" size="sm" />
-        <span>Join Us Now</span>
+        @if (isRegistering()) {
+          <app-icon name="spinner" size="sm" />
+          <span>Registering...</span>
+        } @else {
+          <app-icon name="plus" size="sm" />
+          <span>Join Us Now</span>
+        }
       </button>
     }
   </div>
@@ -373,10 +382,17 @@
     </button> -->
     <button
       type="button"
-      class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+      (click)="testButtonClick(); SignIn()"
+      [disabled]="isLoggingIn()"
+      class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      <app-icon name="log-in" size="sm" />
-      <span>Sign In</span>
+      @if (isLoggingIn()) {
+        <app-icon name="spinner" size="sm" />
+        <span>Signing In...</span>
+      } @else {
+        <app-icon name="log-in" size="sm" />
+        <span>Sign In</span>
+      }
     </button>
   </div>
 </app-modal>

@@ -1,0 +1,92 @@
+<div class="trip-detail-page">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/hotel-details">Hotel Integration</a>
+    <span class="breadcrumb-sep" aria-hidden="true">/</span>
+    <a class="breadcrumb-link" [routerLink]="['/hotel-details', hotelId()]">Hotel Details #{{ hotelId() }}</a>
+    <span class="breadcrumb-sep" aria-hidden="true">/</span>
+    <span class="breadcrumb-trip">Trip {{ tripId() }}</span>
+  </nav>
+
+  <!-- Hotel Info Card -->
+  <section class="section-gap">
+    <app-hotel-info-card [hotel]="hotel()" (deleteClick)="onHotelDelete()" />
+  </section>
+
+  <!-- Trip Details Card -->
+  <section class="section-gap">
+    <app-card variant="elevated" class="trip-details-card">
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="header-title-row">
+          <div class="section-icon-circle">
+            <app-icon name="calendar" size="sm" aria-hidden="true" />
+          </div>
+          <h3 class="section-title">Trip Details</h3>
+        </div>
+        <span
+          class="trip-status-badge"
+          [class.badge--active]="trip().status === 'active'"
+          [class.badge--completed]="trip().status === 'completed'"
+          [class.badge--cancelled]="trip().status === 'cancelled'"
+          [class.badge--scheduled]="trip().status === 'scheduled'"
+          [class.badge--pending]="trip().status === 'pending'"
+        >
+          {{ statusLabel() }}
+        </span>
+      </div>
+
+      <!-- Fields Grid -->
+      <div class="fields-grid">
+        <!-- Row 1 -->
+        <div class="field-group">
+          <span class="field-label">Trip ID</span>
+          <span class="field-value">{{ trip().tripId }}</span>
+        </div>
+        <div class="field-group">
+          <span class="field-label">Guest Name</span>
+          <span class="field-value">{{ trip().guestName }}</span>
+        </div>
+        <div class="field-group">
+          <span class="field-label">Room No.</span>
+          <span class="field-value">{{ trip().roomNo }}</span>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="field-group">
+          <span class="field-label">Destinations</span>
+          <span class="field-value field-value--muted">{{ trip().destinations }}</span>
+        </div>
+        <div class="field-group">
+          <span class="field-label">Fare (CHF)</span>
+          <span class="field-value">{{ trip().fare }}</span>
+        </div>
+        <div class="field-group">
+          <span class="field-label">Hotel Profits (CHF) * {{ trip().commissionRate }}% *</span>
+          <span class="field-value">{{ trip().hotelProfits }}</span>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="field-group">
+          <span class="field-label">Start Date</span>
+          <span class="field-value">{{ trip().startDate }}</span>
+        </div>
+        <div class="field-group">
+          <span class="field-label">End Date</span>
+          <span class="field-value">{{ trip().endDate ?? '--' }}</span>
+        </div>
+        <div class="field-group">
+          <span class="field-label">Trip Rate ($:00)</span>
+          <span class="field-value">{{ trip().tripRate != null ? trip().tripRate : '--' }}</span>
+        </div>
+      </div>
+    </app-card>
+  </section>
+
+  <!-- Trip Conversation -->
+  <section class="section-gap conversation-section">
+    <app-chat />
+  </section>
+
+</div>

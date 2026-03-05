@@ -18,6 +18,7 @@ import { InputComponent } from '../../../../shared/components/input/input.compon
 import { BtnComponent } from '../../../../shared/components/btn/btn.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { ResultHandlerService } from '../../../../core/services/result-handler.service';
 import { UserService } from '../../services/user.service';
 import type { User } from '../../models/user.model';
 
@@ -32,13 +33,14 @@ export class UserFormComponent extends BaseFormComponent<User> {
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
   private readonly notifications = inject(NotificationStore);
+  private readonly resultHandler = inject(ResultHandlerService);
 
   readonly id = input<string>();
   readonly isEditMode = computed(() => !!this.id());
 
   protected readonly editResource = rxResource<User, string | undefined>({
     params: () => this.id(),
-    stream: ({ params: id }) => this.userService.getById(id!),
+    stream: ({ params: id }) => this.resultHandler.mapForRxResource(this.userService.getById(id!)),
   });
 
   private readonly patchOnLoad = effect(() => {

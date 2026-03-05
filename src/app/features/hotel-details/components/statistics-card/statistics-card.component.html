@@ -1,0 +1,12 @@
+<app-card variant="elevated" class="statistics-card">
+  <div class="statistic-content">
+    <div class="statistic-info">
+      <div class="statistic-label">{{ statistic().label }}</div>
+      <div class="statistic-value">{{ formatValue() }}</div>
+    </div>
+
+    <div class="statistic-icon-circle">
+      <app-icon name="user" size="md" />
+    </div>
+  </div>
+</app-card>

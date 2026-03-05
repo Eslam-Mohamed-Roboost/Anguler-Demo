@@ -51,7 +51,7 @@ export class NavbarBookingComponent {
   readonly joinUsClick = output<void>();
 
   /** Whether the user is authenticated */
-  readonly isAuthenticated = input(false);
+  readonly isAuthenticated = input(true);
 
   /** Hotel name to display in profile pill */
   readonly hotelName = input('Salam Hotel');

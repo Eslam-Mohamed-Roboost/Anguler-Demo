@@ -1,7 +1,7 @@
 // Environment configuration
 export const environment = {
   production: false,
-  apiUrl: '/api',
+  apiUrl: 'https://linesapp-001-site1.rtempurl.com/api',
   /** OpenWeatherMap API key — get a free key at https://openweathermap.org/api */
   weatherApiKey: '',
 };

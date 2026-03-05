@@ -2,8 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-
   signal,
+  computed,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { form } from '@angular/forms/signals';
@@ -24,6 +24,9 @@ import { CarType } from '../../models/CarType-model';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { SingInFromModel } from '../../models/signInForm-model';
 import { PasswordInputComponent } from '../../../../shared/components/password-input/password-input.component';
+import { AuthService } from '../services/auth.service';
+import { CitiesService } from '../services/cities.service';
+import { LoginService } from '../services/login.service';
 
 @Component({
   selector: 'app-booking',
@@ -44,7 +47,10 @@ import { PasswordInputComponent } from '../../../../shared/components/password-i
   styleUrl: './booking.component.css',
 })
 export class BookingComponent extends BaseComponent {
-   private readonly joinUsService = inject(JoinUsService);
+  private readonly joinUsService = inject(JoinUsService);
+  private readonly authService = inject(AuthService);
+  private readonly citiesService = inject(CitiesService);
+  private readonly loginService = inject(LoginService);
 
   constructor() {
     super();
@@ -69,6 +75,9 @@ export class BookingComponent extends BaseComponent {
         },
       );
     }
+
+    // Load cities on initialization
+    this.loadCities();
   }
 
   readonly carTypes: CarType[] = [
@@ -131,7 +140,10 @@ export class BookingComponent extends BaseComponent {
   readonly ShowComfirmBookingModel = signal(false);
   readonly ShowRideRequestSentModel = signal(false);
   readonly showPickupTimeModal = signal(false);
-readonly ShowScheduledRiderModel = signal(false)
+readonly ShowScheduledRiderModel = signal(false);
+readonly activeTab = signal<'login' | 'register'>('register');
+  readonly isRegistering = signal(false);
+  readonly isLoggingIn = signal(false);
 
   readonly pickupDateOptions: string[] = this.generateDateOptions();
   readonly pickupHourOptions: string[] = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
@@ -140,10 +152,33 @@ readonly ShowScheduledRiderModel = signal(false)
   readonly selectedPickupDateIndex = signal(0);
   readonly selectedPickupHourIndex = signal(12);
   readonly selectedPickupMinuteIndex = signal(0);
-  readonly cities = [
-    'Cairo', 'Alexandria', 'Giza', 'Sharm El Sheikh',
-    'Hurghada', 'Luxor', 'Aswan', 'Dahab',
-  ];
+  cities: { id: string; name: string }[] = [];
+  readonly citiesLoading = signal(false);
+  readonly citiesError = signal<string | null>(null);
+
+  private loadCities(): void {
+    this.citiesLoading.set(true);
+    this.citiesError.set(null);
+    
+    this.citiesService.getCities(undefined, 50, 1).subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          this.cities = response.data.items;
+          console.log('🏙️ Cities loaded successfully:', response.data.items);
+        } else {
+          this.citiesError.set('Failed to load cities');
+          console.error('Cities API error:', response.error);
+        }
+      },
+      error: (error) => {
+        this.citiesError.set('Failed to load cities');
+        console.error('Cities service error:', error);
+      },
+      complete: () => {
+        this.citiesLoading.set(false);
+      }
+    });
+  }
 
   readonly banks = [
     'National Bank of Egypt', 'Banque Misr', 'CIB',
@@ -153,10 +188,12 @@ readonly ShowScheduledRiderModel = signal(false)
 
   protected readonly joinFormModel = signal<JoinUsFormModel>({
     hotelName: '',
-    city: '',
+    cityId: '',
     address: '',
     phoneNumber: '',
     email: '',
+    password:'',
+    locationUrl:''
   });
   protected readonly jf = form(this.joinFormModel);
 
@@ -293,5 +330,170 @@ readonly ShowScheduledRiderModel = signal(false)
       options.push(`${day} ${month}`);
     }
     return options;
+  }
+  public Regiester(): void {
+    console.log('Submitting hotel registration:', this.joinFormModel());
+    this.showWelcomeModal.set(true);
+    // Basic validation - check all required fields
+    const form = this.joinFormModel();
+    console.log('Form data for validation:', form);
+    
+    const requiredFields = ['hotelName', 'cityId', 'address', 'phoneNumber', 'email', 'password'];
+    const missingFields = requiredFields.filter(field => !form[field as keyof JoinUsFormModel]);
+    
+    console.log('Missing fields:', missingFields);
+    console.log('Field values:', {
+      hotelName: form.hotelName,
+      cityId: form.cityId,
+      address: form.address,
+      phoneNumber: form.phoneNumber,
+      email: form.email,
+      password: form.password
+    });
+    
+    if (missingFields.length > 0) {
+      this.showError(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      this.showError('Please enter a valid email address');
+      return;
+    }
+
+    // Phone validation - more flexible to accept common phone formats
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    if (!phoneRegex.test(form.phoneNumber) || form.phoneNumber.length < 6) {
+      this.showError('Please enter a valid phone number (minimum 6 digits)');
+      return;
+    }
+
+    // City ID validation - should be a valid UUID or select from dropdown
+    if (!form.cityId || form.cityId === '') {
+      this.showError('Please select a city');
+      return;
+    }
+
+    this.isRegistering.set(true);
+    
+    this.authService.Register(form).subscribe({
+      next: (result) => {
+        this.isRegistering.set(false);
+        
+        if (result.isSuccess) {
+          console.log('Registration successful:', result.data);
+          this.showSuccess('Hotel registered successfully! You will be redirected to login.');
+          
+          // Reset form
+          this.joinFormModel.set({
+            hotelName: '',
+            cityId: '',
+            address: '',
+            phoneNumber: '',
+            email: '',
+            password: '',
+            locationUrl: ''
+          });
+          
+          // Switch to login tab after successful registration
+          setTimeout(() => {
+            this.activeTab.set('login');
+          }, 2000);
+          
+        } else {
+          console.error('Registration failed:', result.error);
+          this.showError(result.error?.description || 'Registration failed. Please try again.');
+        }
+      },
+      error: (err) => {
+        this.isRegistering.set(false);
+        console.error('Registration error:', err);
+        this.showError('An unexpected error occurred. Please try again later.');
+      }
+    });
+  }
+
+  public testButtonClick(): void {
+    console.log('🖱️ Button clicked! Test method called.');
+    console.log('📊 Current SignInForm signal value:', this.SignInForm());
+    console.log('📊 SignInFormF form object:', this.SignInFormF);
+    
+    // Try to get form values directly
+    const formValue = this.SignInForm();
+    console.log('📋 Form values - Email:', formValue.email, 'Password:', formValue.password ? '***' : 'empty');
+  }
+
+  public SignIn(): void {
+    console.log('🔐 SignIn method called!');
+    console.log('📊 SignInForm signal value:', this.SignInForm());
+    console.log('🔍 LoginService injected:', !!this.loginService);
+    
+    // Temporarily bypass validation to test if the method is called
+    console.log('🧪 Testing login with hardcoded values...');
+    
+    this.isLoggingIn.set(true);
+    
+    const loginRequest = {
+      email: 'test@example.com',
+      password: 'password123'
+    };
+    
+    console.log('📡 About to call loginService.login with:', loginRequest);
+    
+    // Use hardcoded values for testing
+    this.loginService.login(loginRequest).subscribe({
+      next: (result) => {
+        console.log('📡 Login API response received:', result);
+        this.isLoggingIn.set(false);
+        
+        if (result.isSuccess && result.data) {
+          console.log('✅ Login successful:', result.data);
+          this.showSuccess('Login successful! Welcome back.');
+          
+          // Save user session
+          if (result.data.user && result.data.token) {
+            this.loginService.saveUserSession({
+              ...result.data.user,
+              token: result.data.token
+            });
+          }
+          
+          // Reset form
+          this.SignInForm.set({
+            email: '',
+            password: ''
+          });
+          
+          // Close modal
+          this.closeSignInModal();
+          
+        } else {
+          console.error('❌ Login failed:', result.error);
+          this.showError(result.error?.description || 'Login failed. Please check your credentials.');
+        }
+      },
+      error: (err) => {
+        console.error('❌ Login API error:', err);
+        this.isLoggingIn.set(false);
+        this.showError('An unexpected error occurred. Please try again later.');
+      },
+      complete: () => {
+        console.log('🏁 Login API call completed');
+      }
+    });
+  }
+
+  private showSuccess(message: string): void {
+    // Implementation would depend on your notification system
+    console.log('SUCCESS:', message);
+    // You could use a toast service or modal here
+  }
+
+  private showError(message: string): void {
+    // Implementation would depend on your notification system
+    console.error('ERROR:', message);
+    // You could use a toast service or modal here
   }
 }

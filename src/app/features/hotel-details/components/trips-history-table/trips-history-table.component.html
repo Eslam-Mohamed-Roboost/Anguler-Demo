@@ -1,0 +1,238 @@
+<app-card variant="elevated" class="trips-history-table">
+  <!-- Tabs + Toolbar -->
+  <div class="table-header">
+    <!-- Tabs -->
+    <div class="tabs-row">
+      <button
+        class="tab-btn"
+        [class.tab-btn--active]="activeTab() === 'trips'"
+        type="button"
+        (click)="setTab('trips')"
+      >
+        Hotels Trips
+      </button>
+      <button
+        class="tab-btn"
+        [class.tab-btn--active]="activeTab() === 'hotels'"
+        type="button"
+        (click)="setTab('hotels')"
+      >
+        All Hotels ({{ totalHotels() }})
+      </button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-container">
+        <app-icon name="search" class="search-icon" size="sm" aria-hidden="true" />
+        <app-input
+          inputId="trips-search"
+          placeholder="Search Trips"
+          [field]="searchField"
+          (input)="onSearchChange($event)"
+          inputClass="pl-8"
+        />
+      </div>
+
+      <div class="table-actions">
+        <button class="action-control-btn" type="button" aria-label="Sort">
+          <app-icon name="chevron-down" size="sm" aria-hidden="true" />
+          <span>Sort</span>
+        </button>
+        <button class="action-control-btn" type="button" aria-label="Filter">
+          <app-icon name="filter" size="sm" aria-hidden="true" />
+          <span>Filter</span>
+        </button>
+        <button
+          class="action-control-btn commission-btn"
+          type="button"
+          (click)="commissionSettings.emit()"
+        >
+          <app-icon name="layers" size="sm" aria-hidden="true" />
+          <span>Commission Settings</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hotels Trips Table -->
+  @if (activeTab() === 'trips') {
+    <div class="table-container">
+      <app-data-table
+        [data]="trips()"
+        [columns]="tripColumns()"
+        [loading]="loading()"
+        ariaLabel="Hotel integration trips table"
+        trackByKey="id"
+      >
+        <!-- Hotel Name Cell -->
+        <ng-template cellDef="hotelName" let-row>
+          <div class="cell-two-line">
+            <span class="cell-primary">{{ row.hotelName ?? '--' }}</span>
+            @if (row.hotelPhone) {
+              <span class="cell-secondary">{{ row.hotelPhone }}</span>
+            }
+          </div>
+        </ng-template>
+
+        <!-- Guest Name Cell -->
+        <ng-template cellDef="guestName" let-row>
+          <div class="cell-two-line">
+            <span class="cell-primary">{{ row.customerName }}</span>
+            @if (row.room) {
+              <span class="cell-secondary">{{ row.room }}</span>
+            }
+          </div>
+        </ng-template>
+
+        <!-- Driver Name Cell -->
+        <ng-template cellDef="driverName" let-row>
+          <div class="cell-two-line">
+            <span class="cell-primary">{{ row.driverName ?? '--' }}</span>
+            @if (row.driverId) {
+              <span class="cell-secondary">{{ row.driverId }}</span>
+            }
+          </div>
+        </ng-template>
+
+        <!-- Route Cell -->
+        <ng-template cellDef="route" let-row>
+          <div class="cell-route">
+            <div class="route-line">
+              <span class="route-dot route-dot--pickup" aria-hidden="true"></span>
+              <span class="route-text">{{ row.pickupLocation }}</span>
+            </div>
+            <div class="route-line">
+              <span class="route-dot route-dot--dropoff" aria-hidden="true"></span>
+              <span class="route-text">{{ row.dropoffLocation }}</span>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Status Cell -->
+        <ng-template cellDef="status" let-row>
+          <span class="status-badge" [class]="tripStatusColorMap[row.status] || 'status-pending'">
+            {{ row.status.charAt(0).toUpperCase() + row.status.slice(1) }}
+          </span>
+        </ng-template>
+
+        <!-- Fare Cell -->
+        <ng-template cellDef="fare" let-row>
+          <div class="cell-two-line">
+            <span class="cell-primary">{{ row.price.toFixed(2) }} CHF</span>
+            @if (row.commission != null) {
+              <span class="cell-secondary">Comm.: {{ row.commission.toFixed(2) }}</span>
+            }
+          </div>
+        </ng-template>
+
+        <!-- Start/End Date Cell -->
+        <ng-template cellDef="startEndDate" let-row>
+          <div class="cell-two-line">
+            <span class="cell-primary">{{ formatDate(row.date) }}</span>
+            <span class="cell-secondary">{{ formatDate(row.endDate) }}</span>
+          </div>
+        </ng-template>
+
+        <!-- Actions Cell -->
+        <ng-template cellDef="actions" let-row>
+          <div class="action-buttons">
+            <button
+              class="action-btn view-btn"
+              type="button"
+              (click)="onTripAction(row, 'view')"
+              aria-label="View trip details"
+            >
+              <app-icon name="eye" size="sm" aria-hidden="true" />
+            </button>
+          </div>
+        </ng-template>
+      </app-data-table>
+    </div>
+  }
+
+  <!-- All Hotels Table -->
+  @if (activeTab() === 'hotels') {
+    <div class="table-container">
+      <app-data-table
+        [data]="hotels()"
+        [columns]="hotelColumns()"
+        [loading]="loading()"
+        ariaLabel="All hotels table"
+        trackByKey="id"
+      >
+        <!-- Select Cell -->
+        <ng-template cellDef="select" let-row>
+          <input
+            type="checkbox"
+            class="hotel-checkbox"
+            [attr.aria-label]="'Select ' + row.hotelName"
+          />
+        </ng-template>
+
+        <!-- Hotel Name Cell -->
+        <ng-template cellDef="hotelName" let-row>
+          <div class="cell-two-line">
+            <span class="cell-primary">{{ row.hotelName }}</span>
+            <span
+              class="hotel-status-dot"
+              [class.hotel-status-dot--active]="row.hotelStatus === 'active'"
+              [class.hotel-status-dot--suspended]="row.hotelStatus === 'suspended'"
+            >
+              {{ row.hotelStatus === 'active' ? 'Active' : 'Suspended' }}
+            </span>
+          </div>
+        </ng-template>
+
+        <!-- Total Trips Cell -->
+        <ng-template cellDef="totalTrips" let-row>
+          <span class="cell-primary">{{ row.totalTrips }}</span>
+        </ng-template>
+
+        <!-- Hotel Comm Cell -->
+        <ng-template cellDef="hotelComm" let-row>
+          <span class="cell-primary">{{ row.hotelComm }}</span>
+        </ng-template>
+
+        <!-- Hotel Profits Cell -->
+        <ng-template cellDef="hotelProfits" let-row>
+          <span class="cell-primary">{{ row.hotelProfits }}</span>
+        </ng-template>
+
+        <!-- Lines Profits Cell -->
+        <ng-template cellDef="linesProfits" let-row>
+          <span class="cell-primary">{{ row.linesProfits }}</span>
+        </ng-template>
+
+        <!-- Monthly Dues Cell -->
+        <ng-template cellDef="monthlyDues" let-row>
+          <span class="cell-primary">{{ row.monthlyDues }}</span>
+        </ng-template>
+
+        <!-- Status Cell -->
+        <ng-template cellDef="status" let-row>
+          <span
+            class="settlement-status"
+            [class.settlement-status--progress]="row.settlementStatus === 'in-progress'"
+            [class.settlement-status--settled]="row.settlementStatus === 'settled'"
+          >
+            {{ row.settlementStatus === 'in-progress' ? 'In Progress' : 'Settled' }} : {{ row.settlementAmount }}
+          </span>
+        </ng-template>
+
+        <!-- Actions Cell -->
+        <ng-template cellDef="actions" let-row>
+          <div class="action-buttons">
+            <a
+              class="action-btn view-btn"
+              [routerLink]="['/hotel-details', row.id]"
+              aria-label="View hotel details"
+            >
+              <app-icon name="eye" size="sm" aria-hidden="true" />
+            </a>
+          </div>
+        </ng-template>
+      </app-data-table>
+    </div>
+  }
+</app-card>

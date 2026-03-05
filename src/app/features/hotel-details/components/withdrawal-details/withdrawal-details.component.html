@@ -1,0 +1,67 @@
+<app-card variant="elevated" class="withdrawal-details">
+  <!-- Header -->
+  <div class="section-header">
+    <div class="header-left">
+      <div class="section-icon-circle">
+        <app-icon name="bank-notes" size="sm" />
+      </div>
+      <h3 class="section-title">Withdrawal Details</h3>
+    </div>
+    <div class="awaiting-payout">
+      Awaiting Payout: {{ amountLabel() }}
+    </div>
+  </div>
+
+  <form class="form-content" (submit)="handleSubmit($event)">
+    <!-- Row 1: Account Holder Name | Bank Name -->
+    <div class="form-row">
+      <div class="form-field">
+        <app-input
+          label="Account Holder Name"
+          inputId="accountHolderName"
+          type="text"
+          placeholder="User entered text"
+          [field]="fieldTree.accountHolderName"
+        />
+      </div>
+      <div class="form-field">
+        <app-input
+          label="Bank Name"
+          inputId="bankName"
+          type="text"
+          placeholder="User entered text"
+          [field]="fieldTree.bankName"
+        />
+      </div>
+    </div>
+
+    <!-- Row 2: IBAN | Swift Code / BIC -->
+    <div class="form-row">
+      <div class="form-field">
+        <app-input
+          label="IBAN"
+          inputId="iban"
+          type="text"
+          placeholder="User entered text"
+          [field]="fieldTree.iban"
+        />
+      </div>
+      <div class="form-field">
+        <app-input
+          label="Swift Code / BIC"
+          inputId="swiftCode"
+          type="text"
+          placeholder="User entered text"
+          [field]="fieldTree.swiftCode"
+        />
+      </div>
+    </div>
+
+    <!-- Settle Balance Button -->
+    <div class="form-actions">
+      <button type="submit" class="btn-settle" [disabled]="submitLoading()">
+        Settle Balance : {{ amountLabel() }}
+      </button>
+    </div>
+  </form>
+</app-card>

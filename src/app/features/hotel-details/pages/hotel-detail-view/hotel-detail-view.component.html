@@ -1,0 +1,159 @@
+<div class="hotel-detail-page">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/hotel-details">Hotel Integration</a>
+    <span class="breadcrumb-sep" aria-hidden="true">/</span>
+    <span class="breadcrumb-current">Hotel Details #{{ hotelId() }}</span>
+  </nav>
+
+  <!-- Hotel Info Card -->
+  <section class="section-gap">
+    <app-hotel-info-card
+      [hotel]="hotel()"
+      (deleteClick)="onHotelDelete()"
+    />
+  </section>
+
+  <!-- Statistics Grid -->
+  <section class="section-gap">
+    <div class="statistics-grid">
+      @for (stat of statistics(); track stat.label) {
+        <app-statistics-card [statistic]="stat" />
+      }
+    </div>
+  </section>
+
+  <!-- Hotel Details Form -->
+  <section class="section-gap">
+    <app-hotel-details-form
+      [initialData]="hotel()"
+      (formSubmit)="onFormSubmit($event)"
+      (formCancel)="onFormCancel()"
+    />
+  </section>
+
+  <!-- Withdrawal Details -->
+  <section class="section-gap">
+    <app-withdrawal-details
+      [awaitingAmount]="awaitingAmount()"
+      (settleSubmit)="onWithdrawalSubmit($event)"
+    />
+  </section>
+
+  <!-- Trips History -->
+  <section class="section-gap">
+    <app-card variant="elevated" class="trips-card">
+      <!-- Section Header -->
+      <div class="trips-header">
+        <div class="trips-title-row">
+          <div class="section-icon-circle">
+            <app-icon name="calendar" size="sm" aria-hidden="true" />
+          </div>
+          <h3 class="section-title">Trips History</h3>
+        </div>
+
+        <div class="trips-toolbar">
+          <div class="search-container">
+            <app-icon name="search" class="search-icon" size="sm" aria-hidden="true" />
+            <input
+              class="search-input"
+              type="text"
+              placeholder="Search Trips"
+              [value]="searchQuery()"
+              (input)="onSearchChange($event)"
+              aria-label="Search trips"
+            />
+          </div>
+          <button class="toolbar-btn" type="button">
+            <app-icon name="filter" size="sm" aria-hidden="true" />
+            <span>Filter</span>
+          </button>
+          <button class="toolbar-btn" type="button">
+            <app-icon name="download" size="sm" aria-hidden="true" />
+            <span>Export</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container">
+        <app-data-table
+          [data]="filteredTrips()"
+          [columns]="columns()"
+          ariaLabel="Hotel trips history"
+          trackByKey="id"
+        >
+          <!-- Guest Cell -->
+          <ng-template cellDef="guest" let-row>
+            <div class="cell-two-line">
+              <span class="cell-primary">{{ row.customerName }}</span>
+              @if (row.room) {
+                <span class="cell-secondary">{{ row.room }}</span>
+              }
+            </div>
+          </ng-template>
+
+          <!-- Driver Cell -->
+          <ng-template cellDef="driver" let-row>
+            <div class="cell-two-line">
+              <span class="cell-primary">{{ row.driverName ?? '--' }}</span>
+              @if (row.driverId) {
+                <span class="cell-secondary">{{ row.driverId }}</span>
+              }
+            </div>
+          </ng-template>
+
+          <!-- Route Cell -->
+          <ng-template cellDef="route" let-row>
+            <div class="cell-route">
+              <div class="route-line">
+                <span class="route-dot route-dot--pickup" aria-hidden="true"></span>
+                <span class="route-text">{{ row.pickupLocation }}</span>
+              </div>
+              <div class="route-line">
+                <span class="route-dot route-dot--dropoff" aria-hidden="true"></span>
+                <span class="route-text">{{ row.dropoffLocation }}</span>
+              </div>
+            </div>
+          </ng-template>
+
+          <!-- Duration Cell -->
+          <ng-template cellDef="duration" let-row>
+            <span class="cell-primary">{{ row.duration }} min</span>
+          </ng-template>
+
+          <!-- Fare Cell -->
+          <ng-template cellDef="fare" let-row>
+            <div class="cell-two-line">
+              <span class="cell-primary">{{ row.price.toFixed(2) }} CHF</span>
+              @if (row.commission != null) {
+                <span class="cell-secondary">Comm.: {{ row.commission.toFixed(2) }}</span>
+              }
+            </div>
+          </ng-template>
+
+          <!-- Date Cell -->
+          <ng-template cellDef="date" let-row>
+            <div class="cell-two-line">
+              <span class="cell-primary">{{ formatDate(row.date) }}</span>
+              <span class="cell-secondary">{{ formatDate(row.endDate) }}</span>
+            </div>
+          </ng-template>
+
+          <!-- Actions Cell -->
+          <ng-template cellDef="actions" let-row>
+            <a
+              class="action-btn view-btn"
+              [routerLink]="['/hotel-details', hotelId(), 'trip', row.id]"
+              aria-label="View trip details"
+            >
+              <app-icon name="eye" size="sm" aria-hidden="true" />
+            </a>
+          </ng-template>
+        </app-data-table>
+      </div>
+    </app-card>
+  </section>
+
+</div>

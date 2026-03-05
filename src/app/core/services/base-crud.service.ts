@@ -3,33 +3,34 @@ import { inject } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
+import { Result } from '../models/result.model';
 
 export abstract class BaseCrudService<T> {
   protected readonly api = inject(ApiService);
 
   abstract readonly endpoint: string;
 
-  getAll(params?: HttpParams): Observable<T[]> {
+  getAll(params?: HttpParams): Observable<Result<T[]>> {
     return this.api.get<T[]>(this.endpoint, params);
   }
 
-  getById(id: number | string): Observable<T> {
+  getById(id: number | string): Observable<Result<T>> {
     return this.api.get<T>(`${this.endpoint}/${id}`);
   }
 
-  create(item: Partial<T>): Observable<T> {
+  create(item: Partial<T>): Observable<Result<T>> {
     return this.api.post<T>(this.endpoint, item);
   }
 
-  update(id: number | string, item: Partial<T>): Observable<T> {
+  update(id: number | string, item: Partial<T>): Observable<Result<T>> {
     return this.api.put<T>(`${this.endpoint}/${id}`, item);
   }
 
-  patch(id: number | string, item: Partial<T>): Observable<T> {
+  patch(id: number | string, item: Partial<T>): Observable<Result<T>> {
     return this.api.patch<T>(`${this.endpoint}/${id}`, item);
   }
 
-  delete(id: number | string): Observable<void> {
+  delete(id: number | string): Observable<Result<void>> {
     return this.api.delete<void>(`${this.endpoint}/${id}`);
   }
 }

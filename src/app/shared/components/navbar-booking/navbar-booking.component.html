@@ -17,7 +17,7 @@
   </div>
 
   <!-- Right: Guest buttons (unauthenticated) -->
-  @if (!isAuthenticated()) {
+  @if (isAuthenticated()) {
     <div class="flex items-center gap-2 sm:gap-3">
       <button
         type="button"

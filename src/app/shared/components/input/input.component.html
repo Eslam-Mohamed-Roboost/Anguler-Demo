@@ -1,7 +1,7 @@
 <div>
   <!-- ═══════ LABEL ═══════ -->
   @if (label()) {
-    <label [for]="inputId()" class="mb-1 block text-sm font-medium dark:text-gray-200" [class]="labelClass()">
+    <label [for]="inputId()" class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400" [class]="labelClass()">
       {{ label() }}
       <ng-content select="[label-hint]" />
     </label>
@@ -12,10 +12,12 @@
     <textarea
       #textareaEl
       [id]="inputId()"
-      [formField]="$any(field())"
       [placeholder]="placeholder()"
       [rows]="rows()"
       [class]="classes()"
+      [value]="getFieldValue()"
+      (input)="onFieldValueChange($event)"
+      (blur)="onFieldBlur()"
     ></textarea>
   } @else {
     <div class="relative">
@@ -23,10 +25,13 @@
         #inputEl
         [id]="inputId()"
         [type]="type()"
-        [formField]="$any(field())"
         [placeholder]="placeholder()"
         [attr.step]="step() || null"
         [class]="classes()"
+        [value]="getFieldValue()"
+        (input)="onFieldValueChange($event)"
+        (blur)="onFieldBlur()"
+        [disabled]="disabled()"
       />
 
       <!-- ═══════ CUSTOM SPIN BUTTONS ═══════ -->

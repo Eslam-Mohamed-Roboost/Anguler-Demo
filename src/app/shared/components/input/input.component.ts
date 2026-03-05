@@ -61,12 +61,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  ElementRef,
-  effect,
   input,
+  effect,
   viewChild,
+  ElementRef,
 } from '@angular/core';
-import { FormField } from '@angular/forms/signals';
 import { IconComponent } from '../icon/icon.component';
 
 /**
@@ -81,7 +80,7 @@ export type SpinButtonMode = 'native' | 'custom' | 'none';
 @Component({
   selector: 'app-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormField, IconComponent],
+  imports: [IconComponent],
   templateUrl: './input.component.html',
   styleUrl: './input.component.css',
 })
@@ -159,6 +158,11 @@ export class InputComponent {
   protected readonly touched = computed(() => {
     const node = this.field();
     try {
+      // Handle signal forms field structure
+      if (node && typeof node === 'object' && 'model' in node) {
+        return (node as any).touched?.() ?? false;
+      }
+      // Handle legacy structure
       return (node as any)?.()?.touched?.() ?? false;
     } catch {
       return false;
@@ -168,6 +172,11 @@ export class InputComponent {
   protected readonly invalid = computed(() => {
     const node = this.field();
     try {
+      // Handle signal forms field structure
+      if (node && typeof node === 'object' && 'model' in node) {
+        return (node as any).invalid?.() ?? false;
+      }
+      // Handle legacy structure
       return (node as any)?.()?.invalid?.() ?? false;
     } catch {
       return false;
@@ -177,6 +186,11 @@ export class InputComponent {
   protected readonly errors = computed((): { message: string }[] => {
     const node = this.field();
     try {
+      // Handle signal forms field structure
+      if (node && typeof node === 'object' && 'model' in node) {
+        return ((node as any).errors?.() ?? []) as { message: string }[];
+      }
+      // Handle legacy structure
       return ((node as any)?.()?.errors?.() ?? []) as { message: string }[];
     } catch {
       return [];
@@ -185,7 +199,7 @@ export class InputComponent {
 
   protected readonly classes = computed(() => {
     const base =
-      'w-full rounded border px-3 py-2 text-sm transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 disabled:bg-gray-100 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
+      'w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
 
     const spinClass = this.hideNativeSpinners() ? 'hide-spin-buttons' : '';
     const customSpinPadding = this.showCustomSpinners() ? 'pe-9' : '';
@@ -198,22 +212,73 @@ export class InputComponent {
   /* ── Custom spin button methods ───────────────────────────── */
 
   constructor() {
-    // Effect to handle disabled state
     effect(() => {
       const isDisabled = this.disabled();
-      
-      // Handle input element
       const inputEl = this.inputRef()?.nativeElement;
       if (inputEl) {
         inputEl.disabled = isDisabled;
       }
-      
-      // Handle textarea element
       const textareaEl = this.textareaRef()?.nativeElement;
       if (textareaEl) {
         textareaEl.disabled = isDisabled;
       }
     });
+  }
+
+  protected getFieldValue(): string {
+    const field = this.field();
+    try {
+      // Handle signal forms field structure
+      if (field && typeof field === 'object' && 'model' in field) {
+        const model = (field as any).model;
+        return model?.() ?? '';
+      }
+      // Handle legacy structure
+      return (field as any)?.()?.() ?? '';
+    } catch {
+      return '';
+    }
+  }
+
+  protected onFieldValueChange(event: Event): void {
+    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+    const value = target.value;
+    
+    const field = this.field();
+    try {
+      // Handle signal forms field structure
+      if (field && typeof field === 'object' && 'model' in field) {
+        const model = (field as any).model;
+        if (model && typeof model === 'function') {
+          model.set(value);
+        }
+      }
+      // Handle legacy structure
+      else if (field && typeof field === 'function') {
+        field(value);
+      }
+    } catch (error) {
+      console.warn('Failed to update field value:', error);
+    }
+  }
+
+  protected onFieldBlur(): void {
+    const field = this.field();
+    try {
+      // Handle signal forms field structure
+      if (field && typeof field === 'object' && 'markAsTouched' in field) {
+        (field as any).markAsTouched?.();
+      }
+      // Handle legacy structure
+      else if (field && typeof field === 'object' && 'touched' in field) {
+        const touched = (field as any).touched;
+        if (touched && typeof touched === 'function') {
+          touched.set(true);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to mark field as touched:', error);
+    }
   }
 
   protected increment(): void {
