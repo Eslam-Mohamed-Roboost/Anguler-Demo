@@ -7,21 +7,22 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { BillingPanelComponent, BillingItem } from '../billing-panel/billing-panel.component';
 import { MessagePanelComponent, Message } from '../message-panel/message-panel.component';
+import { LanguageService } from '../../../core/services/language.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-navbar-booking',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent, RouterLink, BillingPanelComponent, MessagePanelComponent],
+  imports: [IconComponent, RouterLink, BillingPanelComponent, MessagePanelComponent, TranslatePipe],
   templateUrl: './navbar-booking.component.html',
   host: { class: 'relative z-20 block' },
 })
 export class NavbarBookingComponent {
-  private readonly doc = inject(DOCUMENT);
+  private readonly langService = inject(LanguageService);
 
   /** Logo image source */
   readonly logoSrc = input('assets/booking/logo-lines.png');
@@ -38,8 +39,8 @@ export class NavbarBookingComponent {
   /** Whether to show the join us button with lightning icon */
   readonly showJoinUsIcon = input(true);
 
-  /** Current language */
-  readonly lang = signal<'en' | 'ar'>('en');
+  /** Current language (delegates to LanguageService) */
+  readonly lang = this.langService.lang;
 
   /** Emitted when language changes */
   readonly langChange = output<'en' | 'ar'>();
@@ -128,7 +129,7 @@ export class NavbarBookingComponent {
 
   /** Derived: flag image */
   protected readonly flagSrc = computed(() =>
-    this.lang() === 'en' ? 'assets/booking/flag-en.png' : 'assets/booking/flag-ar.svg',
+    this.lang() === 'en' ? 'assets/booking/flag-en.svg' : 'assets/booking/flag-ar.svg',
   );
 
   /** Derived: language display name */
@@ -137,12 +138,8 @@ export class NavbarBookingComponent {
   );
 
   toggleLang(): void {
-    const next = this.lang() === 'en' ? 'ar' : 'en';
-    this.lang.set(next);
-    const html = this.doc.documentElement;
-    html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
-    html.setAttribute('lang', next);
-    this.langChange.emit(next);
+    this.langService.toggleLang();
+    this.langChange.emit(this.lang());
   }
 
   /** Handle message panel toggle */

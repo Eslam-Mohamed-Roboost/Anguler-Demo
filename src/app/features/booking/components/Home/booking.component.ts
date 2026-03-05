@@ -27,6 +27,7 @@ import { PasswordInputComponent } from '../../../../shared/components/password-i
 import { AuthService } from '../services/auth.service';
 import { CitiesService } from '../services/cities.service';
 import { LoginService } from '../services/login.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-booking',
@@ -41,7 +42,8 @@ import { LoginService } from '../services/login.service';
     MapComponent,
     WeatherWidgetComponent,
     ModalComponent,
-    PasswordInputComponent
+    PasswordInputComponent,
+    TranslatePipe,
 ],
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css',

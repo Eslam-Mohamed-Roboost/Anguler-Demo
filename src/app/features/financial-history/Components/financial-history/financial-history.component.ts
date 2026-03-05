@@ -5,10 +5,11 @@ import { financialHestory, PayoutAlert, FinancialHistoryItem } from '../../model
 import { PaginationComponent } from "../../../../shared/components/pagination/pagination.component";
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
 import { SearchInputComponent } from '../../../../shared/components/search-input/search-input.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-financial-history',
-  imports: [PaginationComponent, IconComponent, SearchInputComponent],
+  imports: [PaginationComponent, IconComponent, SearchInputComponent, TranslatePipe],
   templateUrl: './financial-history.component.html',
   styleUrl: './financial-history.component.css',
 })
