@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import { AvatarComponent } from '../avatar/avatar.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface Message {
   id: string;
@@ -20,7 +21,7 @@ export interface Message {
 @Component({
   selector: 'app-message-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent, AvatarComponent],
+  imports: [IconComponent, AvatarComponent, TranslatePipe],
   templateUrl: './message-panel.component.html',
 })
 export class MessagePanelComponent {

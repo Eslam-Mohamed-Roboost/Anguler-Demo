@@ -1,6 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { InputComponent } from '../../../../shared/components/input/input.component';
 import { PasswordInputComponent } from '../../../../shared/components/password-input/password-input.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 import { form } from '@angular/forms/signals';
 import {TabDef} from '../../models/TabDef-mode'
 import {HotelInfoModel} from '../../models/HotelInfo-model'
@@ -8,15 +10,19 @@ import {PasswordModel} from '../../models/Password-model'
 import {WithdrawalModel} from '../../models/Withdrawal-model'
 @Component({
   selector: 'app-profile-tabs',
-  imports: [InputComponent, PasswordInputComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [InputComponent, PasswordInputComponent, TranslatePipe],
   templateUrl: './profile-tabs.component.html',
   styleUrl: './profile-tabs.component.css',
 })
 export class ProfileTabsComponent {
+  private readonly langService = inject(LanguageService);
+  readonly lang = this.langService.lang;
+
   protected readonly tabs: TabDef[] = [
-    { key: 'hotel-info', label: 'Hotel Info.' },
-    { key: 'password', label: 'Password' },
-    { key: 'withdrawal', label: 'Withdrawal Details' }
+    { key: 'hotel-info', label: 'profile.hotelInfo' },
+    { key: 'password', label: 'profile.password' },
+    { key: 'withdrawal', label: 'profile.withdrawalDetails' }
   ];
   
   protected readonly activeTab = signal('hotel-info');

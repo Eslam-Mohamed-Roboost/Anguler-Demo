@@ -1,8 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { InputComponent } from '../../../../shared/components/input/input.component';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { form } from '@angular/forms/signals';
 interface TripDetalsModel{
     Destinations: string,
@@ -22,7 +22,8 @@ interface TripDetalsModel{
    
 @Component({
   selector: 'app-details',
-  imports: [DatePipe, BadgeComponent, IconComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [DatePipe, BadgeComponent, IconComponent, TranslatePipe],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css',
 })

@@ -9,6 +9,8 @@
  *     (pageChange)="currentPage.set($event)"
  *   />
  */
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -21,7 +23,7 @@ import { IconComponent } from '../icon/icon.component';
 @Component({
   selector: 'app-pagination',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent],
+  imports: [IconComponent,TranslatePipe],
   templateUrl: './pagination.component.html',
   styleUrl: './pagination.component.css',
 })

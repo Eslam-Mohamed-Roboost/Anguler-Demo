@@ -14,6 +14,7 @@ import { BadgeComponent } from '../../../../shared/components/badge/badge.compon
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import type { ColumnDef, SortState } from '../../../../shared/components/data-table/column-def';
 import { Trip } from '../../models/trip-model';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 
 @Component({
@@ -27,13 +28,14 @@ import { Trip } from '../../models/trip-model';
     BadgeComponent,
     IconComponent,
     RouterLink,
+    TranslatePipe
   ],
   templateUrl: './rider-history.component.html',
   styleUrl: './rider-history.component.css',
 })
 export class RiderHistoryComponent extends BaseComponent {
   protected readonly columns: ColumnDef[] = [
-    { key: 'tripId', header: 'Trip ID', sortable: true },
+    { key: 'tripId', header: 'TripID', sortable: true },
     { key: 'driver', header: 'Driver', sortable: true },
     { key: 'guestName', header: 'Guest Name', sortable: true },
     { key: 'roomNo', header: 'Room No.' },
@@ -41,7 +43,7 @@ export class RiderHistoryComponent extends BaseComponent {
     { key: 'status', header: 'Status', sortable: true },
     { key: 'duration', header: 'Duration' },
     { key: 'fare', header: 'Fare', sortable: true },
-    { key: 'startEndDate', header: 'Stat/End Date', sortable: true },
+    { key: 'startEndDate', header: 'Start.End.Date', sortable: true },
     { key: 'actions', header: 'Actions' },
   ];
 

@@ -42,11 +42,12 @@ import { CellDefDirective } from './cell-def.directive';
 // Re-export CellDefDirective so consumers don't need a separate import
 export { CellDefDirective } from './cell-def.directive';
 import type { ColumnDef, SortState, SortDirection } from './column-def';
+import { TranslatePipe } from "../../pipes/translate.pipe";
 
 @Component({
   selector: 'app-data-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, SkeletonTableComponent, IconComponent],
+  imports: [NgTemplateOutlet, SkeletonTableComponent, IconComponent, TranslatePipe],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.css',
 })

@@ -3,7 +3,7 @@
 } @else {
   <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
     <table
-      class="w-full text-left text-sm text-gray-700 dark:text-gray-200"
+      class="w-full text-start text-sm text-gray-700 dark:text-gray-200"
       [attr.aria-label]="ariaLabel() || null"
     >
       <thead>
@@ -20,7 +20,7 @@
               [attr.role]="col.sortable ? 'columnheader button' : null"
             >
               <span class="inline-flex items-center gap-1">
-                {{ col.header }}
+                {{ col.header | translate }}
                 @if (col.sortable) {
                   <span class="inline-flex flex-col text-gray-300 dark:text-gray-600" aria-hidden="true">
                     <app-icon

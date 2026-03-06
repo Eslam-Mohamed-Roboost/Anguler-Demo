@@ -7,7 +7,7 @@
         <div class="flex items-center gap-4">
           <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-700 m-0">
             <!-- <app-icon name="chat-bubble" size="sm" /> -->
-            Messages
+            {{ 'messages.title' | translate }}
           </h3>
           @if (getUnreadCount() > 0) {
             <span class="bg-[#e76500] text-white px-3 py-1 rounded-full text-xs font-medium">
@@ -15,7 +15,7 @@
             </span>
           }
         </div>
-        <button class="bg-transparent border-0 p-2 rounded-md text-gray-500 cursor-pointer transition-all hover:bg-gray-100 hover:text-gray-700" (click)="onClose()" aria-label="Close message panel">
+        <button class="bg-transparent border-0 p-2 rounded-md text-gray-500 cursor-pointer transition-all hover:bg-gray-100 hover:text-gray-700" (click)="onClose()" [attr.aria-label]="'messages.closeAriaLabel' | translate">
           <app-icon name="close" size="sm" />
         </button>
       </div>
@@ -48,7 +48,7 @@
                            <div class="flex justify-between items-center mt-2">
                           <span class="text-xs font-medium px-2 py-1 rounded-full
                             {{ !message.read ? 'bg-[#e76500] text-white' : 'bg-gray-100 text-gray-600' }}">
-                            {{ !message.read ? 'Unread' : 'Read' }}
+                            {{ !message.read ? ('messages.unread' | translate) : ('messages.read' | translate) }}
                           </span>
                         </div>
                         </h4>
@@ -83,8 +83,8 @@
         } @else {
           <div class="text-center py-12 px-4 text-gray-600">
             <app-icon name="chat-bubble" size="lg" class="text-gray-300 mb-4" />
-            <h4 class="text-lg font-semibold text-gray-700 m-0 mb-2">No messages</h4>
-            <p class="m-0 text-sm">You don't have any messages at the moment.</p>
+            <h4 class="text-lg font-semibold text-gray-700 m-0 mb-2">{{ 'messages.empty' | translate }}</h4>
+            <p class="m-0 text-sm">{{ 'messages.emptyDesc' | translate }}</p>
           </div>
         }
       </div>

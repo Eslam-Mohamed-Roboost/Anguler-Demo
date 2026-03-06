@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface BillingItem {
   id: string;
@@ -20,7 +21,7 @@ export interface BillingItem {
 @Component({
   selector: 'app-billing-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent],
+  imports: [IconComponent, TranslatePipe],
   templateUrl: './billing-panel.component.html',
 })
 export class BillingPanelComponent {

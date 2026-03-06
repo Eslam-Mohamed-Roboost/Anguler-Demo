@@ -2,13 +2,13 @@ export type Lang = 'en' | 'ar';
 
 export const TRANSLATIONS = {
   en: {
-    // Navbar
+    // ── Navbar ────────────────────────────────────────────────────────────
     'nav.signIn': 'Sign In',
     'nav.joinUs': 'Join Us Now',
     'nav.tripsHistory': 'Trips History',
     'nav.langAriaLabel': 'Switch to Arabic',
 
-    // Main form
+    // ── Booking form ──────────────────────────────────────────────────────
     'form.dropOff': 'Drop off Location',
     'form.chooseDest': 'Choose Your Destination',
     'form.clientName': 'Client Name',
@@ -20,12 +20,12 @@ export const TRANSLATIONS = {
     'form.bookNow': 'Book Your Ride Now',
     'form.schedule': 'Schedule Your Ride',
 
-    // Contact
+    // ── Contact ───────────────────────────────────────────────────────────
     'contact.title': 'Contact Us',
     'contact.gmail': 'Gmail',
     'contact.whatsapp': 'Whatsapp',
 
-    // Join modal
+    // ── Join Us modal ─────────────────────────────────────────────────────
     'join.title': 'Join Us Now',
     'join.info': 'Join us today to start earning commissions ( 2% ) on every ride you book for your guests. More bookings, more rewards.',
     'join.hotelName': 'Hotel Name',
@@ -41,7 +41,7 @@ export const TRANSLATIONS = {
     'join.next': 'Next',
     'join.back': 'Back',
 
-    // Withdrawal
+    // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'Withdrawal Details',
     'withdrawal.warning': 'Secure your payouts. Add your details to receive your 2% commissions automatically on the 1st of every month via our encrypted system.',
     'withdrawal.accountHolder': 'Account Holder Name',
@@ -55,7 +55,7 @@ export const TRANSLATIONS = {
     'withdrawal.registering': 'Registering...',
     'withdrawal.joinNow': 'Join Us Now',
 
-    // Sign In modal
+    // ── Sign In modal ─────────────────────────────────────────────────────
     'signIn.title': 'Welcome Again!',
     'signIn.email': 'Hotel Email',
     'signIn.password': 'Password',
@@ -64,13 +64,13 @@ export const TRANSLATIONS = {
     'signIn.loading': 'Signing In...',
     'signIn.button': 'Sign In',
 
-    // Forgot Password modal
+    // ── Forgot Password modal ─────────────────────────────────────────────
     'forgotPassword.title': 'Forget Password ?',
     'forgotPassword.subtitle': 'Enter your email to receive reset instructions.',
     'forgotPassword.goBack': 'Go Back',
     'forgotPassword.sendCode': 'Send Code',
 
-    // Verification modal
+    // ── Verification modal ────────────────────────────────────────────────
     'verification.title': 'Enter Verification Code',
     'verification.subtitle': 'We have sent a code to your hotel mail',
     'verification.label': 'Enter Verification Code',
@@ -79,13 +79,13 @@ export const TRANSLATIONS = {
     'verification.goBack': 'Go Back',
     'verification.sendCode': 'Send Code',
 
-    // Welcome modal
+    // ── Welcome modal ─────────────────────────────────────────────────────
     'welcome.title': 'Welcome Aboard!',
     'welcome.subtitle': 'Your Hotel Account Is Ready',
     'welcome.desc': 'Your account has been successfully created, thank you for joining our partner network.',
     'welcome.gotIt': 'Got it!',
 
-    // Booking Confirmation modal
+    // ── Booking Confirmation modal ────────────────────────────────────────
     'confirm.title': 'Booking Confirmation',
     'confirm.dropOff': 'Drop Off Location',
     'confirm.chooseDest': 'Choose Your Destination',
@@ -97,37 +97,114 @@ export const TRANSLATIONS = {
     'confirm.button': 'Confirm Booking & Send Request',
     'confirm.goBack': 'Go Back',
 
-    // Ride Request Sent modal
+    // ── Ride Request Sent modal ───────────────────────────────────────────
     'rideSent.title': 'Ride Request Sent!',
     'rideSent.desc': "Your request has been successfully dispatched to drivers. We're finding you a driver and expect your ride to be accepted shortly.",
     'rideSent.gotIt': 'Got it!',
     'rideSent.viewDetails': 'View My Ride Details',
 
-    // Pickup Time modal
+    // ── Pickup Time modal ─────────────────────────────────────────────────
     'pickup.title': 'Choose Pickup Time',
     'pickup.schedule': 'Schedule',
     'pickup.goBack': 'Go Back',
 
-    // Scheduled Ride modal
+    // ── Scheduled Ride modal ──────────────────────────────────────────────
     'scheduled.title': 'Ride Scheduled & Dispatched',
     'scheduled.desc': 'Done! Your trip is successfully scheduled and dispatched to drivers. A driver will confirm and arrive precisely at your selected time.',
     'scheduled.gotIt': 'Got it!',
     'scheduled.viewDetails': 'View My Ride Details',
 
-    // Common
+    // ── Common ────────────────────────────────────────────────────────────
     'common.close': 'Close dialog',
+
+    // ── Shared table / list ───────────────────────────────────────────────
+    'Search': 'Search',
+    'Export': 'Export',
+    'filter.Filter': 'Filter',
+    'filter.ClearSort': 'Clear Sort',
+    'shared.pagination.current': 'current page',
+
+    // table column headers
+    'TripID': 'Trip ID',
+    'Driver': 'Driver',
+    'Guest': 'Guest',
+    'Guest Name': 'Guest Name',
+    'Room No.': 'Room No.',
+    'Route': 'Route',
+    'Status': 'Status',
+    'Duration': 'Duration',
+    'Fare': 'Fare',
+    'Start.End.Date': 'Start / End Date',
+    'Trip.Profit': 'Trip Profit (2%)',
+    'Commulative.Profit': 'Cumulative Profit',
+    'Actions': 'Actions',
+
+    // units
+    'unit.min': 'min',
+    'unit.km': 'km',
+    'riderHistory.commission': 'Comm.',
+    'riderHistory.viewDetails': 'View trip details',
+
+    // ── Financial History page ────────────────────────────────────────────
     'financial.Payouts': 'Your Payouts are scheduled on the 1st of every month. Payments are completed within 3 business days from the scheduling date. Your Commission ( 2% ) for each trip.',
-    
+    'financial.FinancialHistory': 'Financial History',
+    'riderHistory.title': 'Trips History',
+
+    // ── Trip Details page ─────────────────────────────────────────────────
+    'tripDetails.title': 'Trip Details',
+    'tripDetails.tripId': 'Trip ID',
+    'tripDetails.passenger': 'Passenger Name',
+    'tripDetails.fare': 'Fare',
+    'tripDetails.driver': 'Driver',
+    'tripDetails.startDate': 'Start Date',
+    'tripDetails.endDate': 'End Date',
+    'tripDetails.destinations': 'Destinations',
+    'tripDetails.payment': 'Payment',
+
+    // ── Profile page ──────────────────────────────────────────────────────
+    'profile.hotelInfo': 'Hotel Info.',
+    'profile.password': 'Password',
+    'profile.withdrawalDetails': 'Withdrawal Details',
+    'profile.name': 'Name',
+    'profile.city': 'City',
+    'profile.address': 'Address',
+    'profile.phone': 'Hotel Phone Number',
+    'profile.email': 'Hotel Email',
+    'profile.editDetails': 'Edit Hotel Details',
+    'profile.updatePassword': 'Update Password',
+    'profile.updateDetails': 'Update Details',
+    'profile.currentPassword': 'Current Password',
+    'profile.newPassword': 'New Password',
+    'profile.confirmPassword': 'Confirm New Password',
+    'profile.currentPasswordPlaceholder': 'Enter current password',
+    'profile.newPasswordPlaceholder': 'Enter new password',
+    'profile.confirmPasswordPlaceholder': 'Confirm new password',
+    'profile.accountNumber': 'Account Number',
+    'profile.swiftCode': 'SWIFT Code',
+
+    // ── Message Panel ─────────────────────────────────────────────────────
+    'messages.title': 'Messages',
+    'messages.unread': 'Unread',
+    'messages.read': 'Read',
+    'messages.empty': 'No messages',
+    'messages.emptyDesc': "You don't have any messages at the moment.",
+    'messages.closeAriaLabel': 'Close message panel',
+
+    // ── Billing / Notifications Panel ─────────────────────────────────────
+    'billing.title': 'Notifications',
+    'billing.empty': 'No billing items',
+    'billing.emptyDesc': "You don't have any invoices or bills at the moment.",
+    'billing.closeAriaLabel': 'Close billing panel',
   },
 
   ar: {
-    // Navbar
+    // ── Navbar ────────────────────────────────────────────────────────────
     'nav.signIn': 'تسجيل الدخول',
     'nav.joinUs': 'انضم إلينا الآن',
     'nav.tripsHistory': 'سجل الرحلات',
     'nav.langAriaLabel': 'Switch to English',
 
-    // Main form
+    // ── Booking form ──────────────────────────────────────────────────────
     'form.dropOff': 'موقع التوصيل',
     'form.chooseDest': 'اختر وجهتك',
     'form.clientName': 'اسم العميل',
@@ -139,12 +216,12 @@ export const TRANSLATIONS = {
     'form.bookNow': 'احجز رحلتك الآن',
     'form.schedule': 'جدول رحلتك',
 
-    // Contact
+    // ── Contact ───────────────────────────────────────────────────────────
     'contact.title': 'تواصل معنا',
     'contact.gmail': 'Gmail',
     'contact.whatsapp': 'واتساب',
 
-    // Join modal
+    // ── Join Us modal ─────────────────────────────────────────────────────
     'join.title': 'انضم إلينا الآن',
     'join.info': 'انضم إلينا اليوم وابدأ في كسب العمولات ( 2% ) على كل رحلة تحجزها لضيوفك. المزيد من الحجوزات، المزيد من المكافآت.',
     'join.hotelName': 'اسم الفندق',
@@ -160,7 +237,7 @@ export const TRANSLATIONS = {
     'join.next': 'التالي',
     'join.back': 'رجوع',
 
-    // Withdrawal
+    // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'تفاصيل السحب',
     'withdrawal.warning': 'أمّن مدفوعاتك. أضف بياناتك لتلقي عمولاتك البالغة 2% تلقائياً في الأول من كل شهر عبر نظامنا المشفر.',
     'withdrawal.accountHolder': 'اسم صاحب الحساب',
@@ -174,7 +251,7 @@ export const TRANSLATIONS = {
     'withdrawal.registering': 'جارٍ التسجيل...',
     'withdrawal.joinNow': 'انضم إلينا الآن',
 
-    // Sign In modal
+    // ── Sign In modal ─────────────────────────────────────────────────────
     'signIn.title': 'أهلاً بعودتك!',
     'signIn.email': 'البريد الإلكتروني للفندق',
     'signIn.password': 'كلمة المرور',
@@ -183,13 +260,13 @@ export const TRANSLATIONS = {
     'signIn.loading': 'جارٍ تسجيل الدخول...',
     'signIn.button': 'تسجيل الدخول',
 
-    // Forgot Password modal
+    // ── Forgot Password modal ─────────────────────────────────────────────
     'forgotPassword.title': 'نسيت كلمة المرور؟',
     'forgotPassword.subtitle': 'أدخل بريدك الإلكتروني لاستقبال تعليمات الإعادة.',
     'forgotPassword.goBack': 'العودة',
     'forgotPassword.sendCode': 'إرسال الرمز',
 
-    // Verification modal
+    // ── Verification modal ────────────────────────────────────────────────
     'verification.title': 'أدخل رمز التحقق',
     'verification.subtitle': 'لقد أرسلنا رمزاً إلى بريد فندقك',
     'verification.label': 'أدخل رمز التحقق',
@@ -198,13 +275,13 @@ export const TRANSLATIONS = {
     'verification.goBack': 'العودة',
     'verification.sendCode': 'إرسال الرمز',
 
-    // Welcome modal
+    // ── Welcome modal ─────────────────────────────────────────────────────
     'welcome.title': 'أهلاً بك!',
     'welcome.subtitle': 'حساب فندقك جاهز',
     'welcome.desc': 'تم إنشاء حسابك بنجاح، شكراً لانضمامك إلى شبكة شركائنا.',
     'welcome.gotIt': 'فهمت!',
 
-    // Booking Confirmation modal
+    // ── Booking Confirmation modal ────────────────────────────────────────
     'confirm.title': 'تأكيد الحجز',
     'confirm.dropOff': 'موقع التوصيل',
     'confirm.chooseDest': 'اختر وجهتك',
@@ -216,26 +293,104 @@ export const TRANSLATIONS = {
     'confirm.button': 'تأكيد الحجز وإرسال الطلب',
     'confirm.goBack': 'العودة',
 
-    // Ride Request Sent modal
+    // ── Ride Request Sent modal ───────────────────────────────────────────
     'rideSent.title': 'تم إرسال طلب الرحلة!',
     'rideSent.desc': 'تم إرسال طلبك بنجاح إلى السائقين. نحن نبحث لك عن سائق ونتوقع قبول رحلتك قريباً.',
     'rideSent.gotIt': 'فهمت!',
     'rideSent.viewDetails': 'عرض تفاصيل رحلتي',
 
-    // Pickup Time modal
+    // ── Pickup Time modal ─────────────────────────────────────────────────
     'pickup.title': 'اختر وقت الانطلاق',
     'pickup.schedule': 'جدولة',
     'pickup.goBack': 'العودة',
 
-    // Scheduled Ride modal
+    // ── Scheduled Ride modal ──────────────────────────────────────────────
     'scheduled.title': 'تم جدولة الرحلة وإرسالها',
     'scheduled.desc': 'تم! تم جدولة رحلتك بنجاح وإرسالها إلى السائقين. سيؤكد السائق ويصل في الوقت المحدد بدقة.',
     'scheduled.gotIt': 'فهمت!',
     'scheduled.viewDetails': 'عرض تفاصيل رحلتي',
 
-    // Common
+    // ── Common ────────────────────────────────────────────────────────────
     'common.close': 'إغلاق النافذة',
+
+    // ── Shared table / list ───────────────────────────────────────────────
+    'Search': 'بحث',
+    'Export': 'تصدير',
+    'filter.Filter': 'تصفية',
+    'filter.ClearSort': 'مسح الفرز',
+    'shared.pagination.current': 'الصفحة الحالية',
+
+    // table column headers
+    'TripID': 'رقم الرحلة',
+    'Driver': 'السائق',
+    'Guest': 'الضيف',
+    'Guest Name': 'اسم الضيف',
+    'Room No.': 'رقم الغرفة',
+    'Route': 'الطريق',
+    'Status': 'الحالة',
+    'Duration': 'المدة',
+    'Fare': 'الأجرة',
+    'Start.End.Date': 'بداية / نهاية',
+    'Trip.Profit': 'ربح الرحلة (2%)',
+    'Commulative.Profit': 'الربح التراكمي',
+    'Actions': 'الإجراءات',
+
+    // units
+    'unit.min': 'دقيقة',
+    'unit.km': 'كم',
+    'riderHistory.commission': 'عمولة',
+    'riderHistory.viewDetails': 'عرض تفاصيل الرحلة',
+
+    // ── Financial History page ────────────────────────────────────────────
     'financial.Payouts': 'يتم جدولة مدفوعاتك في الأول من كل شهر. تكتمل المدفوعات في غضون 3 أيام عمل من تاريخ الجدولة. عمولتك ( 2% ) لكل رحلة.',
+    'financial.FinancialHistory': 'السجل المالي',
+    'riderHistory.title': 'سجل الرحلات',
+
+    // ── Trip Details page ─────────────────────────────────────────────────
+    'tripDetails.title': 'تفاصيل الرحلة',
+    'tripDetails.tripId': 'رقم الرحلة',
+    'tripDetails.passenger': 'اسم المسافر',
+    'tripDetails.fare': 'الأجرة',
+    'tripDetails.driver': 'السائق',
+    'tripDetails.startDate': 'تاريخ البداية',
+    'tripDetails.endDate': 'تاريخ النهاية',
+    'tripDetails.destinations': 'الوجهات',
+    'tripDetails.payment': 'طريقة الدفع',
+
+    // ── Profile page ──────────────────────────────────────────────────────
+    'profile.hotelInfo': 'معلومات الفندق',
+    'profile.password': 'كلمة المرور',
+    'profile.withdrawalDetails': 'تفاصيل السحب',
+    'profile.name': 'الاسم',
+    'profile.city': 'المدينة',
+    'profile.address': 'العنوان',
+    'profile.phone': 'رقم هاتف الفندق',
+    'profile.email': 'البريد الإلكتروني للفندق',
+    'profile.editDetails': 'تعديل بيانات الفندق',
+    'profile.updatePassword': 'تحديث كلمة المرور',
+    'profile.updateDetails': 'تحديث البيانات',
+    'profile.currentPassword': 'كلمة المرور الحالية',
+    'profile.newPassword': 'كلمة المرور الجديدة',
+    'profile.confirmPassword': 'تأكيد كلمة المرور الجديدة',
+    'profile.currentPasswordPlaceholder': 'أدخل كلمة المرور الحالية',
+    'profile.newPasswordPlaceholder': 'أدخل كلمة المرور الجديدة',
+    'profile.confirmPasswordPlaceholder': 'تأكيد كلمة المرور الجديدة',
+    'profile.accountNumber': 'رقم الحساب',
+    'profile.swiftCode': 'رمز SWIFT',
+
+    // ── Message Panel ─────────────────────────────────────────────────────
+    'messages.title': 'الرسائل',
+    'messages.unread': 'غير مقروء',
+    'messages.read': 'مقروء',
+    'messages.empty': 'لا توجد رسائل',
+    'messages.emptyDesc': 'ليس لديك أي رسائل في الوقت الحالي.',
+    'messages.closeAriaLabel': 'إغلاق لوحة الرسائل',
+
+    // ── Billing / Notifications Panel ─────────────────────────────────────
+    'billing.title': 'الإشعارات',
+    'billing.empty': 'لا توجد فواتير',
+    'billing.emptyDesc': 'ليس لديك أي فواتير أو مدفوعات في الوقت الحالي.',
+    'billing.closeAriaLabel': 'إغلاق لوحة الإشعارات',
   },
 } as const;
 

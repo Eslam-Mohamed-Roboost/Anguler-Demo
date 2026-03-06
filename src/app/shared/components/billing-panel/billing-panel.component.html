@@ -7,11 +7,11 @@
         <div class="flex items-center gap-4">
           <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-700 m-0">
             <app-icon name="file" size="sm" />
-            Notifications
+            {{ 'billing.title' | translate }}
           </h3>
       
         </div>
-        <button class="bg-transparent border-0 p-2 rounded-md text-gray-500 cursor-pointer transition-all hover:bg-gray-100 hover:text-gray-700" (click)="onClose()" aria-label="Close billing panel">
+        <button class="bg-transparent border-0 p-2 rounded-md text-gray-500 cursor-pointer transition-all hover:bg-gray-100 hover:text-gray-700" (click)="onClose()" [attr.aria-label]="'billing.closeAriaLabel' | translate">
           <app-icon name="close" size="sm" />
         </button>
       </div>
@@ -77,8 +77,8 @@
         } @else {
           <div class="text-center py-12 px-4 text-gray-600">
             <app-icon name="file" size="lg" class="text-gray-300 mb-4" />
-            <h4 class="text-lg font-semibold text-gray-700 m-0 mb-2">No billing items</h4>
-            <p class="m-0 text-sm">You don't have any invoices or bills at the moment.</p>
+            <h4 class="text-lg font-semibold text-gray-700 m-0 mb-2">{{ 'billing.empty' | translate }}</h4>
+            <p class="m-0 text-sm">{{ 'billing.emptyDesc' | translate }}</p>
           </div>
         }
       </div>
