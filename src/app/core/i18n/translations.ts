@@ -7,6 +7,9 @@ export const TRANSLATIONS = {
     'nav.joinUs': 'Join Us Now',
     'nav.tripsHistory': 'Trips History',
     'nav.langAriaLabel': 'Switch to Arabic',
+    'nav.myProfile': 'My Profile',
+    'nav.financialReports': 'Financial Reports',
+    'nav.logout': 'Logout',
 
     // ── Booking form ──────────────────────────────────────────────────────
     'form.dropOff': 'Drop off Location',
@@ -38,6 +41,9 @@ export const TRANSLATIONS = {
     'join.phonePlaceholder': 'Put Hotel Phone Number here',
     'join.email': 'Hotel Email',
     'join.emailPlaceholder': 'example@gmail.com',
+    'join.password': 'Password',
+    'join.passwordPlaceholder': 'Enter your password',
+    'join.changePhoto': 'Change photo',
     'join.next': 'Next',
     'join.back': 'Back',
 
@@ -69,6 +75,7 @@ export const TRANSLATIONS = {
     'forgotPassword.subtitle': 'Enter your email to receive reset instructions.',
     'forgotPassword.goBack': 'Go Back',
     'forgotPassword.sendCode': 'Send Code',
+    'forgotPassword.sending': 'Sending...',
 
     // ── Verification modal ────────────────────────────────────────────────
     'verification.title': 'Enter Verification Code',
@@ -77,7 +84,16 @@ export const TRANSLATIONS = {
     'verification.noCode': "Didn't receive any code?",
     'verification.resend': 'Resend code',
     'verification.goBack': 'Go Back',
-    'verification.sendCode': 'Send Code',
+    'verification.sendCode': 'Verify',
+    'verification.verifying': 'Verifying...',
+    'resetPassword.title': 'Reset Password',
+    'resetPassword.subtitle': 'Enter your new password below.',
+    'resetPassword.newPassword': 'New Password',
+    'resetPassword.newPasswordPlaceholder': 'Enter new password',
+    'resetPassword.confirmPassword': 'Confirm Password',
+    'resetPassword.confirmPasswordPlaceholder': 'Confirm new password',
+    'resetPassword.submit': 'Reset Password',
+    'resetPassword.submitting': 'Resetting...',
 
     // ── Welcome modal ─────────────────────────────────────────────────────
     'welcome.title': 'Welcome Aboard!',
@@ -94,8 +110,12 @@ export const TRANSLATIONS = {
     'confirm.manyBags': 'Many bags, or More than 4 people',
     'confirm.tripCost': 'Trip Cost',
     'confirm.tripDuration': 'Trip Duration',
+    'confirm.vehicle': 'Vehicle Type',
+    'confirm.creating': 'Sending Request...',
     'confirm.button': 'Confirm Booking & Send Request',
     'confirm.goBack': 'Go Back',
+    'common.yes': 'Yes',
+    'common.no': 'No',
 
     // ── Ride Request Sent modal ───────────────────────────────────────────
     'rideSent.title': 'Ride Request Sent!',
@@ -203,6 +223,9 @@ export const TRANSLATIONS = {
     'nav.joinUs': 'انضم إلينا الآن',
     'nav.tripsHistory': 'سجل الرحلات',
     'nav.langAriaLabel': 'Switch to English',
+    'nav.myProfile': 'ملفي الشخصي',
+    'nav.financialReports': 'التقارير المالية',
+    'nav.logout': 'تسجيل الخروج',
 
     // ── Booking form ──────────────────────────────────────────────────────
     'form.dropOff': 'موقع التوصيل',
@@ -234,6 +257,9 @@ export const TRANSLATIONS = {
     'join.phonePlaceholder': 'أدخل رقم هاتف الفندق هنا',
     'join.email': 'البريد الإلكتروني للفندق',
     'join.emailPlaceholder': 'example@gmail.com',
+    'join.password': 'كلمة المرور',
+    'join.passwordPlaceholder': 'أدخل كلمة المرور',
+    'join.changePhoto': 'تغيير الصورة',
     'join.next': 'التالي',
     'join.back': 'رجوع',
 
@@ -265,6 +291,7 @@ export const TRANSLATIONS = {
     'forgotPassword.subtitle': 'أدخل بريدك الإلكتروني لاستقبال تعليمات الإعادة.',
     'forgotPassword.goBack': 'العودة',
     'forgotPassword.sendCode': 'إرسال الرمز',
+    'forgotPassword.sending': 'جارٍ الإرسال...',
 
     // ── Verification modal ────────────────────────────────────────────────
     'verification.title': 'أدخل رمز التحقق',
@@ -273,7 +300,16 @@ export const TRANSLATIONS = {
     'verification.noCode': 'لم تستلم أي رمز؟',
     'verification.resend': 'إعادة إرسال الرمز',
     'verification.goBack': 'العودة',
-    'verification.sendCode': 'إرسال الرمز',
+    'verification.sendCode': 'تحقق',
+    'verification.verifying': 'جارٍ التحقق...',
+    'resetPassword.title': 'إعادة تعيين كلمة المرور',
+    'resetPassword.subtitle': 'أدخل كلمة المرور الجديدة أدناه.',
+    'resetPassword.newPassword': 'كلمة المرور الجديدة',
+    'resetPassword.newPasswordPlaceholder': 'أدخل كلمة المرور الجديدة',
+    'resetPassword.confirmPassword': 'تأكيد كلمة المرور',
+    'resetPassword.confirmPasswordPlaceholder': 'أكد كلمة المرور الجديدة',
+    'resetPassword.submit': 'إعادة تعيين كلمة المرور',
+    'resetPassword.submitting': 'جارٍ الإعادة...',
 
     // ── Welcome modal ─────────────────────────────────────────────────────
     'welcome.title': 'أهلاً بك!',
@@ -290,8 +326,12 @@ export const TRANSLATIONS = {
     'confirm.manyBags': 'حقائب كثيرة، أو أكثر من 4 أشخاص',
     'confirm.tripCost': 'تكلفة الرحلة',
     'confirm.tripDuration': 'مدة الرحلة',
+    'confirm.vehicle': 'نوع المركبة',
+    'confirm.creating': 'جارٍ الإرسال...',
     'confirm.button': 'تأكيد الحجز وإرسال الطلب',
     'confirm.goBack': 'العودة',
+    'common.yes': 'نعم',
+    'common.no': 'لا',
 
     // ── Ride Request Sent modal ───────────────────────────────────────────
     'rideSent.title': 'تم إرسال طلب الرحلة!',

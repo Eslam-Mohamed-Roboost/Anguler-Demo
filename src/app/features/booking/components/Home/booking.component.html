@@ -62,7 +62,7 @@
           <!-- Choose Your Car -->
           <app-car-selector
             [label]="'form.chooseCar' | translate"
-            [options]="carTypes"
+            [options]="carTypes()"
             [(selected)]="selectedCar"
           />
 
@@ -70,7 +70,7 @@
           <div class="space-y-2 pt-1 sm:space-y-3">
             <button
               type="button"
-              (click)="openJoinModal()"
+              (click)="bookNow()"
               class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-90 sm:px-6 sm:py-3 sm:text-base"
             >
               <app-icon name="zap" size="sm" />
@@ -174,12 +174,37 @@
   <!-- ═══ Step 1: Hotel Details ═══ -->
   @if (joinStep() === 1) {
     <div class="mt-4 rounded-xl border border-gray-200 p-4">
+      <!-- Hotel photo uploader -->
       <div class="mb-4 flex justify-center">
-        <img
-          src="assets/booking/hotel-illustration.png"
-          alt="Hotel illustration"
-          class="h-20 w-auto object-contain"
-        />
+        <div class="relative">
+          <div class="size-24 overflow-hidden rounded-full border-2 border-gray-200 bg-gray-100">
+            <img
+              [src]="hotelImageSrc()"
+              alt="Hotel photo"
+              class="size-full object-cover"
+            />
+          </div>
+          <label
+            class="absolute bottom-0 end-0 flex size-8 cursor-pointer items-center justify-center rounded-full bg-primary shadow-md transition hover:brightness-90"
+            [attr.aria-label]="'join.changePhoto' | translate"
+          >
+           <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M18.1499 1.51233C27.3385 1.51233 34.7876 8.96139 34.7876 18.15C34.7876 27.3387 27.3385 34.7877 18.1499 34.7877C8.96126 34.7877 1.51221 27.3387 1.51221 18.15C1.51221 8.96139 8.96126 1.51233 18.1499 1.51233Z" fill="#00A63E"/>
+<path d="M18.1499 1.51233C27.3385 1.51233 34.7876 8.96139 34.7876 18.15C34.7876 27.3387 27.3385 34.7877 18.1499 34.7877C8.96126 34.7877 1.51221 27.3387 1.51221 18.15C1.51221 8.96139 8.96126 1.51233 18.1499 1.51233Z" stroke="white" stroke-width="3.025"/>
+<path d="M14.6606 14.2234V20.471C14.6606 22.58 16.1856 24.1628 18.3524 24.1628" stroke="white" stroke-width="1.13438" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22.0438 23.8787V17.6311C22.0438 15.5221 20.5188 13.9393 18.3521 13.9393" stroke="white" stroke-width="1.13438"/>
+<path d="M23.4638 22.4589C23.4638 22.4589 22.4181 23.8788 22.0439 23.8788C21.6698 23.8788 20.624 22.4589 20.624 22.4589" stroke="white" stroke-width="1.13438" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16.0805 15.3594C16.0805 15.3594 15.0348 13.9395 14.6606 13.9395C14.2864 13.9395 13.2407 15.3594 13.2407 15.3594" stroke="white" stroke-width="1.13438" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+            <input
+              type="file"
+              accept="image/*"
+              class="sr-only"
+              (change)="onHotelImageChange($event)"
+            />
+          </label>
+        </div>
       </div>
       <div class="space-y-3">
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -227,6 +252,13 @@
             inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
           />
         </div>
+        <app-password-input
+          [label]="'join.password' | translate"
+          inputId="join-password"
+          [field]="jf.password"
+          [placeholder]="'join.passwordPlaceholder' | translate"
+          inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+        />
       </div>
     </div>
   }
@@ -286,10 +318,16 @@
       <button
         type="button"
         (click)="nextStep()"
-        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+        [disabled]="isRegistering()"
+        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <app-icon name="zap" size="sm" />
-        <span>{{ 'join.next' | translate }}</span>
+        @if (isRegistering()) {
+          <app-icon name="spinner" size="sm" />
+          <span>{{ 'withdrawal.registering' | translate }}</span>
+        } @else {
+          <app-icon name="zap" size="sm" />
+          <span>{{ 'join.next' | translate }}</span>
+        }
       </button>
     } @else {
       <button
@@ -343,21 +381,21 @@
   <div modal-content class="flex flex-col gap-3 p-4">
     <app-input
       [label]="'signIn.email' | translate"
-      inputId="email"
+      inputId="sign-in-email"
       [field]="SignInFormF.email"
       type="email"
       placeholder="example@gmail.com"
       inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
-      placeholderClass="placeholder:text-gray-400  placeholder:text-xs"
+      placeholderClass="placeholder:text-gray-400 placeholder:text-xs"
       labelClass="text-[#5B738B]"
     />
     <app-password-input
       [label]="'signIn.password' | translate"
-      inputId="password"
+      inputId="sign-in-password"
       [field]="SignInFormF.password"
       [placeholder]="'signIn.passwordPlaceholder' | translate"
       inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
-      placeholderClass="placeholder:text-gray-400  placeholder:text-xs"
+      placeholderClass="placeholder:text-gray-400 placeholder:text-xs"
       labelClass="text-[#5B738B]"
     />
     <a (click)="openForgotPasswordMode()" class="text-end text-gray-400 text-sm cursor-pointer">{{ 'signIn.forgotPassword' | translate }}</a>
@@ -367,7 +405,7 @@
   <div modal-footer class="flex items-center justify-center gap-3 px-4 pb-4 pt-2">
     <button
       type="button"
-      (click)="testButtonClick(); SignIn()"
+      (click)="SignIn()"
       [disabled]="isLoggingIn()"
       class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
     >
@@ -418,10 +456,10 @@
       type="email"
       placeholder="example@gmail.com"
       inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
-      placeholderClass="placeholder:text-gray-400  placeholder:text-xs"
+      placeholderClass="placeholder:text-gray-400 placeholder:text-xs"
       labelClass="text-[#5B738B]"
     />
-   </div>
+  </div>
 
   <!-- Footer -->
   <div modal-footer class="flex items-center justify-center gap-3 px-4 pb-4 pt-2 w-full">
@@ -434,10 +472,16 @@
     </button>
     <button
       type="button"
-      (click)="openVerificationModal()"
-      class="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+      (click)="sendForgotPasswordCode()"
+      [disabled]="isSendingOtp()"
+      class="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {{ 'forgotPassword.sendCode' | translate }}
+      @if (isSendingOtp()) {
+        <app-icon name="spinner" size="sm" />
+        <span>{{ 'forgotPassword.sending' | translate }}</span>
+      } @else {
+        <span>{{ 'forgotPassword.sendCode' | translate }}</span>
+      }
     </button>
   </div>
  </app-modal>
@@ -488,7 +532,7 @@
     </div>
     <p class="mt-3 text-center text-sm text-[#5B738B]">
       {{ 'verification.noCode' | translate }}
-      <button type="button" class="font-semibold text-danger transition hover:underline">{{ 'verification.resend' | translate }}</button>
+      <button type="button" (click)="sendForgotPasswordCode()" [disabled]="isSendingOtp()" class="font-semibold text-danger transition hover:underline disabled:opacity-50">{{ 'verification.resend' | translate }}</button>
     </p>
   </div>
 
@@ -503,10 +547,72 @@
     </button>
     <button
       type="button"
-      (click)="openWelcomeModal()"
-      class="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+      (click)="verifyOtp()"
+      [disabled]="isValidatingOtp()"
+      class="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {{ 'verification.sendCode' | translate }}
+      @if (isValidatingOtp()) {
+        <app-icon name="spinner" size="sm" />
+        <span>{{ 'verification.verifying' | translate }}</span>
+      } @else {
+        <span>{{ 'verification.sendCode' | translate }}</span>
+      }
+    </button>
+  </div>
+</app-modal>
+
+<!-- ═══════ Reset Password Modal ═══════ -->
+<app-modal [open]="showResetPasswordModal()" (closed)="closeResetPasswordModal()">
+  <!-- Header -->
+  <div class="flex items-start justify-between px-4 pt-4">
+    <div>
+      <h2 class="text-xl font-bold text-primary-text">{{ 'resetPassword.title' | translate }}</h2>
+      <p class="mt-1 text-sm text-[#5B738B]">{{ 'resetPassword.subtitle' | translate }}</p>
+    </div>
+    <button
+      type="button"
+      (click)="closeResetPasswordModal()"
+      class="rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+      [attr.aria-label]="'common.close' | translate"
+    >
+      <app-icon name="close" size="sm" />
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="flex flex-col gap-3 p-4">
+    <app-password-input
+      [label]="'resetPassword.newPassword' | translate"
+      inputId="reset-new-password"
+      [field]="rpf.newPassword"
+      [placeholder]="'resetPassword.newPasswordPlaceholder' | translate"
+      inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+      labelClass="text-[#5B738B]"
+    />
+    <app-password-input
+      [label]="'resetPassword.confirmPassword' | translate"
+      inputId="reset-confirm-password"
+      [field]="rpf.confirmPassword"
+      [placeholder]="'resetPassword.confirmPasswordPlaceholder' | translate"
+      inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+      labelClass="text-[#5B738B]"
+    />
+  </div>
+
+  <!-- Footer -->
+  <div modal-footer class="flex items-center justify-center gap-3 px-4 pb-4 pt-2">
+    <button
+      type="button"
+      (click)="submitResetPassword()"
+      [disabled]="isResettingPassword()"
+      class="flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      @if (isResettingPassword()) {
+        <app-icon name="spinner" size="sm" />
+        <span>{{ 'resetPassword.submitting' | translate }}</span>
+      } @else {
+        <span>{{ 'resetPassword.submit' | translate }}</span>
+      }
     </button>
   </div>
 </app-modal>
@@ -545,91 +651,88 @@
 
 
 <!-- ShowComfirmBookingModel-->
- <app-modal [open]="ShowComfirmBookingModel()" (closed)="CloseComfirmBookingModel()">
+<app-modal [open]="ShowComfirmBookingModel()" (closed)="CloseComfirmBookingModel()">
   <!-- Header -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h2 class="flex items-center gap-2 text-xl font-bold text-primary-text">
-        <span>
-        <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M18.1991 18.2083H18.2082M18.1991 18.2083C17.6023 18.8001 16.5208 18.6527 15.7624 18.6527C14.8315 18.6527 14.3832 18.8348 13.7188 19.4992C13.1531 20.065 12.3946 21.0833 11.4998 21.0833C10.605 21.0833 9.84662 20.065 9.28088 19.4992C8.61648 18.8348 8.16818 18.6527 7.23723 18.6527C6.47882 18.6527 5.39734 18.8001 4.8006 18.2083C4.19907 17.6119 4.34711 16.5259 4.34711 15.7626C4.34711 14.798 4.13616 14.3545 3.44924 13.6676C2.42743 12.6458 1.91652 12.1348 1.9165 11.5C1.91651 10.8651 2.42741 10.3542 3.44921 9.33241C4.0624 8.71922 4.34711 8.1116 4.34711 7.23739C4.34711 6.47895 4.19972 5.39746 4.7915 4.80071C5.388 4.1992 6.47395 4.34725 7.23725 4.34725C8.11143 4.34725 8.71906 4.06256 9.33223 3.44939C10.3541 2.42757 10.8649 1.91666 11.4998 1.91666C12.1347 1.91666 12.6456 2.42757 13.6674 3.44939C14.2804 4.06244 14.888 4.34725 15.7624 4.34725C16.5208 4.34725 17.6024 4.19986 18.1992 4.79166C18.8006 5.38816 18.6525 6.4741 18.6525 7.23739C18.6525 8.20197 18.8636 8.64548 19.5504 9.33241C20.5723 10.3542 21.0832 10.8651 21.0832 11.5C21.0832 12.1348 20.5723 12.6458 19.5504 13.6676C18.8635 14.3545 18.6525 14.798 18.6525 15.7626C18.6525 16.5259 18.8006 17.6119 18.1991 18.2083Z" stroke="#00C950" stroke-width="2.5"/>
-        <path d="M8.625 12.3557C8.625 12.3557 9.775 12.9803 10.35 13.8958C10.35 13.8958 12.075 10.3021 14.375 9.10416" stroke="#00C950" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        </span>
-        <span>{{ 'confirm.title' | translate }}</span>
-      </h2>
-    </div>
-    <button
-      type="button"
-      (click)="CloseComfirmBookingModel()"
-      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:bg-gray-200"
-      [attr.aria-label]="'common.close' | translate"
-    >
-      <app-icon name="close" size="sm" />
-    </button>
+  <div class="flex items-center gap-2">
+    <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18.1991 18.2083H18.2082M18.1991 18.2083C17.6023 18.8001 16.5208 18.6527 15.7624 18.6527C14.8315 18.6527 14.3832 18.8348 13.7188 19.4992C13.1531 20.065 12.3946 21.0833 11.4998 21.0833C10.605 21.0833 9.84662 20.065 9.28088 19.4992C8.61648 18.8348 8.16818 18.6527 7.23723 18.6527C6.47882 18.6527 5.39734 18.8001 4.8006 18.2083C4.19907 17.6119 4.34711 16.5259 4.34711 15.7626C4.34711 14.798 4.13616 14.3545 3.44924 13.6676C2.42743 12.6458 1.91652 12.1348 1.9165 11.5C1.91651 10.8651 2.42741 10.3542 3.44921 9.33241C4.0624 8.71922 4.34711 8.1116 4.34711 7.23739C4.34711 6.47895 4.19972 5.39746 4.7915 4.80071C5.388 4.1992 6.47395 4.34725 7.23725 4.34725C8.11143 4.34725 8.71906 4.06256 9.33223 3.44939C10.3541 2.42757 10.8649 1.91666 11.4998 1.91666C12.1347 1.91666 12.6456 2.42757 13.6674 3.44939C14.2804 4.06244 14.888 4.34725 15.7624 4.34725C16.5208 4.34725 17.6024 4.19986 18.1992 4.79166C18.8006 5.38816 18.6525 6.4741 18.6525 7.23739C18.6525 8.20197 18.8636 8.64548 19.5504 9.33241C20.5723 10.3542 21.0832 10.8651 21.0832 11.5C21.0832 12.1348 20.5723 12.6458 19.5504 13.6676C18.8635 14.3545 18.6525 14.798 18.6525 15.7626C18.6525 16.5259 18.8006 17.6119 18.1991 18.2083Z" stroke="#00C950" stroke-width="2.5"/>
+      <path d="M8.625 12.3557C8.625 12.3557 9.775 12.9803 10.35 13.8958C10.35 13.8958 12.075 10.3021 14.375 9.10416" stroke="#00C950" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h2 class="text-xl font-bold text-primary-text">{{ 'confirm.title' | translate }}</h2>
   </div>
 
+  <!-- Drop off location -->
   <div class="mt-4 rounded-xl border border-gray-200 p-4">
-    <p class="text-[#223548] text-sm">{{ 'confirm.dropOff' | translate }}</p>
-    <h3>{{ 'confirm.chooseDest' | translate }}</h3>
+    <p class="text-sm text-[#5B738B]">{{ 'confirm.dropOff' | translate }}</p>
+    <p class="mt-1 text-base font-bold text-primary-text">{{ formModel().destination || '—' }}</p>
   </div>
- <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-   <div class="rounded-xl border border-gray-200 p-4">
-      <p class="text-[#223548] text-sm">{{ 'confirm.clientName' | translate }}</p>
-      <h3>Eslam Mohamed</h3>
-   </div>
+
+  <!-- Client / Room / Bags -->
+  <div class="mt-3 grid grid-cols-3 gap-3">
     <div class="rounded-xl border border-gray-200 p-4">
-      <p class="text-[#223548] text-sm">{{ 'confirm.roomNo' | translate }}</p>
-      <h3>24</h3>
-   </div>
-   <div class="rounded-xl border border-gray-200 p-4">
-      <p class="text-[#223548] text-sm">{{ 'confirm.manyBags' | translate }}</p>
-   </div>
+      <p class="text-xs text-[#5B738B]">{{ 'confirm.clientName' | translate }}</p>
+      <p class="mt-1 text-sm font-bold text-primary-text">{{ formModel().clientName || '—' }}</p>
+    </div>
+    <div class="rounded-xl border border-gray-200 p-4">
+      <p class="text-xs text-[#5B738B]">{{ 'confirm.roomNo' | translate }}</p>
+      <p class="mt-1 text-sm font-bold text-primary-text">{{ formModel().roomNo || '—' }}</p>
+    </div>
+    <div class="rounded-xl border border-gray-200 p-4">
+      <p class="text-xs font-medium text-[#5B738B]">{{ 'confirm.manyBags' | translate }}</p>
+    </div>
   </div>
 
-  <div class="mt-4 rounded-xl border border-gray-200 p-4">
+  <!-- Car selector -->
+  <div class="mt-3 rounded-xl border border-gray-200 p-4">
     <app-car-selector
       [label]="'form.chooseCar' | translate"
-      [options]="carTypes"
+      [options]="carTypes()"
       [(selected)]="selectedCar"
     />
   </div>
 
-  <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+  <!-- Trip cost / duration -->
+  <div class="mt-3 grid grid-cols-2 gap-3">
     <div class="rounded-xl border border-gray-200 p-4">
-       <p class="text-[#223548] text-sm">{{ 'confirm.tripCost' | translate }}</p>
-       <h3>214.50 CHF</h3>
+      <p class="text-xs text-[#5B738B]">{{ 'confirm.tripCost' | translate }}</p>
+      <p class="mt-1 text-base font-bold text-primary-text">
+        {{ selectedCarOption()?.price ?? '—' }} EGP
+      </p>
     </div>
     <div class="rounded-xl border border-gray-200 p-4">
-       <p class="text-[#223548] text-sm">{{ 'confirm.tripDuration' | translate }}</p>
-       <h3>00:30:10</h3>
+      <p class="text-xs text-[#5B738B]">{{ 'confirm.tripDuration' | translate }}</p>
+      <p class="mt-1 text-base font-bold text-primary-text">{{ tripDurationLabel() }}</p>
     </div>
   </div>
 
   <!-- Footer -->
-  <div modal-footer class="flex flex-col items-center justify-center gap-3 px-4 pb-4 pt-2 w-full">
+  <div modal-footer class="flex flex-col gap-3 px-4 pb-4 pt-2 w-full">
     <button
       type="button"
-      (click)="openWelcomeModal()"
-      class="flex items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 w-full"
+      (click)="confirmBooking()"
+      [disabled]="isCreatingTrip()"
+      class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      <span>
-        <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M18.1991 18.2083H18.2082M18.1991 18.2083C17.6023 18.8001 16.5208 18.6527 15.7624 18.6527C14.8315 18.6527 14.3832 18.8348 13.7188 19.4992C13.1531 20.065 12.3946 21.0833 11.4998 21.0833C10.605 21.0833 9.84662 20.065 9.28088 19.4992C8.61648 18.8348 8.16818 18.6527 7.23723 18.6527C6.47882 18.6527 5.39734 18.8001 4.8006 18.2083C4.19907 17.6119 4.34711 16.5259 4.34711 15.7626C4.34711 14.798 4.13616 14.3545 3.44924 13.6676C2.42743 12.6458 1.91652 12.1348 1.9165 11.5C1.91651 10.8651 2.42741 10.3542 3.44921 9.33241C4.0624 8.71922 4.34711 8.1116 4.34711 7.23739C4.34711 6.47895 4.19972 5.39746 4.7915 4.80071C5.388 4.1992 6.47395 4.34725 7.23725 4.34725C8.11143 4.34725 8.71906 4.06256 9.33223 3.44939C10.3541 2.42757 10.8649 1.91666 11.4998 1.91666C12.1347 1.91666 12.6456 2.42757 13.6674 3.44939C14.2804 4.06244 14.888 4.34725 15.7624 4.34725C16.5208 4.34725 17.6024 4.19986 18.1992 4.79166C18.8006 5.38816 18.6525 6.4741 18.6525 7.23739C18.6525 8.20197 18.8636 8.64548 19.5504 9.33241C20.5723 10.3542 21.0832 10.8651 21.0832 11.5C21.0832 12.1348 20.5723 12.6458 19.5504 13.6676C18.8635 14.3545 18.6525 14.798 18.6525 15.7626C18.6525 16.5259 18.8006 17.6119 18.1991 18.2083Z" stroke="#00C950" stroke-width="2.5"/>
-        <path d="M8.625 12.3557C8.625 12.3557 9.775 12.9803 10.35 13.8958C10.35 13.8958 12.075 10.3021 14.375 9.10416" stroke="#00C950" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      @if (isCreatingTrip()) {
+        <app-icon name="spinner" size="sm" />
+        <span>{{ 'confirm.creating' | translate }}</span>
+      } @else {
+        <svg width="20" height="20" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18.1991 18.2083H18.2082M18.1991 18.2083C17.6023 18.8001 16.5208 18.6527 15.7624 18.6527C14.8315 18.6527 14.3832 18.8348 13.7188 19.4992C13.1531 20.065 12.3946 21.0833 11.4998 21.0833C10.605 21.0833 9.84662 20.065 9.28088 19.4992C8.61648 18.8348 8.16818 18.6527 7.23723 18.6527C6.47882 18.6527 5.39734 18.8001 4.8006 18.2083C4.19907 17.6119 4.34711 16.5259 4.34711 15.7626C4.34711 14.798 4.13616 14.3545 3.44924 13.6676C2.42743 12.6458 1.91652 12.1348 1.9165 11.5C1.91651 10.8651 2.42741 10.3542 3.44921 9.33241C4.0624 8.71922 4.34711 8.1116 4.34711 7.23739C4.34711 6.47895 4.19972 5.39746 4.7915 4.80071C5.388 4.1992 6.47395 4.34725 7.23725 4.34725C8.11143 4.34725 8.71906 4.06256 9.33223 3.44939C10.3541 2.42757 10.8649 1.91666 11.4998 1.91666C12.1347 1.91666 12.6456 2.42757 13.6674 3.44939C14.2804 4.06244 14.888 4.34725 15.7624 4.34725C16.5208 4.34725 17.6024 4.19986 18.1992 4.79166C18.8006 5.38816 18.6525 6.4741 18.6525 7.23739C18.6525 8.20197 18.8636 8.64548 19.5504 9.33241C20.5723 10.3542 21.0832 10.8651 21.0832 11.5C21.0832 12.1348 20.5723 12.6458 19.5504 13.6676C18.8635 14.3545 18.6525 14.798 18.6525 15.7626C18.6525 16.5259 18.8006 17.6119 18.1991 18.2083Z" stroke="white" stroke-width="2.5"/>
+          <path d="M8.625 12.3557C8.625 12.3557 9.775 12.9803 10.35 13.8958C10.35 13.8958 12.075 10.3021 14.375 9.10416" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </span>
-      {{ 'confirm.button' | translate }}
+        <span>{{ 'confirm.button' | translate }}</span>
+      }
     </button>
     <button
       type="button"
       (click)="CloseComfirmBookingModel()"
-      class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50 w-full"
+      class="w-full rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
     >
       {{ 'confirm.goBack' | translate }}
     </button>
   </div>
- </app-modal>
+</app-modal>
 
 
 <!-- ═══════ Comfirm Aboard Modal ═══════ -->
@@ -766,10 +869,16 @@
   <div modal-footer class="flex flex-col items-center gap-3 px-4 pb-4 pt-4 w-full">
     <button
       type="button"
-      (click)="closePickupTimeModal()"
-      class="flex w-full items-center justify-center gap-1.5 rounded-full bg-warning px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+      (click)="confirmScheduledTrip()"
+      [disabled]="isCreatingTrip()"
+      class="flex w-full items-center justify-center gap-1.5 rounded-full bg-warning px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {{ 'pickup.schedule' | translate }}
+      @if (isCreatingTrip()) {
+        <app-icon name="spinner" size="sm" />
+        <span>{{ 'confirm.creating' | translate }}</span>
+      } @else {
+        <span>{{ 'pickup.schedule' | translate }}</span>
+      }
     </button>
     <button
       type="button"

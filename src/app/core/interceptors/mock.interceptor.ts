@@ -333,7 +333,11 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     return handleProducts(req);
   }
 
-  // Users CRUD
+  // Users CRUD — pass auth-related endpoints through to the real API
+  if (url.includes('/users/login') || url.includes('/users/reset-password')) {
+    return next(req);
+  }
+
   if (url.includes('/users')) {
     return handleUsers(req);
   }

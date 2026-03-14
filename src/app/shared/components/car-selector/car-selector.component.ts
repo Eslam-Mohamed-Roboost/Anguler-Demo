@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   input,
-  output,
   model,
 } from '@angular/core';
 
@@ -10,6 +9,8 @@ export interface CarOption {
   id: string;
   label: string;
   image: string;
+  price?: number;
+  estimatedMinutes?: number;
 }
 
 @Component({

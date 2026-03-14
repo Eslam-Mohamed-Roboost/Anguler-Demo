@@ -46,32 +46,7 @@ export class NavbarComponent {
   protected readonly billingPanelOpen = signal(false);
 
   /** Sample billing data */
-  protected readonly billingItems = signal<BillingItem[]>([
-    {
-      id: '1',
-      title: 'Monthly Subscription',
-      amount: 29.99,
-      date: '2024-01-15',
-      status: 'pending',
-      description: 'Premium plan subscription for January 2024'
-    },
-    {
-      id: '2', 
-      title: 'Hotel Booking Fee',
-      amount: 150.00,
-      date: '2024-01-10',
-      status: 'paid',
-      description: 'Booking fee for Salam Hotel reservation'
-    },
-    {
-      id: '3',
-      title: 'Service Charge',
-      amount: 45.50,
-      date: '2024-01-05',
-      status: 'overdue',
-      description: 'Additional service charges'
-    }
-  ]);
+  protected readonly billingItems = signal<BillingItem[]>([]);
 
   /** Mock login for demo purposes — calls the mock auth endpoint */
   protected mockLogin(): void {
@@ -116,12 +91,12 @@ export class NavbarComponent {
         : billingItem
     );
     this.billingItems.set(updatedItems);
-    this.notifications.showSuccess(`Payment processed for ${item.title}`);
+    this.notifications.showSuccess(`Payment processed for ${item.message}`);
   }
 
   /** Handle view bill */
   protected onViewBill(item: BillingItem): void {
     console.log('Viewing bill:', item);
-    this.notifications.showInfo(`Viewing details for ${item.title}`);
+    this.notifications.showInfo(`Viewing details for ${item.message}`);
   }
 }

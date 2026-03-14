@@ -66,6 +66,7 @@ import {
   viewChild,
   ElementRef,
 } from '@angular/core';
+import { FormField } from '@angular/forms/signals';
 import { IconComponent } from '../icon/icon.component';
 
 /**
@@ -80,7 +81,7 @@ export type SpinButtonMode = 'native' | 'custom' | 'none';
 @Component({
   selector: 'app-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent],
+  imports: [IconComponent, FormField],
   templateUrl: './input.component.html',
   styleUrl: './input.component.css',
 })
@@ -223,43 +224,6 @@ export class InputComponent {
         textareaEl.disabled = isDisabled;
       }
     });
-  }
-
-  protected getFieldValue(): string {
-    const field = this.field();
-    try {
-      // Handle signal forms field structure
-      if (field && typeof field === 'object' && 'model' in field) {
-        const model = (field as any).model;
-        return model?.() ?? '';
-      }
-      // Handle legacy structure
-      return (field as any)?.()?.() ?? '';
-    } catch {
-      return '';
-    }
-  }
-
-  protected onFieldValueChange(event: Event): void {
-    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
-    const value = target.value;
-    
-    const field = this.field();
-    try {
-      // Handle signal forms field structure
-      if (field && typeof field === 'object' && 'model' in field) {
-        const model = (field as any).model;
-        if (model && typeof model === 'function') {
-          model.set(value);
-        }
-      }
-      // Handle legacy structure
-      else if (field && typeof field === 'function') {
-        field(value);
-      }
-    } catch (error) {
-      console.warn('Failed to update field value:', error);
-    }
   }
 
   protected onFieldBlur(): void {

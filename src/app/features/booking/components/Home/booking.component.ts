@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal,
-  computed,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { form } from '@angular/forms/signals';
@@ -20,14 +20,17 @@ import { JoinUsService } from '../services/join-us.service';
 import { BookingFormModel } from '../../models/BookingForm-model';
 import { JoinUsFormModel } from '../../models/JoinUsForm-model';
 import { WithdrawalFormModel } from '../../models/WithdrawalForm-model';
-import { CarType } from '../../models/CarType-model';
 import { BaseComponent } from '../../../../shared/base/base.component';
-import { SingInFromModel } from '../../models/signInForm-model';
 import { PasswordInputComponent } from '../../../../shared/components/password-input/password-input.component';
 import { AuthService } from '../services/auth.service';
 import { CitiesService } from '../services/cities.service';
 import { LoginService } from '../services/login.service';
+import { OtpService } from '../services/otp.service';
+import { VehicleTypeService } from '../services/vehicle-type.service';
+import { TripRequestService } from '../services/trip-request.service';
+import { CarOption } from '../../../../shared/components/car-selector/car-selector.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { NotificationStore } from '../../../../core/stores/notification.store';
 
 @Component({
   selector: 'app-booking',
@@ -53,6 +56,10 @@ export class BookingComponent extends BaseComponent {
   private readonly authService = inject(AuthService);
   private readonly citiesService = inject(CitiesService);
   private readonly loginService = inject(LoginService);
+  private readonly otpService = inject(OtpService);
+  private readonly vehicleTypeService = inject(VehicleTypeService);
+  private readonly tripRequestService = inject(TripRequestService);
+  private readonly notifications = inject(NotificationStore);
 
   constructor() {
     super();
@@ -80,16 +87,40 @@ export class BookingComponent extends BaseComponent {
 
     // Load cities on initialization
     this.loadCities();
+    this.loadVehicleTypes(50);
   }
 
-  readonly carTypes: CarType[] = [
-    { id: 'premium', label: 'Premium', image: 'assets/booking/car-premium.png' },
-    { id: 'van', label: 'Van', image: 'assets/booking/car-van.png' },
-    { id: 'comfort', label: 'Comfort', image: 'assets/booking/car-comfort.png' },
-    { id: 'pet', label: 'Pet', image: 'assets/booking/car-pet.png' },
-    { id: 'taxi', label: 'Taxi', image: 'assets/booking/car-taxi.png' },
-    { id: 'kids', label: 'Kids Seat', image: 'assets/booking/car-kids.png' },
-  ];
+  private static readonly fallbackImages: Record<string, string> = {
+    classic:  'assets/booking/car-taxi.png',
+    sport:    'assets/booking/car-premium.png',
+    van:      'assets/booking/car-van.png',
+    comfort:  'assets/booking/car-comfort.png',
+    pet:      'assets/booking/car-pet.png',
+    kids:     'assets/booking/car-kids.png',
+  };
+
+  readonly carTypes = signal<CarOption[]>([]);
+  readonly carTypesLoading = signal(false);
+
+  private loadVehicleTypes(km: number): void {
+    this.carTypesLoading.set(true);
+    this.vehicleTypeService.getAll(km).subscribe({
+      next: (result) => {
+        this.carTypesLoading.set(false);
+        if (result.isSuccess && result.data) {
+          const options: CarOption[] = result.data.map(v => {
+            const key = v.name.toLowerCase().split(' ')[0];
+            const image = BookingComponent.fallbackImages[key] ?? 'assets/booking/car-premium.png';
+            const price = v.expectedPriceAfterDiscount ?? v.expectedPrice;
+            return { id: v.id, label: v.name, image, price, estimatedMinutes: v.estimatedTimeInMinutes };
+          });
+          this.carTypes.set(options);
+          if (options.length > 0) this.selectedCar.set(options[0].id);
+        }
+      },
+      error: () => this.carTypesLoading.set(false),
+    });
+  }
 
   readonly destinations = [
     'Cairo International Airport',
@@ -104,7 +135,28 @@ export class BookingComponent extends BaseComponent {
     'Heliopolis',
   ];
 
-  protected readonly selectedCar = signal<string>('premium');
+  protected readonly selectedCar = signal<string>('');
+  readonly selectedCarOption = computed(() =>
+    this.carTypes().find(c => c.id === this.selectedCar()) ?? null,
+  );
+  readonly tripDurationLabel = computed(() => {
+    const mins = this.selectedCarOption()?.estimatedMinutes ?? 0;
+    const h = Math.floor(mins / 60).toString().padStart(2, '0');
+    const m = (mins % 60).toString().padStart(2, '0');
+    return `${h}hr : ${m}min : 00sec`;
+  });
+  readonly isCreatingTrip = signal(false);
+  readonly hotelImageSrc = signal<string>('assets/booking/hotel-illustration.png');
+
+  onHotelImageChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => this.hotelImageSrc.set(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  }
 
   /* ── Signal Form ──────────────────────────────────────── */
   protected readonly formModel = signal<BookingFormModel>({
@@ -115,11 +167,8 @@ export class BookingComponent extends BaseComponent {
   });
   protected readonly f = form(this.formModel);
 
-  protected readonly SignInForm = signal<SingInFromModel>({
-    email: '',
-    password: '',
-  });
-  protected readonly SignInFormF = form(this.SignInForm);
+  protected readonly signInFormModel = signal({ email: '', password: '' });
+  protected readonly SignInFormF = form(this.signInFormModel);
 
   /* ── Map ───────────────────────────────────────────────── */
   readonly mapCenter = signal<[number, number]>([30.0444, 31.2357]);
@@ -146,6 +195,13 @@ readonly ShowScheduledRiderModel = signal(false);
 readonly activeTab = signal<'login' | 'register'>('register');
   readonly isRegistering = signal(false);
   readonly isLoggingIn = signal(false);
+  readonly isSendingOtp = signal(false);
+  readonly isValidatingOtp = signal(false);
+  readonly isResettingPassword = signal(false);
+  readonly otpUserId = signal<string>('');
+  readonly showResetPasswordModal = signal(false);
+  protected readonly resetPasswordFormModel = signal({ newPassword: '', confirmPassword: '' });
+  protected readonly rpf = form(this.resetPasswordFormModel);
 
   readonly pickupDateOptions: string[] = this.generateDateOptions();
   readonly pickupHourOptions: string[] = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
@@ -217,7 +273,35 @@ readonly activeTab = signal<'login' | 'register'>('register');
   }
 
   nextStep(): void {
-    this.joinStep.set(2);
+    const form = this.joinFormModel();
+
+    if (!form.hotelName || !form.cityId || !form.address || !form.phoneNumber || !form.email || !form.password) {
+      this.showError('Please fill in all required fields.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      this.showError('Please enter a valid email address.');
+      return;
+    }
+
+    this.isRegistering.set(true);
+
+    this.authService.Register(form).subscribe({
+      next: (result) => {
+        this.isRegistering.set(false);
+        if (result.isSuccess) {
+          this.joinStep.set(2);
+        } else {
+          this.showError(result.error?.description || 'Registration failed. Please try again.');
+        }
+      },
+      error: () => {
+        this.isRegistering.set(false);
+        this.showError('An unexpected error occurred. Please try again later.');
+      },
+    });
   }
 
   prevStep(): void {
@@ -239,6 +323,30 @@ readonly activeTab = signal<'login' | 'register'>('register');
     this.ForgotPasswordMode.set(false);
   }
 
+  sendForgotPasswordCode(): void {
+    const email = this.signInFormModel().email;
+    if (!email) {
+      this.showError('Please enter your email address.');
+      return;
+    }
+    this.isSendingOtp.set(true);
+    this.otpService.resend(email).subscribe({
+      next: (result) => {
+        this.isSendingOtp.set(false);
+        if (result.isSuccess && result.data) {
+          this.otpUserId.set(result.data);
+          this.openVerificationModal();
+        } else {
+          this.showError(result.error?.description || 'Failed to send OTP. Please try again.');
+        }
+      },
+      error: () => {
+        this.isSendingOtp.set(false);
+        this.showError('An unexpected error occurred. Please try again later.');
+      },
+    });
+  }
+
   openVerificationModal(): void {
     this.ColseForgotPasswordMode();
     this.otpDigits.set(['', '', '', '', '', '']);
@@ -247,6 +355,64 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   closeVerificationModal(): void {
     this.showVerificationModal.set(false);
+  }
+
+  verifyOtp(): void {
+    const otp = this.otpDigits().join('');
+    if (otp.length < 6) {
+      this.showError('Please enter all 6 digits of the verification code.');
+      return;
+    }
+    this.isValidatingOtp.set(true);
+    this.otpService.validate(this.otpUserId(), otp).subscribe({
+      next: (result) => {
+        this.isValidatingOtp.set(false);
+        if (result.isSuccess && result.data === true) {
+          this.closeVerificationModal();
+          this.resetPasswordFormModel.set({ newPassword: '', confirmPassword: '' });
+          this.showResetPasswordModal.set(true);
+        } else {
+          this.showError('Invalid verification code. Please try again.');
+        }
+      },
+      error: () => {
+        this.isValidatingOtp.set(false);
+        this.showError('An unexpected error occurred. Please try again later.');
+      },
+    });
+  }
+
+  closeResetPasswordModal(): void {
+    this.showResetPasswordModal.set(false);
+  }
+
+  submitResetPassword(): void {
+    const { newPassword, confirmPassword } = this.resetPasswordFormModel();
+    if (!newPassword) {
+      this.showError('Please enter a new password.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      this.showError('Passwords do not match.');
+      return;
+    }
+    this.isResettingPassword.set(true);
+    this.otpService.resetPassword(this.otpUserId(), newPassword).subscribe({
+      next: (result) => {
+        this.isResettingPassword.set(false);
+        if (result.isSuccess) {
+          this.closeResetPasswordModal();
+          this.showSuccess('Password reset successfully! Please sign in with your new password.');
+          this.signInModalOpen();
+        } else {
+          this.showError(result.error?.description || 'Failed to reset password. Please try again.');
+        }
+      },
+      error: () => {
+        this.isResettingPassword.set(false);
+        this.showError('An unexpected error occurred. Please try again later.');
+      },
+    });
   }
 
   onOtpInput(event: Event, index: number): void {
@@ -280,12 +446,29 @@ readonly activeTab = signal<'login' | 'register'>('register');
   }
 
 
+  bookNow(): void {
+    if (!this.loginService.isLoggedIn()) {
+      this.signInModalOpen();
+      return;
+    }
+    const { destination, clientName, roomNo } = this.formModel();
+    if (!destination || !clientName || !roomNo) {
+      this.showError('Please fill in destination, client name, and room number.');
+      return;
+    }
+    this.ShowComfirmBookingModel.set(true);
+  }
+
   openComfirmBookingModel(): void {
     this.ShowComfirmBookingModel.set(true);
   }
 
   CloseComfirmBookingModel(): void {
     this.ShowComfirmBookingModel.set(false);
+  }
+
+  confirmBooking(): void {
+    this.createTrip(false, null);
   }
 
   openRideRequestSentModel():void{
@@ -296,11 +479,69 @@ readonly activeTab = signal<'login' | 'register'>('register');
   }
 
   openPickupTimeModal(): void {
+    if (!this.loginService.isLoggedIn()) {
+      this.signInModalOpen();
+      return;
+    }
+    const { destination, clientName, roomNo } = this.formModel();
+    if (!destination || !clientName || !roomNo) {
+      this.showError('Please fill in destination, client name, and room number.');
+      return;
+    }
     this.showPickupTimeModal.set(true);
   }
 
   closePickupTimeModal(): void {
     this.showPickupTimeModal.set(false);
+  }
+
+  confirmScheduledTrip(): void {
+    this.closePickupTimeModal();
+    this.createTrip(true, this.getScheduledAt());
+  }
+
+  private getScheduledAt(): string {
+    const now = new Date();
+    const d = new Date(now);
+    d.setDate(now.getDate() + this.selectedPickupDateIndex());
+    d.setHours(this.selectedPickupHourIndex(), this.selectedPickupMinuteIndex(), 0, 0);
+    return d.toISOString();
+  }
+
+  private createTrip(isScheduled: boolean, scheduledAt: string | null): void {
+    const { destination, clientName, roomNo } = this.formModel();
+    const [lat, lng] = this.mapCenter();
+    const car = this.selectedCarOption();
+
+    this.isCreatingTrip.set(true);
+    this.tripRequestService.create({
+      startLocation: { latitude: lat, longitude: lng, address: 'Current Location', order: 0 },
+      endLocations: [{ latitude: 0, longitude: 0, address: destination, order: 1 }],
+      isScheduled,
+      scheduledAt,
+      vehicleTypeId: this.selectedCar(),
+      paymentMethodId: null,
+      estimatedPrice: car?.price ?? 0,
+      distance: 50,
+      userRewardId: null,
+      paymentMethodType: 0,
+      roomNumber: parseInt(roomNo, 10) || 0,
+      guestName: clientName,
+    }).subscribe({
+      next: (result) => {
+        this.isCreatingTrip.set(false);
+        if (result.isSuccess) {
+          this.ShowComfirmBookingModel.set(false);
+          this.ShowRideRequestSentModel.set(true);
+        } else {
+          this.showError(result.error?.description || 'Failed to create trip. Please try again.');
+        }
+      },
+      error: () => {
+        this.isCreatingTrip.set(false);
+        this.showError('An unexpected error occurred. Please try again later.');
+      },
+    });
   }
   openScheduledRiderModel(): void {
     this.ShowScheduledRiderModel.set(true);
@@ -417,85 +658,41 @@ readonly activeTab = signal<'login' | 'register'>('register');
     });
   }
 
-  public testButtonClick(): void {
-    console.log('🖱️ Button clicked! Test method called.');
-    console.log('📊 Current SignInForm signal value:', this.SignInForm());
-    console.log('📊 SignInFormF form object:', this.SignInFormF);
-    
-    // Try to get form values directly
-    const formValue = this.SignInForm();
-    console.log('📋 Form values - Email:', formValue.email, 'Password:', formValue.password ? '***' : 'empty');
-  }
-
   public SignIn(): void {
-    console.log('🔐 SignIn method called!');
-    console.log('📊 SignInForm signal value:', this.SignInForm());
-    console.log('🔍 LoginService injected:', !!this.loginService);
-    
-    // Temporarily bypass validation to test if the method is called
-    console.log('🧪 Testing login with hardcoded values...');
-    
+    const { email, password } = this.signInFormModel();
+    console.log('Attempting login with:', { email, password: '********' });
+    if (!email || !password) {
+      this.showError('Please enter your email and password.');
+      return;
+    }
+
     this.isLoggingIn.set(true);
-    
-    const loginRequest = {
-      email: 'test@example.com',
-      password: 'password123'
-    };
-    
-    console.log('📡 About to call loginService.login with:', loginRequest);
-    
-    // Use hardcoded values for testing
-    this.loginService.login(loginRequest).subscribe({
+
+    this.loginService.login({ email, password }).subscribe({
       next: (result) => {
-        console.log('📡 Login API response received:', result);
         this.isLoggingIn.set(false);
-        
+
         if (result.isSuccess && result.data) {
-          console.log('✅ Login successful:', result.data);
-          this.showSuccess('Login successful! Welcome back.');
-          
-          // Save user session
-          if (result.data.user && result.data.token) {
-            this.loginService.saveUserSession({
-              ...result.data.user,
-              token: result.data.token
-            });
-          }
-          
-          // Reset form
-          this.SignInForm.set({
-            email: '',
-            password: ''
-          });
-          
-          // Close modal
+          this.loginService.saveSession(result.data.token, result.data.role);
+          this.signInFormModel.set({ email: '', password: '' });
           this.closeSignInModal();
-          
+          this.showSuccess('Login successful! Welcome back.');
         } else {
-          console.error('❌ Login failed:', result.error);
           this.showError(result.error?.description || 'Login failed. Please check your credentials.');
         }
       },
-      error: (err) => {
-        console.error('❌ Login API error:', err);
+      error: () => {
         this.isLoggingIn.set(false);
         this.showError('An unexpected error occurred. Please try again later.');
       },
-      complete: () => {
-        console.log('🏁 Login API call completed');
-      }
     });
   }
 
   private showSuccess(message: string): void {
-    // Implementation would depend on your notification system
-    console.log('SUCCESS:', message);
-    // You could use a toast service or modal here
+    this.notifications.showSuccess(message);
   }
 
   private showError(message: string): void {
-    // Implementation would depend on your notification system
-    console.error('ERROR:', message);
-    // You could use a toast service or modal here
+    this.notifications.showError(message);
   }
 }

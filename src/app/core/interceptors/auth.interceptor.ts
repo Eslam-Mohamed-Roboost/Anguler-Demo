@@ -1,16 +1,16 @@
 // Attaches JWT bearer token to outgoing HTTP requests when authenticated
 import { inject } from '@angular/core';
 import type { HttpInterceptorFn } from '@angular/common/http';
-import { AuthService } from '../services/auth.service';
+import { LoginService } from '../../features/booking/components/services/login.service';
+import { environment } from '../../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // Skip auth header for external API calls
-  if (req.url.startsWith('http')) {
+  // Only attach token for requests going to our API
+  if (!req.url.startsWith(environment.apiUrl)) {
     return next(req);
   }
 
-  const authService = inject(AuthService);
-  const token = authService.token();
+  const token = inject(LoginService).getToken();
 
   if (token) {
     req = req.clone({

@@ -15,8 +15,7 @@
       [placeholder]="placeholder()"
       [rows]="rows()"
       [class]="classes()"
-      [value]="getFieldValue()"
-      (input)="onFieldValueChange($event)"
+      [formField]="$any(field())"
       (blur)="onFieldBlur()"
     ></textarea>
   } @else {
@@ -28,10 +27,8 @@
         [placeholder]="placeholder()"
         [attr.step]="step() || null"
         [class]="classes()"
-        [value]="getFieldValue()"
-        (input)="onFieldValueChange($event)"
+        [formField]="$any(field())"
         (blur)="onFieldBlur()"
-        [disabled]="disabled()"
       />
 
       <!-- ═══════ CUSTOM SPIN BUTTONS ═══════ -->

@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import { Observable, of, delay } from 'rxjs';
-import { environment } from '../../../../../environments/environment';
+import { ApiService } from '../../../../core/services/api.service';
+import { Result } from '../../../../core/models/result.model';
 
 export interface City {
   id: string;
@@ -9,52 +10,37 @@ export interface City {
 }
 
 export interface CitiesResponse {
-  isSuccess: boolean;
-  data: {
+ 
     items: City[];
     pageNumber: number;
     pageSize: number;
     totalCount: number;
     totalPages: number;
-  };
-  error?: {
-    code: string;
-    description: string;
-    type: number;
-  };
-  statusCode: number;
+  
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class CitiesService {
-  private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.apiUrl;
-  private readonly useMockData = false; // Set to false to use real API
+export class CitiesService extends ApiService {
+   private readonly useMockData = false; // Set to false to use real API
 
-  constructor() {
-    console.log('🏙️ CitiesService initialized');
-  }
+ 
 
-  getCities(searchTerm?: string, pageSize: number = 50, pageNumber: number = 1): Observable<CitiesResponse> {
+  getCities(searchTerm?: string, pageSize: number = 50, pageNumber: number = 1): Observable<Result<CitiesResponse>> {
     if (this.useMockData) {
-      console.log('📊 Using mock cities data');
       return of(this.createMockCitiesResponse(searchTerm, pageSize, pageNumber)).pipe(delay(300));
     }
 
-    const params = new URLSearchParams();
-    if (searchTerm) params.append('Name', searchTerm);
-    params.append('PageSize', pageSize.toString());
-    params.append('PageNumber', pageNumber.toString());
+    let params = new HttpParams()
+      .set('PageSize', pageSize.toString())
+      .set('PageNumber', pageNumber.toString());
+    if (searchTerm) params = params.set('Name', searchTerm);
 
-    const url = `${this.baseUrl}/city/getall?${params}`;
-    console.log('📡 Fetching cities from API:', url);
-
-    return this.http.get<CitiesResponse>(url);
+    return this.get<CitiesResponse>('/city/getall', params);
   }
 
-  private createMockCitiesResponse(searchTerm?: string, pageSize: number = 50, pageNumber: number = 1): CitiesResponse {
+  private createMockCitiesResponse(searchTerm?: string, pageSize: number = 50, pageNumber: number = 1): Result<CitiesResponse> {
     const allCities: City[] = [
       { id: '3fa85f64-5717-4562-b3fc-2c963f66afa6', name: 'Cairo' },
       { id: '3fa85f64-5717-4562-b3fc-2c963f66afa7', name: 'Alexandria' },
@@ -116,6 +102,7 @@ export class CitiesService {
         totalCount: filteredCities.length,
         totalPages: Math.ceil(filteredCities.length / pageSize)
       },
+      error: null,
       statusCode: 200
     };
   }

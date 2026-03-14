@@ -17,7 +17,7 @@
   </div>
 
   <!-- Right: Guest buttons (unauthenticated) -->
-  @if (isAuthenticated()) {
+  @if (!isAuthenticated()) {
     <div class="flex items-center gap-2 sm:gap-3">
       <button
         type="button"
@@ -94,23 +94,71 @@
         <span>{{ 'nav.tripsHistory' | translate }}</span>
       </a>
 
-      <!-- Hotel profile pill -->
-      <button
-        type="button"
-        (click)="profileClick.emit()"
-        class="flex items-center gap-1.5 rounded-full bg-[#F0FDF4] px-2 py-1.5 shadow-sm backdrop-blur-sm transition hover:bg-white sm:gap-2 sm:px-3 sm:py-2"
-      >
-        <span class="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary sm:size-8">
-          <svg class="size-4 sm:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 21h18"/>
-            <path d="M5 21V7l8-4v18"/>
-            <path d="M19 21V11l-6-4"/>
-            <path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>
+      <!-- Hotel profile pill + dropdown -->
+      <div class="relative" (appClickOutside)="closeProfileDropdown()">
+        <button
+          type="button"
+          (click)="toggleProfileDropdown()"
+          class="flex items-center gap-1.5 rounded-full bg-[#F0FDF4] px-2 py-1.5 shadow-sm backdrop-blur-sm transition hover:bg-white sm:gap-2 sm:px-3 sm:py-2"
+        >
+          <span class="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary sm:size-8">
+            <svg class="size-4 sm:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21h18"/>
+              <path d="M5 21V7l8-4v18"/>
+              <path d="M19 21V11l-6-4"/>
+              <path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>
+            </svg>
+          </span>
+          <span class="hidden text-sm font-semibold text-primary-text sm:inline">{{ hotelName() }}</span>
+          <app-icon name="chevron-down" size="xs" class="text-gray-400 transition-transform duration-200" />
+        </button>
+
+        <!-- Dropdown menu -->
+        @if (profileDropdownOpen()) {
+          <div class="absolute end-0 top-full mt-2 w-52 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg">
+            <a
+              routerLink="/profile"
+              (click)="closeProfileDropdown()"
+              class="flex items-center gap-3 px-4 py-3.5 text-sm font-medium text-primary-text transition hover:bg-gray-50"
+            >
+           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16.5 9C16.5 13.1421 13.1421 16.5 9 16.5C4.85786 16.5 1.5 13.1421 1.5 9C1.5 4.85786 4.85786 1.5 9 1.5C13.1421 1.5 16.5 4.85786 16.5 9Z" stroke="#5B738B" stroke-width="1.125"/>
+          <path d="M11.0625 7.125C11.0625 8.2641 10.1391 9.1875 9 9.1875C7.8609 9.1875 6.9375 8.2641 6.9375 7.125C6.9375 5.98592 7.8609 5.0625 9 5.0625C10.1391 5.0625 11.0625 5.98592 11.0625 7.125Z" stroke="#5B738B" stroke-width="1.125"/>
+          <path d="M4.12495 14.25L4.54525 13.5145C5.21291 12.3461 6.45545 11.625 7.8012 11.625H10.1987C11.5444 11.625 12.787 12.3461 13.4546 13.5145L13.8749 14.25" stroke="#5B738B" stroke-width="1.125" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-        </span>
-        <span class="hidden text-sm font-semibold text-primary-text sm:inline">{{ hotelName() }}</span>
-        <app-icon name="chevron-down" size="xs" class="text-gray-400" />
-      </button>
+
+              <span>{{ 'nav.myProfile' | translate }}</span>
+            </a>
+            <div class="mx-4 border-t border-gray-100"></div>
+            <a
+              routerLink="/FinancialHistory"
+              (click)="closeProfileDropdown()"
+              class="flex items-center gap-3 px-4 py-3.5 text-sm font-medium text-primary-text transition hover:bg-gray-50"
+            >
+             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4.875 13.125V10.875M8.625 13.125V6.375M12.375 13.125V10.125" stroke="#5B738B" stroke-width="1.125" stroke-linecap="round"/>
+              <path d="M16.125 4.125C16.125 5.36764 15.1177 6.375 13.875 6.375C12.6323 6.375 11.625 5.36764 11.625 4.125C11.625 2.88236 12.6323 1.875 13.875 1.875C15.1177 1.875 16.125 2.88236 16.125 4.125Z" stroke="#5B738B" stroke-width="1.125"/>
+              <path d="M16.1216 8.25C16.1216 8.25 16.125 8.50463 16.125 9C16.125 12.3588 16.125 14.0381 15.0816 15.0816C14.0381 16.125 12.3587 16.125 9 16.125C5.64124 16.125 3.96187 16.125 2.91843 15.0816C1.875 14.0381 1.875 12.3588 1.875 9C1.875 5.64127 1.875 3.96189 2.91843 2.91845C3.96187 1.87502 5.64124 1.87502 9 1.87502L9.75 1.875" stroke="#5B738B" stroke-width="1.125" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+
+              <span>{{ 'nav.financialReports' | translate }}</span>
+            </a>
+            <div class="mx-4 border-t border-gray-100"></div>
+            <button
+              type="button"
+              (click)="logout()"
+              class="flex w-full items-center gap-3 px-4 py-3.5 text-sm font-medium text-danger transition hover:bg-red-50"
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.875 3.30031C12.564 2.17793 10.8611 1.5 9 1.5C4.85786 1.5 1.5 4.85786 1.5 9C1.5 13.1421 4.85786 16.5 9 16.5C10.8611 16.5 12.564 15.8221 13.875 14.6997" stroke="#EE3939" stroke-width="1.125" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M13.5 6C13.5 6 16.5 8.2095 16.5 9C16.5 9.79058 13.5 12 13.5 12M16.125 9H6.75" stroke="#EE3939" stroke-width="1.125" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+
+              <span>{{ 'nav.logout' | translate }}</span>
+            </button>
+          </div>
+        }
+      </div>
     </div>
   }
 </nav>
@@ -126,8 +174,10 @@
 <!-- Billing Panel -->
 <app-billing-panel 
   [isOpen]="billingPanelOpen()"
-  [billingItems]="billingItems()"
+  
   (closePanel)="onCloseBillingPanel()"
-  (payBill)="onPayBill($event)"
-  (viewBill)="onViewBill($event)"
+ 
 />
+<!-- [billingItems]="billingItems()" -->
+ <!-- (payBill)="onPayBill($event)"
+  (viewBill)="onViewBill($event)" -->

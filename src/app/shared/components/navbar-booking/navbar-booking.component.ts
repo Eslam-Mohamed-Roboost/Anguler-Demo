@@ -7,22 +7,26 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { BillingPanelComponent, BillingItem } from '../billing-panel/billing-panel.component';
 import { MessagePanelComponent, Message } from '../message-panel/message-panel.component';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { ClickOutsideDirective } from '../../directives/click-outside.directive';
+import { LoginService } from '../../../features/booking/components/services/login.service';
 
 @Component({
   selector: 'app-navbar-booking',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent, RouterLink, BillingPanelComponent, MessagePanelComponent, TranslatePipe],
+  imports: [IconComponent, RouterLink, BillingPanelComponent, MessagePanelComponent, TranslatePipe, ClickOutsideDirective],
   templateUrl: './navbar-booking.component.html',
   host: { class: 'relative z-20 block' },
 })
 export class NavbarBookingComponent {
   private readonly langService = inject(LanguageService);
+  private readonly loginService = inject(LoginService);
+  private readonly router = inject(Router);
 
   /** Logo image source */
   readonly logoSrc = input('assets/booking/logo-lines.png');
@@ -64,35 +68,10 @@ export class NavbarBookingComponent {
   /** Panel states */
   protected readonly messagePanelOpen = signal(false);
   protected readonly billingPanelOpen = signal(false);
+  protected readonly profileDropdownOpen = signal(false);
 
   /** Sample billing data */
-  protected readonly billingItems = signal<BillingItem[]>([
-    {
-      id: '1',
-      title: 'Room Booking - Deluxe Suite',
-      amount: 250.00,
-      date: '2024-01-20',
-      status: 'pending',
-      description: 'Deluxe suite for 2 nights at Salam Hotel'
-    },
-    {
-      id: '2', 
-      title: 'Airport Transfer',
-      amount: 45.00,
-      date: '2024-01-18',
-      status: 'paid',
-      description: 'Airport pickup and drop-off service'
-    },
-    {
-      id: '3',
-      title: 'Spa Services',
-      amount: 120.00,
-      date: '2024-01-15',
-      status: 'overdue',
-      description: 'Massage and wellness treatments'
-    }
-  ]);
-
+ 
   /** Sample message data */
   protected readonly messages = signal([
     {
@@ -160,6 +139,20 @@ export class NavbarBookingComponent {
     this.billingPanelOpen.set(false);
   }
 
+  protected toggleProfileDropdown(): void {
+    this.profileDropdownOpen.update(v => !v);
+  }
+
+  protected closeProfileDropdown(): void {
+    this.profileDropdownOpen.set(false);
+  }
+
+  protected logout(): void {
+    this.loginService.clearSession();
+    this.closeProfileDropdown();
+    this.router.navigate(['/home']);
+  }
+
   /** Handle message click */
   protected onMessageItemClick(message: any): void {
     console.log('Message clicked:', message);
@@ -177,17 +170,17 @@ export class NavbarBookingComponent {
   }
 
   /** Handle pay bill */
-  protected onPayBill(item: BillingItem): void {
-    console.log('Paying bill:', item);
-    // Update item status to paid
-    const updatedItems = this.billingItems().map(billingItem => 
-      billingItem.id === item.id 
-        ? { ...billingItem, status: 'paid' as const }
-        : billingItem
-    );
-    this.billingItems.set(updatedItems);
-    this.bellCount.set(Math.max(0, this.bellCount() - 1));
-  }
+  // protected onPayBill(item: BillingItem): void {
+  //   console.log('Paying bill:', item);
+  //   // Update item status to paid
+  //   const updatedItems = this.billingItems().map(billingItem => 
+  //     billingItem.id === item.id 
+  //       ? { ...billingItem, status: 'paid' as const }
+  //       : billingItem
+  //   );
+  //   this.billingItems.set(updatedItems);
+  //   this.bellCount.set(Math.max(0, this.bellCount() - 1));
+  // }
 
   /** Handle view bill */
   protected onViewBill(item: BillingItem): void {

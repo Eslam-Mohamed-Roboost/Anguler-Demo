@@ -1,4 +1,4 @@
-<div role="radiogroup" [attr.aria-label]="label()" class="mt-5">
+<div role="radiogroup" [attr.aria-label]="label()">
   @if (label()) {
     <p class="mb-2 text-sm font-medium text-gray-700">{{ label() }}</p>
   }
@@ -19,6 +19,12 @@
           class="text-xs font-medium"
           [class]="selected() === car.id ? 'text-primary' : 'text-gray-500'"
         >{{ car.label }}</span>
+        @if (car.price != null) {
+          <span
+            class="text-[10px] font-semibold"
+            [class]="selected() === car.id ? 'text-primary' : 'text-gray-400'"
+          >{{ car.price }} EGP</span>
+        }
       </button>
     }
   </div>
