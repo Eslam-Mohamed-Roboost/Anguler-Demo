@@ -84,6 +84,17 @@ export class TripDetailComponent implements OnInit, OnDestroy {
     return map[this.trip().status] ?? this.trip().status;
   });
 
+  readonly statusBadgeClass = computed(() => {
+    const map: Record<string, string> = {
+      active: 'text-status-scheduled bg-status-scheduled-bg',
+      pending: 'text-status-scheduled bg-status-scheduled-bg',
+      completed: 'text-status-completed bg-status-completed-bg',
+      cancelled: 'text-status-cancelled bg-status-cancelled-bg',
+      scheduled: 'text-status-active bg-status-active-bg',
+    };
+    return map[this.trip().status] ?? '';
+  });
+
   ngOnInit(): void {
     this.renderer.addClass(document.body, 'hotel-details-active');
     const hotelId = this.route.snapshot.paramMap.get('id');

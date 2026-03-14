@@ -14,6 +14,7 @@ import { TripsHistoryTableComponent } from '../../components/trips-history-table
 import { HotelDetailsService } from '../../services/hotel-details.service';
 import { GetDriverTripsQuery } from '../../services/api.types';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-hotel-details',
@@ -22,6 +23,7 @@ import { IconComponent } from '../../../../shared/components/icon/icon.component
     StatisticsCardComponent,
     TripsHistoryTableComponent,
     IconComponent,
+    TranslatePipe,
   ],
   templateUrl: './hotel-details.component.html',
   styleUrl: './hotel-details.component.css',

@@ -1,14 +1,14 @@
-<div class="hotel-detail-page">
+<div class="min-h-screen bg-page-bg overflow-y-auto h-screen px-8 py-6 max-w-[1400px] mx-auto max-lg:px-5 max-lg:py-5 max-md:px-4 max-md:py-3">
 
   <!-- Breadcrumb -->
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/hotel-details">Hotel Integration</a>
-    <span class="breadcrumb-sep" aria-hidden="true">/</span>
-    <span class="breadcrumb-current">Hotel Details #{{ hotelId() }}</span>
+  <nav class="flex items-center gap-1.5 text-cell mb-4" aria-label="Breadcrumb">
+    <a class="text-muted no-underline hover:text-body-soft hover:underline transition-colors" routerLink="/hotel-details">Hotel Integration</a>
+    <span class="text-muted-light" aria-hidden="true">/</span>
+    <span class="text-body font-medium">Hotel Details #{{ hotelId() }}</span>
   </nav>
 
   <!-- Hotel Info Card -->
-  <section class="section-gap">
+  <section class="mb-4">
     <app-hotel-info-card
       [hotel]="hotel()"
       (deleteClick)="onHotelDelete()"
@@ -16,8 +16,8 @@
   </section>
 
   <!-- Statistics Grid -->
-  <section class="section-gap">
-    <div class="statistics-grid">
+  <section class="mb-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-md:gap-2">
       @for (stat of statistics(); track stat.label) {
         <app-statistics-card [statistic]="stat" />
       }
@@ -25,7 +25,7 @@
   </section>
 
   <!-- Hotel Details Form -->
-  <section class="section-gap">
+  <section class="mb-4">
     <app-hotel-details-form
       [initialData]="hotel()"
       (formSubmit)="onFormSubmit($event)"
@@ -34,7 +34,7 @@
   </section>
 
   <!-- Withdrawal Details -->
-  <section class="section-gap">
+  <section class="mb-4">
     <app-withdrawal-details
       [awaitingAmount]="awaitingAmount()"
       (settleSubmit)="onWithdrawalSubmit($event)"
@@ -42,22 +42,22 @@
   </section>
 
   <!-- Trips History -->
-  <section class="section-gap">
-    <app-card variant="elevated" class="trips-card">
+  <section class="mb-4">
+    <app-card variant="elevated">
       <!-- Section Header -->
-      <div class="trips-header">
-        <div class="trips-title-row">
-          <div class="section-icon-circle">
+      <div class="flex items-center justify-between px-4 pt-4 gap-4 flex-wrap max-lg:flex-col max-lg:items-start">
+        <div class="flex items-center gap-2.5">
+          <div class="flex items-center justify-center size-8 rounded-full bg-icon-circle-bg text-icon-circle shrink-0">
             <app-icon name="calendar" size="sm" aria-hidden="true" />
           </div>
-          <h3 class="section-title">Trips History</h3>
+          <h3 class="text-[15px] font-semibold text-body m-0">Trips History</h3>
         </div>
 
-        <div class="trips-toolbar">
-          <div class="search-container">
-            <app-icon name="search" class="search-icon" size="sm" aria-hidden="true" />
+        <div class="flex items-center gap-2 flex-wrap max-lg:w-full">
+          <div class="relative flex items-center">
+            <app-icon name="search" class="absolute start-3 text-muted-light z-[1] pointer-events-none" size="sm" aria-hidden="true" />
             <input
-              class="search-input"
+              class="py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-white outline-none w-[180px] focus:border-warning focus:ring-2 focus:ring-warning/10 max-lg:flex-1"
               type="text"
               placeholder="Search Trips"
               [value]="searchQuery()"
@@ -65,11 +65,11 @@
               aria-label="Search trips"
             />
           </div>
-          <button class="toolbar-btn" type="button">
+          <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer hover:bg-gray-50 whitespace-nowrap transition" type="button">
             <app-icon name="filter" size="sm" aria-hidden="true" />
             <span>Filter</span>
           </button>
-          <button class="toolbar-btn" type="button">
+          <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer hover:bg-gray-50 whitespace-nowrap transition" type="button">
             <app-icon name="download" size="sm" aria-hidden="true" />
             <span>Export</span>
           </button>
@@ -77,7 +77,7 @@
       </div>
 
       <!-- Table -->
-      <div class="table-container">
+      <div class="px-4 py-3 overflow-x-auto">
         <app-data-table
           [data]="filteredTrips()"
           [columns]="columns()"
@@ -86,65 +86,65 @@
         >
           <!-- Guest Cell -->
           <ng-template cellDef="guest" let-row>
-            <div class="cell-two-line">
-              <span class="cell-primary">{{ row.customerName }}</span>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.customerName }}</span>
               @if (row.room) {
-                <span class="cell-secondary">{{ row.room }}</span>
+                <span class="text-xs text-muted">{{ row.room }}</span>
               }
             </div>
           </ng-template>
 
           <!-- Driver Cell -->
           <ng-template cellDef="driver" let-row>
-            <div class="cell-two-line">
-              <span class="cell-primary">{{ row.driverName ?? '--' }}</span>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
               @if (row.driverId) {
-                <span class="cell-secondary">{{ row.driverId }}</span>
+                <span class="text-xs text-muted">{{ row.driverId }}</span>
               }
             </div>
           </ng-template>
 
           <!-- Route Cell -->
           <ng-template cellDef="route" let-row>
-            <div class="cell-route">
-              <div class="route-line">
-                <span class="route-dot route-dot--pickup" aria-hidden="true"></span>
-                <span class="route-text">{{ row.pickupLocation }}</span>
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center gap-1.5">
+                <span class="inline-block size-2 rounded-full shrink-0 bg-status-completed" aria-hidden="true"></span>
+                <span class="text-cell text-body-soft">{{ row.pickupLocation }}</span>
               </div>
-              <div class="route-line">
-                <span class="route-dot route-dot--dropoff" aria-hidden="true"></span>
-                <span class="route-text">{{ row.dropoffLocation }}</span>
+              <div class="flex items-center gap-1.5">
+                <span class="inline-block size-2 rounded-full shrink-0 bg-status-cancelled" aria-hidden="true"></span>
+                <span class="text-cell text-body-soft">{{ row.dropoffLocation }}</span>
               </div>
             </div>
           </ng-template>
 
           <!-- Duration Cell -->
           <ng-template cellDef="duration" let-row>
-            <span class="cell-primary">{{ row.duration }} min</span>
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.duration }} min</span>
           </ng-template>
 
           <!-- Fare Cell -->
           <ng-template cellDef="fare" let-row>
-            <div class="cell-two-line">
-              <span class="cell-primary">{{ row.price.toFixed(2) }} CHF</span>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price.toFixed(2) }} CHF</span>
               @if (row.commission != null) {
-                <span class="cell-secondary">Comm.: {{ row.commission.toFixed(2) }}</span>
+                <span class="text-xs text-muted">Comm.: {{ row.commission.toFixed(2) }}</span>
               }
             </div>
           </ng-template>
 
           <!-- Date Cell -->
           <ng-template cellDef="date" let-row>
-            <div class="cell-two-line">
-              <span class="cell-primary">{{ formatDate(row.date) }}</span>
-              <span class="cell-secondary">{{ formatDate(row.endDate) }}</span>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-cell font-medium text-body max-sm:text-xs">{{ formatDate(row.date) }}</span>
+              <span class="text-xs text-muted">{{ formatDate(row.endDate) }}</span>
             </div>
           </ng-template>
 
           <!-- Actions Cell -->
           <ng-template cellDef="actions" let-row>
             <a
-              class="action-btn view-btn"
+              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition bg-status-completed-bg text-status-completed hover:bg-green-100"
               [routerLink]="['/hotel-details', hotelId(), 'trip', row.id]"
               aria-label="View trip details"
             >

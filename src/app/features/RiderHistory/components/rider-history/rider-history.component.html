@@ -129,10 +129,7 @@
 
   <!-- ═══════ Pagination ═══════ -->
   <div class="px-4 pb-4 md:px-6 md:pb-6 flex-shrink-0">
-    <!-- Debug info -->
-    <div class="text-xs text-gray-500 mb-2">
-      Total: {{ filteredTrips().length }}, Page Size: {{ pageSize() }}, Current: {{ currentPage() }}
-    </div>
+ 
     <app-pagination
       [currentPage]="currentPage()"
       [totalItems]="filteredTrips().length"

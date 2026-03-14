@@ -11,6 +11,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { langInterceptor } from './core/interceptors/lang.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { mockInterceptor } from './core/interceptors/mock.interceptor';
 
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor, errorInterceptor, loadingInterceptor, mockInterceptor]),
+      withInterceptors([authInterceptor, langInterceptor, errorInterceptor, loadingInterceptor, mockInterceptor]),
     ),
     provideRouter(routes, withComponentInputBinding(), withViewTransitions()),
     provideClientHydration(withEventReplay()),

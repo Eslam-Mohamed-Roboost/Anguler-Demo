@@ -7,6 +7,9 @@ export const TRANSLATIONS = {
     'nav.joinUs': 'Join Us Now',
     'nav.tripsHistory': 'Trips History',
     'nav.langAriaLabel': 'Switch to Arabic',
+    'nav.mainNavAriaLabel': 'Main navigation',
+    'nav.phoneNotificationsAriaLabel': 'Phone notifications',
+    'nav.bellNotificationsAriaLabel': 'Bell notifications',
     'nav.myProfile': 'My Profile',
     'nav.financialReports': 'Financial Reports',
     'nav.logout': 'Logout',
@@ -142,6 +145,9 @@ export const TRANSLATIONS = {
     'Export': 'Export',
     'filter.Filter': 'Filter',
     'filter.ClearSort': 'Clear Sort',
+    'shared.pagination.label': 'Pagination navigation',
+    'shared.pagination.prev': 'Previous page',
+    'shared.pagination.next': 'Next page',
     'shared.pagination.current': 'current page',
 
     // table column headers
@@ -215,6 +221,11 @@ export const TRANSLATIONS = {
     'billing.empty': 'No billing items',
     'billing.emptyDesc': "You don't have any invoices or bills at the moment.",
     'billing.closeAriaLabel': 'Close billing panel',
+
+    // ── Hotel Details page ────────────────────────────────────────────────
+    'hotelDetails.retry': 'Retry',
+    'hotelDetails.title': 'Hotel Integration',
+    'hotelDetails.payoutInfo': 'Monthly payouts: Scheduled for the 1st. Deadline for completion is 3 business days.',
   },
 
   ar: {
@@ -223,6 +234,9 @@ export const TRANSLATIONS = {
     'nav.joinUs': 'انضم إلينا الآن',
     'nav.tripsHistory': 'سجل الرحلات',
     'nav.langAriaLabel': 'Switch to English',
+    'nav.mainNavAriaLabel': 'التنقل الرئيسي',
+    'nav.phoneNotificationsAriaLabel': 'إشعارات الهاتف',
+    'nav.bellNotificationsAriaLabel': 'إشعارات الجرس',
     'nav.myProfile': 'ملفي الشخصي',
     'nav.financialReports': 'التقارير المالية',
     'nav.logout': 'تسجيل الخروج',
@@ -358,6 +372,9 @@ export const TRANSLATIONS = {
     'Export': 'تصدير',
     'filter.Filter': 'تصفية',
     'filter.ClearSort': 'مسح الفرز',
+    'shared.pagination.label': 'التنقل بين الصفحات',
+    'shared.pagination.prev': 'الصفحة السابقة',
+    'shared.pagination.next': 'الصفحة التالية',
     'shared.pagination.current': 'الصفحة الحالية',
 
     // table column headers
@@ -431,6 +448,11 @@ export const TRANSLATIONS = {
     'billing.empty': 'لا توجد فواتير',
     'billing.emptyDesc': 'ليس لديك أي فواتير أو مدفوعات في الوقت الحالي.',
     'billing.closeAriaLabel': 'إغلاق لوحة الإشعارات',
+
+    // ── Hotel Details page ────────────────────────────────────────────────
+    'hotelDetails.retry': 'إعادة المحاولة',
+    'hotelDetails.title': 'تكامل الفندق',
+    'hotelDetails.payoutInfo': 'المدفوعات الشهرية: مجدولة في اليوم الأول. الموعد النهائي للإتمام هو 3 أيام عمل.',
   },
 } as const;
 

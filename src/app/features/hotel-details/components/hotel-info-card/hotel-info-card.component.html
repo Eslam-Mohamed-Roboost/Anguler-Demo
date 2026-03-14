@@ -1,28 +1,28 @@
-<app-card variant="elevated" class="hotel-info-card">
-  <div class="hotel-info-content">
+<app-card variant="elevated" class="mb-6">
+  <div class="flex gap-4 items-start relative max-md:flex-col">
     <!-- Hotel Image -->
-    <div class="hotel-image">
+    <div class="shrink-0 size-[108px] rounded-lg overflow-hidden max-md:w-full max-md:h-[200px] max-sm:h-[150px]">
       <img
         [src]="hotel().imageUrl || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=400&fit=crop'"
         [alt]="hotel().name"
-        class="rounded-lg object-cover w-full h-full"
+        class="object-cover w-full h-full"
         loading="lazy"
       />
     </div>
 
     <!-- Hotel Information -->
-    <div class="hotel-details">
-      <h2 class="hotel-name">{{ hotel().name }}</h2>
+    <div class="flex-1 min-w-0">
+      <h2 class="text-lg font-bold text-body mb-3 leading-snug max-md:text-base">{{ hotel().name }}</h2>
 
-      <div class="contact-list">
+      <div class="flex flex-col gap-2">
         @for (contact of contactInfo(); track contact.icon) {
-          <div class="contact-item">
+          <div class="flex items-center gap-2">
             <app-icon
               [name]="contact.icon"
-              class="contact-icon"
+              class="shrink-0 text-emerald-500"
               size="sm"
             />
-            <span class="contact-text">{{ contact.text }}</span>
+            <span class="text-cell text-body-soft leading-snug break-words max-sm:text-xs">{{ contact.text }}</span>
           </div>
         }
       </div>
@@ -30,7 +30,7 @@
 
     <!-- Delete Button -->
     <button
-      class="delete-btn"
+      class="shrink-0 size-8 flex items-center justify-center bg-red-100 text-status-cancelled rounded-full cursor-pointer hover:bg-red-200 transition-colors border-none max-md:absolute max-md:top-0 max-md:end-0"
       type="button"
       (click)="deleteClick.emit()"
       aria-label="Delete hotel"

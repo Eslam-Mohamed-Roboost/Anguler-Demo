@@ -1,18 +1,18 @@
-<div class="hotel-integration-page">
+<div class="min-h-screen bg-page-bg overflow-y-auto h-screen px-8 py-6 max-w-[1400px] mx-auto max-lg:px-6 max-md:px-4 max-sm:px-3">
   <!-- Error Message -->
   @if (error()) {
-    <div class="error-message">
-      <span class="error-text">{{ error() }}</span>
-      <button class="retry-button" type="button" (click)="refreshData()">Retry</button>
+    <div class="flex items-center justify-between gap-4 px-4 py-3 bg-red-50 border border-red-200 rounded-btn mb-4">
+      <span class="text-sm text-status-cancelled">{{ error() }}</span>
+      <button class="text-cell font-medium text-status-cancelled border border-status-cancelled rounded-btn px-3 py-1 cursor-pointer bg-transparent hover:bg-red-50 transition" type="button" (click)="refreshData()">{{ 'hotelDetails.retry' | translate }}</button>
     </div>
   }
 
   <!-- Page Title -->
-  <h1 class="page-title">Hotel Integration</h1>
+  <h1 class="text-xl font-bold text-body mb-5">{{ 'hotelDetails.title' | translate }}</h1>
 
   <!-- Statistics Grid -->
-  <section class="statistics-section">
-    <div class="statistics-grid">
+  <section class="mb-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-sm:gap-2">
       @for (stat of statisticsCards(); track stat.label) {
         <app-statistics-card [statistic]="stat" />
       }
@@ -20,13 +20,13 @@
   </section>
 
   <!-- Info Banner -->
-  <div class="info-banner" role="note">
+  <div class="flex items-center gap-2 px-4 py-3 bg-amber-50 border border-amber-200 rounded-btn text-cell text-amber-800 mb-5" role="note">
     <app-icon name="info" size="sm" aria-hidden="true" />
-    <span>Monthly payouts: Scheduled for the 1st. Deadline for completion is 3 business days.</span>
+    <span>{{ 'hotelDetails.payoutInfo' | translate }}</span>
   </div>
 
   <!-- Trips History Table -->
-  <section class="trips-section">
+  <section class="mb-6">
     <app-trips-history-table
       [trips]="filteredTrips()"
       [hotels]="hotels()"

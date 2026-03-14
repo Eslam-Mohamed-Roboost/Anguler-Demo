@@ -1,19 +1,19 @@
-<app-card variant="elevated" class="trips-history-table">
+<app-card variant="elevated" class="mb-6">
   <!-- Tabs + Toolbar -->
-  <div class="table-header">
+  <div class="flex justify-between items-center px-4 pt-4 gap-4 flex-wrap max-lg:flex-col max-lg:items-start">
     <!-- Tabs -->
-    <div class="tabs-row">
+    <div class="flex gap-1">
       <button
-        class="tab-btn"
-        [class.tab-btn--active]="activeTab() === 'trips'"
+        class="px-4 py-2 border rounded-btn bg-white text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50"
+        [class]="activeTab() === 'trips' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-gray-300'"
         type="button"
         (click)="setTab('trips')"
       >
         Hotels Trips
       </button>
       <button
-        class="tab-btn"
-        [class.tab-btn--active]="activeTab() === 'hotels'"
+        class="px-4 py-2 border rounded-btn bg-white text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50"
+        [class]="activeTab() === 'hotels' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-gray-300'"
         type="button"
         (click)="setTab('hotels')"
       >
@@ -22,29 +22,29 @@
     </div>
 
     <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="search-container">
-        <app-icon name="search" class="search-icon" size="sm" aria-hidden="true" />
+    <div class="flex items-center gap-3 flex-wrap max-lg:w-full">
+      <div class="relative flex items-center max-lg:flex-1">
+        <app-icon name="search" class="absolute start-3 text-muted-light z-[1] pointer-events-none" size="sm" aria-hidden="true" />
         <app-input
           inputId="trips-search"
           placeholder="Search Trips"
           [field]="searchField"
           (input)="onSearchChange($event)"
-          inputClass="pl-8"
+          inputClass="ps-8"
         />
       </div>
 
-      <div class="table-actions">
-        <button class="action-control-btn" type="button" aria-label="Sort">
+      <div class="flex gap-2">
+        <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5" type="button" aria-label="Sort">
           <app-icon name="chevron-down" size="sm" aria-hidden="true" />
           <span>Sort</span>
         </button>
-        <button class="action-control-btn" type="button" aria-label="Filter">
+        <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5" type="button" aria-label="Filter">
           <app-icon name="filter" size="sm" aria-hidden="true" />
           <span>Filter</span>
         </button>
         <button
-          class="action-control-btn commission-btn"
+          class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
           type="button"
           (click)="commissionSettings.emit()"
         >
@@ -57,7 +57,7 @@
 
   <!-- Hotels Trips Table -->
   @if (activeTab() === 'trips') {
-    <div class="table-container">
+    <div class="px-4 py-3 overflow-x-auto max-md:px-3 max-md:py-2">
       <app-data-table
         [data]="trips()"
         [columns]="tripColumns()"
@@ -67,78 +67,79 @@
       >
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
-          <div class="cell-two-line">
-            <span class="cell-primary">{{ row.hotelName ?? '--' }}</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName ?? '--' }}</span>
             @if (row.hotelPhone) {
-              <span class="cell-secondary">{{ row.hotelPhone }}</span>
+              <span class="text-xs text-muted">{{ row.hotelPhone }}</span>
             }
           </div>
         </ng-template>
 
         <!-- Guest Name Cell -->
         <ng-template cellDef="guestName" let-row>
-          <div class="cell-two-line">
-            <span class="cell-primary">{{ row.customerName }}</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.customerName }}</span>
             @if (row.room) {
-              <span class="cell-secondary">{{ row.room }}</span>
+              <span class="text-xs text-muted">{{ row.room }}</span>
             }
           </div>
         </ng-template>
 
         <!-- Driver Name Cell -->
         <ng-template cellDef="driverName" let-row>
-          <div class="cell-two-line">
-            <span class="cell-primary">{{ row.driverName ?? '--' }}</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
             @if (row.driverId) {
-              <span class="cell-secondary">{{ row.driverId }}</span>
+              <span class="text-xs text-muted">{{ row.driverId }}</span>
             }
           </div>
         </ng-template>
 
         <!-- Route Cell -->
         <ng-template cellDef="route" let-row>
-          <div class="cell-route">
-            <div class="route-line">
-              <span class="route-dot route-dot--pickup" aria-hidden="true"></span>
-              <span class="route-text">{{ row.pickupLocation }}</span>
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-1.5">
+              <span class="inline-block size-2 rounded-full shrink-0 bg-status-completed" aria-hidden="true"></span>
+              <span class="text-cell text-body-soft">{{ row.pickupLocation }}</span>
             </div>
-            <div class="route-line">
-              <span class="route-dot route-dot--dropoff" aria-hidden="true"></span>
-              <span class="route-text">{{ row.dropoffLocation }}</span>
+            <div class="flex items-center gap-1.5">
+              <span class="inline-block size-2 rounded-full shrink-0 bg-status-cancelled" aria-hidden="true"></span>
+              <span class="text-cell text-body-soft">{{ row.dropoffLocation }}</span>
             </div>
           </div>
         </ng-template>
 
         <!-- Status Cell -->
         <ng-template cellDef="status" let-row>
-          <span class="status-badge" [class]="tripStatusColorMap[row.status] || 'status-pending'">
+          <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium capitalize max-sm:px-2 max-sm:text-2xs"
+                [class]="tripStatusColorMap[row.status] || 'text-status-scheduled bg-status-scheduled-bg'">
             {{ row.status.charAt(0).toUpperCase() + row.status.slice(1) }}
           </span>
         </ng-template>
 
         <!-- Fare Cell -->
         <ng-template cellDef="fare" let-row>
-          <div class="cell-two-line">
-            <span class="cell-primary">{{ row.price.toFixed(2) }} CHF</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price.toFixed(2) }} CHF</span>
             @if (row.commission != null) {
-              <span class="cell-secondary">Comm.: {{ row.commission.toFixed(2) }}</span>
+              <span class="text-xs text-muted">Comm.: {{ row.commission.toFixed(2) }}</span>
             }
           </div>
         </ng-template>
 
         <!-- Start/End Date Cell -->
         <ng-template cellDef="startEndDate" let-row>
-          <div class="cell-two-line">
-            <span class="cell-primary">{{ formatDate(row.date) }}</span>
-            <span class="cell-secondary">{{ formatDate(row.endDate) }}</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ formatDate(row.date) }}</span>
+            <span class="text-xs text-muted">{{ formatDate(row.endDate) }}</span>
           </div>
         </ng-template>
 
         <!-- Actions Cell -->
         <ng-template cellDef="actions" let-row>
-          <div class="action-buttons">
+          <div class="flex gap-1.5">
             <button
-              class="action-btn view-btn"
+              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
               type="button"
               (click)="onTripAction(row, 'view')"
               aria-label="View trip details"
@@ -153,7 +154,7 @@
 
   <!-- All Hotels Table -->
   @if (activeTab() === 'hotels') {
-    <div class="table-container">
+    <div class="px-4 py-3 overflow-x-auto max-md:px-3 max-md:py-2">
       <app-data-table
         [data]="hotels()"
         [columns]="hotelColumns()"
@@ -165,20 +166,19 @@
         <ng-template cellDef="select" let-row>
           <input
             type="checkbox"
-            class="hotel-checkbox"
+            class="size-4 cursor-pointer accent-warning"
             [attr.aria-label]="'Select ' + row.hotelName"
           />
         </ng-template>
 
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
-          <div class="cell-two-line">
-            <span class="cell-primary">{{ row.hotelName }}</span>
-            <span
-              class="hotel-status-dot"
-              [class.hotel-status-dot--active]="row.hotelStatus === 'active'"
-              [class.hotel-status-dot--suspended]="row.hotelStatus === 'suspended'"
-            >
+          <div class="flex flex-col gap-0.5">
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName }}</span>
+            <span class="flex items-center gap-1 text-xs font-medium"
+                  [class]="row.hotelStatus === 'active' ? 'text-status-completed' : 'text-status-cancelled'">
+              <span class="inline-block size-[7px] rounded-full"
+                    [class]="row.hotelStatus === 'active' ? 'bg-status-completed' : 'bg-status-cancelled'"></span>
               {{ row.hotelStatus === 'active' ? 'Active' : 'Suspended' }}
             </span>
           </div>
@@ -186,45 +186,42 @@
 
         <!-- Total Trips Cell -->
         <ng-template cellDef="totalTrips" let-row>
-          <span class="cell-primary">{{ row.totalTrips }}</span>
+          <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.totalTrips }}</span>
         </ng-template>
 
         <!-- Hotel Comm Cell -->
         <ng-template cellDef="hotelComm" let-row>
-          <span class="cell-primary">{{ row.hotelComm }}</span>
+          <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.hotelComm }}</span>
         </ng-template>
 
         <!-- Hotel Profits Cell -->
         <ng-template cellDef="hotelProfits" let-row>
-          <span class="cell-primary">{{ row.hotelProfits }}</span>
+          <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.hotelProfits }}</span>
         </ng-template>
 
         <!-- Lines Profits Cell -->
         <ng-template cellDef="linesProfits" let-row>
-          <span class="cell-primary">{{ row.linesProfits }}</span>
+          <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.linesProfits }}</span>
         </ng-template>
 
         <!-- Monthly Dues Cell -->
         <ng-template cellDef="monthlyDues" let-row>
-          <span class="cell-primary">{{ row.monthlyDues }}</span>
+          <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.monthlyDues }}</span>
         </ng-template>
 
         <!-- Status Cell -->
         <ng-template cellDef="status" let-row>
-          <span
-            class="settlement-status"
-            [class.settlement-status--progress]="row.settlementStatus === 'in-progress'"
-            [class.settlement-status--settled]="row.settlementStatus === 'settled'"
-          >
+          <span class="text-cell font-semibold"
+                [class]="row.settlementStatus === 'in-progress' ? 'text-warning' : 'text-status-completed'">
             {{ row.settlementStatus === 'in-progress' ? 'In Progress' : 'Settled' }} : {{ row.settlementAmount }}
           </span>
         </ng-template>
 
         <!-- Actions Cell -->
         <ng-template cellDef="actions" let-row>
-          <div class="action-buttons">
+          <div class="flex gap-1.5">
             <a
-              class="action-btn view-btn"
+              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
               [routerLink]="['/hotel-details', row.id]"
               aria-label="View hotel details"
             >

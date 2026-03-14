@@ -1,4 +1,4 @@
-<nav class="flex items-center justify-between px-3 py-2 sm:px-5 sm:py-3 lg:px-8 xl:px-10" aria-label="Main navigation">
+<nav class="flex items-center justify-between px-3 py-2 sm:px-5 sm:py-3 lg:px-8 xl:px-10" [attr.aria-label]="'nav.mainNavAriaLabel' | translate">
   <!-- Left: Logo + Language toggle -->
   <div class="flex items-center gap-2 sm:gap-4">
     <a href="/" class="shrink-0">
@@ -47,7 +47,7 @@
         type="button"
         (click)="onMessageClick()"
         class="relative flex size-9 items-center justify-center rounded-full bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition hover:bg-white sm:size-10"
-        aria-label="Phone notifications"
+        [attr.aria-label]="'nav.phoneNotificationsAriaLabel' | translate"
       >
      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M7.82202 12.5174H14.0796M7.82202 8.3457H10.9508" stroke="#5B738B" stroke-width="1.56439" stroke-linecap="round" stroke-linejoin="round"/>
@@ -67,7 +67,7 @@
         type="button"
         (click)="onBillingClick()"
         class="relative flex size-9 items-center justify-center rounded-full bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition hover:bg-white sm:size-10"
-        aria-label="Bell notifications"
+        [attr.aria-label]="'nav.bellNotificationsAriaLabel' | translate"
       >
        <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M17.32 20.1136C17.32 22.2736 15.569 24.0246 13.409 24.0246C11.2491 24.0246 9.49805 22.2736 9.49805 20.1136" stroke="#5B738B" stroke-width="1.67614" stroke-linecap="round" stroke-linejoin="round"/>

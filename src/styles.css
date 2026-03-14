@@ -19,6 +19,37 @@
   --color-success-light: #F0FDF4;
   --color-warning-light: #FFFCEC;
   --color-gold-light: #FFF8D6;
+
+  /* ── Page / Layout ─────────────────────────────── */
+  --color-page-bg: #f9fafb;
+  --color-card-border: #e5e7eb;
+  --color-muted: #6b7280;
+  --color-muted-light: #9ca3af;
+  --color-body: #111827;
+  --color-body-soft: #374151;
+
+  /* ── Trip / Hotel Status ────────────────────────── */
+  --color-status-completed: #16a34a;
+  --color-status-completed-bg: #f0fdf4;
+  --color-status-active: #2563eb;
+  --color-status-active-bg: #eff6ff;
+  --color-status-scheduled: #d97706;
+  --color-status-scheduled-bg: #fffbeb;
+  --color-status-cancelled: #dc2626;
+  --color-status-cancelled-bg: #fef2f2;
+
+  /* ── Section icon circle ───────────────────────── */
+  --color-icon-circle-bg: #f0fdf4;
+  --color-icon-circle: #16a34a;
+
+  /* ── Border radius ─────────────────────────────── */
+  --radius-badge: 9999px;
+  --radius-btn: 0.5rem;
+  --radius-card: 0.75rem;
+
+  /* ── Custom font sizes ─────────────────────────── */
+  --text-2xs: 0.6875rem;
+  --text-cell: 0.8125rem;
 }
 
 /* Prevent double scrollbar — only <main> should scroll */

@@ -75,11 +75,11 @@ export class TripsHistoryTableComponent {
   ]);
 
   protected readonly tripStatusColorMap: Record<string, string> = {
-    completed: 'status-completed',
-    active: 'status-active',
-    pending: 'status-pending',
-    scheduled: 'status-scheduled',
-    cancelled: 'status-cancelled',
+    completed: 'text-status-completed bg-status-completed-bg',
+    active: 'text-status-active bg-status-active-bg',
+    pending: 'text-status-scheduled bg-status-scheduled-bg',
+    scheduled: 'text-status-scheduled bg-status-scheduled-bg',
+    cancelled: 'text-status-cancelled bg-status-cancelled-bg',
   };
 
   protected setTab(tab: 'trips' | 'hotels'): void {

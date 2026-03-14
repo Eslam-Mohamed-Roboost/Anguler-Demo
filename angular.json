@@ -32,7 +32,8 @@
               "src/styles.css"
             ],
             "allowedCommonJsDependencies": [
-              "leaflet"
+              "leaflet",
+              "openmeteo"
             ]
           },
           "configurations": {
@@ -40,7 +41,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "600kB",
                   "maximumError": "1MB"
                 },
                 {

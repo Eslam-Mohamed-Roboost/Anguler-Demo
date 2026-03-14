@@ -1,91 +1,81 @@
-<div class="trip-detail-page">
+<div class="min-h-screen bg-page-bg overflow-y-auto h-screen px-8 py-6 max-w-[1400px] mx-auto max-lg:px-5 max-md:px-4 max-md:py-3">
 
   <!-- Breadcrumb -->
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/hotel-details">Hotel Integration</a>
-    <span class="breadcrumb-sep" aria-hidden="true">/</span>
-    <a class="breadcrumb-link" [routerLink]="['/hotel-details', hotelId()]">Hotel Details #{{ hotelId() }}</a>
-    <span class="breadcrumb-sep" aria-hidden="true">/</span>
-    <span class="breadcrumb-trip">Trip {{ tripId() }}</span>
+  <nav class="flex items-center gap-1.5 text-cell mb-4" aria-label="Breadcrumb">
+    <a class="text-muted no-underline hover:text-body-soft hover:underline" routerLink="/hotel-details">Hotel Integration</a>
+    <span class="text-muted-light" aria-hidden="true">/</span>
+    <a class="text-muted no-underline hover:text-body-soft hover:underline" [routerLink]="['/hotel-details', hotelId()]">Hotel Details #{{ hotelId() }}</a>
+    <span class="text-muted-light" aria-hidden="true">/</span>
+    <span class="text-warning font-semibold">Trip {{ tripId() }}</span>
   </nav>
 
   <!-- Hotel Info Card -->
-  <section class="section-gap">
+  <section class="mb-4">
     <app-hotel-info-card [hotel]="hotel()" (deleteClick)="onHotelDelete()" />
   </section>
 
   <!-- Trip Details Card -->
-  <section class="section-gap">
-    <app-card variant="elevated" class="trip-details-card">
+  <section class="mb-4">
+    <app-card variant="elevated">
       <!-- Card Header -->
-      <div class="card-header">
-        <div class="header-title-row">
-          <div class="section-icon-circle">
+      <div class="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+        <div class="flex items-center gap-2.5">
+          <div class="flex items-center justify-center size-8 rounded-full bg-icon-circle-bg text-icon-circle shrink-0">
             <app-icon name="calendar" size="sm" aria-hidden="true" />
           </div>
-          <h3 class="section-title">Trip Details</h3>
+          <h3 class="text-[15px] font-semibold text-body m-0">Trip Details</h3>
         </div>
-        <span
-          class="trip-status-badge"
-          [class.badge--active]="trip().status === 'active'"
-          [class.badge--completed]="trip().status === 'completed'"
-          [class.badge--cancelled]="trip().status === 'cancelled'"
-          [class.badge--scheduled]="trip().status === 'scheduled'"
-          [class.badge--pending]="trip().status === 'pending'"
-        >
+        <span class="text-xs font-semibold px-3 py-1 rounded-badge" [class]="statusBadgeClass()">
           {{ statusLabel() }}
         </span>
       </div>
 
       <!-- Fields Grid -->
-      <div class="fields-grid">
-        <!-- Row 1 -->
-        <div class="field-group">
-          <span class="field-label">Trip ID</span>
-          <span class="field-value">{{ trip().tripId }}</span>
+      <div class="grid grid-cols-3 gap-4 gap-x-6 p-4 pb-5 max-md:grid-cols-2 max-sm:grid-cols-1">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-muted font-medium">Trip ID</span>
+          <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ trip().tripId }}</span>
         </div>
-        <div class="field-group">
-          <span class="field-label">Guest Name</span>
-          <span class="field-value">{{ trip().guestName }}</span>
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-muted font-medium">Guest Name</span>
+          <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ trip().guestName }}</span>
         </div>
-        <div class="field-group">
-          <span class="field-label">Room No.</span>
-          <span class="field-value">{{ trip().roomNo }}</span>
-        </div>
-
-        <!-- Row 2 -->
-        <div class="field-group">
-          <span class="field-label">Destinations</span>
-          <span class="field-value field-value--muted">{{ trip().destinations }}</span>
-        </div>
-        <div class="field-group">
-          <span class="field-label">Fare (CHF)</span>
-          <span class="field-value">{{ trip().fare }}</span>
-        </div>
-        <div class="field-group">
-          <span class="field-label">Hotel Profits (CHF) * {{ trip().commissionRate }}% *</span>
-          <span class="field-value">{{ trip().hotelProfits }}</span>
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-muted font-medium">Room No.</span>
+          <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ trip().roomNo }}</span>
         </div>
 
-        <!-- Row 3 -->
-        <div class="field-group">
-          <span class="field-label">Start Date</span>
-          <span class="field-value">{{ trip().startDate }}</span>
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-muted font-medium">Destinations</span>
+          <span class="text-sm text-muted-light font-normal border-b border-card-border pb-1.5 min-h-7">{{ trip().destinations }}</span>
         </div>
-        <div class="field-group">
-          <span class="field-label">End Date</span>
-          <span class="field-value">{{ trip().endDate ?? '--' }}</span>
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-muted font-medium">Fare (CHF)</span>
+          <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ trip().fare }}</span>
         </div>
-        <div class="field-group">
-          <span class="field-label">Trip Rate ($:00)</span>
-          <span class="field-value">{{ trip().tripRate != null ? trip().tripRate : '--' }}</span>
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-muted font-medium">Hotel Profits (CHF) * {{ trip().commissionRate }}% *</span>
+          <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ trip().hotelProfits }}</span>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-muted font-medium">Start Date</span>
+          <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ trip().startDate }}</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-muted font-medium">End Date</span>
+          <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ trip().endDate ?? '--' }}</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-muted font-medium">Trip Rate ($:00)</span>
+          <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ trip().tripRate != null ? trip().tripRate : '--' }}</span>
         </div>
       </div>
     </app-card>
   </section>
 
   <!-- Trip Conversation -->
-  <section class="section-gap conversation-section">
+  <section class="mb-4">
     <app-chat />
   </section>
 

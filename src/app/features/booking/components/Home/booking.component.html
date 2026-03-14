@@ -802,42 +802,42 @@
   <!-- Picker area -->
   <div class="mt-5 flex items-center justify-center gap-2">
     <!-- Date picker column -->
-    <div class="pickup-picker-wrapper">
-      <div class="pickup-picker-highlight"></div>
+    <div class="relative w-[130px] h-[120px] overflow-hidden">
+      <div class="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[40px] border-t-[2.5px] border-b-[2.5px] border-gray-300 pointer-events-none z-[1]"></div>
       <div
         class="pickup-picker-scroll"
         (scroll)="onPickerScroll('date', $event)"
       >
-        <div class="pickup-picker-spacer"></div>
+        <div class="h-[40px] shrink-0"></div>
         @for (dateOpt of pickupDateOptions; track $index) {
           <div
-            class="pickup-picker-item"
-            [class.pickup-picker-item--selected]="$index === selectedPickupDateIndex()"
+            class="h-[40px] flex items-center justify-center text-[0.95rem] snap-center transition-all whitespace-nowrap select-none"
+            [class]="$index === selectedPickupDateIndex() ? 'text-primary-text font-bold text-[1.05rem]' : 'text-muted'"
           >
             {{ dateOpt }}
           </div>
         }
-        <div class="pickup-picker-spacer"></div>
+        <div class="h-[40px] shrink-0"></div>
       </div>
     </div>
 
     <!-- Hour picker column -->
-    <div class="pickup-picker-wrapper pickup-picker-wrapper--narrow">
-      <div class="pickup-picker-highlight"></div>
+    <div class="relative w-[60px] h-[120px] overflow-hidden">
+      <div class="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[40px] border-t-[2.5px] border-b-[2.5px] border-gray-300 pointer-events-none z-[1]"></div>
       <div
         class="pickup-picker-scroll"
         (scroll)="onPickerScroll('hour', $event)"
       >
-        <div class="pickup-picker-spacer"></div>
+        <div class="h-[40px] shrink-0"></div>
         @for (hourOpt of pickupHourOptions; track $index) {
           <div
-            class="pickup-picker-item"
-            [class.pickup-picker-item--selected]="$index === selectedPickupHourIndex()"
+            class="h-[40px] flex items-center justify-center text-[0.95rem] snap-center transition-all whitespace-nowrap select-none"
+            [class]="$index === selectedPickupHourIndex() ? 'text-primary-text font-bold text-[1.05rem]' : 'text-muted'"
           >
             {{ hourOpt }}
           </div>
         }
-        <div class="pickup-picker-spacer"></div>
+        <div class="h-[40px] shrink-0"></div>
       </div>
     </div>
 
@@ -845,22 +845,22 @@
     <span class="text-2xl font-bold text-primary-text">:</span>
 
     <!-- Minute picker column -->
-    <div class="pickup-picker-wrapper pickup-picker-wrapper--narrow">
-      <div class="pickup-picker-highlight"></div>
+    <div class="relative w-[60px] h-[120px] overflow-hidden">
+      <div class="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[40px] border-t-[2.5px] border-b-[2.5px] border-gray-300 pointer-events-none z-[1]"></div>
       <div
         class="pickup-picker-scroll"
         (scroll)="onPickerScroll('minute', $event)"
       >
-        <div class="pickup-picker-spacer"></div>
+        <div class="h-[40px] shrink-0"></div>
         @for (minOpt of pickupMinuteOptions; track $index) {
           <div
-            class="pickup-picker-item"
-            [class.pickup-picker-item--selected]="$index === selectedPickupMinuteIndex()"
+            class="h-[40px] flex items-center justify-center text-[0.95rem] snap-center transition-all whitespace-nowrap select-none"
+            [class]="$index === selectedPickupMinuteIndex() ? 'text-primary-text font-bold text-[1.05rem]' : 'text-muted'"
           >
             {{ minOpt }}
           </div>
         }
-        <div class="pickup-picker-spacer"></div>
+        <div class="h-[40px] shrink-0"></div>
       </div>
     </div>
   </div>
