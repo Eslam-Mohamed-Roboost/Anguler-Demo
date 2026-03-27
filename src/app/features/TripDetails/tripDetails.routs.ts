@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 export const tripDetailsRoutes: Routes = [
   {
-    path: '',
+    path: ':id',
     loadComponent: () =>
       import('./components/trip-details/trip-details.component').then((m) => m.TripDetailsComponent),
   },

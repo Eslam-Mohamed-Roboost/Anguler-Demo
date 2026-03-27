@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  OnInit,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -13,9 +14,11 @@ import { SearchInputComponent } from '../../../../shared/components/search-input
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import type { ColumnDef, SortState } from '../../../../shared/components/data-table/column-def';
-import { Trip } from '../../models/trip-model';
+import { HotelRequestItem } from '../../models/trip-model';
+import { RiderHistoryService } from '../../services/rider-history.service';
+import { ResultHandlerService } from '../../../../core/services/result-handler.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
-
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-rider-history',
@@ -28,17 +31,20 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
     BadgeComponent,
     IconComponent,
     RouterLink,
-    TranslatePipe
+    TranslatePipe,
   ],
   templateUrl: './rider-history.component.html',
   styleUrl: './rider-history.component.css',
 })
-export class RiderHistoryComponent extends BaseComponent {
+export class RiderHistoryComponent extends BaseComponent implements OnInit {
+  private readonly riderHistoryService = inject(RiderHistoryService);
+  private readonly resultHandler = inject(ResultHandlerService);
+
   protected readonly columns: ColumnDef[] = [
-    { key: 'tripId', header: 'TripID', sortable: true },
-    { key: 'driver', header: 'Driver', sortable: true },
+    { key: 'tripCode', header: 'TripID', sortable: true },
+    { key: 'driverName', header: 'Driver', sortable: true },
     { key: 'guestName', header: 'Guest Name', sortable: true },
-    { key: 'roomNo', header: 'Room No.' },
+    { key: 'roomNumber', header: 'Room No.' },
     { key: 'route', header: 'Route' },
     { key: 'status', header: 'Status', sortable: true },
     { key: 'duration', header: 'Duration' },
@@ -48,31 +54,12 @@ export class RiderHistoryComponent extends BaseComponent {
   ];
 
   protected readonly sortState = signal<SortState>({ column: '', direction: null });
-
-  private readonly allTrips: Trip[] = Array.from({ length: 100 }, (_, i) => {
-    const statuses: Trip['status'][] = ['Completed', 'Cancelled', 'Scheduled', 'Waiting Driver', 'Active'];
-    return {
-      id: i + 1,
-      tripId: 'TR001',
-      driver: 'Alice Johnson',
-      guestName: 'Alice Johnson',
-      roomNo: 'Ro. 24',
-      routeFrom: 'Hotel District A',
-      routeTo: 'Airport',
-      status: statuses[i % statuses.length],
-      durationMin: 25,
-      distanceKm: 12.5,
-      fare: 18.50,
-      commission: 3.70,
-      startDate: '2024-01-15 14:30',
-      endDate: '--',
-    };
-  });
-
-  protected readonly trips = signal<Trip[]>(this.allTrips);
+  protected readonly trips = signal<HotelRequestItem[]>([]);
   protected readonly searchQuery = signal('');
   protected readonly currentPage = signal(1);
   protected readonly pageSize = signal(10);
+  protected readonly totalItems = signal(0);
+  protected readonly loading = signal(false);
 
   protected readonly filteredTrips = computed(() => {
     const query = this.searchQuery().toLowerCase();
@@ -80,8 +67,8 @@ export class RiderHistoryComponent extends BaseComponent {
     if (query) {
       result = result.filter(
         (t) =>
-          t.tripId.toLowerCase().includes(query) ||
-          t.driver.toLowerCase().includes(query) ||
+          t.tripCode.toLowerCase().includes(query) ||
+          t.driverName.toLowerCase().includes(query) ||
           t.guestName.toLowerCase().includes(query) ||
           t.status.toLowerCase().includes(query),
       );
@@ -105,19 +92,50 @@ export class RiderHistoryComponent extends BaseComponent {
     return result;
   });
 
-  protected readonly paginatedTrips = computed(() => {
-    const start = (this.currentPage() - 1) * this.pageSize();
-    return this.filteredTrips().slice(start, start + this.pageSize());
-  });
+  ngOnInit(): void {
+    this.loadTrips();
+  }
+
+  protected loadTrips(): void {
+    this.loading.set(true);
+    this.riderHistoryService
+      .getHotelRequestsHistory({
+        pageNumber: this.currentPage(),
+        pageSize: this.pageSize(),
+      })
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: (result) => {
+          this.resultHandler.handleResult(
+            result,
+            (data) => {
+              this.trips.set(data.items ?? []);
+              this.totalItems.set(data.totalCount);
+            },
+            () => {
+              this.trips.set([]);
+              this.totalItems.set(0);
+            },
+          );
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        },
+      });
+  }
 
   onSearch(query: string): void {
     this.searchQuery.set(query);
-    this.currentPage.set(1);
   }
 
   onSort(state: SortState): void {
     this.sortState.set(state);
-    this.currentPage.set(1);
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage.set(page);
+    this.loadTrips();
   }
 
   clearSort(): void {
@@ -125,13 +143,31 @@ export class RiderHistoryComponent extends BaseComponent {
   }
 
   getStatusVariant(status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {
-    switch (status) {
-      case 'Completed': return 'success';
-      case 'Cancelled': return 'danger';
-      case 'Scheduled': return 'info';
-      case 'Waiting Driver': return 'warning';
-      case 'Active': return 'success';
-      default: return 'neutral';
+    const normalized = status.toLowerCase();
+    if (normalized === 'completed') return 'success';
+    if (normalized === 'cancelled') return 'danger';
+    if (normalized === 'scheduled') return 'info';
+    if (normalized === 'waiting driver' || normalized === 'pending') return 'warning';
+    if (normalized === 'active' || normalized === 'in progress') return 'success';
+    return 'neutral';
+  }
+
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '--';
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  }
+
+  formatCurrency(amount: number, currency: string): string {
+    if (currency) {
+      return `${amount.toFixed(2)} ${currency}`;
     }
+    return `$ ${amount.toFixed(2)}`;
   }
 }

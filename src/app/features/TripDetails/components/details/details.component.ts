@@ -1,50 +1,27 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
-import { form } from '@angular/forms/signals';
-interface TripDetalsModel{
-    Destinations: string,
-    TripID: string,
-    StartDate: Date,
-    EndDate: Date,
-    Fare: number,
-    PassengerName:string,
-    Status: 'Completed' | 'Ongoing' | 'Cancelled',
-    DriverName: string,
-    DriverRating: number,
-    DriverPhone: string,
-    FromLocation: string,
-    ToLocation: string,
-    PaymentMethod: string
-}
-   
+import {
+  PersonCard,
+  TripDetailsInfo,
+  getTripStatusLabel,
+  getTripStatusVariant,
+} from '../../models/trip-details.model';
+
 @Component({
   selector: 'app-details',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, BadgeComponent, IconComponent, TranslatePipe],
+  imports: [BadgeComponent, IconComponent, TranslatePipe],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css',
 })
-
- 
 export class DetailsComponent {
-  protected readonly formModel = signal<TripDetalsModel>({
-    Destinations: 'Cairo International Airport - Tahrir Square',
-    TripID: 'TRIP-2024-001',
-    StartDate: new Date('2024-02-15T10:30:00'),
-    EndDate: new Date('2024-02-15T11:15:00'),
-    Fare: 125.50,
-    PassengerName: 'John Doe',
-    Status: 'Completed',
-    DriverName: 'Ahmed Ali',
-    DriverRating: 5,
-    DriverPhone: '+20 123 456 7890',
-    FromLocation: 'Cairo International Airport',
-    ToLocation: 'Tahrir Square',
-    PaymentMethod: 'Visa ****1234'
-  });
-    protected readonly f = form(this.formModel);
+  readonly passengerCard = input.required<PersonCard>();
+  readonly driverCard = input.required<PersonCard>();
+  readonly tripDetails = input.required<TripDetailsInfo>();
 
+  protected readonly statusLabel = computed(() => getTripStatusLabel(this.tripDetails().tripStatus));
+  protected readonly statusVariant = computed(() => getTripStatusVariant(this.tripDetails().tripStatus));
+  protected readonly destinations = computed(() => this.tripDetails().destinations.join(' → '));
 }

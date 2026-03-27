@@ -186,6 +186,11 @@ export const TRANSLATIONS = {
     'tripDetails.endDate': 'End Date',
     'tripDetails.destinations': 'Destinations',
     'tripDetails.payment': 'Payment',
+    'tripDetails.carType': 'Car Type',
+    'tripDetails.hotel': 'Hotel',
+    'tripDetails.driverProfit': 'Driver Profit',
+    'tripDetails.appProfit': 'App Profit',
+    'tripDetails.duration': 'Duration & Distance',
 
     // ── Profile page ──────────────────────────────────────────────────────
     'profile.hotelInfo': 'Hotel Info.',
@@ -413,6 +418,11 @@ export const TRANSLATIONS = {
     'tripDetails.endDate': 'تاريخ النهاية',
     'tripDetails.destinations': 'الوجهات',
     'tripDetails.payment': 'طريقة الدفع',
+    'tripDetails.carType': 'نوع السيارة',
+    'tripDetails.hotel': 'الفندق',
+    'tripDetails.driverProfit': 'أرباح السائق',
+    'tripDetails.appProfit': 'أرباح التطبيق',
+    'tripDetails.duration': 'المدة والمسافة',
 
     // ── Profile page ──────────────────────────────────────────────────────
     'profile.hotelInfo': 'معلومات الفندق',

@@ -6,6 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 import { form } from '@angular/forms/signals';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { CheckboxComponent } from '../../../../shared/components/checkbox/checkbox.component';
@@ -52,6 +53,7 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
   styleUrl: './booking.component.css',
 })
 export class BookingComponent extends BaseComponent {
+  private readonly router = inject(Router);
   private readonly joinUsService = inject(JoinUsService);
   private readonly authService = inject(AuthService);
   private readonly citiesService = inject(CitiesService);
@@ -146,6 +148,7 @@ export class BookingComponent extends BaseComponent {
     return `${h}hr : ${m}min : 00sec`;
   });
   readonly isCreatingTrip = signal(false);
+  readonly createdTripId = signal<string | null>(null);
   readonly hotelImageSrc = signal<string>('assets/booking/hotel-illustration.png');
 
   onHotelImageChange(event: Event): void {
@@ -478,6 +481,14 @@ readonly activeTab = signal<'login' | 'register'>('register');
     this.ShowRideRequestSentModel.set(false)
   }
 
+  viewTripDetails(): void {
+    const tripId = this.createdTripId();
+    if (tripId) {
+      this.closeRideRequestSentModel();
+      this.router.navigate(['/TripDetails', tripId]);
+    }
+  }
+
   openPickupTimeModal(): void {
     if (!this.loginService.isLoggedIn()) {
       this.signInModalOpen();
@@ -520,7 +531,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       isScheduled,
       scheduledAt,
       vehicleTypeId: this.selectedCar(),
-      paymentMethodId: null,
+      paymentMethodId: '168ac692-3a98-8cb0-8934-019b1e8abaa8',
       estimatedPrice: car?.price ?? 0,
       distance: 50,
       userRewardId: null,
@@ -531,6 +542,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       next: (result) => {
         this.isCreatingTrip.set(false);
         if (result.isSuccess) {
+          this.createdTripId.set(result.data as string);
           this.ShowComfirmBookingModel.set(false);
           this.ShowRideRequestSentModel.set(true);
         } else {
