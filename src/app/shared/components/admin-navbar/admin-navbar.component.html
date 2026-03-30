@@ -1,0 +1,110 @@
+<header class="flex h-[72px] items-center justify-between border-b border-gray-100 bg-white px-6">
+  <!-- Left: Mobile menu + Page title + Breadcrumb -->
+  <div class="flex items-center gap-4">
+    <!-- Mobile menu button -->
+    <button
+      type="button"
+      class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 lg:hidden"
+      (click)="menuToggle.emit()"
+      aria-label="Toggle menu"
+    >
+      <app-icon name="menu" size="md" />
+    </button>
+
+    <!-- Page title & breadcrumb -->
+    <div>
+      <div class="flex items-center gap-2">
+        <app-icon [name]="pageInfo().icon" size="md" class="text-gray-600" />
+        <h1 class="text-lg font-semibold text-gray-800">{{ pageInfo().title }}</h1>
+      </div>
+      <!-- Breadcrumb -->
+      <nav aria-label="Breadcrumb" class="mt-0.5">
+        <ol class="flex items-center gap-1 text-xs text-gray-400">
+          <li>
+            <a routerLink="/" class="transition-colors hover:text-gray-600">Home</a>
+          </li>
+          @for (crumb of breadcrumbs(); track crumb.url; let last = $last) {
+            <li class="flex items-center gap-1">
+              <span class="text-gray-300">/</span>
+              @if (last) {
+                <span class="text-gray-500" aria-current="page">{{ crumb.label }}</span>
+              } @else {
+                <a [routerLink]="crumb.url" class="transition-colors hover:text-gray-600">{{ crumb.label }}</a>
+              }
+            </li>
+          }
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Right: Actions -->
+  <div class="flex items-center gap-3">
+    <!-- Active Trips badge -->
+    <button
+      type="button"
+      class="hidden items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 sm:flex"
+    >
+      <app-icon name="car" size="sm" class="text-gray-500" />
+      <span>Active Trips</span>
+      <span class="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white">{{ activeTrips() }}</span>
+    </button>
+
+    <!-- Notification icons -->
+    <div class="flex items-center gap-1">
+      <button type="button" class="notification-btn" aria-label="Alerts">
+        <app-icon name="alert-triangle" size="sm" />
+        @if (notificationCount() > 0) {
+          <span class="notification-badge bg-red-500">{{ notificationCount() }}</span>
+        }
+      </button>
+
+      <button type="button" class="notification-btn" aria-label="Messages">
+        <app-icon name="chat-bubble" size="sm" />
+        @if (messageCount() > 0) {
+          <span class="notification-badge bg-emerald-500">{{ messageCount() }}</span>
+        }
+      </button>
+
+      <button type="button" class="notification-btn" aria-label="Calls">
+        <app-icon name="phone" size="sm" />
+        @if (callCount() > 0) {
+          <span class="notification-badge bg-blue-500">{{ callCount() }}</span>
+        }
+      </button>
+    </div>
+
+    <!-- Divider -->
+    <div class="hidden h-8 w-px bg-gray-200 sm:block"></div>
+
+    <!-- User profile -->
+    <div class="relative">
+      <button type="button" class="flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-50" (click)="toggleProfile()">
+        <div class="flex size-9 items-center justify-center rounded-full bg-amber-400 text-sm font-bold text-white">
+          {{ userName().charAt(0) }}
+        </div>
+        <div class="hidden text-start sm:block">
+          <p class="text-sm font-medium text-gray-700">{{ userName() }}</p>
+          <p class="text-[11px] text-emerald-500">{{ userRole() }}</p>
+        </div>
+        <app-icon name="chevron-down" size="xs" class="hidden text-gray-400 sm:block" />
+      </button>
+
+      @if (profileOpen()) {
+        <div class="absolute end-0 top-full z-20 mt-2 w-48 rounded-xl border border-gray-100 bg-white py-2 shadow-lg">
+          <a routerLink="/account" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50" (click)="closeProfile()">
+            <div class="flex size-7 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-white">
+              {{ userName().charAt(0) }}
+            </div>
+            My Account
+          </a>
+          <div class="mx-3 my-1 border-t border-gray-100"></div>
+          <button type="button" class="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 transition-colors hover:bg-red-50" (click)="logout()">
+            <app-icon name="close" size="sm" class="text-red-500" />
+            Logout
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</header>

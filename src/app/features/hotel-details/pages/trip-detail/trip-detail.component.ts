@@ -9,10 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { CardComponent } from '../../../../shared/components/card/card.component';
-import { IconComponent } from '../../../../shared/components/icon/icon.component';
-import { ChatComponent } from '../../../TripDetails/components/chat/chat.component';
-import { HotelInfoCardComponent } from '../../components/hotel-info-card/hotel-info-card.component';
+ 
 import type { HotelInfo } from '../../types/hotel-details.types';
 
 export interface TripDetail {
@@ -33,13 +30,7 @@ export interface TripDetail {
 @Component({
   selector: 'app-trip-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    CardComponent,
-    IconComponent,
-    ChatComponent,
-    HotelInfoCardComponent,
-  ],
+  imports: [],
   templateUrl: './trip-detail.component.html',
   styleUrl: './trip-detail.component.css',
 })

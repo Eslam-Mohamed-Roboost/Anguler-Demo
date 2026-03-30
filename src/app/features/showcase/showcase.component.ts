@@ -54,8 +54,7 @@ import { PasswordInputComponent } from '../../shared/components/password-input/p
 import { SliderComponent } from '../../shared/components/slider/slider.component';
 import { RatingComponent } from '../../shared/components/rating/rating.component';
 import { MapComponent } from '../../shared/components/map/map.component';
-import { WeatherWidgetComponent } from '../../shared/components/weather-widget/weather-widget.component';
-
+ 
 // ── Shared directives ──────────────────────────────────────
 import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 import { ClickOutsideDirective } from '../../shared/directives/click-outside.directive';
@@ -139,8 +138,7 @@ interface DemoFormModel {
     SliderComponent,
     RatingComponent,
     MapComponent,
-    WeatherWidgetComponent,
-    TooltipDirective,
+     TooltipDirective,
     ClickOutsideDirective,
     SkeletonDirective,
     CopyToClipboardDirective,

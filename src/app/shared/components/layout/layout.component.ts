@@ -17,9 +17,7 @@ import {
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { NavbarComponent } from '../navbar/navbar.component';
-import { NavbarBookingComponent } from '../navbar-booking/navbar-booking.component';
-import { JoinUsService } from '../../../features/booking/components/services/join-us.service';
-import { LoginService } from '../../../features/booking/components/services/login.service';
+ 
 
 const ROUTE_ANIMATION = trigger('routeAnimation', [
   transition('* <=> *', [
@@ -40,14 +38,13 @@ const ROUTE_ANIMATION = trigger('routeAnimation', [
 @Component({
   selector: 'app-layout',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, SidebarComponent, NavbarComponent, NavbarBookingComponent],
+  imports: [RouterOutlet, SidebarComponent, NavbarComponent],
   animations: [ROUTE_ANIMATION],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
 })
 export class LayoutComponent {
-  private readonly joinUsService = inject(JoinUsService);
-  private readonly loginService = inject(LoginService);
+ 
 
   /** Type of navbar to display: 'default' or 'booking' */
   readonly navbarStyle = input<'default' | 'booking'>('default');
@@ -55,8 +52,7 @@ export class LayoutComponent {
   protected readonly sidebarOpen = signal(false);
 
   /** Whether the user is authenticated (for booking navbar) */
-  protected readonly isAuthenticated = this.loginService.isLoggedIn;
-
+ 
   toggleSidebar(): void {
     this.sidebarOpen.update((v) => !v);
   }
@@ -66,10 +62,8 @@ export class LayoutComponent {
   }
 
   onJoinUsClick(): void {
-    this.joinUsService.requestOpen();
-  }
+   }
 
   onSignInClick(): void {
-    this.joinUsService.requestSignIn();
-  }
+   }
 }

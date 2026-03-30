@@ -1,0 +1,15 @@
+<app-card variant="elevated">
+  <div class="flex items-center justify-between px-5 py-4 gap-4">
+    <div class="flex-1 min-w-0 flex flex-col gap-1.5">
+      <span class="text-xs font-medium text-gray-400 uppercase tracking-wide truncate">{{ label() }}</span>
+      <span class="text-2xl font-bold text-gray-800 leading-tight">{{ formattedValue() }}</span>
+      @if (changeText()) {
+        <span class="text-xs font-medium" [class]="changeColor()">{{ changeText() }}</span>
+      }
+    </div>
+
+    <div class="shrink-0 size-12 rounded-xl flex items-center justify-center" [class]="iconClasses()">
+      <app-icon [name]="icon()" size="md" />
+    </div>
+  </div>
+</app-card>

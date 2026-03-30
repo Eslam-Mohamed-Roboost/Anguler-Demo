@@ -1,0 +1,26 @@
+/* ── Hover state ── */
+.nav-item:not(.nav-active):hover {
+  background-color: #f0fdf4;
+}
+
+/* ── Active state (green pill) ── */
+.nav-active {
+  background-color: #22c55e;
+  color: white;
+  box-shadow: 0 2px 8px rgb(34 197 94 / 0.3);
+}
+
+.nav-active:hover {
+  background-color: #16a34a;
+}
+
+.nav-active .nav-icon,
+.nav-active .nav-label {
+  color: white;
+}
+
+/* Override group-hover when active */
+.nav-active:hover .nav-icon,
+.nav-active:hover .nav-label {
+  color: white;
+}

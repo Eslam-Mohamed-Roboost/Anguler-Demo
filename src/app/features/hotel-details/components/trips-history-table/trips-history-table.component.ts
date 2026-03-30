@@ -12,7 +12,6 @@ import type { ColumnDef } from '../../../../shared/components/data-table/column-
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
-import { InputComponent } from '../../../../shared/components/input/input.component';
 import type { HotelRecord, TripRecord, TripSearchFilters } from '../../types/hotel-details.types';
 
 @Component({
@@ -24,7 +23,6 @@ import type { HotelRecord, TripRecord, TripSearchFilters } from '../../types/hot
     CellDefDirective,
     CardComponent,
     IconComponent,
-    InputComponent,
   ],
   templateUrl: './trips-history-table.component.html',
   styleUrl: './trips-history-table.component.css',
@@ -44,10 +42,6 @@ export class TripsHistoryTableComponent {
   readonly filterChange = output<TripSearchFilters>();
   readonly tripAction = output<{ type: string; tripId: string }>();
   readonly commissionSettings = output<void>();
-
-  protected readonly searchField = computed(() => ({
-    value: this.searchQuery(),
-  }));
 
   protected readonly tripColumns = computed<ColumnDef[]>(() => [
     { key: 'id', header: 'Trip ID', sortable: true, headerClass: 'w-20' },

@@ -1,0 +1,59 @@
+<div class="min-h-screen bg-page-bg overflow-y-auto h-screen px-8 py-6 max-w-[1400px] mx-auto max-lg:px-6 max-md:px-4 max-sm:px-3">
+
+  <!-- Page Title -->
+  <h1 class="text-xl font-bold text-body mb-5">{{ 'hotelDetails.title' | translate }}</h1>
+
+  <!-- Statistics Grid -->
+  <section class="mb-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-sm:gap-2">
+      @for (stat of statistics(); track stat.label) {
+        <app-statistics-card
+          [label]="stat.label"
+          [value]="stat.value"
+          [icon]="stat.icon"
+          [color]="stat.color"
+          [changePercent]="stat.changePercent"
+          [changeDescription]="stat.changeDescription"
+        />
+      }
+    </div>
+  </section>
+
+  <!-- Revenue Chart -->
+  <section class="mb-4">
+    <app-revenue-chart [data]="revenueData()" />
+  </section>
+
+  <!-- Recent Trips & Important Alerts -->
+  <section class="mb-4">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <app-recent-trips [trips]="recentTrips()" />
+      <app-important-alerts [alerts]="importantAlerts()" />
+    </div>
+  </section>
+
+  <!-- Payouts Table -->
+  <section class="mb-4">
+    <app-payouts-table [payouts]="mockPayouts()" />
+  </section>
+
+  <!-- Info Banner -->
+  <!-- <div class="flex items-center gap-2 px-4 py-3 bg-amber-50 border border-amber-200 rounded-btn text-cell text-amber-800 mb-5" role="note">
+    <app-icon name="info" size="sm" aria-hidden="true" />
+    <span>{{ 'hotelDetails.payoutInfo' | translate }}</span>
+  </div> -->
+
+  <!-- Trips History Table -->
+  <section class="mb-6">
+    <!-- <app-trips-history-table
+      [trips]="filteredTrips()"
+      [hotels]="hotels()"
+      [loading]="loading()"
+      [searchQuery]="searchQuery()"
+      [totalTrips]="totalTrips()"
+      [totalHotels]="totalHotels()"
+      (searchChange)="onSearchChange($event)"
+      (tripAction)="onTripAction($event)"
+    /> -->
+  </section>
+</div>

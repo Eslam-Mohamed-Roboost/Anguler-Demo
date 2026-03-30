@@ -1,0 +1,101 @@
+<!-- Heading -->
+<h1 class="mb-1 text-3xl font-bold text-gray-800" i18n="@@auth.login.title">Login</h1>
+<p class="mb-8 text-sm text-gray-400" i18n="@@auth.login.subtitle">Login to access your Dashboard</p>
+
+<!-- Error message -->
+@if (errorMessage()) {
+  <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600" role="alert">
+    {{ errorMessage() }}
+  </div>
+}
+
+<!-- Form -->
+<form  (ngSubmit)="onSubmit()" class="space-y-5">
+  <!-- Email -->
+  <div>
+    <label for="email" class="mb-1.5 block text-sm font-medium text-gray-600" i18n="@@auth.login.emailLabel">Email</label>
+    <input
+      id="email"
+      type="email"
+      formControlName="email"
+      i18n-placeholder="@@auth.login.emailPlaceholder"
+      placeholder="Enter Your Email"
+      [formField]="loginForm.email" 
+      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-700 outline-none transition-colors placeholder:text-gray-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+    />
+      <!-- [class.border-red-400]="form.controls.email.touched && form.controls.email.invalid" -->
+
+    <!-- @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+      <p class="mt-1 text-xs text-red-500" i18n="@@auth.login.emailRequired">Email is required</p>
+    } @else if (form.controls.email.touched && form.controls.email.hasError('email')) {
+      <p class="mt-1 text-xs text-red-500" i18n="@@auth.login.emailInvalid">Please enter a valid email</p>
+    } -->
+  </div>
+
+  <!-- Password -->
+  <div>
+    <label for="password" class="mb-1.5 block text-sm font-medium text-gray-600" i18n="@@auth.login.passwordLabel">Password</label>
+    <div class="relative">
+      <input
+        id="password"
+        [type]="showPassword() ? 'text' : 'password'"
+        formControlName="password"
+        i18n-placeholder="@@auth.login.passwordPlaceholder"
+        placeholder="Enter Your password"
+        [formField]="loginForm.password"
+        class="w-full rounded-lg border border-gray-300 px-4 py-3 pe-16 text-sm text-gray-700 outline-none transition-colors placeholder:text-gray-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+      />
+        <!-- [class.border-red-400]="form.controls.password.touched && form.controls.password.invalid" -->
+
+      <button
+        type="button"
+        (click)="togglePassword()"
+        class="absolute inset-y-0 end-0 flex items-center px-4 text-xs font-medium text-gray-400 transition-colors hover:text-gray-600"
+      >
+        @if (showPassword()) {
+          <span i18n="@@auth.login.hidePassword">hide</span>
+        } @else {
+          <span i18n="@@auth.login.showPassword">show</span>
+        }
+      </button>
+    </div>
+    <!-- @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+      <p class="mt-1 text-xs text-red-500" i18n="@@auth.login.passwordRequired">Password is required</p>
+    } @else if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
+      <p class="mt-1 text-xs text-red-500" i18n="@@auth.login.passwordMinLength">Password must be at least 6 characters</p>
+    } -->
+  </div>
+
+  <!-- Remember me & Forgot password -->
+  <div class="flex items-center justify-between">
+    <label class="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+      <input
+        type="checkbox"
+        formControlName="rememberMe"
+        class="size-4 rounded border-gray-300 text-emerald-500 focus:ring-emerald-500"
+        [formField]="loginForm.rememberMe"
+
+      />
+
+      <span i18n="@@auth.login.rememberMe">Remember me</span>
+    </label>
+    <a routerLink="/auth/forgot-password" class="text-sm font-medium text-primary transition-colors hover:text-emerald-600" i18n="@@auth.login.forgotPassword">
+      Forgot Password
+    </a>
+  </div>
+
+  <!-- Submit -->
+  <button
+    type="button"
+    (click)="onSubmit()"
+    [disabled]="loading()"
+    class="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+  >
+    @if (loading()) {
+      <app-icon name="spinner" size="sm" class="inline-block" />
+      <span class="ms-2" i18n="@@auth.login.loggingIn">Logging in...</span>
+    } @else {
+      <span i18n="@@auth.login.loginButton">Login</span>
+    }
+  </button>
+</form>

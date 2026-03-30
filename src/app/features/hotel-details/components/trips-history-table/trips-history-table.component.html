@@ -25,12 +25,13 @@
     <div class="flex items-center gap-3 flex-wrap max-lg:w-full">
       <div class="relative flex items-center max-lg:flex-1">
         <app-icon name="search" class="absolute start-3 text-muted-light z-[1] pointer-events-none" size="sm" aria-hidden="true" />
-        <app-input
-          inputId="trips-search"
+        <input
+          id="trips-search"
+          type="text"
           placeholder="Search Trips"
-          [field]="searchField"
+          [value]="searchQuery()"
           (input)="onSearchChange($event)"
-          inputClass="ps-8"
+          class="w-full rounded-btn border border-card-border bg-white px-3 py-[7px] ps-8 text-cell text-body placeholder:text-muted-light focus:border-primary focus:outline-none"
         />
       </div>
 
@@ -120,9 +121,9 @@
         <!-- Fare Cell -->
         <ng-template cellDef="fare" let-row>
           <div class="flex flex-col gap-0.5">
-            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price.toFixed(2) }} CHF</span>
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price != null ? row.price.toFixed(2) : '--' }} CHF</span>
             @if (row.commission != null) {
-              <span class="text-xs text-muted">Comm.: {{ row.commission.toFixed(2) }}</span>
+              <span class="text-xs text-muted">Comm.: {{ row.commission!.toFixed(2) }}</span>
             }
           </div>
         </ng-template>

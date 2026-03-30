@@ -1,0 +1,70 @@
+<div class="rounded-xl border border-gray-100 bg-white p-5">
+  <!-- Header -->
+  <div class="mb-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="text-emerald-500">
+        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </span>
+      <span class="text-sm font-semibold text-gray-800">Recent Trips</span>
+    </div>
+    <a class="text-xs font-medium text-emerald-500 transition-colors hover:text-emerald-600" href="#">
+      All Trips &rarr;
+    </a>
+  </div>
+
+  <!-- Trip List -->
+  <div class="space-y-4">
+    @for (trip of trips(); track trip.id) {
+      <div class="rounded-lg border border-gray-50 p-3">
+        <!-- Row 1: ID, Status, Price -->
+        <div class="mb-2 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold text-gray-800">{{ trip.id }}</span>
+            <span class="rounded-md px-2 py-0.5 text-[10px] font-semibold" [class]="statusClass(trip.status)">
+              {{ trip.status }}
+            </span>
+          </div>
+          <span class="text-sm font-semibold text-gray-800">${{ trip.price.toFixed(2) }}</span>
+        </div>
+
+        <!-- Row 2: Driver → Passenger, Time -->
+        <div class="mb-2 flex items-center justify-between text-xs text-gray-500">
+          <div class="flex items-center gap-1">
+            <span class="inline-flex size-4 items-center justify-center rounded-full bg-emerald-100">
+              <span class="text-[8px] text-emerald-600">&#9679;</span>
+            </span>
+            <span>{{ trip.driverName }} (Driver)</span>
+            <span class="text-gray-300">&rarr;</span>
+            <span class="inline-flex size-4 items-center justify-center rounded-full bg-blue-100">
+              <span class="text-[8px] text-blue-600">&#9679;</span>
+            </span>
+            <span>{{ trip.passengerName }}</span>
+          </div>
+          <span class="text-gray-400">{{ trip.timeAgo }}</span>
+        </div>
+
+        <!-- Row 3: Locations -->
+        <div class="space-y-1 text-xs text-gray-500">
+          <div class="flex items-center gap-1.5">
+            <span class="text-emerald-500">
+              <svg class="size-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+              </svg>
+            </span>
+            <span>{{ trip.pickupLocation }}</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-red-500">
+              <svg class="size-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+              </svg>
+            </span>
+            <span>{{ trip.dropoffLocation }}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -10,13 +10,8 @@
     @if (navbarStyle() === 'default') {
       <app-navbar (menuToggle)="toggleSidebar()" />
     } @else if (navbarStyle() === 'booking') {
-      <app-navbar-booking
-        signInText="Sign In"
-        joinUsText="Join Us Now"
-        [isAuthenticated]="isAuthenticated()"
-        (joinUsClick)="onJoinUsClick()"
-        (signInClick)="onSignInClick()"
-      />
+      <!-- <app-navbar-booking
+      /> -->
     }
 
     <!-- Main content -->

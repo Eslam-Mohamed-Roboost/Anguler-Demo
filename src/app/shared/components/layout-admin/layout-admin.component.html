@@ -1,0 +1,15 @@
+<div class="flex h-screen bg-gray-50">
+  <!-- Admin Sidebar -->
+  <app-admin-sidebar [open]="sidebarOpen()" (closed)="closeSidebar()" />
+
+  <!-- Main content area -->
+  <div class="flex flex-1 flex-col overflow-hidden">
+    <!-- Top navbar -->
+    <app-admin-navbar (menuToggle)="toggleSidebar()" />
+
+    <!-- Page content -->
+    <main id="main-content" class="flex-1 overflow-y-auto p-6">
+      <router-outlet />
+    </main>
+  </div>
+</div>
