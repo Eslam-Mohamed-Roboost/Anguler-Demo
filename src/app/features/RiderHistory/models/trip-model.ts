@@ -4,26 +4,42 @@ export interface Location {
   address: string;
 }
 
+ 
+
+
+
 export interface HotelRequestItem {
-  tripRequestId: string;
-  tripCode: string;
-  guestName: string;
-  roomNumber: number;
-  driverName: string;
-  driverAvatarUrl: string;
-  startLocation: Location;
-  endLocation: Location;
-  status: string;
-  durationMinutes: number;
-  distanceInKm: number;
-  fare: number;
-  commission: number;
-  currency: string;
-  startedAt: string;
-  endedAt: string;
-  requestedAt: string;
+  tripRequestId: string
+  tripId: string
+  tripCode: any
+  guestName: any
+  roomNumber: any
+  driverName: string
+  driverAvatarUrl: any
+  startLocation: StartLocation
+  endLocation: EndLocation
+  status: string
+  durationMinutes: any
+  distanceInKm: any
+  fare: number
+  commission: any
+  currency: string
+  startedAt: any
+  endedAt: any
+  requestedAt: string
 }
 
+export interface StartLocation {
+  latitude: number
+  longitude: number
+  address: string
+}
+
+export interface EndLocation {
+  latitude: number
+  longitude: number
+  address: string
+}
 export interface HotelRequestsHistoryResponse {
   items: HotelRequestItem[];
   pageNumber: number;

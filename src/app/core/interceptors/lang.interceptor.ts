@@ -4,8 +4,10 @@ import type { HttpInterceptorFn } from '@angular/common/http';
 import { LanguageService } from '../services/language.service';
 import { environment } from '../../../environments/environment';
 
+const API_ORIGINS = [environment.apiUrl, environment.adminApiUrl];
+
 export const langInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!req.url.startsWith(environment.apiUrl)) {
+  if (!API_ORIGINS.some((base) => req.url.startsWith(base))) {
     return next(req);
   }
 

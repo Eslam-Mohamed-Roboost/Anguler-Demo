@@ -50,6 +50,7 @@
       [data]="filteredTrips()"
       [columns]="columns"
       trackByKey="tripRequestId"
+      [loading]="loading()"
       ariaLabel="Hotel requests history table"
       (sortChange)="onSort($event)"
     >

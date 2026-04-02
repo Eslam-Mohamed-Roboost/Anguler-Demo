@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  OnInit,
+  effect,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -36,7 +36,7 @@ import { inject } from '@angular/core';
   templateUrl: './rider-history.component.html',
   styleUrl: './rider-history.component.css',
 })
-export class RiderHistoryComponent extends BaseComponent implements OnInit {
+export class RiderHistoryComponent extends BaseComponent {
   private readonly riderHistoryService = inject(RiderHistoryService);
   private readonly resultHandler = inject(ResultHandlerService);
 
@@ -92,8 +92,12 @@ export class RiderHistoryComponent extends BaseComponent implements OnInit {
     return result;
   });
 
-  ngOnInit(): void {
-    this.loadTrips();
+  constructor() {
+    super();
+    effect(() => {
+      this.currentPage(); // track — re-run loadTrips on page change
+      this.loadTrips();
+    });
   }
 
   protected loadTrips(): void {
@@ -106,17 +110,11 @@ export class RiderHistoryComponent extends BaseComponent implements OnInit {
       .pipe(this.takeUntilDestroyed())
       .subscribe({
         next: (result) => {
-          this.resultHandler.handleResult(
-            result,
-            (data) => {
-              this.trips.set(data.items ?? []);
-              this.totalItems.set(data.totalCount);
-            },
-            () => {
-              this.trips.set([]);
-              this.totalItems.set(0);
-            },
-          );
+          if(result.isSuccess == true){
+              this.trips.set(result.data?.items ?? []);
+              this.totalItems.set(result.data?.totalCount ?? 0);
+          }
+          
           this.loading.set(false);
         },
         error: () => {
@@ -135,7 +133,6 @@ export class RiderHistoryComponent extends BaseComponent implements OnInit {
 
   onPageChange(page: number): void {
     this.currentPage.set(page);
-    this.loadTrips();
   }
 
   clearSort(): void {
@@ -164,7 +161,8 @@ export class RiderHistoryComponent extends BaseComponent implements OnInit {
     }).format(date);
   }
 
-  formatCurrency(amount: number, currency: string): string {
+  formatCurrency(amount: number | null | undefined, currency: string): string {
+    if (amount == null) return '--';
     if (currency) {
       return `${amount.toFixed(2)} ${currency}`;
     }
