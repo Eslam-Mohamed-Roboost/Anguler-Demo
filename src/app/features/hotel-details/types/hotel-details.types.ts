@@ -25,6 +25,7 @@ export interface HotelDetails {
 
 export interface TripRecord {
   id: string;
+  tripCode?: string;
   customerName: string;
   pickupLocation: string;
   dropoffLocation: string;
@@ -47,6 +48,7 @@ export interface TripRecord {
   commission?: number;
   endDate?: string;
 }
+
 
 export interface HotelFormData {
   name: string;

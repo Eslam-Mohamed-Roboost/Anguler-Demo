@@ -20,7 +20,11 @@ export function roleGuard(allowedRoles: string[]): CanActivateFn {
       return true;
     }
 
-    // Redirect to home if role requirement not met
-    return router.createUrlTree(['/']);
+    // Redirect admin/hotel users to their dashboard; others to home
+    if (authService.hasAnyRole(['admin', 'hotel'])) {
+      return router.createUrlTree(['/hotel-details']);
+    }
+
+    return router.createUrlTree(['/home']);
   };
 }

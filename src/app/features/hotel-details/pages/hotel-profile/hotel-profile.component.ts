@@ -14,7 +14,6 @@ import type { ColumnDef } from '../../../../shared/components/data-table/column-
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
-// import { InputComponent } from '../../../../shared/components/input/input.component';
 import { HotelInfoCardComponent } from '../../components/hotel-info-card/hotel-info-card.component';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
 import { HotelDetailsFormComponent } from '../../components/hotel-details-form/hotel-details-form.component';
@@ -22,13 +21,12 @@ import { WithdrawalDetailsComponent } from '../../components/withdrawal-details/
 import type { HotelFormData, HotelInfo, TripRecord, WithdrawalFormData } from '../../types/hotel-details.types';
 
 @Component({
-  selector: 'app-hotel-detail-view',
+  selector: 'app-hotel-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     CardComponent,
     IconComponent,
-    // InputComponent,
     DataTableComponent,
     CellDefDirective,
     HotelInfoCardComponent,
@@ -36,14 +34,14 @@ import type { HotelFormData, HotelInfo, TripRecord, WithdrawalFormData } from '.
     HotelDetailsFormComponent,
     WithdrawalDetailsComponent,
   ],
-  templateUrl: './hotel-detail-view.component.html',
-  styleUrl: './hotel-detail-view.component.css',
+  templateUrl: './hotel-profile.component.html',
+  styleUrl: './hotel-profile.component.css',
 })
-export class HotelDetailViewComponent implements OnInit, OnDestroy {
+export class HotelProfileComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly renderer = inject(Renderer2);
 
-  readonly hotelId = signal('21422');
+  readonly hotelId = signal('');
   readonly searchQuery = signal('');
   readonly awaitingAmount = signal(280);
 
@@ -87,7 +85,7 @@ export class HotelDetailViewComponent implements OnInit, OnDestroy {
       t.customerName.toLowerCase().includes(q) ||
       t.driverName?.toLowerCase().includes(q) ||
       t.pickupLocation.toLowerCase().includes(q) ||
-      t.dropoffLocation.toLowerCase().includes(q)
+      t.dropoffLocation.toLowerCase().includes(q),
     );
   });
 

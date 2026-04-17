@@ -1,0 +1,79 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center justify-between">
+    <h2 class="text-lg font-semibold text-gray-800">Pending Hotel Requests</h2>
+  </div>
+
+  <app-data-table
+    [data]="items()"
+    [columns]="columns"
+    trackByKey="tripRequestId"
+    [loading]="loading()"
+    ariaLabel="Pending hotel requests table"
+  >
+    <!-- Route -->
+    <ng-template cellDef="route" let-row>
+      <div class="flex flex-col gap-0.5 text-xs">
+        <span class="flex items-center gap-1">
+          <span class="inline-block size-2 rounded-full bg-emerald-500"></span>
+          {{ row.startLocation?.address }}
+        </span>
+        <span class="flex items-center gap-1">
+          <span class="inline-block size-2 rounded-full bg-red-500"></span>
+          {{ row.endLocation?.address }}
+        </span>
+      </div>
+    </ng-template>
+
+    <!-- Requested At -->
+    <ng-template cellDef="requestedAt" let-row>
+      <span class="text-xs text-gray-600">{{ formatDate(row.requestedAt) }}</span>
+    </ng-template>
+
+    <!-- Actions: assign driver inline -->
+    <ng-template cellDef="actions" let-row>
+      <div class="flex items-center gap-2">
+        <select
+          class="w-40 rounded-lg border border-gray-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 disabled:opacity-50"
+          [value]="assignDriverId()[row.tripRequestId]"
+          [disabled]="driversLoading()"
+          (change)="setDriverId(row.tripRequestId, $any($event.target).value)"
+          [attr.aria-label]="'Select driver for trip ' + row.tripRequestId"
+        >
+          <option value="" disabled>
+            @if (driversLoading()) { Loading… } @else { Select driver }
+          </option>
+          @for (driver of drivers(); track driver.driverId) {
+            <option [value]="driver.driverId">{{ driver.fullName }}</option>
+          }
+        </select>
+        <button
+          type="button"
+          (click)="assignDriver(row.tripRequestId)"
+          [disabled]="assignLoading() === row.tripRequestId || !assignDriverId()[row.tripRequestId]"
+          class="flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1 text-xs font-medium text-white transition hover:bg-emerald-600 disabled:opacity-50"
+        >
+          @if (assignLoading() === row.tripRequestId) {
+            <span class="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
+          } @else {
+            <app-icon name="check" size="xs" />
+          }
+          Assign
+        </button>
+        <a
+          [routerLink]="['/admin/trip', row.tripRequestId]"
+          class="flex size-7 items-center justify-center rounded-full text-primary hover:bg-gray-100"
+          aria-label="View trip details"
+        >
+          <app-icon name="eye" size="sm" />
+        </a>
+      </div>
+    </ng-template>
+  </app-data-table>
+
+  <app-pagination
+    [currentPage]="currentPage()"
+    [totalItems]="totalItems()"
+    [pageSize]="pageSize()"
+    (pageChange)="onPageChange($event)"
+  />
+</div>

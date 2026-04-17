@@ -30,4 +30,12 @@ export class TripRequestService extends ApiService {
   create(body: CreateTripRequest): Observable<Result<unknown>> {
     return this.post<unknown>('/trip-request/create', body);
   }
+
+  cancelTrip(tripRequestId: string, cancellationReason: string): Observable<Result<void>> {
+    return this.put<void>('/trip-request/cancel', { tripRequestId, cancellationReason });
+  }
+
+  rescheduleTrip(tripRequestId: string, newScheduledAt: string): Observable<Result<void>> {
+    return this.put<void>(`/trip-request/${tripRequestId}/reschedule`, { newScheduledAt });
+  }
 }

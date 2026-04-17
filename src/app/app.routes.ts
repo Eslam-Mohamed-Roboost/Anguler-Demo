@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 import { LayoutComponent } from './shared/components/layout/layout.component';
 import { LayoutBookingComponent } from './shared/components/layout-booking/layout-booking.component';
 import { NotFoundComponent } from './features/not-found/not-found.component';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -14,40 +16,44 @@ export const routes: Routes = [
         path: 'home',
         loadChildren: () =>
           import('./features/booking/booking.routes').then((m) => m.bookingRoutes),
-        
       },
       {
         path: 'RiderHistory',
+        canActivate: [authGuard, roleGuard(['passenger'])],
         loadChildren: () =>
           import('./features/RiderHistory/RiderHistory.routes').then((m) => m.RiderHistoryRoutes),
-        
       },
       {
         path: 'TripDetails',
+        canActivate: [authGuard, roleGuard(['passenger', 'admin'])],
         loadChildren: () =>
           import('./features/TripDetails/tripDetails.routs').then((m) => m.tripDetailsRoutes),
-        
       },
-       {
+      {
         path: 'FinancialHistory',
+        canActivate: [authGuard, roleGuard(['passenger'])],
         loadChildren: () =>
           import('./features/financial-history/financial-history-routes').then((m) => m.financialHistoryRoutes),
-        
       },
-       {
+      {
         path: 'profile',
+        canActivate: [authGuard, roleGuard(['passenger'])],
         loadChildren: () =>
           import('./features/Profile/Profile.routs').then((m) => m.ProfileRoutes),
-        
       },
       {
         path: 'hotel-details',
+        canActivate: [authGuard, roleGuard(['admin', 'hotel'])],
         loadChildren: () =>
           import('./features/hotel-details/hotel-details.routes').then((m) => m.HOTEL_DETAILS_ROUTES),
-        
       },
-        { path: '', redirectTo: 'home', pathMatch: 'full' },
-
+      {
+        path: 'admin',
+        canActivate: [authGuard, roleGuard(['admin'])],
+        loadChildren: () =>
+          import('./features/admin-dashboard/admin.routes').then((m) => m.Admin_ROUTES),
+      },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
   {
@@ -72,7 +78,6 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/showcase/showcase.routes').then((m) => m.showcaseRoutes),
       },
-      // { path: '', redirectTo: 'demo', pathMatch: 'full' },
     ],
   },
   { path: '**', component: NotFoundComponent },

@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   effect,
+  inject,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -18,7 +19,7 @@ import { HotelRequestItem } from '../../models/trip-model';
 import { RiderHistoryService } from '../../services/rider-history.service';
 import { ResultHandlerService } from '../../../../core/services/result-handler.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
-import { inject } from '@angular/core';
+import { TripRequestService } from '../../../booking/components/services/trip-request.service';
 
 @Component({
   selector: 'app-rider-history',
@@ -39,6 +40,7 @@ import { inject } from '@angular/core';
 export class RiderHistoryComponent extends BaseComponent {
   private readonly riderHistoryService = inject(RiderHistoryService);
   private readonly resultHandler = inject(ResultHandlerService);
+  private readonly tripRequestService = inject(TripRequestService);
 
   protected readonly columns: ColumnDef[] = [
     { key: 'tripCode', header: 'TripID', sortable: true },
@@ -60,6 +62,7 @@ export class RiderHistoryComponent extends BaseComponent {
   protected readonly pageSize = signal(10);
   protected readonly totalItems = signal(0);
   protected readonly loading = signal(false);
+  protected readonly cancelLoading = signal<string | null>(null);
 
   protected readonly filteredTrips = computed(() => {
     const query = this.searchQuery().toLowerCase();
@@ -137,6 +140,25 @@ export class RiderHistoryComponent extends BaseComponent {
 
   clearSort(): void {
     this.sortState.set({ column: '', direction: null });
+  }
+
+  isCancellable(status: string): boolean {
+    const s = status.toLowerCase();
+    return s === 'pending' || s === 'accepted';
+  }
+
+  cancelTrip(tripRequestId: string): void {
+    this.cancelLoading.set(tripRequestId);
+    this.tripRequestService
+      .cancelTrip(tripRequestId, 'Cancelled by hotel')
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: () => {
+          this.cancelLoading.set(null);
+          this.loadTrips();
+        },
+        error: () => this.cancelLoading.set(null),
+      });
   }
 
   getStatusVariant(status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {

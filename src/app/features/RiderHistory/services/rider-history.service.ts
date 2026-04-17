@@ -1,20 +1,14 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { Result } from '../../../core/models/result.model';
-import {
-  HotelRequestsHistoryResponse,
-  HotelRequestsQuery,
-} from '../models/trip-model';
+import { AdminApiService } from '../../../core/services/admin-api.service';
+import type { Result } from '../../../core/models/result.model';
+import type { HotelRequestsHistoryResponse, HotelRequestsQuery } from '../models/trip-model';
 
 @Injectable({ providedIn: 'root' })
-export class RiderHistoryService {
-  private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.adminApiUrl;
-
+export class RiderHistoryService extends AdminApiService {
   getHotelRequestsHistory(
-    query: HotelRequestsQuery
+    query: HotelRequestsQuery,
   ): Observable<Result<HotelRequestsHistoryResponse>> {
     const params = new HttpParams()
       .set('pageNumber', query.pageNumber)
@@ -22,7 +16,7 @@ export class RiderHistoryService {
 
     return this.http.get<Result<HotelRequestsHistoryResponse>>(
       `${this.baseUrl}/admin/hotel-requests/history`,
-      { params }
+      { params },
     );
   }
 }

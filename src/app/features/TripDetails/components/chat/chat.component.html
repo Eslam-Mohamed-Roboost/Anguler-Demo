@@ -1,20 +1,52 @@
 <section class="flex min-h-0 h-full w-full min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 mx-8 px-4 py-4">
-  <!-- Header: Trip Conversation - same padding, responsive -->
-  <div class="shrink-0 border-b border-gray-200 px-4 py-3 dark:border-gray-700 px-4 py-4">
+  <!-- Header -->
+  <div class="shrink-0 flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700">
     <h3 class="flex items-center gap-2 text-base font-semibold text-primary-text sm:text-lg">
       <span class="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
         <app-icon name="chat-bubble" size="sm" />
       </span>
       Trip Conversation
+      @if (conversation()?.status) {
+        <span class="text-xs font-medium px-2 py-0.5 rounded-full"
+          [class]="conversation()?.status === 'Open' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'">
+          {{ conversation()?.status }}
+        </span>
+      }
     </h3>
-  </div>
-  <!-- Chat Messages - same padding, responsive -->
-  <div class="chat-messages min-h-0 flex-1 overflow-y-scroll px-4 py-4 sm:px-6 sm:py-5 md:px-12 md:py-6 lg:px-24 xl:px-44 xl:py-6">
-    <app-message [messages]="messages()" />
+
+    @if (isOpen()) {
+      <button
+        type="button"
+        (click)="closeConversation()"
+        [disabled]="closeLoading()"
+        class="flex items-center gap-1.5 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+        aria-label="Close conversation"
+      >
+        @if (closeLoading()) {
+          <span class="size-3 animate-spin rounded-full border-2 border-red-300 border-t-red-600 block"></span>
+        } @else {
+          <app-icon name="close" size="xs" />
+        }
+        Close
+      </button>
+    }
   </div>
 
-  <!-- Input Area - same padding, responsive -->
-  <div class="chat-input shrink-0 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 sm:px-6 sm:py-4 md:px-12 lg:px-24 xl:px-44 xl:py-4">
-    <app-chat-input (send)="onSend($event)" />
+  <!-- Messages -->
+  <div class="chat-messages min-h-0 flex-1 overflow-y-scroll px-4 py-4 sm:px-6 sm:py-5 md:px-12 md:py-6 lg:px-24 xl:px-44 xl:py-6">
+    @if (chatLoading()) {
+      <div class="flex h-full items-center justify-center">
+        <span class="size-6 animate-spin rounded-full border-4 border-gray-200 border-t-primary block"></span>
+      </div>
+    } @else {
+      <app-message [messages]="conversation()?.messages ?? []" />
+    }
   </div>
+
+  <!-- Input (only when open) -->
+  @if (isOpen()) {
+    <div class="chat-input shrink-0 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 sm:px-6 sm:py-4 md:px-12 lg:px-24 xl:px-44 xl:py-4">
+      <app-chat-input (send)="onSend($event)" />
+    </div>
+  }
 </section>

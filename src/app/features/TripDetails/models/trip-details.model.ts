@@ -1,60 +1,80 @@
-export interface PersonCard {
-  name: string;
-  role: string;
-  rating: number;
-  status: string;
-  phoneNumber: string;
-  email: string;
-  emergencyCallsCount: number;
+export interface Location {
+  latitude: number;
+  longitude: number;
+  address: string;
 }
 
-export interface TripDetailsInfo {
-  tripStatus: number;
-  tripId: string;
-  tripCode: string;
-  pickupLocation: string;
-  destinations: string[];
-  tripFare: number;
-  driverProfit: number;
-  appProfit: number;
-  paymentMethod: string;
-  carType: string;
-  tripDuration: number;
-  tripDistance: number;
-  isHotelTrip: boolean;
+export interface TripDriver {
+  driverId: string;
+  fullName: string;
+  avatarUrl: string | null;
+  phoneNumber: string | null;
+  rating: number;
+}
+
+export interface HotelInfo {
+  id: string;
   hotelName: string;
-  guestName: string;
-  roomNumber: number;
+  cityId: string;
+  address: string;
+  locationUrl: string;
+  phoneNumber: string;
+  email: string;
+  logoUrl: string;
+  commissionRate: number;
+  isActive: boolean;
+  isVerified: boolean;
 }
 
 export interface TripDetailsResponse {
-  passengerCard: PersonCard;
-  driverCard: PersonCard;
-  tripDetails: TripDetailsInfo;
+  tripRequestId: string;
+  tripId: string | null;
+  tripCode: string | null;
+  unifiedStatus: string;
+  startLocation: Location;
+  endLocation: Location;
+  guestName: string;
+  roomNumber: number;
+  isHotelRequest: boolean;
+  hotelId: string | null;
+  driver: TripDriver | null;
+  estimatedPrice: number;
+  actualFare: number | null;
+  tips: number | null;
+  currency: string;
+  paymentMethodType: string;
+  isScheduled: boolean;
+  scheduledAt: string | null;
+  requestedAt: string;
+  startedAt: string | null;
+  endedAt: string | null;
+  arrivedAt: string | null;
+  durationMinutes: number | null;
+  distanceInKm: number | null;
 }
 
-export function getTripStatusLabel(status: number): string {
+export function getTripStatusLabel(status: string): string {
   switch (status) {
-    case 0: return 'Pending';
-    case 1: return 'Accepted';
-    case 2: return 'Arrived';
-    case 3: return 'In Progress';
-    case 4: return 'Completed';
-    case 5: return 'Cancelled';
-    case 6: return 'Rejected';
-    default: return 'Unknown';
+    case 'Pending': return 'Pending';
+    case 'Accepted': return 'Accepted';
+    case 'Arrived': return 'Arrived';
+    case 'InProgress': return 'In Progress';
+    case 'Completed': return 'Completed';
+    case 'Cancelled': return 'Cancelled';
+    case 'Rejected': return 'Rejected';
+    default: return status;
   }
 }
 
-export function getTripStatusVariant(status: number): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {
+export function getTripStatusVariant(status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {
   switch (status) {
-    case 4: return 'success';
-    case 5:
-    case 6: return 'danger';
-    case 3: return 'info';
-    case 0:
-    case 1:
-    case 2: return 'warning';
+    case 'Completed': return 'success';
+    case 'Cancelled':
+    case 'Rejected': return 'danger';
+    case 'InProgress': return 'info';
+    case 'Pending':
+    case 'Accepted':
+    case 'Arrived': return 'warning';
     default: return 'neutral';
   }
 }

@@ -64,6 +64,7 @@
             [label]="'form.chooseCar' | translate"
             [options]="carTypes()"
             [(selected)]="selectedCar"
+            [loading]="carTypesLoading()"
           />
 
           <!-- Action Buttons -->
@@ -688,6 +689,7 @@
       [label]="'form.chooseCar' | translate"
       [options]="carTypes()"
       [(selected)]="selectedCar"
+      [loading]="carTypesLoading()"
     />
   </div>
 

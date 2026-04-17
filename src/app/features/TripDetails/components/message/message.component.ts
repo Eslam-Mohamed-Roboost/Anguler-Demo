@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
-import type { ChatMessage } from '../../models/chat-message.model';
+import type { ChatMessageItem } from '../../models/chat-message.model';
 
 @Component({
   selector: 'app-message',
@@ -10,5 +10,5 @@ import type { ChatMessage } from '../../models/chat-message.model';
   styleUrl: './message.component.css',
 })
 export class MessageComponent {
-  readonly messages = input.required<ChatMessage[]>();
+  readonly messages = input.required<ChatMessageItem[]>();
 }

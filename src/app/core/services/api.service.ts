@@ -7,8 +7,8 @@ import { Result } from '../models/result.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.apiUrl;
+  protected readonly http = inject(HttpClient);
+  protected readonly baseUrl = environment.apiUrl;
 
   get<T>(path: string, params?: HttpParams, context?: HttpContext): Observable<Result<T>> {
     return this.http.get<Result<T>>(`${this.baseUrl}${path}`, { params, context });

@@ -80,9 +80,25 @@
             </div>
           </div>
 
+          @if (passwordError()) {
+            <p class="text-sm text-red-500" role="alert">{{ passwordError() }}</p>
+          }
+          @if (passwordSuccess()) {
+            <p class="text-sm text-green-600" role="status">{{ 'profile.passwordUpdated' | translate }}</p>
+          }
+
           <div class="flex justify-end mt-6">
-            <button class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
-              {{ 'profile.updatePassword' | translate }}
+            <button
+              type="button"
+              (click)="submitChangePassword()"
+              [disabled]="passwordLoading()"
+              class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (passwordLoading()) {
+                <span>{{ 'common.loading' | translate }}</span>
+              } @else {
+                {{ 'profile.updatePassword' | translate }}
+              }
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpParams } from '@angular/common/http';
+import { HttpContext, HttpParams } from '@angular/common/http';
 import { Observable, of, delay } from 'rxjs';
+import { SKIP_LOADING } from '../../../../core/tokens/skip-loading.token';
 import { ApiService } from '../../../../core/services/api.service';
 import { Result } from '../../../../core/models/result.model';
 
@@ -37,7 +38,8 @@ export class CitiesService extends ApiService {
       .set('PageNumber', pageNumber.toString());
     if (searchTerm) params = params.set('Name', searchTerm);
 
-    return this.get<CitiesResponse>('/city/getall', params);
+    const context = new HttpContext().set(SKIP_LOADING, true);
+    return this.get<CitiesResponse>('/city/getall', params, context);
   }
 
   private createMockCitiesResponse(searchTerm?: string, pageSize: number = 50, pageNumber: number = 1): Result<CitiesResponse> {

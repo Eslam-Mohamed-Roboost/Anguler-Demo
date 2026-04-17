@@ -12,8 +12,8 @@ import type { ColumnDef } from '../../../../shared/components/data-table/column-
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
-import { InputComponent } from '../../../../shared/components/input/input.component';
 import type { HotelRecord, TripRecord, TripSearchFilters } from '../../types/hotel-details.types';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-trips-history-table',
@@ -24,7 +24,7 @@ import type { HotelRecord, TripRecord, TripSearchFilters } from '../../types/hot
     CellDefDirective,
     CardComponent,
     IconComponent,
-    InputComponent,
+    TranslatePipe,
   ],
   templateUrl: './trips-history-table.component.html',
   styleUrl: './trips-history-table.component.css',
@@ -45,12 +45,8 @@ export class TripsHistoryTableComponent {
   readonly tripAction = output<{ type: string; tripId: string }>();
   readonly commissionSettings = output<void>();
 
-  protected readonly searchField = computed(() => ({
-    value: this.searchQuery(),
-  }));
-
   protected readonly tripColumns = computed<ColumnDef[]>(() => [
-    { key: 'id', header: 'Trip ID', sortable: true, headerClass: 'w-20' },
+    { key: 'tripId', header: 'Trip Code', sortable: true, headerClass: 'w-28' },
     { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-36' },
     { key: 'guestName', header: 'Guest Name', sortable: true, headerClass: 'w-32' },
     { key: 'driverName', header: 'Driver Name', sortable: true, headerClass: 'w-32' },

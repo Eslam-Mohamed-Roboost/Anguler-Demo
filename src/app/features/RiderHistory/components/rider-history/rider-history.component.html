@@ -121,13 +121,30 @@
 
       <!-- Custom cell: Actions -->
       <ng-template cellDef="actions" let-row>
-        <a
-          [routerLink]="['/TripDetails', row.tripRequestId]"
-          class="flex size-8 items-center justify-center rounded-full text-primary transition hover:bg-gray-100"
-          [attr.aria-label]="'riderHistory.viewDetails' | translate"
-        >
-          <app-icon name="eye" size="sm" />
-        </a>
+        <div class="flex items-center gap-1">
+          <a
+            [routerLink]="['/TripDetails', row.tripRequestId]"
+            class="flex size-8 items-center justify-center rounded-full text-primary transition hover:bg-gray-100"
+            [attr.aria-label]="'riderHistory.viewDetails' | translate"
+          >
+            <app-icon name="eye" size="sm" />
+          </a>
+          @if (isCancellable(row.status)) {
+            <button
+              type="button"
+              (click)="cancelTrip(row.tripRequestId)"
+              [disabled]="cancelLoading() === row.tripRequestId"
+              class="flex size-8 items-center justify-center rounded-full text-red-500 transition hover:bg-red-50 disabled:opacity-40"
+              [attr.aria-label]="'Cancel trip'"
+            >
+              @if (cancelLoading() === row.tripRequestId) {
+                <span class="size-4 animate-spin rounded-full border-2 border-red-300 border-t-red-500 block"></span>
+              } @else {
+                <app-icon name="close" size="sm" />
+              }
+            </button>
+          }
+        </div>
       </ng-template>
     </app-data-table>
   </div>

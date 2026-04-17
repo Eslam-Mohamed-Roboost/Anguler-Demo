@@ -1,9 +1,17 @@
-export type MessageSender = 'user' | 'agent';
-
-export interface ChatMessage {
+export interface ChatMessageItem {
   id: string;
-  sender: MessageSender;
-  senderName: string;
-  text: string;
-  timestamp: string;
+  senderId: string;
+  senderRole: string;
+  message: string;
+  createdAt: string;
+}
+
+export interface ChatConversation {
+  conversationId: string;
+  tripId: string;
+  conversationType: string;
+  status: string;
+  createdAt: string;
+  closedAt: string | null;
+  messages: ChatMessageItem[];
 }

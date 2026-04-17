@@ -4,6 +4,6 @@
   overflow: hidden;
 }
 
-::ng-deep body.trip-details-active {
+::ng-deep body.hotel-details-active {
   overflow: auto !important;
 }

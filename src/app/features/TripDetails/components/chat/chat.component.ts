@@ -1,25 +1,18 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { MessageComponent } from '../message/message.component';
-import type { ChatMessage } from '../../models/chat-message.model';
-
-const MOCK_MESSAGES: ChatMessage[] = [
-  {
-    id: '1',
-    sender: 'user',
-    senderName: 'Lines',
-    text: 'Hi. I was charged $5.00 as a cancellation fee for my last ride (ID: 55B3R),',
-    timestamp: '04:45 PM',
-  },
-  {
-    id: '2',
-    sender: 'agent',
-    senderName: 'Salam Hotel',
-    text: "Hello! I'm Sarah, and I'd be happy to check that for you.",
-    timestamp: '04:45 PM',
-  },
-];
+import type { ChatConversation } from '../../models/chat-message.model';
+import { ChatService } from '../../services/chat.service';
+import { BaseComponent } from '../../../../shared/base/base.component';
 
 @Component({
   selector: 'app-chat',
@@ -28,23 +21,60 @@ const MOCK_MESSAGES: ChatMessage[] = [
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css',
 })
-export class ChatComponent {
-  protected readonly messages = signal<ChatMessage[]>(MOCK_MESSAGES);
+export class ChatComponent extends BaseComponent implements OnInit {
+  private readonly chatService = inject(ChatService);
+
+  readonly tripRequestId = input.required<string>();
+
+  protected readonly conversation = signal<ChatConversation | null>(null);
+  protected readonly isOpen = computed(() => this.conversation()?.status === 'Open');
+  protected readonly chatLoading = signal(false);
+  protected readonly sendLoading = signal(false);
+  protected readonly closeLoading = signal(false);
+
+  ngOnInit(): void {
+    this.loadChat();
+  }
+
+  private loadChat(): void {
+    const id = this.tripRequestId();
+    if (!id) return;
+    this.chatLoading.set(true);
+    this.chatService.getChatHistory(id).pipe(this.takeUntilDestroyed()).subscribe({
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.conversation.set(result.data);
+        }
+        this.chatLoading.set(false);
+      },
+      error: () => this.chatLoading.set(false),
+    });
+  }
 
   protected onSend(text: string): void {
-    const now = new Date();
-    const timestamp = now.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
+    const id = this.tripRequestId();
+    if (!text.trim() || !id) return;
+
+    this.sendLoading.set(true);
+    this.chatService.sendMessage(id, text).subscribe({
+      next: () => {
+        this.sendLoading.set(false);
+        this.loadChat();
+      },
+      error: () => this.sendLoading.set(false),
     });
-    const newMessage: ChatMessage = {
-      id: crypto.randomUUID(),
-      sender: 'user',
-      senderName: 'Lines',
-      text,
-      timestamp,
-    };
-    this.messages.update((msgs) => [...msgs, newMessage]);
+  }
+
+  protected closeConversation(): void {
+    const id = this.tripRequestId();
+    if (!id) return;
+    this.closeLoading.set(true);
+    this.chatService.closeConversation(id).subscribe({
+      next: () => {
+        this.closeLoading.set(false);
+        this.loadChat();
+      },
+      error: () => this.closeLoading.set(false),
+    });
   }
 }

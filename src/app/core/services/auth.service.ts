@@ -34,19 +34,40 @@ export class AuthService {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
+      // Primary: core auth keys
       const savedToken = localStorage.getItem('auth_token');
-      const savedUser = localStorage.getItem('auth_user');
+      const savedUser  = localStorage.getItem('auth_user');
+      // Fallback: LoginService keys (booking login flow)
+      const loginToken = localStorage.getItem('userToken');
+      const loginRole  = localStorage.getItem('userRole');
+
       if (savedToken) {
         this._token.set(savedToken);
         if (savedUser) {
           try {
             this._user.set(JSON.parse(savedUser));
           } catch {
-            // Corrupted data — clear
             localStorage.removeItem('auth_user');
           }
         }
+      } else if (loginToken && loginRole) {
+        this._token.set(loginToken);
+        this._user.set({ id: 0, name: '', email: '', roles: [loginRole.toLowerCase()] });
       }
+    }
+  }
+
+  /**
+   * Called after a successful login through the booking LoginService.
+   * Syncs the token + role into this service so guards work correctly.
+   */
+  setSession(token: string, role: string): void {
+    const normalizedRole = role.toLowerCase();
+    this._token.set(token);
+    this._user.set({ id: 0, name: '', email: '', roles: [normalizedRole] });
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('auth_user', JSON.stringify(this._user()));
     }
   }
 

@@ -24,6 +24,7 @@ import { WithdrawalFormModel } from '../../models/WithdrawalForm-model';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { PasswordInputComponent } from '../../../../shared/components/password-input/password-input.component';
 import { AuthService } from '../services/auth.service';
+import { AuthService as CoreAuthService } from '../../../../core/services/auth.service';
 import { CitiesService } from '../services/cities.service';
 import { LoginService } from '../services/login.service';
 import { OtpService } from '../services/otp.service';
@@ -56,6 +57,7 @@ export class BookingComponent extends BaseComponent {
   private readonly router = inject(Router);
   private readonly joinUsService = inject(JoinUsService);
   private readonly authService = inject(AuthService);
+  private readonly coreAuth = inject(CoreAuthService);
   private readonly citiesService = inject(CitiesService);
   private readonly loginService = inject(LoginService);
   private readonly otpService = inject(OtpService);
@@ -686,9 +688,14 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
         if (result.isSuccess && result.data) {
           this.loginService.saveSession(result.data.token, result.data.role);
+          this.coreAuth.setSession(result.data.token, result.data.role);
           this.signInFormModel.set({ email: '', password: '' });
           this.closeSignInModal();
           this.showSuccess('Login successful! Welcome back.');
+          const role = result.data.role.toLowerCase();
+          if (role === 'admin' || role === 'hotel') {
+            this.router.navigate(['/hotel-details']);
+          }
         } else {
           this.showError(result.error?.description || 'Login failed. Please check your credentials.');
         }

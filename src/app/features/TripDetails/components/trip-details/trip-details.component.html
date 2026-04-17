@@ -1,6 +1,41 @@
 @if (loading()) {
-  <div class="flex h-full items-center justify-center">
-    <div class="size-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary"></div>
+  <!-- Skeleton mimics: details card (header + 2-col grid) + chat card -->
+  <div class="flex h-full min-h-0 flex-col gap-4 w-full sm:gap-6" aria-hidden="true">
+
+    <!-- Details card skeleton -->
+    <section class="shrink-0 w-full rounded-2xl border border-gray-200 bg-white shadow-sm mx-8 px-4 py-4">
+      <!-- Header row -->
+      <div class="flex items-center justify-between border-b border-gray-200 px-4 py-4 sm:px-5 sm:py-5">
+        <app-skeleton-block width="160px" height="1.5rem" />
+        <app-skeleton-block width="80px" height="1.75rem" />
+      </div>
+      <!-- 2-column field grid -->
+      <div class="grid grid-cols-1 gap-4 px-4 py-4 sm:grid-cols-2 sm:gap-5 sm:px-5 sm:py-5">
+        @for (_ of [1,2,3,4,5,6,7,8]; track $index) {
+          <div class="flex flex-col gap-2">
+            <app-skeleton-block width="40%" height="0.75rem" />
+            <app-skeleton-block width="70%" height="1rem" />
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Chat card skeleton -->
+    <section class="flex min-h-[400px] flex-1 flex-col rounded-2xl border border-gray-200 bg-white shadow-sm mx-8 px-6 py-4 gap-3">
+      <app-skeleton-block width="120px" height="1.25rem" />
+      <div class="flex flex-col gap-3 flex-1 pt-2">
+        <div class="flex justify-end"><app-skeleton-block width="55%" height="2.25rem" /></div>
+        <div class="flex justify-start"><app-skeleton-block width="45%" height="2.25rem" /></div>
+        <div class="flex justify-end"><app-skeleton-block width="60%" height="2.25rem" /></div>
+        <div class="flex justify-start"><app-skeleton-block width="38%" height="2.25rem" /></div>
+      </div>
+      <!-- Input row -->
+      <div class="flex items-center gap-2 border-t border-gray-100 pt-3">
+        <app-skeleton-block width="100%" height="2.5rem" />
+        <app-skeleton-block width="2.5rem" height="2.5rem" />
+      </div>
+    </section>
+
   </div>
 } @else if (error()) {
   <div class="flex h-full flex-col items-center justify-center gap-3 text-gray-500">
@@ -11,15 +46,17 @@
     <!-- Trip Details Card -->
     <section class="shrink-0 w-full">
       <app-details
-        [passengerCard]="data.passengerCard"
-        [driverCard]="data.driverCard"
-        [tripDetails]="data.tripDetails"
+        [data]="data"
+        [tripRequestId]="tripRequestId()"
+        [hotelInfo]="hotelInfo()"
+        [isAdmin]="isAdmin()"
+        (statusChanged)="refreshTrip()"
       />
     </section>
 
     <!-- Chat -->
     <section class="flex min-h-[400px] min-w-0 flex-1 flex-col">
-      <app-chat />
+      <app-chat [tripRequestId]="tripRequestId()" />
     </section>
   </div>
 }
