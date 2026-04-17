@@ -2,12 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   OnDestroy,
   OnInit,
   Renderer2,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
@@ -21,6 +23,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { SkeletonBlockComponent } from '../../../../shared/components/skeleton/skeleton-block.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { HotelRequestsService, type DriverItem } from '../../../admin-dashboard/services/hotel-requests.service';
+import { NotificationStore } from '../../../../core/stores/notification.store';
 
 export interface TripDetail {
   tripId: string;
@@ -59,6 +62,8 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   private readonly tripDetailsService = inject(TripDetailsService);
   private readonly authService = inject(AuthService);
   private readonly hotelRequestsService = inject(HotelRequestsService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly notifications = inject(NotificationStore);
 
   readonly isAdmin = computed(() => this.authService.hasRole('admin'));
 
@@ -121,9 +126,6 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       this.loadTripDetails(tripId);
     }
     this.loadHotelProfile();
-    if (this.isAdmin()) {
-      this.loadDrivers();
-    }
   }
 
   ngOnDestroy(): void {
@@ -132,38 +134,45 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
 
   private loadHotelProfile(): void {
     this.hotelLoading.set(true);
-    this.hotelDetailsService.getMyProfile().subscribe({
-      next: (result) => {
-        this.hotelLoading.set(false);
-        if (result.isSuccess && result.data) {
-          const p = result.data;
-          this.hotelId.set(p.hotelId);
-          this.hotel.set({
-            id: p.hotelId,
-            name: p.hotelName,
-            address: p.address,
-            phone: p.phoneNumber,
-            email: p.email,
-            imageUrl: p.imageUrl ?? '',
-          });
-        }
-      },
-      error: () => { this.hotelLoading.set(false); },
-    });
+    this.hotelDetailsService.getMyProfile()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.hotelLoading.set(false);
+          if (result.isSuccess && result.data) {
+            const p = result.data;
+            this.hotelId.set(p.hotelId);
+            this.hotel.set({
+              id: p.hotelId,
+              name: p.hotelName,
+              address: p.address,
+              phone: p.phoneNumber,
+              email: p.email,
+              imageUrl: p.imageUrl ?? '',
+            });
+          }
+        },
+        error: () => { this.hotelLoading.set(false); },
+      });
   }
 
   private loadTripDetails(tripRequestId: string): void {
     this.tripLoading.set(true);
-    this.tripDetailsService.getTripByRequestId(tripRequestId).subscribe({
-      next: (result) => {
-        this.tripLoading.set(false);
-        if (result.isSuccess && result.data) {
-          this.rawStatus.set(result.data.unifiedStatus);
-          this.trip.set(this.toTripDetail(result.data));
-        }
-      },
-      error: () => { this.tripLoading.set(false); },
-    });
+    this.tripDetailsService.getTripByRequestId(tripRequestId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.tripLoading.set(false);
+          if (result.isSuccess && result.data) {
+            this.rawStatus.set(result.data.unifiedStatus);
+            this.trip.set(this.toTripDetail(result.data));
+            if (this.isAdmin() && result.data.unifiedStatus === 'Pending') {
+              this.loadDrivers();
+            }
+          }
+        },
+        error: () => { this.tripLoading.set(false); },
+      });
   }
 
   private toTripDetail(data: TripDetailsResponse): TripDetail {
@@ -195,31 +204,36 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
 
   private loadDrivers(): void {
     this.driversLoading.set(true);
-    this.hotelRequestsService.getDrivers(1, 100).subscribe({
-      next: (result) => {
-        this.driversLoading.set(false);
-        if (result.isSuccess && result.data) {
-          this.drivers.set(result.data.items);
-        }
-      },
-      error: () => this.driversLoading.set(false),
-    });
+    this.hotelRequestsService.getDrivers(1, 100)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.driversLoading.set(false);
+          if (result.isSuccess && result.data) {
+            this.drivers.set(result.data.items);
+          }
+        },
+        error: () => this.driversLoading.set(false),
+      });
   }
 
-  assignDriver(): void {
+  protected assignDriver(): void {
     const driverId = this.selectedDriverId();
     const tripRequestId = this.tripId();
     if (!driverId || !tripRequestId || this.assignLoading()) return;
 
     this.assignLoading.set(true);
-    this.tripDetailsService.assignDriver(tripRequestId, driverId).subscribe({
-      next: () => {
-        this.assignLoading.set(false);
-        this.selectedDriverId.set('');
-        this.loadTripDetails(tripRequestId);
-      },
-      error: () => this.assignLoading.set(false),
-    });
+    this.tripDetailsService.assignDriver(tripRequestId, driverId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.assignLoading.set(false);
+          this.selectedDriverId.set('');
+          this.notifications.showSuccess('Driver assigned successfully.');
+          this.loadTripDetails(tripRequestId);
+        },
+        error: () => this.assignLoading.set(false),
+      });
   }
 
   onHotelDelete(): void {}

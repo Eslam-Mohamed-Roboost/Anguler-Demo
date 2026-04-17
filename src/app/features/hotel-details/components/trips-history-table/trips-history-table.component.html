@@ -59,7 +59,7 @@
 
   <!-- Hotels Trips Table -->
   @if (activeTab() === 'trips') {
-    <div class="px-4 py-3 overflow-x-auto max-md:px-3 max-md:py-2">
+    <div class="px-4 py-3 overflow-x-auto max-md:px-3 max-md:py-2 flex flex-col gap-3">
       <app-data-table
         [data]="trips()"
         [columns]="tripColumns()"
@@ -156,6 +156,12 @@
           </div>
         </ng-template>
       </app-data-table>
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalItems]="totalTrips()"
+        [pageSize]="pageSize()"
+        (pageChange)="pageChange.emit($event)"
+      />
     </div>
   }
 

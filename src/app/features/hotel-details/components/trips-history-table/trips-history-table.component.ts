@@ -12,6 +12,7 @@ import type { ColumnDef } from '../../../../shared/components/data-table/column-
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import type { HotelRecord, TripRecord, TripSearchFilters } from '../../types/hotel-details.types';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
@@ -24,6 +25,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
     CellDefDirective,
     CardComponent,
     IconComponent,
+    PaginationComponent,
     TranslatePipe,
   ],
   templateUrl: './trips-history-table.component.html',
@@ -40,10 +42,14 @@ export class TripsHistoryTableComponent {
 
   readonly activeTab = signal<'trips' | 'hotels'>('trips');
 
+  readonly currentPage = input(1);
+  readonly pageSize = input(10);
+
   readonly searchChange = output<string>();
   readonly filterChange = output<TripSearchFilters>();
   readonly tripAction = output<{ type: string; tripId: string }>();
   readonly commissionSettings = output<void>();
+  readonly pageChange = output<number>();
 
   protected readonly tripColumns = computed<ColumnDef[]>(() => [
     { key: 'tripId', header: 'Trip Code', sortable: true, headerClass: 'w-28' },

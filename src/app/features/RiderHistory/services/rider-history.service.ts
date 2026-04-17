@@ -14,9 +14,6 @@ export class RiderHistoryService extends AdminApiService {
       .set('pageNumber', query.pageNumber)
       .set('pageSize', query.pageSize);
 
-    return this.http.get<Result<HotelRequestsHistoryResponse>>(
-      `${this.baseUrl}/admin/hotel-requests/history`,
-      { params },
-    );
+    return this.get<HotelRequestsHistoryResponse>('/admin/hotel-requests/history', params);
   }
 }

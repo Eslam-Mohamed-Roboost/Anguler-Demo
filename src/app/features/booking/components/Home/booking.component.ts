@@ -6,7 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { form } from '@angular/forms/signals';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { CheckboxComponent } from '../../../../shared/components/checkbox/checkbox.component';
@@ -55,6 +55,7 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
 })
 export class BookingComponent extends BaseComponent {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly joinUsService = inject(JoinUsService);
   private readonly authService = inject(AuthService);
   private readonly coreAuth = inject(CoreAuthService);
@@ -88,6 +89,14 @@ export class BookingComponent extends BaseComponent {
         },
       );
     }
+
+    // Auto-open sign-in modal when redirected here by authGuard (?signin=1)
+    this.route.queryParams.pipe(this.takeUntilDestroyed()).subscribe(params => {
+      if (params['signin'] === '1') {
+        this.signInModalOpen();
+        this.router.navigate([], { queryParams: {}, replaceUrl: true });
+      }
+    });
 
     // Load cities on initialization
     this.loadCities();
@@ -227,7 +236,6 @@ readonly activeTab = signal<'login' | 'register'>('register');
       next: (response) => {
         if (response.isSuccess && response.data) {
           this.cities = response.data.items;
-          console.log('🏙️ Cities loaded successfully:', response.data.items);
         } else {
           this.citiesError.set('Failed to load cities');
           console.error('Cities API error:', response.error);
@@ -589,24 +597,9 @@ readonly activeTab = signal<'login' | 'register'>('register');
     return options;
   }
   public Regiester(): void {
-    console.log('Submitting hotel registration:', this.joinFormModel());
-    this.showWelcomeModal.set(true);
-    // Basic validation - check all required fields
     const form = this.joinFormModel();
-    console.log('Form data for validation:', form);
-    
     const requiredFields = ['hotelName', 'cityId', 'address', 'phoneNumber', 'email', 'password'];
     const missingFields = requiredFields.filter(field => !form[field as keyof JoinUsFormModel]);
-    
-    console.log('Missing fields:', missingFields);
-    console.log('Field values:', {
-      hotelName: form.hotelName,
-      cityId: form.cityId,
-      address: form.address,
-      phoneNumber: form.phoneNumber,
-      email: form.email,
-      password: form.password
-    });
     
     if (missingFields.length > 0) {
       this.showError(`Please fill in all required fields: ${missingFields.join(', ')}`);
@@ -640,7 +633,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
         this.isRegistering.set(false);
         
         if (result.isSuccess) {
-          console.log('Registration successful:', result.data);
+          this.showWelcomeModal.set(true);
           this.showSuccess('Hotel registered successfully! You will be redirected to login.');
           
           // Reset form
@@ -660,13 +653,11 @@ readonly activeTab = signal<'login' | 'register'>('register');
           }, 2000);
           
         } else {
-          console.error('Registration failed:', result.error);
           this.showError(result.error?.description || 'Registration failed. Please try again.');
         }
       },
-      error: (err) => {
+      error: () => {
         this.isRegistering.set(false);
-        console.error('Registration error:', err);
         this.showError('An unexpected error occurred. Please try again later.');
       }
     });
@@ -674,7 +665,6 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   public SignIn(): void {
     const { email, password } = this.signInFormModel();
-    console.log('Attempting login with:', { email, password: '********' });
     if (!email || !password) {
       this.showError('Please enter your email and password.');
       return;

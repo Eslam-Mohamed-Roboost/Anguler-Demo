@@ -5,11 +5,14 @@
     <a class="text-muted no-underline hover:text-body-soft hover:underline transition-colors" routerLink="/hotel-details">
       {{ 'hotelTrip.breadcrumbRoot' | translate }}
     </a>
-    @if (hotelId()) {
+    @if (hotelId() && !hotelLoading()) {
       <span class="text-muted-light" aria-hidden="true">/</span>
       <a class="text-muted no-underline hover:text-body-soft hover:underline transition-colors" [routerLink]="['/hotel-details', hotelId()]">
         #{{ hotelId() }}
       </a>
+    } @else if (hotelLoading()) {
+      <span class="text-muted-light" aria-hidden="true">/</span>
+      <span class="inline-block h-3 w-16 animate-pulse rounded bg-gray-200"></span>
     }
     <span class="text-muted-light" aria-hidden="true">/</span>
     <span class="text-warning font-semibold">

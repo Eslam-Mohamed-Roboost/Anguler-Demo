@@ -15,6 +15,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { LoginService } from '../../../features/booking/components/services/login.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar-booking',
@@ -26,6 +27,7 @@ import { LoginService } from '../../../features/booking/components/services/logi
 export class NavbarBookingComponent {
   private readonly langService = inject(LanguageService);
   private readonly loginService = inject(LoginService);
+  private readonly coreAuth = inject(AuthService);
   private readonly router = inject(Router);
 
   /** Logo image source */
@@ -149,15 +151,15 @@ export class NavbarBookingComponent {
 
   protected logout(): void {
     this.loginService.clearSession();
+    this.coreAuth.logout();
     this.closeProfileDropdown();
     this.router.navigate(['/home']);
   }
 
   /** Handle message click */
   protected onMessageItemClick(message: any): void {
-    console.log('Message clicked:', message);
     // Mark as read
-    const updatedMessages = this.messages().map(msg => 
+    const updatedMessages = this.messages().map(msg =>
       msg.id === message.id ? { ...msg, read: true } : msg
     );
     this.messages.set(updatedMessages);
@@ -183,7 +185,5 @@ export class NavbarBookingComponent {
   // }
 
   /** Handle view bill */
-  protected onViewBill(item: BillingItem): void {
-    console.log('Viewing bill:', item);
-  }
+  protected onViewBill(_item: BillingItem): void {}
 }

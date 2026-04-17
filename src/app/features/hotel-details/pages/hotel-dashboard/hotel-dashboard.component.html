@@ -34,8 +34,11 @@
       [searchQuery]="searchQuery()"
       [totalTrips]="totalTrips()"
       [totalHotels]="totalHotels()"
+      [currentPage]="currentPage()"
+      [pageSize]="pageSize()"
       (searchChange)="onSearchChange($event)"
       (tripAction)="onTripAction($event)"
+      (pageChange)="onPageChange($event)"
     />
   </section>
 </div>

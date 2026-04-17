@@ -14,6 +14,7 @@ import type { ColumnDef } from '../../../../shared/components/data-table/column-
 import type { HotelRequestItem } from '../../../RiderHistory/models/trip-model';
 import { HotelRequestsService, type DriverItem } from '../../services/hotel-requests.service';
 import { BaseComponent } from '../../../../shared/base/base.component';
+import { NotificationStore } from '../../../../core/stores/notification.store';
 
 @Component({
   selector: 'app-pending-requests',
@@ -30,6 +31,7 @@ import { BaseComponent } from '../../../../shared/base/base.component';
 })
 export class PendingRequestsComponent extends BaseComponent implements OnInit {
   private readonly service = inject(HotelRequestsService);
+  private readonly notifications = inject(NotificationStore);
 
   protected readonly columns: ColumnDef[] = [
     { key: 'tripCode', header: 'Trip ID', sortable: true },
@@ -44,7 +46,6 @@ export class PendingRequestsComponent extends BaseComponent implements OnInit {
   protected readonly pageSize = signal(10);
   protected readonly assignDriverId = signal<Record<string, string>>({});
   protected readonly assignLoading = signal<string | null>(null);
-  protected readonly assignError = signal<string | null>(null);
 
   protected readonly items = signal<HotelRequestItem[]>([]);
   protected readonly totalItems = signal(0);
@@ -93,17 +94,19 @@ export class PendingRequestsComponent extends BaseComponent implements OnInit {
     if (!driverId) return;
 
     this.assignLoading.set(tripRequestId);
-    this.assignError.set(null);
-    this.service.assignDriver(tripRequestId, driverId).subscribe({
-      next: () => {
-        this.assignLoading.set(null);
-        this.loadRequests();
-      },
-      error: () => {
-        this.assignLoading.set(null);
-        this.assignError.set(tripRequestId);
-      },
-    });
+    this.service.assignDriver(tripRequestId, driverId)
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: () => {
+          this.assignLoading.set(null);
+          this.notifications.showSuccess('Driver assigned successfully.');
+          this.loadRequests();
+        },
+        error: () => {
+          this.assignLoading.set(null);
+          this.notifications.showError('Failed to assign driver. Please try again.');
+        },
+      });
   }
 
   onPageChange(page: number): void {

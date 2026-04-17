@@ -127,6 +127,11 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     this.searchQuery.set(query);
   }
 
+  onPageChange(page: number): void {
+    this.currentPage.set(page);
+    this.loadTrips();
+  }
+
   onTripAction(action: { type: string; tripId: string }): void {
     if (action.type === 'view') {
       this.router.navigate(['/hotel-details', 'trip', action.tripId]);

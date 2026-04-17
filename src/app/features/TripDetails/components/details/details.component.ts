@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, OnInit, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { getTripStatusLabel, getTripStatusVariant, HotelInfo, TripDetailsResponse } from '../../models/trip-details.model';
 import { TripDetailsService } from '../../services/trip-details.service';
 import { FeedbackService } from '../../services/feedback.service';
 import { HotelRequestsService, type DriverItem } from '../../../admin-dashboard/services/hotel-requests.service';
+import { NotificationStore } from '../../../../core/stores/notification.store';
 
 @Component({
   selector: 'app-details',
@@ -17,6 +19,8 @@ export class DetailsComponent implements OnInit {
   private readonly tripDetailsService = inject(TripDetailsService);
   private readonly feedbackService = inject(FeedbackService);
   private readonly hotelRequestsService = inject(HotelRequestsService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly notifications = inject(NotificationStore);
 
   readonly data = input.required<TripDetailsResponse>();
   readonly tripRequestId = input.required<string>();
@@ -41,22 +45,24 @@ export class DetailsComponent implements OnInit {
   protected readonly assignLoading = signal(false);
 
   ngOnInit(): void {
-    if (this.isAdmin()) {
+    if (this.isAdmin() && this.data().unifiedStatus === 'Pending') {
       this.loadDrivers();
     }
   }
 
   private loadDrivers(): void {
     this.driversLoading.set(true);
-    this.hotelRequestsService.getDrivers(1, 100).subscribe({
-      next: (result) => {
-        this.driversLoading.set(false);
-        if (result.isSuccess && result.data) {
-          this.drivers.set(result.data.items);
-        }
-      },
-      error: () => this.driversLoading.set(false),
-    });
+    this.hotelRequestsService.getDrivers(1, 100)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.driversLoading.set(false);
+          if (result.isSuccess && result.data) {
+            this.drivers.set(result.data.items);
+          }
+        },
+        error: () => this.driversLoading.set(false),
+      });
   }
 
   protected assignDriver(): void {
@@ -65,14 +71,17 @@ export class DetailsComponent implements OnInit {
     if (!driverId || !tripRequestId || this.assignLoading()) return;
 
     this.assignLoading.set(true);
-    this.tripDetailsService.assignDriver(tripRequestId, driverId).subscribe({
-      next: () => {
-        this.assignLoading.set(false);
-        this.selectedDriverId.set('');
-        this.statusChanged.emit();
-      },
-      error: () => this.assignLoading.set(false),
-    });
+    this.tripDetailsService.assignDriver(tripRequestId, driverId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.assignLoading.set(false);
+          this.selectedDriverId.set('');
+          this.notifications.showSuccess('Driver assigned successfully.');
+          this.statusChanged.emit();
+        },
+        error: () => this.assignLoading.set(false),
+      });
   }
 
   protected triggerStatusAction(): void {
@@ -89,7 +98,7 @@ export class DetailsComponent implements OnInit {
     if (!action) return;
 
     this.actionLoading.set(true);
-    action.subscribe({
+    action.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.actionLoading.set(false);
         this.statusChanged.emit();
@@ -104,13 +113,15 @@ export class DetailsComponent implements OnInit {
     if (!tripId || rating === 0 || this.feedbackLoading()) return;
 
     this.feedbackLoading.set(true);
-    this.feedbackService.submitFeedback(tripId, rating, this.feedbackComment()).subscribe({
-      next: () => {
-        this.feedbackLoading.set(false);
-        this.feedbackSubmitted.set(true);
-      },
-      error: () => this.feedbackLoading.set(false),
-    });
+    this.feedbackService.submitFeedback(tripId, rating, this.feedbackComment())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.feedbackLoading.set(false);
+          this.feedbackSubmitted.set(true);
+        },
+        error: () => this.feedbackLoading.set(false),
+      });
   }
 
   protected setRating(stars: number): void {
