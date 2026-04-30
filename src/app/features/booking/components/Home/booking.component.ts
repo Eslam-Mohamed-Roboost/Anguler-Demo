@@ -117,7 +117,7 @@ export class BookingComponent extends BaseComponent {
 
   private loadVehicleTypes(km: number): void {
     this.carTypesLoading.set(true);
-    this.vehicleTypeService.getAll(km).subscribe({
+    this.vehicleTypeService.getAll(km).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.carTypesLoading.set(false);
         if (result.isSuccess && result.data) {
@@ -224,31 +224,30 @@ readonly activeTab = signal<'login' | 'register'>('register');
   readonly selectedPickupDateIndex = signal(0);
   readonly selectedPickupHourIndex = signal(12);
   readonly selectedPickupMinuteIndex = signal(0);
-  cities: { id: string; name: string }[] = [];
+  readonly cities = signal<{ id: string; name: string }[]>([]);
   readonly citiesLoading = signal(false);
   readonly citiesError = signal<string | null>(null);
 
   private loadCities(): void {
     this.citiesLoading.set(true);
     this.citiesError.set(null);
-    
-    this.citiesService.getCities(undefined, 50, 1).subscribe({
-      next: (response) => {
-        if (response.isSuccess && response.data) {
-          this.cities = response.data.items;
-        } else {
+
+    this.citiesService.getCities(undefined, 50, 1)
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: (response) => {
+          this.citiesLoading.set(false);
+          if (response.isSuccess && response.data) {
+            this.cities.set(response.data.items);
+          } else {
+            this.citiesError.set('Failed to load cities');
+          }
+        },
+        error: () => {
+          this.citiesLoading.set(false);
           this.citiesError.set('Failed to load cities');
-          console.error('Cities API error:', response.error);
-        }
-      },
-      error: (error) => {
-        this.citiesError.set('Failed to load cities');
-        console.error('Cities service error:', error);
-      },
-      complete: () => {
-        this.citiesLoading.set(false);
-      }
-    });
+        },
+      });
   }
 
   readonly banks = [
@@ -301,7 +300,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
     this.isRegistering.set(true);
 
-    this.authService.Register(form).subscribe({
+    this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isRegistering.set(false);
         if (result.isSuccess) {
@@ -343,7 +342,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       return;
     }
     this.isSendingOtp.set(true);
-    this.otpService.resend(email).subscribe({
+    this.otpService.resend(email).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isSendingOtp.set(false);
         if (result.isSuccess && result.data) {
@@ -377,7 +376,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       return;
     }
     this.isValidatingOtp.set(true);
-    this.otpService.validate(this.otpUserId(), otp).subscribe({
+    this.otpService.validate(this.otpUserId(), otp).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isValidatingOtp.set(false);
         if (result.isSuccess && result.data === true) {
@@ -410,7 +409,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       return;
     }
     this.isResettingPassword.set(true);
-    this.otpService.resetPassword(this.otpUserId(), newPassword).subscribe({
+    this.otpService.resetPassword(this.otpUserId(), newPassword).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isResettingPassword.set(false);
         if (result.isSuccess) {
@@ -460,7 +459,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
 
   bookNow(): void {
-    if (!this.loginService.isLoggedIn()) {
+    if (!this.coreAuth.isAuthenticated()) {
       this.signInModalOpen();
       return;
     }
@@ -500,7 +499,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
   }
 
   openPickupTimeModal(): void {
-    if (!this.loginService.isLoggedIn()) {
+    if (!this.coreAuth.isAuthenticated()) {
       this.signInModalOpen();
       return;
     }
@@ -548,7 +547,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       paymentMethodType: 0,
       roomNumber: parseInt(roomNo, 10) || 0,
       guestName: clientName,
-    }).subscribe({
+    }).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isCreatingTrip.set(false);
         if (result.isSuccess) {
@@ -596,7 +595,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
     }
     return options;
   }
-  public Regiester(): void {
+  public Register(): void {
     const form = this.joinFormModel();
     const requiredFields = ['hotelName', 'cityId', 'address', 'phoneNumber', 'email', 'password'];
     const missingFields = requiredFields.filter(field => !form[field as keyof JoinUsFormModel]);
@@ -627,11 +626,11 @@ readonly activeTab = signal<'login' | 'register'>('register');
     }
 
     this.isRegistering.set(true);
-    
-    this.authService.Register(form).subscribe({
+
+    this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isRegistering.set(false);
-        
+
         if (result.isSuccess) {
           this.showWelcomeModal.set(true);
           this.showSuccess('Hotel registered successfully! You will be redirected to login.');
@@ -672,7 +671,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
     this.isLoggingIn.set(true);
 
-    this.loginService.login({ email, password }).subscribe({
+    this.loginService.login({ email, password }).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isLoggingIn.set(false);
 

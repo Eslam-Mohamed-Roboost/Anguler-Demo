@@ -20,6 +20,7 @@ import { RiderHistoryService } from '../../services/rider-history.service';
 import { ResultHandlerService } from '../../../../core/services/result-handler.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { TripRequestService } from '../../../booking/components/services/trip-request.service';
+import { NotificationStore } from '../../../../core/stores/notification.store';
 
 @Component({
   selector: 'app-rider-history',
@@ -41,6 +42,7 @@ export class RiderHistoryComponent extends BaseComponent {
   private readonly riderHistoryService = inject(RiderHistoryService);
   private readonly resultHandler = inject(ResultHandlerService);
   private readonly tripRequestService = inject(TripRequestService);
+  private readonly notifications = inject(NotificationStore);
 
   protected readonly columns: ColumnDef[] = [
     { key: 'tripCode', header: 'TripID', sortable: true },
@@ -65,18 +67,7 @@ export class RiderHistoryComponent extends BaseComponent {
   protected readonly cancelLoading = signal<string | null>(null);
 
   protected readonly filteredTrips = computed(() => {
-    const query = this.searchQuery().toLowerCase();
     let result = this.trips();
-    if (query) {
-      result = result.filter(
-        (t) =>
-          t.tripCode.toLowerCase().includes(query) ||
-          t.driverName.toLowerCase().includes(query) ||
-          t.guestName.toLowerCase().includes(query) ||
-          t.status.toLowerCase().includes(query),
-      );
-    }
-
     const { column, direction } = this.sortState();
     if (column && direction) {
       result = [...result].sort((a, b) => {
@@ -91,14 +82,14 @@ export class RiderHistoryComponent extends BaseComponent {
         return 0;
       });
     }
-
     return result;
   });
 
   constructor() {
     super();
     effect(() => {
-      this.currentPage(); // track — re-run loadTrips on page change
+      this.currentPage(); // track — re-run loadTrips on page/search change
+      this.searchQuery();
       this.loadTrips();
     });
   }
@@ -109,6 +100,7 @@ export class RiderHistoryComponent extends BaseComponent {
       .getHotelRequestsHistory({
         pageNumber: this.currentPage(),
         pageSize: this.pageSize(),
+        search: this.searchQuery() || undefined,
       })
       .pipe(this.takeUntilDestroyed())
       .subscribe({
@@ -128,6 +120,7 @@ export class RiderHistoryComponent extends BaseComponent {
 
   onSearch(query: string): void {
     this.searchQuery.set(query);
+    this.currentPage.set(1);
   }
 
   onSort(state: SortState): void {
@@ -155,9 +148,13 @@ export class RiderHistoryComponent extends BaseComponent {
       .subscribe({
         next: () => {
           this.cancelLoading.set(null);
+          this.notifications.showSuccess('Trip cancelled successfully.');
           this.loadTrips();
         },
-        error: () => this.cancelLoading.set(null),
+        error: () => {
+          this.cancelLoading.set(null);
+          this.notifications.showError('Failed to cancel trip. Please try again.');
+        },
       });
   }
 

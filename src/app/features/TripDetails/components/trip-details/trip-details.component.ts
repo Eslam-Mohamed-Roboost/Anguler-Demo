@@ -26,6 +26,7 @@ export class TripDetailsComponent extends BaseComponent implements OnInit {
   protected readonly error = signal(false);
   protected readonly tripData = signal<TripDetailsResponse | null>(null);
   protected readonly hotelInfo = signal<HotelInfo | null>(null);
+  private loadedHotelId = '';
 
   ngOnInit(): void {
     this.route.paramMap.pipe(this.takeUntilDestroyed()).subscribe(params => {
@@ -45,7 +46,8 @@ export class TripDetailsComponent extends BaseComponent implements OnInit {
       next: (result) => {
         if (result.isSuccess && result.data) {
           this.tripData.set(result.data);
-          if (result.data.hotelId) {
+          if (result.data.hotelId && result.data.hotelId !== this.loadedHotelId) {
+            this.loadedHotelId = result.data.hotelId;
             this.loadHotel(result.data.hotelId);
           }
         } else {

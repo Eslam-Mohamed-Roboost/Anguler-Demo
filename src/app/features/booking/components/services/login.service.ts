@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api.service';
 import { Result } from '../../../../core/models/result.model';
@@ -17,7 +18,10 @@ export interface LoginData {
   providedIn: 'root',
 })
 export class LoginService extends ApiService {
-  readonly isLoggedIn = signal(!!localStorage.getItem('userToken'));
+  private readonly platformId = inject(PLATFORM_ID);
+  readonly isLoggedIn = signal(
+    isPlatformBrowser(this.platformId) ? !!localStorage.getItem('userToken') : false,
+  );
 
   login(credentials: LoginRequest): Observable<Result<LoginData>> {
     return this.post<LoginData>('/users/login', credentials);

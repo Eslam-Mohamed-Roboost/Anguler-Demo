@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed 's/:$//g')",
+      "Bash(grep -l TranslatePipe /home/eslam/Documents/GitHub/Anguler-Demo/src/app/**/*.ts)",
+      "Bash(find /home/eslam/Documents/GitHub/Anguler-Demo/src/app -name \"*.ts\" -type f -exec grep -l \"TranslatePipe\" {})",
+      "Bash(find /home/eslam/Documents/GitHub/Anguler-Demo/src/app/shared/components -name \"*.css\" -type f -exec wc -l {} +)",
+      "Read(//home/eslam/Documents/GitHub/Anguler-Demo/**)",
+      "WebFetch(domain:www.figma.com)",
+      "Bash(grep -r admin /home/eslam/Documents/GitHub/Anguler-Demo/src --include=*.ts --include=*.html)",
+      "Bash(grep -E \"\\\\.ts$\")",
+      "Bash(npx ng:*)",
+      "Bash(node -e \"const pkg = require\\('./node_modules/@angular/core/package.json'\\); console.log\\(pkg.version\\)\")"
+    ]
+  }
+}

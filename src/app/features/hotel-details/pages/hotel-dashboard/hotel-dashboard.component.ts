@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
   inject,
   OnInit,
@@ -8,11 +9,12 @@ import {
   Renderer2,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import type { HotelRecord, TripRecord } from '../../types/hotel-details.types';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
 import { TripsHistoryTableComponent } from '../../components/trips-history-table/trips-history-table.component';
-import { HotelDetailsService, HotelTripItem } from '../../services/hotel-details.service';
+import { HotelDetailsService, HotelApiItem, HotelTripItem, DashboardStatsResponse } from '../../services/hotel-details.service';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
@@ -32,20 +34,12 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   private readonly hotelDetailsService = inject(HotelDetailsService);
   private readonly renderer = inject(Renderer2);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  readonly statistics = signal<StatisticItem[]>([
-    { label: 'Total Hotels', value: '15', color: 'orange' },
-    { label: 'Total Revenue', value: '89,456 CHF', color: 'orange' },
-    { label: 'Hotels Comm.', value: '20,456 CHF', color: 'orange' },
-    { label: 'Lines Net Profit', value: '20,456 CHF', color: 'orange' },
-    { label: 'Active Trips', value: '120', color: 'orange' },
-    { label: 'Scheduled Trips', value: '15', color: 'orange' },
-    { label: 'Completed Trips', value: '15', color: 'orange' },
-    { label: 'Canceled Trips', value: '40', color: 'orange' },
-  ]);
+  readonly statistics = signal<StatisticItem[]>(this.buildStatistics());
 
   readonly trips = signal<TripRecord[]>([]);
   readonly hotels = signal<HotelRecord[]>([]);
@@ -55,23 +49,53 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   readonly currentPage = signal(1);
   readonly pageSize = signal(10);
 
-  readonly filteredTrips = computed(() => {
-    const query = this.searchQuery().toLowerCase();
-    const allTrips = this.trips();
-    if (!query) return allTrips;
-    return allTrips.filter(trip =>
-      trip.customerName.toLowerCase().includes(query) ||
-      trip.tripCode?.toLowerCase().includes(query) ||
-      trip.driverName?.toLowerCase().includes(query) ||
-      trip.pickupLocation.toLowerCase().includes(query) ||
-      trip.dropoffLocation.toLowerCase().includes(query) ||
-      trip.status.toLowerCase().includes(query),
-    );
-  });
+  readonly filteredTrips = computed(() => this.trips());
 
   ngOnInit(): void {
     this.renderer.addClass(document.body, 'hotel-details-active');
     this.loadTrips();
+    this.loadHotels();
+    this.loadDashboardStats();
+  }
+
+  private loadDashboardStats(): void {
+    const now = new Date();
+    const yearAgo = new Date(now);
+    yearAgo.setFullYear(now.getFullYear() - 1);
+    const fromDate = this.formatDateParam(yearAgo);
+    const toDate = this.formatDateParam(now);
+
+    this.hotelDetailsService
+      .getDashboardStats(fromDate, toDate)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.statistics.set(this.buildStatistics(result.data));
+          }
+        },
+      });
+  }
+
+  private buildStatistics(stats?: DashboardStatsResponse): StatisticItem[] {
+    const currency = (n: number) => `${n.toLocaleString()} CHF`;
+    const count = (n: number) => String(n);
+    return [
+      { label: 'Total Hotels', value: count(stats?.totalHotels ?? 0), color: 'orange' },
+      { label: 'Total Revenue', value: currency(stats?.totalRevenue ?? 0), color: 'orange' },
+      { label: 'Hotels Comm.', value: currency(stats?.hotelsCommission ?? 0), color: 'orange' },
+      { label: 'Lines Net Profit', value: currency(stats?.linesNetProfit ?? 0), color: 'orange' },
+      { label: 'Active Trips', value: count(stats?.activeTrips ?? 0), color: 'orange' },
+      { label: 'Scheduled Trips', value: count(stats?.scheduledTrips ?? 0), color: 'orange' },
+      { label: 'Completed Trips', value: count(stats?.completedTrips ?? 0), color: 'orange' },
+      { label: 'Canceled Trips', value: count(stats?.canceledTrips ?? 0), color: 'orange' },
+    ];
+  }
+
+  private formatDateParam(d: Date): string {
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${mm}-${dd}-${d.getFullYear()}`;
   }
 
   ngOnDestroy(): void {
@@ -82,21 +106,53 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
 
-    this.hotelDetailsService.getHotelTrips(this.currentPage(), this.pageSize()).subscribe({
-      next: (result) => {
-        this.loading.set(false);
-        if (result.isSuccess && result.data) {
-          this.trips.set(result.data.items.map(item => this.toTripRecord(item)));
-          this.totalTrips.set(result.data.totalCount);
-        } else {
-          this.error.set(result.error?.description ?? 'Failed to load trips data');
-        }
-      },
-      error: () => {
-        this.loading.set(false);
-        this.error.set('Failed to load trips data');
-      },
-    });
+    this.hotelDetailsService
+      .getHotelTrips(this.currentPage(), this.pageSize(), undefined, this.searchQuery() || undefined)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.loading.set(false);
+          if (result.isSuccess && result.data) {
+            this.trips.set(result.data.items.map(item => this.toTripRecord(item)));
+            this.totalTrips.set(result.data.totalCount);
+          } else {
+            this.error.set(result.error?.description ?? 'Failed to load trips data');
+          }
+        },
+        error: () => {
+          this.loading.set(false);
+          this.error.set('Failed to load trips data');
+        },
+      });
+  }
+
+  private loadHotels(): void {
+    this.hotelDetailsService
+      .getAllHotels(1, 100, this.searchQuery() || undefined)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.hotels.set(result.data.items.map(item => this.toHotelRecord(item)));
+            this.totalHotels.set(result.data.totalCount);
+          }
+        },
+      });
+  }
+
+  private toHotelRecord(item: HotelApiItem): HotelRecord {
+    return {
+      id: item.id,
+      hotelName: item.hotelName,
+      hotelStatus: item.isActive ? 'active' : 'suspended',
+      totalTrips: 0,
+      hotelComm: `${item.commissionRate}%`,
+      hotelProfits: '--',
+      linesProfits: '--',
+      monthlyDues: '--',
+      settlementStatus: 'in-progress',
+      settlementAmount: '--',
+    };
   }
 
   private toTripRecord(item: HotelTripItem): TripRecord {
@@ -125,6 +181,9 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
 
   onSearchChange(query: string): void {
     this.searchQuery.set(query);
+    this.currentPage.set(1);
+    this.loadTrips();
+    this.loadHotels();
   }
 
   onPageChange(page: number): void {
@@ -140,5 +199,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
 
   refreshData(): void {
     this.loadTrips();
+    this.loadHotels();
+    this.loadDashboardStats();
   }
 }

@@ -10,9 +10,13 @@ export class RiderHistoryService extends AdminApiService {
   getHotelRequestsHistory(
     query: HotelRequestsQuery,
   ): Observable<Result<HotelRequestsHistoryResponse>> {
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('pageNumber', query.pageNumber)
       .set('pageSize', query.pageSize);
+
+    if (query.search) {
+      params = params.set('search', query.search);
+    }
 
     return this.get<HotelRequestsHistoryResponse>('/admin/hotel-requests/history', params);
   }

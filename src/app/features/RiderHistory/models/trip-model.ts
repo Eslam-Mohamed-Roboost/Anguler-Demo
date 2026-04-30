@@ -51,4 +51,5 @@ export interface HotelRequestsHistoryResponse {
 export interface HotelRequestsQuery {
   pageNumber: number;
   pageSize: number;
+  search?: string;
 }

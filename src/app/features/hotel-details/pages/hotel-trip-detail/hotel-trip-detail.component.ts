@@ -120,12 +120,39 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     this.renderer.addClass(document.body, 'hotel-details-active');
     const hotelId = this.route.snapshot.paramMap.get('id');
     const tripId = this.route.snapshot.paramMap.get('tripId');
-    if (hotelId) this.hotelId.set(hotelId);
     if (tripId) {
       this.tripId.set(tripId);
       this.loadTripDetails(tripId);
     }
-    this.loadHotelProfile();
+    if (hotelId) {
+      this.hotelId.set(hotelId);
+      this.loadHotelById(hotelId);
+    } else {
+      this.loadHotelProfile();
+    }
+  }
+
+  private loadHotelById(hotelId: string): void {
+    this.hotelLoading.set(true);
+    this.hotelDetailsService.getHotelById(hotelId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.hotelLoading.set(false);
+          if (result.isSuccess && result.data) {
+            const h = result.data;
+            this.hotel.set({
+              id: h.id,
+              name: h.hotelName,
+              address: h.address,
+              phone: h.phoneNumber,
+              email: h.email,
+              imageUrl: h.logoUrl ?? '',
+            });
+          }
+        },
+        error: () => { this.hotelLoading.set(false); },
+      });
   }
 
   ngOnDestroy(): void {

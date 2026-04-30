@@ -220,7 +220,7 @@
             [label]="'join.city' | translate"
             inputId="join-city"
             [field]="jf.cityId"
-            [options]="cities"
+            [options]="cities()"
             optionValue="id"
             optionLabel="name"
             [placeholder]="'join.cityPlaceholder' | translate"
@@ -339,7 +339,7 @@
         {{ 'join.back' | translate }}
       </button>
       <button
-       (click)="Regiester()"
+       (click)="Register()"
         type="button"
         [disabled]="isRegistering()"
         class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
