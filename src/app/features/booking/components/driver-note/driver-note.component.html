@@ -34,7 +34,7 @@
     <textarea
       (input)="onNoteChange($event)"
       [value]="noteText()"
-      placeholder="write Your note here"
+      [placeholder]="'join.additionalNotePlaceholder' | translate"
       class="w-full h-[69px] rounded-[12px] border-[0.3px] border-[#a9b4be] bg-[rgba(249,250,250,0.7)] px-4 py-3 text-sm text-[#223548] placeholder-[rgba(34,53,72,0.4)] resize-none focus:outline-none focus:ring-2 focus:ring-[#1b90ff]/30 focus:border-[#1b90ff]"
     ></textarea>
   }

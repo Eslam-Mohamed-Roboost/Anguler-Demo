@@ -21,7 +21,7 @@ export const TRANSLATIONS = {
     'form.clientNamePlaceholder': 'ex: Hesham Mousa',
     'form.roomNo': 'Room No.',
     'form.roomNoPlaceholder': 'ex: 24',
-    'form.manyBags': 'Many bags, or more than 4 people',
+    'form.manyBags': 'Guest has many bags or more than 4 people',
     'form.chooseCar': 'Choose Your Car',
     'form.bookNow': 'Book Your Ride Now',
     'form.schedule': 'Schedule Your Ride',
@@ -53,6 +53,9 @@ export const TRANSLATIONS = {
     'join.servicePreferences': 'Service Preferences & Vehicle Specifications',
     'join.additionalNote': 'Additional Note',
     'join.additionalNotePlaceholder': 'Put Your additional Note here',
+    'join.otherEntityTypePlaceholder': 'Enter Your Company Type here',
+    'common.save': 'Save',
+    'common.saved': 'Saved',
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'Withdrawal Details',
@@ -308,7 +311,7 @@ export const TRANSLATIONS = {
     'form.clientNamePlaceholder': 'مثال: هشام موسى',
     'form.roomNo': 'رقم الغرفة',
     'form.roomNoPlaceholder': 'مثال: 24',
-    'form.manyBags': 'حقائب كثيرة، أو أكثر من 4 أشخاص',
+    'form.manyBags': 'الضيف لديه حقائب كثيرة أو أكثر من 4 أشخاص',
     'form.chooseCar': 'اختر سيارتك',
     'form.bookNow': 'احجز رحلتك الآن',
     'form.schedule': 'جدول رحلتك',
@@ -340,6 +343,9 @@ export const TRANSLATIONS = {
     'join.servicePreferences': 'تفضيلات الخدمة ومواصفات المركبة',
     'join.additionalNote': 'ملاحظة إضافية',
     'join.additionalNotePlaceholder': 'أدخل ملاحظتك الإضافية هنا',
+    'join.otherEntityTypePlaceholder': 'أدخل نوع شركتك',
+    'common.save': 'حفظ',
+    'common.saved': 'محفوظ',
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'تفاصيل السحب',
@@ -595,7 +601,7 @@ export const TRANSLATIONS = {
     'form.clientNamePlaceholder': 'z.B.: Hesham Mousa',
     'form.roomNo': 'Zimmernr.',
     'form.roomNoPlaceholder': 'z.B.: 24',
-    'form.manyBags': 'Viele Gepäckstücke oder mehr als 4 Personen',
+    'form.manyBags': 'Gast hat viele Gepäckstücke oder mehr als 4 Personen',
     'form.chooseCar': 'Fahrzeug wählen',
     'form.bookNow': 'Fahrt jetzt buchen',
     'form.schedule': 'Fahrt planen',
@@ -627,6 +633,9 @@ export const TRANSLATIONS = {
     'join.servicePreferences': 'Servicepräferenzen & Fahrzeugspezifikationen',
     'join.additionalNote': 'Zusätzliche Notiz',
     'join.additionalNotePlaceholder': 'Ihre zusätzliche Notiz hier eingeben',
+    'join.otherEntityTypePlaceholder': 'Geben Sie Ihren Unternehmenstyp ein',
+    'common.save': 'Speichern',
+    'common.saved': 'Gespeichert',
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'Auszahlungsdetails',

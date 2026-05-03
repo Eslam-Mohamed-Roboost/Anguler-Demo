@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -104,6 +105,19 @@ export class BookingComponent extends BaseComponent {
     // Load cities on initialization
     this.loadCities();
     this.loadVehicleTypes(50);
+
+    // Auto-select Van when many bags is checked
+    effect(() => {
+      const manyBagsValue = this.formModel().manyBags;
+      const cars = this.carTypes();
+
+      if (manyBagsValue && cars.length > 0) {
+        const vanCar = cars.find(c => c.label.toLowerCase().includes('van'));
+        if (vanCar && this.selectedCar() !== vanCar.id) {
+          this.selectedCar.set(vanCar.id);
+        }
+      }
+    });
   }
 
   private static readonly fallbackImages: Record<string, string> = {
@@ -152,6 +166,8 @@ export class BookingComponent extends BaseComponent {
   ];
 
   protected readonly selectedCar = signal<string>('');
+  protected readonly savedOtherEntityType = signal<string>('');
+
   readonly selectedCarOption = computed(() =>
     this.carTypes().find(c => c.id === this.selectedCar()) ?? null,
   );
@@ -192,6 +208,19 @@ export class BookingComponent extends BaseComponent {
 
   protected onDriverNoteChanged(note: string): void {
     this.formModel.update(m => ({ ...m, driverNote: note }));
+  }
+
+  protected saveOtherEntityType(): void {
+    const otherType = this.joinFormModel().otherEntityType || '';
+    if (otherType && otherType.trim()) {
+      this.savedOtherEntityType.set(otherType.trim());
+      this.joinFormModel.update(m => ({ ...m, otherEntityType: '', entityType: 'Other' }));
+    }
+  }
+
+  protected editOtherEntityType(): void {
+    this.joinFormModel.update(m => ({ ...m, otherEntityType: this.savedOtherEntityType() }));
+    this.savedOtherEntityType.set('');
   }
 
   protected readonly signInFormModel = signal({ email: '', password: '' });
@@ -271,6 +300,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   protected readonly joinFormModel = signal<JoinUsFormModel>({
     entityType: 'Hotel',
+    otherEntityType: '',
     hotelName: '',
     cityId: '',
     address: '',
