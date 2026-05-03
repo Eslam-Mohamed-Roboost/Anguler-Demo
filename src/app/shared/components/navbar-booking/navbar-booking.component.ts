@@ -12,6 +12,7 @@ import { IconComponent } from '../icon/icon.component';
 import { BillingPanelComponent, BillingItem } from '../billing-panel/billing-panel.component';
 import { MessagePanelComponent, Message } from '../message-panel/message-panel.component';
 import { LanguageService } from '../../../core/services/language.service';
+import { Lang } from '../../../core/i18n/translations';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { LoginService } from '../../../features/booking/components/services/login.service';
@@ -49,7 +50,7 @@ export class NavbarBookingComponent {
   readonly lang = this.langService.lang;
 
   /** Emitted when language changes */
-  readonly langChange = output<'en' | 'ar'>();
+  readonly langChange = output<'en' | 'ar'|'de'>();
 
   /** Emitted when Sign In is clicked */
   readonly signInClick = output<void>();
@@ -71,6 +72,27 @@ export class NavbarBookingComponent {
   protected readonly messagePanelOpen = signal(false);
   protected readonly billingPanelOpen = signal(false);
   protected readonly profileDropdownOpen = signal(false);
+  protected readonly langDropdownOpen = signal(false);
+
+  protected readonly langOptions: { lang: Lang; label: string; flag: string }[] = [
+    { lang: 'en', label: 'English',  flag: 'assets/booking/flag-en.svg' },
+    { lang: 'ar', label: 'العربية',  flag: 'assets/booking/flag-ar.svg' },
+    { lang: 'de', label: 'Deutsch',  flag: 'assets/booking/flag-de.svg' },
+  ];
+
+  selectLang(lang: Lang): void {
+    this.langService.setLang(lang);
+    this.langDropdownOpen.set(false);
+    this.langChange.emit(lang);
+  }
+
+  protected toggleLangDropdown(): void {
+    this.langDropdownOpen.update(v => !v);
+  }
+
+  protected closeLangDropdown(): void {
+    this.langDropdownOpen.set(false);
+  }
 
   /** Sample billing data */
  
@@ -108,20 +130,19 @@ export class NavbarBookingComponent {
   /** Emitted when profile is clicked */
   readonly profileClick = output<void>();
 
-  /** Derived: flag image */
-  protected readonly flagSrc = computed(() =>
-    this.lang() === 'en' ? 'assets/booking/flag-en.svg' : 'assets/booking/flag-ar.svg',
-  );
+  protected readonly flagSrc = computed(() => {
+    const l = this.lang();
+    if (l === 'ar') return 'assets/booking/flag-ar.svg';
+    if (l === 'de') return 'assets/booking/flag-de.svg';
+    return 'assets/booking/flag-en.svg';
+  });
 
-  /** Derived: language display name */
-  protected readonly langLabel = computed(() =>
-    this.lang() === 'en' ? 'English' : 'العربية',
-  );
-
-  toggleLang(): void {
-    this.langService.toggleLang();
-    this.langChange.emit(this.lang());
-  }
+  protected readonly langLabel = computed(() => {
+    const l = this.lang();
+    if (l === 'ar') return 'العربية';
+    if (l === 'de') return 'Deutsch';
+    return 'English';
+  });
 
   /** Handle message panel toggle */
   protected onMessageClick(): void {

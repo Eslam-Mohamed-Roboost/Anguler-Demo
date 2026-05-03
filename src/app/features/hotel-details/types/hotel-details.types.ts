@@ -25,6 +25,7 @@ export interface HotelDetails {
 
 export interface TripRecord {
   id: string;
+  hotelId?: string;
   tripCode?: string;
   customerName: string;
   pickupLocation: string;

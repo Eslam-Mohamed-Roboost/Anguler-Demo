@@ -47,7 +47,7 @@ export class TripsHistoryTableComponent {
 
   readonly searchChange = output<string>();
   readonly filterChange = output<TripSearchFilters>();
-  readonly tripAction = output<{ type: string; tripId: string }>();
+  readonly tripAction = output<{ type: string; tripId: string; hotelId?: string }>();
   readonly commissionSettings = output<void>();
   readonly pageChange = output<number>();
 
@@ -59,13 +59,13 @@ export class TripsHistoryTableComponent {
     { key: 'route', header: 'Route', sortable: false, headerClass: 'w-40' },
     { key: 'status', header: 'Status', sortable: true, headerClass: 'w-28' },
     { key: 'fare', header: 'Fare (CHF)', sortable: true, headerClass: 'w-28' },
-    { key: 'startEndDate', header: 'Stat/End Date', sortable: true, headerClass: 'w-36' },
+    { key: 'startEndDate', header: 'Start.End.Date', sortable: true, headerClass: 'w-36' },
     { key: 'actions', header: 'Actions', sortable: false, headerClass: 'w-20' },
   ]);
 
   protected readonly hotelColumns = computed<ColumnDef[]>(() => [
     { key: 'select', header: '', sortable: false, headerClass: 'w-10' },
-    { key: 'id', header: 'ID', sortable: true, headerClass: 'w-20' },
+   // { key: 'id', header: 'ID', sortable: true, headerClass: 'w-20' },
     { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-44' },
     { key: 'totalTrips', header: 'Total Trips', sortable: true, headerClass: 'w-24' },
     { key: 'hotelComm', header: 'Hotel Comm.', sortable: true, headerClass: 'w-24' },
@@ -94,7 +94,7 @@ export class TripsHistoryTableComponent {
   }
 
   protected onTripAction(trip: TripRecord, action: string): void {
-    this.tripAction.emit({ type: action, tripId: trip.id });
+    this.tripAction.emit({ type: action, tripId: trip.id,hotelId:trip.hotelId });
   }
 
   protected formatDate(dateStr: string | undefined): string {

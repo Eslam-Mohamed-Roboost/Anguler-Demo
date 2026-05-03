@@ -14,7 +14,7 @@ export class LanguageService {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       const saved = localStorage.getItem('lang') as Lang | null;
-      if (saved === 'en' || saved === 'ar') {
+      if (saved === 'en' || saved === 'ar' || saved === 'de') {
         this._lang.set(saved);
       }
     }
@@ -39,6 +39,9 @@ export class LanguageService {
   }
 
   toggleLang(): void {
-    this.setLang(this._lang() === 'en' ? 'ar' : 'en');
+    const current = this._lang();
+    if (current === 'en') this.setLang('ar');
+    else if (current === 'ar') this.setLang('de');
+    else this.setLang('en');
   }
 }

@@ -6,6 +6,21 @@ import { ApiService } from '../../../core/services/api.service';
 import type { Result } from '../../../core/models/result.model';
 import type { HotelRequestsHistoryResponse } from '../../RiderHistory/models/trip-model';
 
+export interface HotelSummaryItem {
+  hotelUserId: string;
+  hotelName: string;
+  totalRides: number;
+  totalRevenue: number;
+  totalHotelEarnings: number;
+  totalDriverPayouts: number;
+  totalPlatformCommission: number;
+}
+
+export interface HotelSummaryQuery {
+  fromDate?: string;
+  toDate?: string;
+}
+
 export interface DriverItem {
   driverId: string;
   driverCode: string;
@@ -57,5 +72,12 @@ export class HotelRequestsService extends AdminApiService {
       `/admin/hotel-requests/${tripRequestId}/assign-driver`,
       { driverId },
     );
+  }
+
+  getHotelsSummary(query: HotelSummaryQuery = {}): Observable<Result<HotelSummaryItem[]>> {
+    let params = new HttpParams();
+    if (query.fromDate) params = params.set('fromDate', query.fromDate);
+    if (query.toDate) params = params.set('toDate', query.toDate);
+    return this.linesApi.get<HotelSummaryItem[]>('/hotels/summary', params);
   }
 }

@@ -21,6 +21,7 @@ import { JoinUsService } from '../services/join-us.service';
 import { BookingFormModel } from '../../models/BookingForm-model';
 import { JoinUsFormModel } from '../../models/JoinUsForm-model';
 import { WithdrawalFormModel } from '../../models/WithdrawalForm-model';
+import { ServicePreferencesModel } from '../../models/ServicePreferences-model';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { PasswordInputComponent } from '../../../../shared/components/password-input/password-input.component';
 import { AuthService } from '../services/auth.service';
@@ -201,7 +202,7 @@ export class BookingComponent extends BaseComponent {
   readonly showVerificationModal = signal(false);
   readonly showWelcomeModal = signal(false);
   readonly otpDigits = signal<string[]>(['', '', '', '', '', '']);
-  readonly joinStep = signal<1 | 2>(1);
+  readonly joinStep = signal<1 | 2 | 3>(1);
   readonly ShowComfirmBookingModel = signal(false);
   readonly ShowRideRequestSentModel = signal(false);
   readonly showPickupTimeModal = signal(false);
@@ -275,6 +276,51 @@ readonly activeTab = signal<'login' | 'register'>('register');
   });
   protected readonly wf = form(this.withdrawalFormModel);
 
+  protected readonly servicePreferencesModel = signal<ServicePreferencesModel>({
+    klimaAnlege: false,
+    chauffeurEnglisch: false,
+    chauffeurArabisch: false,
+    zweiSitzerhoehung: false,
+    chauffeureService: false,
+    eineSitzerhoehung: false,
+    maxicosi: false,
+    mitRollator: false,
+    mitRollstuhl: false,
+    allradantrieb: false,
+    nichtraucherChauffeure: false,
+    niedertritt: false,
+    roemerKing: false,
+    additionalNote: '',
+  });
+
+  protected readonly leftPreferences: { key: keyof Omit<ServicePreferencesModel, 'additionalNote'>; label: string }[] = [
+    { key: 'klimaAnlege', label: 'Klima anlege' },
+    { key: 'chauffeurEnglisch', label: 'Chauffeur spricht Englisch' },
+    { key: 'chauffeurArabisch', label: 'Chauffeur spricht Arabisch' },
+    { key: 'zweiSitzerhoehung', label: 'Zwei sitzerhöhung' },
+    { key: 'chauffeureService', label: 'Chauffeure Service' },
+    { key: 'eineSitzerhoehung', label: 'Eine sitzerhöhung' },
+    { key: 'maxicosi', label: 'Maxicosi' },
+  ];
+
+  protected readonly rightPreferences: { key: keyof Omit<ServicePreferencesModel, 'additionalNote'>; label: string }[] = [
+    { key: 'mitRollator', label: 'Mit rollator' },
+    { key: 'mitRollstuhl', label: 'Mit Rollstuhl' },
+    { key: 'allradantrieb', label: 'Allradantrieb' },
+    { key: 'nichtraucherChauffeure', label: 'Nichtraucher Chauffeure' },
+    { key: 'niedertritt', label: 'Niedertritt' },
+    { key: 'roemerKing', label: 'Römer King' },
+  ];
+
+  togglePreference(key: keyof Omit<ServicePreferencesModel, 'additionalNote'>): void {
+    this.servicePreferencesModel.update(prev => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  onAdditionalNoteChange(event: Event): void {
+    const value = (event.target as HTMLTextAreaElement).value;
+    this.servicePreferencesModel.update(prev => ({ ...prev, additionalNote: value }));
+  }
+
   openJoinModal(): void {
     this.joinStep.set(1);
     this.showJoinModal.set(true);
@@ -316,8 +362,14 @@ readonly activeTab = signal<'login' | 'register'>('register');
     });
   }
 
+  nextToWithdrawal(): void {
+    this.joinStep.set(3);
+  }
+
   prevStep(): void {
-    this.joinStep.set(1);
+    const step = this.joinStep();
+    if (step === 3) this.joinStep.set(2);
+    else this.joinStep.set(1);
   }
 
   signInModalOpen(): void {

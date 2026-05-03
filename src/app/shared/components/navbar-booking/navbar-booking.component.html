@@ -4,16 +4,45 @@
     <a href="/" class="shrink-0">
       <img [src]="logoSrc()" [alt]="logoAlt()" class="h-7 w-auto sm:h-8" />
     </a>
-    <button
-      type="button"
-      (click)="toggleLang()"
-      class="flex items-center gap-1 rounded-full bg-white/80 px-2 py-1 text-xs font-medium text-primary-text shadow-sm backdrop-blur-sm transition hover:bg-white sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-sm"
-      [attr.aria-label]="'nav.langAriaLabel' | translate"
-    >
-      <img [src]="flagSrc()" [alt]="langLabel()" class="size-4 rounded-sm object-cover sm:size-5" />
-      <span>{{ langLabel() }}</span>
-      <app-icon name="chevron-down" size="xs" />
-    </button>
+    <div class="relative" (appClickOutside)="closeLangDropdown()">
+      <button
+        type="button"
+        (click)="toggleLangDropdown()"
+        class="flex items-center gap-1 rounded-full bg-white/80 px-2 py-1 text-xs font-medium text-primary-text shadow-sm backdrop-blur-sm transition hover:bg-white sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-sm"
+        [attr.aria-label]="'nav.langAriaLabel' | translate"
+        [attr.aria-expanded]="langDropdownOpen()"
+        aria-haspopup="listbox"
+      >
+        <img [src]="flagSrc()" [alt]="langLabel()" class="size-4 rounded-sm object-cover sm:size-5" />
+        <span>{{ langLabel() }}</span>
+        <app-icon name="chevron-down" size="xs" />
+      </button>
+
+      @if (langDropdownOpen()) {
+        <ul
+          role="listbox"
+          [attr.aria-label]="'nav.langAriaLabel' | translate"
+          class="absolute start-0 top-full z-50 mt-1.5 w-36 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg"
+        >
+          @for (opt of langOptions; track opt.lang) {
+            <li role="option" [attr.aria-selected]="lang() === opt.lang">
+              <button
+                type="button"
+                (click)="selectLang(opt.lang)"
+                class="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm transition hover:bg-gray-50"
+                [class]="lang() === opt.lang ? 'font-semibold text-primary' : 'font-medium text-primary-text'"
+              >
+                <img [src]="opt.flag" [alt]="opt.label" class="size-5 rounded-sm object-cover" />
+                <span>{{ opt.label }}</span>
+                @if (lang() === opt.lang) {
+                  <app-icon name="check" size="xs" class="ms-auto text-primary" />
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
   </div>
 
   <!-- Right: Guest buttons (unauthenticated) -->

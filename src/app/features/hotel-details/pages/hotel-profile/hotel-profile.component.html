@@ -7,12 +7,23 @@
     <span class="text-body font-medium">Hotel Details #{{ hotelId() }}</span>
   </nav>
 
+  <!-- Error banner -->
+  @if (error()) {
+    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+      {{ error() }}
+    </div>
+  }
+
   <!-- Hotel Info Card -->
   <section class="mb-4">
-    <app-hotel-info-card
-      [hotel]="hotel()"
-      (deleteClick)="onHotelDelete()"
-    />
+    @if (loading()) {
+      <div class="h-32 animate-pulse rounded-xl bg-gray-100"></div>
+    } @else {
+      <app-hotel-info-card
+        [hotel]="hotel()"
+        (deleteClick)="onHotelDelete()"
+      />
+    }
   </section>
 
   <!-- Statistics Grid -->
@@ -27,7 +38,7 @@
   <!-- Hotel Details Form -->
   <section class="mb-4">
     <app-hotel-details-form
-      [initialData]="hotel()"
+      [initialData]="hotelFormData()"
       (formSubmit)="onFormSubmit($event)"
       (formCancel)="onFormCancel()"
     />
@@ -78,6 +89,13 @@
 
       <!-- Table -->
       <div class="px-4 py-3 overflow-x-auto">
+        @if (tripsLoading()) {
+          <div class="space-y-2 py-2" aria-hidden="true">
+            @for (_ of [1,2,3,4,5]; track $index) {
+              <div class="h-12 animate-pulse rounded-lg bg-gray-100"></div>
+            }
+          </div>
+        }
         <app-data-table
           [data]="filteredTrips()"
           [columns]="columns()"
@@ -153,6 +171,18 @@
           </ng-template>
         </app-data-table>
       </div>
+
+      <!-- Pagination -->
+      @if (totalTrips() > pageSize()) {
+        <div class="px-4 pb-4">
+          <app-pagination
+            [currentPage]="currentPage()"
+            [totalItems]="totalTrips()"
+            [pageSize]="pageSize()"
+            (pageChange)="onPageChange($event)"
+          />
+        </div>
+      }
     </app-card>
   </section>
 

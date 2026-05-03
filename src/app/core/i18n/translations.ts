@@ -1,4 +1,4 @@
-export type Lang = 'en' | 'ar';
+export type Lang = 'en' | 'ar' | 'de';
 
 export const TRANSLATIONS = {
   en: {
@@ -49,6 +49,9 @@ export const TRANSLATIONS = {
     'join.changePhoto': 'Change photo',
     'join.next': 'Next',
     'join.back': 'Back',
+    'join.servicePreferences': 'Service Preferences & Vehicle Specifications',
+    'join.additionalNote': 'Additional Note',
+    'join.additionalNotePlaceholder': 'Put Your additional Note here',
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'Withdrawal Details',
@@ -146,6 +149,8 @@ export const TRANSLATIONS = {
     'Export': 'Export',
     'filter.Filter': 'Filter',
     'filter.ClearSort': 'Clear Sort',
+    'filter.from': 'From',
+    'filter.to': 'To',
     'shared.pagination.label': 'Pagination navigation',
     'shared.pagination.prev': 'Previous page',
     'shared.pagination.next': 'Next page',
@@ -153,6 +158,8 @@ export const TRANSLATIONS = {
 
     // table column headers
     'TripID': 'Trip ID',
+    'Date': 'Date',
+    'shared.noData': 'No data found',
     'Driver': 'Driver',
     'Guest': 'Guest',
     'Guest Name': 'Guest Name',
@@ -165,6 +172,20 @@ export const TRANSLATIONS = {
     'Trip.Profit': 'Trip Profit (2%)',
     'Commulative.Profit': 'Cumulative Profit',
     'Actions': 'Actions',
+
+    // hotel table column headers
+    'ID': 'ID',
+    'Hotel Name': 'Hotel Name',
+    'Total Trips': 'Total Trips',
+    'Hotel Comm.': 'Hotel Comm.',
+    'Hotel Profits': 'Hotel Profits',
+    'Lines profits': 'Lines profits',
+    'Monthly Dues': 'Monthly Dues',
+
+    // trip table column headers
+    'Trip Code': 'Trip Code',
+    'Driver Name': 'Driver Name',
+    'Fare (CHF)': 'Fare (CHF)',
 
     // units
     'unit.min': 'min',
@@ -314,6 +335,9 @@ export const TRANSLATIONS = {
     'join.changePhoto': 'تغيير الصورة',
     'join.next': 'التالي',
     'join.back': 'رجوع',
+    'join.servicePreferences': 'تفضيلات الخدمة ومواصفات المركبة',
+    'join.additionalNote': 'ملاحظة إضافية',
+    'join.additionalNotePlaceholder': 'أدخل ملاحظتك الإضافية هنا',
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'تفاصيل السحب',
@@ -411,6 +435,8 @@ export const TRANSLATIONS = {
     'Export': 'تصدير',
     'filter.Filter': 'تصفية',
     'filter.ClearSort': 'مسح الفرز',
+    'filter.from': 'من',
+    'filter.to': 'إلى',
     'shared.pagination.label': 'التنقل بين الصفحات',
     'shared.pagination.prev': 'الصفحة السابقة',
     'shared.pagination.next': 'الصفحة التالية',
@@ -418,6 +444,8 @@ export const TRANSLATIONS = {
 
     // table column headers
     'TripID': 'رقم الرحلة',
+    'Date': 'التاريخ',
+    'shared.noData': 'لا توجد بيانات',
     'Driver': 'السائق',
     'Guest': 'الضيف',
     'Guest Name': 'اسم الضيف',
@@ -430,6 +458,20 @@ export const TRANSLATIONS = {
     'Trip.Profit': 'ربح الرحلة (2%)',
     'Commulative.Profit': 'الربح التراكمي',
     'Actions': 'الإجراءات',
+
+    // hotel table column headers
+    'ID': 'المعرف',
+    'Hotel Name': 'اسم الفندق',
+    'Total Trips': 'إجمالي الرحلات',
+    'Hotel Comm.': 'عمولة الفندق',
+    'Hotel Profits': 'أرباح الفندق',
+    'Lines profits': 'أرباح Lines',
+    'Monthly Dues': 'المستحقات الشهرية',
+
+    // trip table column headers
+    'Trip Code': 'رمز الرحلة',
+    'Driver Name': 'اسم السائق',
+    'Fare (CHF)': 'الأجرة (CHF)',
 
     // units
     'unit.min': 'دقيقة',
@@ -529,6 +571,292 @@ export const TRANSLATIONS = {
     'hotelTrip.selectDriver': 'اختر سائقاً',
     'hotelTrip.chooseDriver': 'اختر سائقاً…',
     'hotelTrip.assign': 'تعيين',
+  },
+
+  de: {
+    // ── Navbar ────────────────────────────────────────────────────────────
+    'nav.signIn': 'Anmelden',
+    'nav.joinUs': 'Jetzt beitreten',
+    'nav.tripsHistory': 'Fahrtenhistorie',
+    'nav.langAriaLabel': 'Zu Englisch wechseln',
+    'nav.mainNavAriaLabel': 'Hauptnavigation',
+    'nav.phoneNotificationsAriaLabel': 'Telefonbenachrichtigungen',
+    'nav.bellNotificationsAriaLabel': 'Glockenbenachrichtigungen',
+    'nav.myProfile': 'Mein Profil',
+    'nav.financialReports': 'Finanzberichte',
+    'nav.logout': 'Abmelden',
+
+    // ── Booking form ──────────────────────────────────────────────────────
+    'form.dropOff': 'Abgabeort',
+    'form.chooseDest': 'Ziel wählen',
+    'form.clientName': 'Kundenname',
+    'form.clientNamePlaceholder': 'z.B.: Hesham Mousa',
+    'form.roomNo': 'Zimmernr.',
+    'form.roomNoPlaceholder': 'z.B.: 24',
+    'form.manyBags': 'Viele Gepäckstücke oder mehr als 4 Personen',
+    'form.chooseCar': 'Fahrzeug wählen',
+    'form.bookNow': 'Fahrt jetzt buchen',
+    'form.schedule': 'Fahrt planen',
+
+    // ── Contact ───────────────────────────────────────────────────────────
+    'contact.title': 'Kontakt',
+    'contact.gmail': 'Gmail',
+    'contact.whatsapp': 'WhatsApp',
+
+    // ── Join Us modal ─────────────────────────────────────────────────────
+    'join.title': 'Jetzt beitreten',
+    'join.info': 'Treten Sie uns noch heute bei und verdienen Sie Provisionen ( 2% ) auf jede Fahrt, die Sie für Ihre Gäste buchen. Mehr Buchungen, mehr Belohnungen.',
+    'join.hotelName': 'Hotelname',
+    'join.hotelNamePlaceholder': 'Hotelnamen hier eingeben',
+    'join.city': 'Stadt',
+    'join.cityPlaceholder': 'Stadt auswählen',
+    'join.address': 'Adresse',
+    'join.addressPlaceholder': 'Standortlink des Hotels eingeben oder im Detail beschreiben',
+    'join.phone': 'Telefonnummer des Hotels',
+    'join.phonePlaceholder': 'Telefonnummer des Hotels eingeben',
+    'join.email': 'Hotel-E-Mail',
+    'join.emailPlaceholder': 'example@gmail.com',
+    'join.password': 'Passwort',
+    'join.passwordPlaceholder': 'Passwort eingeben',
+    'join.changePhoto': 'Foto ändern',
+    'join.next': 'Weiter',
+    'join.back': 'Zurück',
+    'join.servicePreferences': 'Servicepräferenzen & Fahrzeugspezifikationen',
+    'join.additionalNote': 'Zusätzliche Notiz',
+    'join.additionalNotePlaceholder': 'Ihre zusätzliche Notiz hier eingeben',
+
+    // ── Withdrawal (join flow) ────────────────────────────────────────────
+    'withdrawal.title': 'Auszahlungsdetails',
+    'withdrawal.warning': 'Sichern Sie Ihre Auszahlungen. Fügen Sie Ihre Daten hinzu, um Ihre 2% Provisionen automatisch am 1. jedes Monats über unser verschlüsseltes System zu erhalten.',
+    'withdrawal.accountHolder': 'Name des Kontoinhabers',
+    'withdrawal.accountHolderPlaceholder': 'Name des Kontoinhabers eingeben',
+    'withdrawal.bankName': 'Bankname',
+    'withdrawal.bankNamePlaceholder': 'Bank auswählen',
+    'withdrawal.iban': 'IBAN',
+    'withdrawal.ibanPlaceholder': 'Ihre IBAN hier eingeben',
+    'withdrawal.swiftCode': 'Swift Code / BIC',
+    'withdrawal.swiftCodePlaceholder': 'Ihren Swift Code hier eingeben',
+    'withdrawal.registering': 'Wird registriert...',
+    'withdrawal.joinNow': 'Jetzt beitreten',
+
+    // ── Sign In modal ─────────────────────────────────────────────────────
+    'signIn.title': 'Willkommen zurück!',
+    'signIn.email': 'Hotel-E-Mail',
+    'signIn.password': 'Passwort',
+    'signIn.passwordPlaceholder': 'Passwort eingeben',
+    'signIn.forgotPassword': 'Passwort vergessen?',
+    'signIn.loading': 'Anmeldung läuft...',
+    'signIn.button': 'Anmelden',
+
+    // ── Forgot Password modal ─────────────────────────────────────────────
+    'forgotPassword.title': 'Passwort vergessen?',
+    'forgotPassword.subtitle': 'Geben Sie Ihre E-Mail ein, um Anweisungen zum Zurücksetzen zu erhalten.',
+    'forgotPassword.goBack': 'Zurück',
+    'forgotPassword.sendCode': 'Code senden',
+    'forgotPassword.sending': 'Wird gesendet...',
+
+    // ── Verification modal ────────────────────────────────────────────────
+    'verification.title': 'Bestätigungscode eingeben',
+    'verification.subtitle': 'Wir haben einen Code an Ihre Hotel-E-Mail gesendet',
+    'verification.label': 'Bestätigungscode eingeben',
+    'verification.noCode': 'Keinen Code erhalten?',
+    'verification.resend': 'Code erneut senden',
+    'verification.goBack': 'Zurück',
+    'verification.sendCode': 'Bestätigen',
+    'verification.verifying': 'Wird bestätigt...',
+    'resetPassword.title': 'Passwort zurücksetzen',
+    'resetPassword.subtitle': 'Geben Sie Ihr neues Passwort unten ein.',
+    'resetPassword.newPassword': 'Neues Passwort',
+    'resetPassword.newPasswordPlaceholder': 'Neues Passwort eingeben',
+    'resetPassword.confirmPassword': 'Passwort bestätigen',
+    'resetPassword.confirmPasswordPlaceholder': 'Neues Passwort bestätigen',
+    'resetPassword.submit': 'Passwort zurücksetzen',
+    'resetPassword.submitting': 'Wird zurückgesetzt...',
+
+    // ── Welcome modal ─────────────────────────────────────────────────────
+    'welcome.title': 'Herzlich willkommen!',
+    'welcome.subtitle': 'Ihr Hotelkonto ist bereit',
+    'welcome.desc': 'Ihr Konto wurde erfolgreich erstellt. Vielen Dank, dass Sie unserem Partnernetzwerk beigetreten sind.',
+    'welcome.gotIt': 'Verstanden!',
+
+    // ── Booking Confirmation modal ────────────────────────────────────────
+    'confirm.title': 'Buchungsbestätigung',
+    'confirm.dropOff': 'Abgabeort',
+    'confirm.chooseDest': 'Ziel wählen',
+    'confirm.clientName': 'Kundenname',
+    'confirm.roomNo': 'Zimmernr.',
+    'confirm.manyBags': 'Viele Gepäckstücke oder mehr als 4 Personen',
+    'confirm.tripCost': 'Fahrtkosten',
+    'confirm.tripDuration': 'Fahrtdauer',
+    'confirm.vehicle': 'Fahrzeugtyp',
+    'confirm.creating': 'Anfrage wird gesendet...',
+    'confirm.button': 'Buchung bestätigen & Anfrage senden',
+    'confirm.goBack': 'Zurück',
+    'common.yes': 'Ja',
+    'common.no': 'Nein',
+    'common.loading': 'Laden...',
+
+    // ── Ride Request Sent modal ───────────────────────────────────────────
+    'rideSent.title': 'Fahrtanfrage gesendet!',
+    'rideSent.desc': 'Ihre Anfrage wurde erfolgreich an Fahrer weitergeleitet. Wir suchen einen Fahrer für Sie und erwarten, dass Ihre Fahrt bald angenommen wird.',
+    'rideSent.gotIt': 'Verstanden!',
+    'rideSent.viewDetails': 'Meine Fahrtdetails anzeigen',
+
+    // ── Pickup Time modal ─────────────────────────────────────────────────
+    'pickup.title': 'Abholzeit wählen',
+    'pickup.schedule': 'Planen',
+    'pickup.goBack': 'Zurück',
+
+    // ── Scheduled Ride modal ──────────────────────────────────────────────
+    'scheduled.title': 'Fahrt geplant & gesendet',
+    'scheduled.desc': 'Fertig! Ihre Fahrt wurde erfolgreich geplant und an Fahrer gesendet. Ein Fahrer wird bestätigen und genau zur gewählten Zeit ankommen.',
+    'scheduled.gotIt': 'Verstanden!',
+    'scheduled.viewDetails': 'Meine Fahrtdetails anzeigen',
+
+    // ── Common ────────────────────────────────────────────────────────────
+    'common.close': 'Dialog schließen',
+
+    // ── Shared table / list ───────────────────────────────────────────────
+    'Search': 'Suche',
+    'Export': 'Exportieren',
+    'filter.Filter': 'Filter',
+    'filter.ClearSort': 'Sortierung löschen',
+    'filter.from': 'Von',
+    'filter.to': 'Bis',
+    'shared.pagination.label': 'Seitennavigation',
+    'shared.pagination.prev': 'Vorherige Seite',
+    'shared.pagination.next': 'Nächste Seite',
+    'shared.pagination.current': 'Aktuelle Seite',
+
+    // table column headers
+    'TripID': 'Fahrten-ID',
+    'Date': 'Datum',
+    'shared.noData': 'Keine Daten gefunden',
+    'Driver': 'Fahrer',
+    'Guest': 'Gast',
+    'Guest Name': 'Gastname',
+    'Room No.': 'Zimmernr.',
+    'Route': 'Route',
+    'Status': 'Status',
+    'Duration': 'Dauer',
+    'Fare': 'Preis',
+    'Start.End.Date': 'Start / Ende',
+    'Trip.Profit': 'Fahrgewinn (2%)',
+    'Commulative.Profit': 'Kumulativer Gewinn',
+    'Actions': 'Aktionen',
+
+    // hotel table column headers
+    'ID': 'ID',
+    'Hotel Name': 'Hotelname',
+    'Total Trips': 'Fahrten gesamt',
+    'Hotel Comm.': 'Hotel-Provision',
+    'Hotel Profits': 'Hotelgewinne',
+    'Lines profits': 'Lines-Gewinne',
+    'Monthly Dues': 'Monatliche Gebühren',
+
+    // trip table column headers
+    'Trip Code': 'Fahrtcode',
+    'Driver Name': 'Fahrername',
+    'Fare (CHF)': 'Preis (CHF)',
+
+    // units
+    'unit.min': 'Min',
+    'unit.km': 'km',
+    'riderHistory.commission': 'Prov.',
+    'riderHistory.viewDetails': 'Fahrtdetails anzeigen',
+
+    // ── Financial History page ────────────────────────────────────────────
+    'financial.Payouts': 'Ihre Auszahlungen sind für den 1. jedes Monats geplant. Zahlungen werden innerhalb von 3 Werktagen abgeschlossen. Ihre Provision ( 2% ) pro Fahrt.',
+    'financial.FinancialHistory': 'Finanzhistorie',
+    'riderHistory.title': 'Fahrtenhistorie',
+
+    // ── Trip Details page ─────────────────────────────────────────────────
+    'tripDetails.title': 'Fahrtdetails',
+    'tripDetails.tripId': 'Fahrten-ID',
+    'tripDetails.passenger': 'Passagiername',
+    'tripDetails.fare': 'Preis',
+    'tripDetails.driver': 'Fahrer',
+    'tripDetails.startDate': 'Startdatum',
+    'tripDetails.endDate': 'Enddatum',
+    'tripDetails.destinations': 'Ziele',
+    'tripDetails.payment': 'Zahlung',
+    'tripDetails.carType': 'Fahrzeugtyp',
+    'tripDetails.hotel': 'Hotel',
+    'tripDetails.driverProfit': 'Fahrergewinn',
+    'tripDetails.appProfit': 'App-Gewinn',
+    'tripDetails.duration': 'Dauer & Entfernung',
+
+    // ── Profile page ──────────────────────────────────────────────────────
+    'profile.hotelInfo': 'Hotelinformationen',
+    'profile.password': 'Passwort',
+    'profile.withdrawalDetails': 'Auszahlungsdetails',
+    'profile.name': 'Name',
+    'profile.city': 'Stadt',
+    'profile.address': 'Adresse',
+    'profile.phone': 'Telefonnummer des Hotels',
+    'profile.email': 'Hotel-E-Mail',
+    'profile.editDetails': 'Hoteldetails bearbeiten',
+    'profile.updatePassword': 'Passwort aktualisieren',
+    'profile.passwordUpdated': 'Passwort erfolgreich aktualisiert.',
+    'profile.updateDetails': 'Details aktualisieren',
+    'profile.currentPassword': 'Aktuelles Passwort',
+    'profile.newPassword': 'Neues Passwort',
+    'profile.confirmPassword': 'Neues Passwort bestätigen',
+    'profile.currentPasswordPlaceholder': 'Aktuelles Passwort eingeben',
+    'profile.newPasswordPlaceholder': 'Neues Passwort eingeben',
+    'profile.confirmPasswordPlaceholder': 'Neues Passwort bestätigen',
+    'profile.accountNumber': 'Kontonummer',
+    'profile.swiftCode': 'SWIFT-Code',
+
+    // ── Message Panel ─────────────────────────────────────────────────────
+    'messages.title': 'Nachrichten',
+    'messages.unread': 'Ungelesen',
+    'messages.read': 'Gelesen',
+    'messages.empty': 'Keine Nachrichten',
+    'messages.emptyDesc': 'Sie haben im Moment keine Nachrichten.',
+    'messages.closeAriaLabel': 'Nachrichtenfeld schließen',
+
+    // ── Billing / Notifications Panel ─────────────────────────────────────
+    'billing.title': 'Benachrichtigungen',
+    'billing.empty': 'Keine Rechnungen',
+    'billing.emptyDesc': 'Sie haben im Moment keine Rechnungen oder Zahlungen.',
+    'billing.closeAriaLabel': 'Benachrichtigungsfeld schließen',
+
+    // ── Hotel Details page ────────────────────────────────────────────────
+    'hotelDetails.retry': 'Erneut versuchen',
+    'hotelDetails.title': 'Hotel-Integration',
+    'hotelDetails.payoutInfo': 'Monatliche Auszahlungen: Geplant für den 1. Frist zur Fertigstellung: 3 Werktage.',
+    'hotelDetails.tripsTab': 'Hotelfahrten',
+    'hotelDetails.hotelsTab': 'Alle Hotels',
+    'hotelDetails.searchTrips': 'Fahrten suchen',
+    'hotelDetails.sort': 'Sortieren',
+    'hotelDetails.filter': 'Filter',
+    'hotelDetails.commSettings': 'Provisionseinstellungen',
+
+    // ── Hotel Trip Detail page ────────────────────────────────────────────
+    'hotelTrip.breadcrumbRoot': 'Hotel-Integration',
+    'hotelTrip.title': 'Fahrtdetails',
+    'hotelTrip.tripCode': 'Fahrtcode',
+    'hotelTrip.guestName': 'Gastname',
+    'hotelTrip.roomNo': 'Zimmernr.',
+    'hotelTrip.destination': 'Ziel',
+    'hotelTrip.fare': 'Preis (CHF)',
+    'hotelTrip.hotelProfits': 'Hotelgewinne (CHF)',
+    'hotelTrip.startDate': 'Startdatum',
+    'hotelTrip.endDate': 'Enddatum',
+    'hotelTrip.tripRate': 'Fahrtbewertung',
+    'hotelTrip.noData': 'Fahrtdetails konnten nicht geladen werden.',
+    'hotelTrip.conversation': 'Fahrtgespräch',
+    'hotelTrip.statusActive': 'Aktive Fahrt',
+    'hotelTrip.statusCompleted': 'Abgeschlossen',
+    'hotelTrip.statusCancelled': 'Storniert',
+    'hotelTrip.statusScheduled': 'Geplant',
+    'hotelTrip.statusPending': 'Ausstehend',
+    'hotelTrip.assignDriver': 'Fahrer zuweisen',
+    'hotelTrip.loadingDrivers': 'Fahrer werden geladen…',
+    'hotelTrip.selectDriver': 'Fahrer auswählen',
+    'hotelTrip.chooseDriver': 'Fahrer wählen…',
+    'hotelTrip.assign': 'Zuweisen',
   },
 } as const;
 

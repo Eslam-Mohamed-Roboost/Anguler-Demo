@@ -7,6 +7,7 @@ import type { Result } from '../../../core/models/result.model';
 
 export interface HotelTripItem {
   tripRequestId: string;
+  hotelName:string;
   tripCode: string;
   guestName: string;
   roomNumber: number;
@@ -34,6 +35,7 @@ export interface HotelProfileResponse {
 }
 
 export interface HotelTripsResponse {
+  hotelId: string;
   items: HotelTripItem[];
   totalCount: number;
   pageNumber: number;
@@ -120,6 +122,17 @@ export class HotelDetailsService extends ApiService {
 
   getHotelById(hotelId: string): Observable<Result<HotelApiItem>> {
     return this.get<HotelApiItem>(`/hotels/${hotelId}`);
+  }
+
+  getHotelTripsById(
+    hotelId: string,
+    pageNumber: number,
+    pageSize: number,
+  ): Observable<Result<HotelTripsResponse>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
+    return this.adminApi.get<HotelTripsResponse>(`/admin/hotels/${hotelId}/trips`, params);
   }
 
   getDashboardStats(

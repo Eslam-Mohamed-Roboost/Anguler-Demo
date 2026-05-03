@@ -38,6 +38,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly hotelId = signal<string>('');
 
   readonly statistics = signal<StatisticItem[]>(this.buildStatistics());
 
@@ -53,9 +54,23 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.renderer.addClass(document.body, 'hotel-details-active');
+    this.loadProfile();
     this.loadTrips();
     this.loadHotels();
     this.loadDashboardStats();
+  }
+
+  private loadProfile(): void {
+    this.hotelDetailsService
+      .getMyProfile()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.hotelId.set(result.data.hotelId);
+          }
+        },
+      });
   }
 
   private loadDashboardStats(): void {
@@ -146,7 +161,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       hotelName: item.hotelName,
       hotelStatus: item.isActive ? 'active' : 'suspended',
       totalTrips: 0,
-      hotelComm: `${item.commissionRate}%`,
+      hotelComm: `${(item.commissionRate * 100).toFixed(0)}%`,
       hotelProfits: '--',
       linesProfits: '--',
       monthlyDues: '--',
@@ -158,9 +173,10 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   private toTripRecord(item: HotelTripItem): TripRecord {
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
-
+    console.log(item)
     return {
       id: item.tripRequestId,
+      hotelName: item.hotelName,
       tripCode: item.tripCode,
       customerName: item.guestName,
       pickupLocation: item.startLocation.address,
@@ -191,9 +207,14 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     this.loadTrips();
   }
 
-  onTripAction(action: { type: string; tripId: string }): void {
+  onTripAction(action: { type: string; tripId: string; hotelId?: string }): void {
     if (action.type === 'view') {
-      this.router.navigate(['/hotel-details', 'trip', action.tripId]);
+      const hId = action.hotelId ?? this.hotelId();
+      if (hId) {
+        this.router.navigate(['/hotel-details', hId, 'trip', action.tripId]);
+      } else {
+        this.router.navigate(['/hotel-details', 'trip', action.tripId]);
+      }
     }
   }
 

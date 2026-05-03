@@ -1,24 +1,39 @@
-export interface financialHestory{
-    id: number;
-    tripId: string;
-    driver: string;
-    guestName: string;
-    roomNo: string;
-    routeFrom: string;
-    routeTo: string;
-    durationMin: number;
-    distanceKm: number;
-    tripProfit : number;
-    CommulativeProfit: number;
-    startDate: string;
-    endDate: string;
+export interface GeoLocation {
+  latitude: number;
+  longitude: number;
+  address: string;
 }
 
-export interface PayoutAlert {
-    id: number;
-    type: 'scheduled' | 'processed';
-    amount: number;
-    message: string;
+export interface FinancialHistoryItem {
+  tripId: string;
+  tripCode: string;
+  guestName: string;
+  roomNumber: number;
+  driverName: string;
+  hotelName: string;
+  startLocation: GeoLocation;
+  endLocation: GeoLocation;
+  durationMinutes: number;
+  distanceKm: number;
+  endedAt: string;
+  fare: number;
+  hotelCommission: number;
+  platformCommission: number;
+  driverPayout: number;
+  currency: string;
 }
 
-export type FinancialHistoryItem = financialHestory | PayoutAlert;
+export interface FinancialHistoryResponse {
+  items: FinancialHistoryItem[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+export interface FinancialHistoryQuery {
+  pageNumber: number;
+  pageSize: number;
+  fromDate?: string;
+  toDate?: string;
+}
