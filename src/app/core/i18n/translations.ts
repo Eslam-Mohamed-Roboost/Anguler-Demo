@@ -34,6 +34,7 @@ export const TRANSLATIONS = {
     // ── Join Us modal ─────────────────────────────────────────────────────
     'join.title': 'Join Us Now',
     'join.info': 'Join us today to start earning commissions ( 2% ) on every ride you book for your guests. More bookings, more rewards.',
+    'join.entityType': 'Entity Type',
     'join.hotelName': 'Hotel Name',
     'join.hotelNamePlaceholder': 'Put Hotel Name here',
     'join.city': 'City',
@@ -320,6 +321,7 @@ export const TRANSLATIONS = {
     // ── Join Us modal ─────────────────────────────────────────────────────
     'join.title': 'انضم إلينا الآن',
     'join.info': 'انضم إلينا اليوم وابدأ في كسب العمولات ( 2% ) على كل رحلة تحجزها لضيوفك. المزيد من الحجوزات، المزيد من المكافآت.',
+    'join.entityType': 'نوع الكيان',
     'join.hotelName': 'اسم الفندق',
     'join.hotelNamePlaceholder': 'أدخل اسم الفندق هنا',
     'join.city': 'المدينة',
@@ -606,6 +608,7 @@ export const TRANSLATIONS = {
     // ── Join Us modal ─────────────────────────────────────────────────────
     'join.title': 'Jetzt beitreten',
     'join.info': 'Treten Sie uns noch heute bei und verdienen Sie Provisionen ( 2% ) auf jede Fahrt, die Sie für Ihre Gäste buchen. Mehr Buchungen, mehr Belohnungen.',
+    'join.entityType': 'Entitätstyp',
     'join.hotelName': 'Hotelname',
     'join.hotelNamePlaceholder': 'Hotelnamen hier eingeben',
     'join.city': 'Stadt',

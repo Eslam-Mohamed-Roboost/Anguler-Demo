@@ -3,4 +3,6 @@ export interface BookingFormModel {
   clientName: string;
   roomNo: string;
   manyBags: boolean;
+  addDriverNote: boolean;
+  driverNote: string;
 }

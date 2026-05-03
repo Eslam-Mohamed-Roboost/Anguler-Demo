@@ -51,6 +51,14 @@
             />
           </div>
 
+          <!-- Driver Note -->
+          <app-driver-note
+            [isChecked]="formModel().addDriverNote"
+            [noteText]="formModel().driverNote"
+            (checkedChange)="onDriverNoteChecked($event)"
+            (noteChange)="onDriverNoteChanged($event)"
+          />
+
           <!-- Many bags checkbox -->
           <app-checkbox
             [label]="'form.manyBags' | translate"
@@ -209,6 +217,18 @@
         </div>
       </div>
       <div class="space-y-3">
+        <!-- Entity Type -->
+        <app-select
+          [label]="'join.entityType' | translate"
+          inputId="join-entity-type"
+          [field]="jf.entityType"
+          [options]="[{ id: 'Hotel', name: 'Hotel' }]"
+          optionValue="id"
+          optionLabel="name"
+          dropdownArrow="custom"
+          selectClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+        />
+
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <app-input
             [label]="'join.hotelName' | translate"

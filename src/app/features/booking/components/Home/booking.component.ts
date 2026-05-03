@@ -33,6 +33,7 @@ import { VehicleTypeService } from '../services/vehicle-type.service';
 import { TripRequestService } from '../services/trip-request.service';
 import { CarOption } from '../../../../shared/components/car-selector/car-selector.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { DriverNoteComponent } from '../driver-note/driver-note.component';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 
 @Component({
@@ -49,6 +50,7 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
     WeatherWidgetComponent,
     ModalComponent,
     PasswordInputComponent,
+    DriverNoteComponent,
     TranslatePipe,
 ],
   templateUrl: './booking.component.html',
@@ -179,8 +181,18 @@ export class BookingComponent extends BaseComponent {
     clientName: '',
     roomNo: '',
     manyBags: true,
+    addDriverNote: false,
+    driverNote: '',
   });
   protected readonly f = form(this.formModel);
+
+  protected onDriverNoteChecked(checked: boolean): void {
+    this.formModel.update(m => ({ ...m, addDriverNote: checked }));
+  }
+
+  protected onDriverNoteChanged(note: string): void {
+    this.formModel.update(m => ({ ...m, driverNote: note }));
+  }
 
   protected readonly signInFormModel = signal({ email: '', password: '' });
   protected readonly SignInFormF = form(this.signInFormModel);
@@ -258,13 +270,14 @@ readonly activeTab = signal<'login' | 'register'>('register');
   ];
 
   protected readonly joinFormModel = signal<JoinUsFormModel>({
+    entityType: 'Hotel',
     hotelName: '',
     cityId: '',
     address: '',
     phoneNumber: '',
     email: '',
-    password:'',
-    locationUrl:''
+    password: '',
+    locationUrl: ''
   });
   protected readonly jf = form(this.joinFormModel);
 
@@ -689,6 +702,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
           
           // Reset form
           this.joinFormModel.set({
+            entityType: '',
             hotelName: '',
             cityId: '',
             address: '',
