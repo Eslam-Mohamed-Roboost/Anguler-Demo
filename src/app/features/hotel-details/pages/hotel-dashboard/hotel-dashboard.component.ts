@@ -14,7 +14,8 @@ import { Router } from '@angular/router';
 import type { HotelRecord, TripRecord } from '../../types/hotel-details.types';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
 import { TripsHistoryTableComponent } from '../../components/trips-history-table/trips-history-table.component';
-import { HotelDetailsService, HotelApiItem, HotelTripItem, DashboardStatsResponse } from '../../services/hotel-details.service';
+import { HotelDetailsService } from '../../services/hotel-details.service';
+import { HotelApiItem, HotelTripItem, DashboardStatsResponse } from '../../models/dto';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
@@ -39,6 +40,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly hotelId = signal<string>('');
+  private dataLoaded = false;
 
   readonly statistics = signal<StatisticItem[]>(this.buildStatistics());
 
@@ -53,6 +55,8 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   readonly filteredTrips = computed(() => this.trips());
 
   ngOnInit(): void {
+    if (this.dataLoaded) return;
+    this.dataLoaded = true;
     this.renderer.addClass(document.body, 'hotel-details-active');
     this.loadProfile();
     this.loadTrips();
@@ -128,7 +132,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
         next: (result) => {
           this.loading.set(false);
           if (result.isSuccess && result.data) {
-            this.trips.set(result.data.items.map(item => this.toTripRecord(item)));
+            this.trips.set(result.data.items.map(item => this.toTripRecord(item, result.data?.hotelId)));
             this.totalTrips.set(result.data.totalCount);
           } else {
             this.error.set(result.error?.description ?? 'Failed to load trips data');
@@ -170,12 +174,12 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     };
   }
 
-  private toTripRecord(item: HotelTripItem): TripRecord {
+  private toTripRecord(item: HotelTripItem, hotelId?: string): TripRecord {
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
-    console.log(item)
     return {
       id: item.tripRequestId,
+      hotelId,
       hotelName: item.hotelName,
       tripCode: item.tripCode,
       customerName: item.guestName,

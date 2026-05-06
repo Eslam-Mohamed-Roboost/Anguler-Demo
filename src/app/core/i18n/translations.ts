@@ -56,6 +56,8 @@ export const TRANSLATIONS = {
     'join.otherEntityTypePlaceholder': 'Enter Your Company Type here',
     'common.save': 'Save',
     'common.saved': 'Saved',
+    'common.cancel': 'Cancel',
+    'common.loading': 'Loading...',
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'Withdrawal Details',
@@ -126,8 +128,7 @@ export const TRANSLATIONS = {
     'confirm.goBack': 'Go Back',
     'common.yes': 'Yes',
     'common.no': 'No',
-    'common.loading': 'Loading...',
-
+ 
     // ── Ride Request Sent modal ───────────────────────────────────────────
     'rideSent.title': 'Ride Request Sent!',
     'rideSent.desc': "Your request has been successfully dispatched to drivers. We're finding you a driver and expect your ride to be accepted shortly.",
@@ -264,6 +265,26 @@ export const TRANSLATIONS = {
     'hotelDetails.sort': 'Sort',
     'hotelDetails.filter': 'Filter',
     'hotelDetails.commSettings': 'Commission Settings',
+    'hotelDetails.statusSettled': 'Settled',
+    'hotelDetails.statusInProgress': 'In Progress',
+    'hotelDetails.selectAll': 'Select all',
+    'hotelDetails.actionsFor': 'Actions for',
+    'admin.pendingRequests.title': 'Pending Hotel Requests',
+    'admin.pendingRequests.selectDriver': 'Select driver',
+    'admin.pendingRequests.loadingDrivers': 'Loading drivers…',
+    'admin.pendingRequests.assign': 'Assign',
+    'admin.pendingRequests.viewTripDetails': 'View trip details',
+    'admin.pendingRequests.requestedAt': 'Requested At',
+    'admin.pendingRequests.tableLabel': 'Pending hotel requests table',
+    'chatInput.placeholder': 'Type your message here...',
+    'chatInput.messageInput': 'Message input',
+    'chatInput.sendMessage': 'Send message',
+    'chatInput.mention': 'Mention',
+    'chatInput.attachFile': 'Attach file',
+    'chatInput.addImage': 'Add image',
+    'tripDetails.loadError': 'Failed to load trip details.',
+    'withdrawal.awaitingPayout': 'Awaiting Payout',
+    'withdrawal.settleBalance': 'Settle Balance:',
 
     // ── Hotel Trip Detail page ────────────────────────────────────────────
     'hotelTrip.breadcrumbRoot': 'Hotel Integration',
@@ -289,6 +310,21 @@ export const TRANSLATIONS = {
     'hotelTrip.selectDriver': 'Select Driver',
     'hotelTrip.chooseDriver': 'Choose a driver…',
     'hotelTrip.assign': 'Assign',
+    'hotelTrip.actions': 'Trip Actions',
+    'hotelTrip.acceptTrip': 'Accept Trip',
+    'hotelTrip.markArrived': 'Mark Arrived',
+    'hotelTrip.startTrip': 'Start Trip',
+    'hotelTrip.completeTrip': 'Complete Trip',
+
+    // ── Hotel Statistics / KPI ────────────────────────────────────────────
+    'stats.commissionPercentage': 'Commi. Percentage (%)',
+    'stats.hotelBalance': 'Hotel Balance',
+    'stats.hotelCommission': 'Hotels Commi.',
+    'stats.linesNetProfit': 'Lines Net Profit',
+    'stats.activeTrips': 'Active Trips',
+    'stats.scheduledTrips': 'Scheduled Trips',
+    'stats.completedTrips': 'Completed Trips',
+    'stats.cancelledTrips': 'Cancelled Trips',
   },
 
   ar: {
@@ -346,6 +382,8 @@ export const TRANSLATIONS = {
     'join.otherEntityTypePlaceholder': 'أدخل نوع شركتك',
     'common.save': 'حفظ',
     'common.saved': 'محفوظ',
+    'common.cancel': 'إلغاء',
+    'common.loading': 'جاري التحميل...',
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'تفاصيل السحب',
@@ -416,8 +454,7 @@ export const TRANSLATIONS = {
     'confirm.goBack': 'العودة',
     'common.yes': 'نعم',
     'common.no': 'لا',
-    'common.loading': 'جارٍ التحميل...',
-
+ 
     // ── Ride Request Sent modal ───────────────────────────────────────────
     'rideSent.title': 'تم إرسال طلب الرحلة!',
     'rideSent.desc': 'تم إرسال طلبك بنجاح إلى السائقين. نحن نبحث لك عن سائق ونتوقع قبول رحلتك قريباً.',
@@ -554,6 +591,26 @@ export const TRANSLATIONS = {
     'hotelDetails.sort': 'ترتيب',
     'hotelDetails.filter': 'تصفية',
     'hotelDetails.commSettings': 'إعدادات العمولة',
+    'hotelDetails.statusSettled': 'تم التسوية',
+    'hotelDetails.statusInProgress': 'قيد التنفيذ',
+    'hotelDetails.selectAll': 'تحديد الكل',
+    'hotelDetails.actionsFor': 'إجراءات لـ',
+    'admin.pendingRequests.title': 'طلبات الفنادق المعلقة',
+    'admin.pendingRequests.selectDriver': 'اختر سائقاً',
+    'admin.pendingRequests.loadingDrivers': 'جارٍ تحميل السائقين…',
+    'admin.pendingRequests.assign': 'تعيين',
+    'admin.pendingRequests.viewTripDetails': 'عرض تفاصيل الرحلة',
+    'admin.pendingRequests.requestedAt': 'تاريخ الطلب',
+    'admin.pendingRequests.tableLabel': 'جدول طلبات الفندق المعلقة',
+    'chatInput.placeholder': 'اكتب رسالتك هنا...',
+    'chatInput.messageInput': 'حقل الرسالة',
+    'chatInput.sendMessage': 'إرسال رسالة',
+    'chatInput.mention': 'إشارة',
+    'chatInput.attachFile': 'إرفاق ملف',
+    'chatInput.addImage': 'إضافة صورة',
+    'tripDetails.loadError': 'فشل تحميل تفاصيل الرحلة.',
+    'withdrawal.awaitingPayout': 'في انتظار الدفع',
+    'withdrawal.settleBalance': 'تسوية الرصيد:',
 
     // ── Hotel Trip Detail page ────────────────────────────────────────────
     'hotelTrip.breadcrumbRoot': 'تكامل الفندق',
@@ -579,6 +636,19 @@ export const TRANSLATIONS = {
     'hotelTrip.selectDriver': 'اختر سائقاً',
     'hotelTrip.chooseDriver': 'اختر سائقاً…',
     'hotelTrip.assign': 'تعيين',
+    'hotelTrip.actions': 'إجراءات الرحلة',
+    'hotelTrip.acceptTrip': 'قبول الرحلة',
+    'hotelTrip.markArrived': 'تحديد الوصول',
+    'hotelTrip.startTrip': 'بدء الرحلة',
+    'hotelTrip.completeTrip': 'إنهاء الرحلة',
+    'stats.commissionPercentage': 'نسبة العمولة (%)',
+    'stats.hotelBalance': 'رصيد الفندق',
+    'stats.hotelCommission': 'عمولة الفندق',
+    'stats.linesNetProfit': 'صافي أرباح Lines',
+    'stats.activeTrips': 'الرحلات النشطة',
+    'stats.scheduledTrips': 'الرحلات المجدولة',
+    'stats.completedTrips': 'الرحلات المكتملة',
+    'stats.cancelledTrips': 'الرحلات الملغاة',
   },
 
   de: {
@@ -636,6 +706,8 @@ export const TRANSLATIONS = {
     'join.otherEntityTypePlaceholder': 'Geben Sie Ihren Unternehmenstyp ein',
     'common.save': 'Speichern',
     'common.saved': 'Gespeichert',
+    'common.cancel': 'Abbrechen',
+    'common.loading': 'Wird geladen...',
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'Auszahlungsdetails',
@@ -706,8 +778,7 @@ export const TRANSLATIONS = {
     'confirm.goBack': 'Zurück',
     'common.yes': 'Ja',
     'common.no': 'Nein',
-    'common.loading': 'Laden...',
-
+ 
     // ── Ride Request Sent modal ───────────────────────────────────────────
     'rideSent.title': 'Fahrtanfrage gesendet!',
     'rideSent.desc': 'Ihre Anfrage wurde erfolgreich an Fahrer weitergeleitet. Wir suchen einen Fahrer für Sie und erwarten, dass Ihre Fahrt bald angenommen wird.',
@@ -844,6 +915,26 @@ export const TRANSLATIONS = {
     'hotelDetails.sort': 'Sortieren',
     'hotelDetails.filter': 'Filter',
     'hotelDetails.commSettings': 'Provisionseinstellungen',
+    'hotelDetails.statusSettled': 'Abgeschlossen',
+    'hotelDetails.statusInProgress': 'In Bearbeitung',
+    'hotelDetails.selectAll': 'Alle auswählen',
+    'hotelDetails.actionsFor': 'Aktionen für',
+    'admin.pendingRequests.title': 'Ausstehende Hotelanfragen',
+    'admin.pendingRequests.selectDriver': 'Fahrer auswählen',
+    'admin.pendingRequests.loadingDrivers': 'Fahrer werden geladen…',
+    'admin.pendingRequests.assign': 'Zuweisen',
+    'admin.pendingRequests.viewTripDetails': 'Fahrtdetails anzeigen',
+    'admin.pendingRequests.requestedAt': 'Anforderungsdatum',
+    'admin.pendingRequests.tableLabel': 'Tabelle ausstehender Hotelanfragen',
+    'chatInput.placeholder': 'Geben Sie Ihre Nachricht hier ein...',
+    'chatInput.messageInput': 'Nachrichten-Eingabe',
+    'chatInput.sendMessage': 'Nachricht senden',
+    'chatInput.mention': 'Erwähnen',
+    'chatInput.attachFile': 'Datei anhängen',
+    'chatInput.addImage': 'Bild hinzufügen',
+    'tripDetails.loadError': 'Laden der Fahrtdetails fehlgeschlagen.',
+    'withdrawal.awaitingPayout': 'Ausstehende Zahlung',
+    'withdrawal.settleBalance': 'Saldo ausgleichen:',
 
     // ── Hotel Trip Detail page ────────────────────────────────────────────
     'hotelTrip.breadcrumbRoot': 'Hotel-Integration',
@@ -869,6 +960,19 @@ export const TRANSLATIONS = {
     'hotelTrip.selectDriver': 'Fahrer auswählen',
     'hotelTrip.chooseDriver': 'Fahrer wählen…',
     'hotelTrip.assign': 'Zuweisen',
+    'hotelTrip.actions': 'Fahrtmaßnahmen',
+    'hotelTrip.acceptTrip': 'Fahrt annehmen',
+    'hotelTrip.markArrived': 'Ankunft markieren',
+    'hotelTrip.startTrip': 'Fahrt starten',
+    'hotelTrip.completeTrip': 'Fahrt abschließen',
+    'stats.commissionPercentage': 'Provision Prozentsatz (%)',
+    'stats.hotelBalance': 'Hotelguthaben',
+    'stats.hotelCommission': 'Hotelprovision',
+    'stats.linesNetProfit': 'Lines Nettogewinn',
+    'stats.activeTrips': 'Aktive Fahrten',
+    'stats.scheduledTrips': 'Geplante Fahrten',
+    'stats.completedTrips': 'Abgeschlossene Fahrten',
+    'stats.cancelledTrips': 'Stornierte Fahrten',
   },
 } as const;
 

@@ -32,6 +32,7 @@ import { LoginService } from '../services/login.service';
 import { OtpService } from '../services/otp.service';
 import { VehicleTypeService } from '../services/vehicle-type.service';
 import { TripRequestService } from '../services/trip-request.service';
+import { PlaceTypeService, type PlaceType } from '../services/place-type.service';
 import { CarOption } from '../../../../shared/components/car-selector/car-selector.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { DriverNoteComponent } from '../driver-note/driver-note.component';
@@ -68,7 +69,17 @@ export class BookingComponent extends BaseComponent {
   private readonly otpService = inject(OtpService);
   private readonly vehicleTypeService = inject(VehicleTypeService);
   private readonly tripRequestService = inject(TripRequestService);
+  private readonly placeTypeService = inject(PlaceTypeService);
   private readonly notifications = inject(NotificationStore);
+
+  // Signals
+  readonly carTypes = signal<CarOption[]>([]);
+  readonly carTypesLoading = signal(false);
+  readonly placeTypes = signal<PlaceType[]>([]);
+  readonly placeTypesLoading = signal(false);
+
+  private vehicleTypesLoaded = false;
+  private placeTypesLoaded = false;
 
   constructor() {
     super();
@@ -105,6 +116,7 @@ export class BookingComponent extends BaseComponent {
     // Load cities on initialization
     this.loadCities();
     this.loadVehicleTypes(50);
+    this.loadPlaceTypes();
 
     // Auto-select Van when many bags is checked
     effect(() => {
@@ -129,10 +141,10 @@ export class BookingComponent extends BaseComponent {
     kids:     'assets/booking/car-kids.png',
   };
 
-  readonly carTypes = signal<CarOption[]>([]);
-  readonly carTypesLoading = signal(false);
-
   private loadVehicleTypes(km: number): void {
+    if (this.vehicleTypesLoaded) return;
+    this.vehicleTypesLoaded = true;
+
     this.carTypesLoading.set(true);
     this.vehicleTypeService.getAll(km).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
@@ -144,7 +156,8 @@ export class BookingComponent extends BaseComponent {
             const price = v.expectedPriceAfterDiscount ?? v.expectedPrice;
             return { id: v.id, label: v.name, image, price, estimatedMinutes: v.estimatedTimeInMinutes };
           });
-          this.carTypes.set(options);
+         
+         this.carTypes.set(options.slice(0, 6));
           if (options.length > 0) this.selectedCar.set(options[0].id);
         }
       },
@@ -289,6 +302,24 @@ readonly activeTab = signal<'login' | 'register'>('register');
           this.citiesLoading.set(false);
           this.citiesError.set('Failed to load cities');
         },
+      });
+  }
+
+  private loadPlaceTypes(): void {
+    if (this.placeTypesLoaded) return;
+    this.placeTypesLoaded = true;
+
+    this.placeTypesLoading.set(true);
+    this.placeTypeService.getPlaceTypes()
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: (response) => {
+          this.placeTypesLoading.set(false);
+          if (response.isSuccess && response.data) {
+            this.placeTypes.set(response.data);
+          }
+        },
+        error: () => this.placeTypesLoading.set(false),
       });
   }
 
@@ -624,12 +655,11 @@ readonly activeTab = signal<'login' | 'register'>('register');
   }
 
   private createTrip(isScheduled: boolean, scheduledAt: string | null): void {
-    const { destination, clientName, roomNo } = this.formModel();
+    const { destination, clientName, roomNo, addDriverNote, driverNote } = this.formModel();
     const [lat, lng] = this.mapCenter();
     const car = this.selectedCarOption();
 
-    this.isCreatingTrip.set(true);
-    this.tripRequestService.create({
+    const payload: any = {
       startLocation: { latitude: lat, longitude: lng, address: 'Current Location', order: 0 },
       endLocations: [{ latitude: 0, longitude: 0, address: destination, order: 1 }],
       isScheduled,
@@ -642,7 +672,14 @@ readonly activeTab = signal<'login' | 'register'>('register');
       paymentMethodType: 0,
       roomNumber: parseInt(roomNo, 10) || 0,
       guestName: clientName,
-    }).pipe(this.takeUntilDestroyed()).subscribe({
+    };
+
+    if (addDriverNote && driverNote) {
+      payload.notes = driverNote;
+    }
+
+    this.isCreatingTrip.set(true);
+    this.tripRequestService.create(payload).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isCreatingTrip.set(false);
         if (result.isSuccess) {

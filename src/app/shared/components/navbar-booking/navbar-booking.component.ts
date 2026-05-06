@@ -2,11 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
+  effect,
   inject,
   input,
+  OnInit,
   output,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { BillingPanelComponent, BillingItem } from '../billing-panel/billing-panel.component';
@@ -17,6 +21,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { LoginService } from '../../../features/booking/components/services/login.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ChatService } from '../../../features/TripDetails/services/chat.service';
 
 @Component({
   selector: 'app-navbar-booking',
@@ -25,11 +30,13 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './navbar-booking.component.html',
   host: { class: 'relative z-20 block' },
 })
-export class NavbarBookingComponent {
+export class NavbarBookingComponent implements OnInit {
   private readonly langService = inject(LanguageService);
   private readonly loginService = inject(LoginService);
   private readonly coreAuth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly chatService = inject(ChatService);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Logo image source */
   readonly logoSrc = input('assets/booking/logo-lines.png');
@@ -96,8 +103,8 @@ export class NavbarBookingComponent {
 
   /** Sample billing data */
  
-  /** Sample message data */
-  protected readonly messages = signal([
+  /** Default static messages for fallback/loading */
+  protected readonly defaultMessages: Message[] = [
     {
       id: '1',
       tripID: 'TRIP-001',
@@ -122,13 +129,57 @@ export class NavbarBookingComponent {
       time: '1 day ago',
       read: true
     }
-  ]);
+  ];
+
+  /** Sample message data */
+  protected readonly messages = signal<Message[]>(this.defaultMessages);
+  protected readonly messagesLoading = signal(false);
+  private dataLoaded = false;
 
   /** Emitted when Trips History is clicked */
   readonly tripsHistoryClick = output<void>();
 
   /** Emitted when profile is clicked */
   readonly profileClick = output<void>();
+
+  ngOnInit(): void {
+    if (this.dataLoaded) return;
+    this.dataLoaded = true;
+    this.loadMessages();
+  }
+
+  private loadMessages(): void {
+    this.messagesLoading.set(true);
+    this.chatService
+      .getSideBarMessages(1, 50)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.messagesLoading.set(false);
+          if (result.isSuccess && result.data?.messages?.items) {
+            this.messages.set(result.data.messages.items);
+            this.callCount.set(result.data.messages.items.filter(m => !m.read).length);
+          }
+        },
+        error: () => {
+          this.messagesLoading.set(false);
+        },
+      });
+       this.chatService
+      .getSideBarMessagesCount()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.messagesLoading.set(false);
+          if (result.isSuccess && result.data !== undefined) {
+            this.callCount.set(result.data??0);
+          }
+        },
+        error: () => {
+          this.messagesLoading.set(false);
+        },
+      });
+  }
 
   protected readonly flagSrc = computed(() => {
     const l = this.lang();

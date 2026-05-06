@@ -16,6 +16,7 @@
           type="text"
           placeholder="User entered text"
           [field]="fieldTree.name"
+           [disabled]="true"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -25,6 +26,7 @@
           type="text"
           placeholder="User entered text"
           [field]="fieldTree.address"
+           [disabled]="true"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -34,6 +36,7 @@
           type="email"
           placeholder="User entered text"
           [field]="fieldTree.email"
+           [disabled]="true"
         />
       </div>
     </div>
@@ -47,6 +50,7 @@
           type="tel"
           placeholder="User entered text"
           [field]="fieldTree.phone"
+           [disabled]="true"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -56,6 +60,7 @@
           type="text"
           placeholder="User entered text"
           [field]="fieldTree.hotelCode"
+           [disabled]="true"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -65,8 +70,31 @@
           type="date"
           placeholder=""
           [field]="fieldTree.joiningDate"
+           [disabled]="true"
         />
       </div>
     </div>
+
+    <!-- Form Actions -->
+    <!-- <div class="flex gap-3 justify-end pt-4 border-t border-gray-100">
+      <button
+        type="button"
+        (click)="formCancel.emit()"
+        [disabled]="loading()"
+        class="px-4 py-2 rounded-lg border border-card-border bg-white text-body font-medium transition hover:bg-gray-50 disabled:opacity-50"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        [disabled]="loading()"
+        class="flex items-center gap-2 px-4 py-2 rounded-lg bg-warning text-white font-medium transition hover:brightness-90 disabled:opacity-50"
+      >
+        @if (loading()) {
+          <span class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
+        }
+        Save Changes
+      </button>
+    </div> -->
   </form>
 </app-card>

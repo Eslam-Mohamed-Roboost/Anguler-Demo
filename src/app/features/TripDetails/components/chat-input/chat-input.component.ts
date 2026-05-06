@@ -1,7 +1,9 @@
 import { Component, output } from '@angular/core';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-chat-input',
+  imports: [TranslatePipe],
   templateUrl: './chat-input.component.html',
   styleUrl: './chat-input.component.css',
 })

@@ -9,12 +9,13 @@ import {
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { HotelRequestsService, type HotelSummaryItem } from '../../services/hotel-requests.service';
 
 @Component({
   selector: 'app-hotels-summary',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent, PaginationComponent],
+  imports: [IconComponent, PaginationComponent, TranslatePipe],
   templateUrl: './hotels-summary.component.html',
   styleUrl: './hotels-summary.component.css',
 })

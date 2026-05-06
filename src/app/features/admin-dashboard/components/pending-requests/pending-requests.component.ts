@@ -10,6 +10,7 @@ import { DataTableComponent } from '../../../../shared/components/data-table/dat
 import { CellDefDirective } from '../../../../shared/components/data-table/cell-def.directive';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import type { ColumnDef } from '../../../../shared/components/data-table/column-def';
 import type { HotelRequestItem } from '../../../RiderHistory/models/trip-model';
 import { HotelRequestsService, type DriverItem } from '../../services/hotel-requests.service';
@@ -25,6 +26,7 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
     PaginationComponent,
     IconComponent,
     RouterLink,
+    TranslatePipe,
   ],
   templateUrl: './pending-requests.component.html',
   styleUrl: './pending-requests.component.css',
@@ -34,11 +36,11 @@ export class PendingRequestsComponent extends BaseComponent implements OnInit {
   private readonly notifications = inject(NotificationStore);
 
   protected readonly columns: ColumnDef[] = [
-    { key: 'tripCode', header: 'Trip ID', sortable: true },
+    { key: 'tripCode', header: 'TripID', sortable: true },
     { key: 'guestName', header: 'Guest', sortable: true },
-    { key: 'roomNumber', header: 'Room' },
+    { key: 'roomNumber', header: 'Room No.' },
     { key: 'route', header: 'Route' },
-    { key: 'requestedAt', header: 'Requested At', sortable: true },
+    { key: 'requestedAt', header: 'admin.pendingRequests.requestedAt', sortable: true },
     { key: 'actions', header: 'Actions' },
   ];
 

@@ -22,7 +22,12 @@ import { StatisticsCardComponent, StatisticItem } from '../../components/statist
 import { HotelDetailsFormComponent } from '../../components/hotel-details-form/hotel-details-form.component';
 import { WithdrawalDetailsComponent } from '../../components/withdrawal-details/withdrawal-details.component';
 import type { HotelFormData, HotelInfo, TripRecord, WithdrawalFormData } from '../../types/hotel-details.types';
-import { HotelDetailsService, HotelApiItem, HotelTripItem } from '../../services/hotel-details.service';
+import { HotelDetailsService } from '../../services/hotel-details.service';
+import { HotelApiItem, HotelTripItem } from '../../models/dto';
+import { NotificationStore } from '../../../../core/stores/notification.store';
+import { BaseComponent } from '../../../../shared/base/base.component';
+import { TranslatePipe } from "../../../../shared/pipes/translate.pipe";
+import { InputComponent } from "../../../../shared/components/input/input.component";
 
 @Component({
   selector: 'app-hotel-profile',
@@ -35,18 +40,16 @@ import { HotelDetailsService, HotelApiItem, HotelTripItem } from '../../services
     CellDefDirective,
     HotelInfoCardComponent,
     StatisticsCardComponent,
-    HotelDetailsFormComponent,
-    WithdrawalDetailsComponent,
-    PaginationComponent,
-  ],
+     PaginationComponent,
+    TranslatePipe],
   templateUrl: './hotel-profile.component.html',
   styleUrl: './hotel-profile.component.css',
 })
-export class HotelProfileComponent implements OnInit, OnDestroy {
+export class HotelProfileComponent extends BaseComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly renderer = inject(Renderer2);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly service = inject(HotelDetailsService);
+   private readonly service = inject(HotelDetailsService);
+  private readonly notifications = inject(NotificationStore);
 
   readonly hotelId = signal('');
   readonly searchQuery = signal('');
@@ -54,7 +57,18 @@ export class HotelProfileComponent implements OnInit, OnDestroy {
 
   readonly loading = signal(false);
   readonly tripsLoading = signal(false);
+  readonly formLoading = signal(false);
+  readonly withdrawalLoading = signal(false);
   readonly error = signal<string | null>(null);
+  private dataLoaded = false;
+
+  readonly hotelData = signal<HotelApiItem | null>(null);
+  readonly withdrawalData = signal<WithdrawalFormData>({
+    accountHolderName: '',
+    bankName: '',
+    iban: '',
+    swiftCode: '',
+  });
 
   readonly currentPage = signal(1);
   readonly pageSize = signal(10);
@@ -67,7 +81,7 @@ export class HotelProfileComponent implements OnInit, OnDestroy {
     phone: '',
     email: '',
   });
-
+readonly amountLabel = signal(0)
   readonly hotelFormData = signal<Partial<HotelFormData>>({});
 
   readonly statistics = signal<StatisticItem[]>([
@@ -95,7 +109,7 @@ export class HotelProfileComponent implements OnInit, OnDestroy {
   });
 
   protected readonly columns = computed<ColumnDef[]>(() => [
-    { key: 'id', header: 'Trip ID', sortable: true, headerClass: 'w-20' },
+    { key: 'tripCode', header: 'Trip ID', sortable: true, headerClass: 'w-20' },
     { key: 'guest', header: 'Guest', sortable: true, headerClass: 'w-32' },
     { key: 'driver', header: 'Driver', sortable: true, headerClass: 'w-32' },
     { key: 'route', header: 'Route', sortable: false, headerClass: 'w-40' },
@@ -109,16 +123,45 @@ export class HotelProfileComponent implements OnInit, OnDestroy {
     this.renderer.addClass(document.body, 'hotel-details-active');
     const id = this.route.snapshot.paramMap.get('id') ?? '';
     this.hotelId.set(id);
-    if (id) {
+    if (id && !this.dataLoaded) {
+      this.dataLoaded = true;
       this.loadHotel(id);
       this.loadTrips(id);
+      this.loadWithdrawalDetails(id);
+      this.hotelKpi(id);
     }
   }
 
   ngOnDestroy(): void {
     this.renderer.removeClass(document.body, 'hotel-details-active');
   }
-
+  private hotelKpi(id: string): void {
+    this.loading.set(true);
+    this.service.getHotelKpi(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.loading.set(false);
+          if (result.isSuccess && result.data) {
+            const stats = result.data;
+            this.statistics.set([
+              { label: 'Commi. Percentage (%)', value: `${(stats.commissionPercentage.value * 100).toFixed(0)}%`, color: 'orange' },
+              { label: 'Hotel Balance', value: `${stats.hotelRevenue.value} CHF`, color: 'orange' },
+              { label: 'Hotels Commi.', value: `${stats.hotelCommission.value} CHF`, color: 'orange' },
+              { label: 'Lines Net Profit', value: `${stats.linesNetProfit.value} CHF`, color: 'orange' },
+              { label: 'Active Trips', value: String(stats.activeTrips.value), color: 'orange' },
+              { label: 'Scheduled Trips', value: String(stats.scheduledTrips.value), color: 'orange' },
+              { label: 'Completed Trips', value: String(stats.completedTrips.value), color: 'orange' },
+              { label: 'Cancelled Trips', value: String(stats.canceledTrips.value), color: 'orange' },
+            ]);
+          }
+        },
+        error: () => {
+          this.loading.set(false);
+          this.notifications.showError('Failed to load hotel KPIs.');
+        },
+      });
+  }
   private loadHotel(id: string): void {
     this.loading.set(true);
     this.error.set(null);
@@ -142,6 +185,8 @@ export class HotelProfileComponent implements OnInit, OnDestroy {
   }
 
   private applyHotelData(item: HotelApiItem): void {
+    this.hotelData.set(item);
+
     this.hotel.set({
       id: item.id,
       name: item.hotelName,
@@ -244,8 +289,98 @@ export class HotelProfileComponent implements OnInit, OnDestroy {
     }).format(new Date(dateStr));
   }
 
-  onFormSubmit(_data: HotelFormData): void {}
+  private loadWithdrawalDetails(hotelId: string): void {
+    this.withdrawalLoading.set(true);
+    this.service
+      .getWithdrawalDetails(hotelId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.withdrawalLoading.set(false);
+          if (result.isSuccess && result.data) {
+            this.withdrawalData.set({
+              accountHolderName: result.data.accountHolderName,
+              bankName: result.data.bankName,
+              iban: result.data.bankAccountNumber,
+              swiftCode: result.data.bankRoutingName,
+            });
+          }
+        },
+        error: () => this.withdrawalLoading.set(false),
+      });
+  }
+
+  onFormSubmit(data: HotelFormData): void {
+    const currentHotel = this.hotelData();
+    if (!currentHotel) return;
+
+    const updatePayload: HotelApiItem = {
+      id: currentHotel.id,
+      hotelName: data.name,
+      cityId: currentHotel.cityId,
+      address: data.address,
+      phoneNumber: data.phone,
+      email: data.email,
+      locationUrl: currentHotel.locationUrl,
+      logoUrl: currentHotel.logoUrl,
+      commissionRate: currentHotel.commissionRate,
+      isActive: currentHotel.isActive,
+      isVerified: currentHotel.isVerified,
+    };
+
+    this.formLoading.set(true);
+    this.service
+      .updateProfile(updatePayload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.formLoading.set(false);
+          if (result.isSuccess && result.data) {
+            this.notifications.showSuccess('Hotel profile updated successfully.');
+            this.applyHotelData(result.data);
+          } else {
+            this.notifications.showError(result.error?.description ?? 'Failed to update profile.');
+          }
+        },
+        error: () => {
+          this.formLoading.set(false);
+          this.notifications.showError('Failed to update hotel profile.');
+        },
+      });
+  }
+
   onFormCancel(): void {}
-  onWithdrawalSubmit(_data: WithdrawalFormData): void {}
+
+  onWithdrawalSubmit(data: WithdrawalFormData): void {
+    this.withdrawalLoading.set(true);
+    this.service
+      .updateWithdrawalDetails({
+        bankName: data.bankName,
+        bankAccountNumber: data.iban,
+        bankRoutingNumber: data.swiftCode,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.withdrawalLoading.set(false);
+          if (result.isSuccess && result.data) {
+            this.notifications.showSuccess('Withdrawal details updated successfully.');
+            this.withdrawalData.set({
+              accountHolderName: result.data.accountHolderName,
+              bankName: result.data.bankName,
+              iban: result.data.bankAccountNumber,
+              swiftCode: result.data.bankRoutingName,
+            });
+          } else {
+            this.notifications.showError(result.error?.description ?? 'Failed to update withdrawal details.');
+          }
+        },
+        error: () => {
+          this.withdrawalLoading.set(false);
+          this.notifications.showError('Failed to update withdrawal details.');
+        },
+      });
+  }
+
   onHotelDelete(): void {}
 }

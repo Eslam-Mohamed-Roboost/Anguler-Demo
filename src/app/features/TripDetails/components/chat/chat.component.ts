@@ -7,6 +7,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { distinctUntilChanged } from 'rxjs';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { MessageComponent } from '../message/message.component';
@@ -31,6 +32,7 @@ export class ChatComponent extends BaseComponent implements OnInit {
   protected readonly chatLoading = signal(false);
   protected readonly sendLoading = signal(false);
   protected readonly closeLoading = signal(false);
+  private lastLoadedId = '';
 
   ngOnInit(): void {
     this.loadChat();
@@ -38,7 +40,9 @@ export class ChatComponent extends BaseComponent implements OnInit {
 
   private loadChat(): void {
     const id = this.tripRequestId();
-    if (!id) return;
+    if (!id || id === this.lastLoadedId) return;
+
+    this.lastLoadedId = id;
     this.chatLoading.set(true);
     this.chatService.getChatHistory(id).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {

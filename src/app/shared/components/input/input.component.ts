@@ -66,7 +66,6 @@ import {
   viewChild,
   ElementRef,
 } from '@angular/core';
-import { FormField } from '@angular/forms/signals';
 import { IconComponent } from '../icon/icon.component';
 
 /**
@@ -81,7 +80,7 @@ export type SpinButtonMode = 'native' | 'custom' | 'none';
 @Component({
   selector: 'app-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent, FormField],
+  imports: [IconComponent],
   templateUrl: './input.component.html',
   styleUrl: './input.component.css',
 })
@@ -177,8 +176,10 @@ export class InputComponent {
       if (node && typeof node === 'object' && 'model' in node) {
         return (node as any).invalid?.() ?? false;
       }
-      // Handle legacy structure
-      return (node as any)?.()?.invalid?.() ?? false;
+      if (typeof node === 'function') {
+        return (node as any)()?.invalid?.() ?? false;
+      }
+      return false;
     } catch {
       return false;
     }
@@ -191,8 +192,10 @@ export class InputComponent {
       if (node && typeof node === 'object' && 'model' in node) {
         return ((node as any).errors?.() ?? []) as { message: string }[];
       }
-      // Handle legacy structure
-      return ((node as any)?.()?.errors?.() ?? []) as { message: string }[];
+      if (typeof node === 'function') {
+        return (((node as any)()?.errors?.() ?? []) as { message: string }[]);
+      }
+      return [];
     } catch {
       return [];
     }

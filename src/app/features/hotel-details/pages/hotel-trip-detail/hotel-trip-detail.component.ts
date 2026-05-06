@@ -78,6 +78,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   readonly selectedDriverId = signal('');
   readonly assignLoading = signal(false);
   readonly rawStatus = signal('');
+  readonly actionLoading = signal(false);
 
   readonly hotel = signal<HotelInfo>({
     id: '',
@@ -114,6 +115,26 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       scheduled: 'text-status-active bg-status-active-bg',
     };
     return map[status] ?? '';
+  });
+
+  readonly canAccept = computed(() => {
+    const status = this.rawStatus().toLowerCase();
+    return status === 'pending';
+  });
+
+  readonly canMarkArrived = computed(() => {
+    const status = this.rawStatus().toLowerCase();
+    return status === 'accepted' || status === 'inprogress' || status === 'arrived';
+  });
+
+  readonly canStartTrip = computed(() => {
+    const status = this.rawStatus().toLowerCase();
+    return status === 'accepted' || status === 'inprogress' || status === 'arrived';
+  });
+
+  readonly canCompleteTrip = computed(() => {
+    const status = this.rawStatus().toLowerCase();
+    return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
 
   ngOnInit(): void {
@@ -191,6 +212,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
         next: (result) => {
           this.tripLoading.set(false);
           if (result.isSuccess && result.data) {
+            console.log('Trip status:', result.data.unifiedStatus);
             this.rawStatus.set(result.data.unifiedStatus);
             this.trip.set(this.toTripDetail(result.data));
             if (this.isAdmin() && result.data.unifiedStatus === 'Pending') {
@@ -260,6 +282,74 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
           this.loadTripDetails(tripRequestId);
         },
         error: () => this.assignLoading.set(false),
+      });
+  }
+
+  protected acceptTrip(): void {
+    const tripRequestId = this.tripId();
+    if (!tripRequestId || this.actionLoading()) return;
+
+    this.actionLoading.set(true);
+    this.tripDetailsService.acceptTrip(tripRequestId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notifications.showSuccess('Trip accepted successfully.');
+          this.loadTripDetails(tripRequestId);
+          this.actionLoading.set(false);
+        },
+        error: () => this.actionLoading.set(false),
+      });
+  }
+
+  protected markArrived(): void {
+    const tripRequestId = this.tripId();
+    if (!tripRequestId || this.actionLoading()) return;
+
+    this.actionLoading.set(true);
+    this.tripDetailsService.markArrived(tripRequestId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notifications.showSuccess('Arrival marked successfully.');
+          this.loadTripDetails(tripRequestId);
+          this.actionLoading.set(false);
+        },
+        error: () => this.actionLoading.set(false),
+      });
+  }
+
+  protected startTrip(): void {
+    const tripRequestId = this.tripId();
+    if (!tripRequestId || this.actionLoading()) return;
+
+    this.actionLoading.set(true);
+    this.tripDetailsService.startTrip(tripRequestId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notifications.showSuccess('Trip started successfully.');
+          this.loadTripDetails(tripRequestId);
+          this.actionLoading.set(false);
+        },
+        error: () => this.actionLoading.set(false),
+      });
+  }
+
+  protected completeTrip(): void {
+    const tripRequestId = this.tripId();
+    if (!tripRequestId || this.actionLoading()) return;
+
+    this.actionLoading.set(true);
+    this.tripDetailsService.completeTrip(tripRequestId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notifications.showSuccess('Trip completed successfully.');
+          this.loadTripDetails(tripRequestId);
+          this.actionLoading.set(false);
+        },
+        error: () => this.actionLoading.set(false),
       });
   }
 

@@ -1,16 +1,18 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { distinctUntilChanged } from 'rxjs';
 import { TripDetailsService } from '../../services/trip-details.service';
 import type { HotelInfo, TripDetailsResponse } from '../../models/trip-details.model';
 import { DetailsComponent } from '../details/details.component';
 import { ChatComponent } from '../chat/chat.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { SkeletonBlockComponent } from '../../../../shared/components/skeleton/skeleton-block.component';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-trip-details',
-  imports: [DetailsComponent, ChatComponent, SkeletonBlockComponent],
+  imports: [DetailsComponent, ChatComponent, SkeletonBlockComponent, TranslatePipe],
   templateUrl: './trip-details.component.html',
   styleUrl: './trip-details.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,10 +31,13 @@ export class TripDetailsComponent extends BaseComponent implements OnInit {
   private loadedHotelId = '';
 
   ngOnInit(): void {
-    this.route.paramMap.pipe(this.takeUntilDestroyed()).subscribe(params => {
+    this.route.paramMap.pipe(
+      distinctUntilChanged(),
+      this.takeUntilDestroyed()
+    ).subscribe(params => {
       const id = params.get('id') ?? '';
-      this.tripRequestId.set(id);
-      if (id) {
+      if (id && id !== this.tripRequestId()) {
+        this.tripRequestId.set(id);
         this.loadTrip(id);
       }
     });

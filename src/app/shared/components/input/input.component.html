@@ -15,7 +15,6 @@
       [placeholder]="placeholder()"
       [rows]="rows()"
       [class]="classes()"
-      [formField]="$any(field())"
       (blur)="onFieldBlur()"
     ></textarea>
   } @else {
@@ -27,7 +26,6 @@
         [placeholder]="placeholder()"
         [attr.step]="step() || null"
         [class]="classes()"
-        [formField]="$any(field())"
         (blur)="onFieldBlur()"
       />
 

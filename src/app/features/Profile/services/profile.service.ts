@@ -9,11 +9,55 @@ export interface ChangePasswordRequest {
   confirmNewPassword: string;
 }
 
+export interface HotelProfileData {
+  id: string;
+  hotelName: string;
+  address: string;
+  phoneNumber: string;
+  email: string;
+  cityId: string;
+  locationUrl: string;
+  logoUrl: string;
+  commissionRate: number;
+  isActive: boolean;
+  isVerified: boolean;
+}
+
+export interface WithdrawalDetailsData {
+  accountHolderName: string;
+  bankName: string;
+  bankAccountNumber: string;
+  bankRoutingNumber: string;
+  bankRoutingName: string;
+}
+
+export interface WithdrawalDetailsUpdate {
+  bankName: string;
+  bankAccountNumber: string;
+  bankRoutingNumber: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
   private readonly api = inject(ApiService);
 
   changePassword(payload: ChangePasswordRequest): Observable<Result<void>> {
     return this.api.put<void>('/users/change-password', payload);
+  }
+
+  getHotelProfile(): Observable<Result<HotelProfileData>> {
+    return this.api.get<HotelProfileData>('/hotels/profile');
+  }
+
+  updateHotelProfile(data: HotelProfileData): Observable<Result<HotelProfileData>> {
+    return this.api.put<HotelProfileData>('/hotels/profile', data);
+  }
+
+  getWithdrawalDetails(): Observable<Result<WithdrawalDetailsData>> {
+    return this.api.get<WithdrawalDetailsData>('/hotels/withdrawal-details');
+  }
+
+  updateWithdrawalDetails(data: WithdrawalDetailsUpdate): Observable<Result<WithdrawalDetailsData>> {
+    return this.api.put<WithdrawalDetailsData>('/hotels/withdrawal-details', data);
   }
 }

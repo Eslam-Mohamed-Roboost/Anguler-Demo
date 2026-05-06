@@ -1,13 +1,19 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  inject,
   input,
+  OnInit,
   output,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IconComponent } from '../icon/icon.component';
 import { AvatarComponent } from '../avatar/avatar.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { ChatService } from '../../../features/TripDetails/services/chat.service';
+import { BaseComponent } from '../../base/base.component';
 
 export interface Message {
   id: string;
@@ -24,7 +30,9 @@ export interface Message {
   imports: [IconComponent, AvatarComponent, TranslatePipe],
   templateUrl: './message-panel.component.html',
 })
-export class MessagePanelComponent {
+export class MessagePanelComponent extends BaseComponent implements OnInit {
+  private readonly chatService = inject(ChatService);
+ 
   /** Whether the panel is open */
   readonly isOpen = input<boolean>(false);
 
@@ -37,8 +45,19 @@ export class MessagePanelComponent {
   /** Message click event */
   readonly messageClick = output<Message>();
 
+  /** Loading state */
+  protected readonly loading = signal(false);
+
+  /** Unread count */
+  protected readonly unreadCount = signal(0);
+
   /** Expanded messages state */
   protected readonly expandedMessages = signal<Set<string>>(new Set());
+
+  /** Local messages from API */
+  protected readonly apiMessages = signal<Message[]>([]);
+
+  private dataLoaded = false;
 
   /** Default mock messages if no messages provided */
   protected readonly defaultMessages = signal<Message[]>([
@@ -92,11 +111,55 @@ export class MessagePanelComponent {
     }
   ]);
 
-  /** Get messages (use provided data or default mock data) */
-  protected getMessages(): Message[] {
-    const msgs = this.messages();
-    return msgs.length > 0 ? msgs : this.defaultMessages();
+  ngOnInit(): void {
+    if (this.dataLoaded) return;
+    this.dataLoaded = true;
+    this.loadMessages();
+    this.loadUnreadCount();
   }
+
+  private loadMessages(): void {
+    this.loading.set(true);
+    this.chatService
+      .getSideBarMessages(1, 50)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.loading.set(false);
+          if (result.isSuccess && result.data?.messages?.items) {
+            this.apiMessages.set(result.data.messages.items);
+          }
+        },
+        error: () => {
+          this.loading.set(false);
+        },
+      });
+  }
+
+  private loadUnreadCount(): void {
+    this.chatService
+      .getSideBarMessagesCount()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data !== undefined) {
+            this.unreadCount.set(result.data ?? 0);
+          }
+        },
+      });
+  }
+
+  /** Get messages (use API data, input data, or default mock data) */
+  protected getMessages(): Message[] {
+    const apiMsgs = this.apiMessages();
+    if (apiMsgs.length > 0) return apiMsgs;
+
+    const inputMsgs = this.messages();
+    if (inputMsgs.length > 0) return inputMsgs;
+
+    return this.defaultMessages();
+  }
+          
 
   /** Close panel */
   protected onClose(): void {

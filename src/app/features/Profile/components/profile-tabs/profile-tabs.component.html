@@ -27,7 +27,17 @@
               <app-input [label]="'profile.name' | translate" inputId="hotel-name" [field]="hotelFields.name" [disabled]="DisableHotleInfo()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
             </div>
             <div class="space-y-2">
-              <app-input [label]="'profile.city' | translate" inputId="hotel-city" [field]="hotelFields.city" [disabled]="DisableHotleInfo()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
+              <app-select
+                [label]="'profile.city' | translate"
+                inputId="join-city"
+                [field]="hotelFields.city"
+                [options]="cities()"
+                optionValue="id"
+                optionLabel="name"
+                [placeholder]="'join.cityPlaceholder' | translate"
+                dropdownArrow="custom"
+                selectClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
+              />
             </div>
             <div class="space-y-2">
               <app-input [label]="'profile.address' | translate" inputId="hotel-address" [field]="hotelFields.address" [disabled]="DisableHotleInfo()" inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm" />
@@ -40,10 +50,27 @@
             </div>
           </div>
 
-          <div class="flex justify-end mt-6">
-            <button (click)="ChangeDiableForHotelInfo()" class="px-6 py-2 bg-[#FFF8D6] hover:text-[#FFF8D6] text-[#E76500] rounded-lg hover:bg-[#E76500]/90 transition-colors">
-              {{ 'profile.editDetails' | translate }}
-            </button>
+          <div class="flex justify-end mt-6 space-x-3">
+            @if (DisableHotleInfo()) {
+              <button (click)="ChangeDiableForHotelInfo()" class="px-6 py-2 bg-[#FFF8D6] hover:text-[#FFF8D6] text-[#E76500] rounded-lg hover:bg-[#E76500]/90 transition-colors">
+                {{ 'profile.editDetails' | translate }}
+              </button>
+            } @else {
+              <button (click)="ChangeDiableForHotelInfo()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
+                {{ 'common.cancel' | translate }}
+              </button>
+              <button
+                (click)="submitHotelInfo()"
+                [disabled]="hotelInfoLoading()"
+                class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                @if (hotelInfoLoading()) {
+                  <span>{{ 'common.loading' | translate }}</span>
+                } @else {
+                  {{ 'common.save' | translate }}
+                }
+              </button>
+            }
           </div>
         </div>
       }
@@ -123,9 +150,26 @@
           </div>
 
           <div class="flex justify-end mt-6 space-x-3">
-            <button class="px-6 py-2 bg-[#FFF8D6] hover:text-[#FFF8D6] text-[#E76500] rounded-lg hover:bg-[#E76500]/90 transition-colors" (click)="ChangeDiableForwithdrawal()">
-              {{ 'profile.updateDetails' | translate }}
-            </button>
+            @if (Disablewithdrawal()) {
+              <button class="px-6 py-2 bg-[#FFF8D6] hover:text-[#FFF8D6] text-[#E76500] rounded-lg hover:bg-[#E76500]/90 transition-colors" (click)="ChangeDiableForwithdrawal()">
+                {{ 'profile.updateDetails' | translate }}
+              </button>
+            } @else {
+              <button (click)="ChangeDiableForwithdrawal()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
+                {{ 'common.cancel' | translate }}
+              </button>
+              <button
+                (click)="submitWithdrawalDetails()"
+                [disabled]="withdrawalLoading()"
+                class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                @if (withdrawalLoading()) {
+                  <span>{{ 'common.loading' | translate }}</span>
+                } @else {
+                  {{ 'common.save' | translate }}
+                }
+              </button>
+            }
           </div>
         </div>
       }

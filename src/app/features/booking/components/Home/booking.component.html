@@ -222,7 +222,7 @@
           [label]="'join.entityType' | translate"
           inputId="join-entity-type"
           [field]="jf.entityType"
-          [options]="[{ id: 'Hotel', name: 'Hotel' }, { id: 'Other', name: 'Other' }]"
+          [options]="placeTypes()"
           optionValue="id"
           optionLabel="name"
           dropdownArrow="custom"

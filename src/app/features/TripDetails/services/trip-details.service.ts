@@ -19,6 +19,10 @@ export class TripDetailsService extends ApiService {
     return this.adminApi.get<TripDetailsResponse>(`/admin/trips/${tripId}/details`);
   }
 
+  acceptTrip(tripRequestId: string): Observable<Result<void>> {
+    return this.put<void>(`/trip-request/accept`, { tripRequestId });
+  }
+
   assignDriver(tripRequestId: string, driverId: string): Observable<Result<void>> {
     return this.adminApi.post<void>(
       `/admin/hotel-requests/${tripRequestId}/assign-driver`,

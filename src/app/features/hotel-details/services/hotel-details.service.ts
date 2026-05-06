@@ -4,76 +4,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { AdminApiService } from '../../../core/services/admin-api.service';
 import type { Result } from '../../../core/models/result.model';
-
-export interface HotelTripItem {
-  tripRequestId: string;
-  hotelName:string;
-  tripCode: string;
-  guestName: string;
-  roomNumber: number;
-  driverName: string | null;
-  driverAvatarUrl: string | null;
-  startLocation: { address: string };
-  endLocation: { address: string };
-  status: string;
-  durationMinutes: number;
-  distanceInKm: number;
-  fare: number | null;
-  commission: number | null;
-  currency: string;
-  startedAt: string;
-  endedAt: string;
-}
-
-export interface HotelProfileResponse {
-  hotelId: string;
-  hotelName: string;
-  address: string;
-  phoneNumber: string;
-  email: string;
-  imageUrl: string | null;
-}
-
-export interface HotelTripsResponse {
-  hotelId: string;
-  items: HotelTripItem[];
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-}
-
-export interface HotelApiItem {
-  id: string;
-  hotelName: string;
-  cityId: string;
-  address: string;
-  locationUrl: string;
-  phoneNumber: string;
-  email: string;
-  logoUrl: string;
-  commissionRate: number;
-  isActive: boolean;
-  isVerified: boolean;
-}
-
-export interface HotelsListResponse {
-  items: HotelApiItem[];
-  pageNumber: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
-}
-
-export interface DashboardStatsResponse {
-  totalHotels: number;
-  totalRevenue: number;
-  hotelsCommission: number;
-  linesNetProfit: number;
-  activeTrips: number;
-  scheduledTrips: number;
-  completedTrips: number;
-  canceledTrips: number;
-}
+import { DashboardStatsResponse, HotelApiItem, HotelKpiResponse, HotelProfileResponse, HotelsListResponse, HotelTripsResponse, WithdrawalDetailsResponse, WithdrawalDetailsUpdate } from '../models/dto';
 
 @Injectable({ providedIn: 'root' })
 export class HotelDetailsService extends ApiService {
@@ -81,6 +12,18 @@ export class HotelDetailsService extends ApiService {
 
   getMyProfile(): Observable<Result<HotelProfileResponse>> {
     return this.get<HotelProfileResponse>('/hotels/profile');
+  }
+
+  updateProfile(data: HotelApiItem): Observable<Result<HotelApiItem>> {
+    return this.put<HotelApiItem>('/hotels/profile', data);
+  }
+
+  getWithdrawalDetails(hotelId: string): Observable<Result<WithdrawalDetailsResponse>> {
+    return this.get<WithdrawalDetailsResponse>(`/hotels/withdrawal-details/${hotelId}`);
+  }
+
+  updateWithdrawalDetails(data: WithdrawalDetailsUpdate): Observable<Result<WithdrawalDetailsResponse>> {
+    return this.put<WithdrawalDetailsResponse>('/hotels/withdrawal-details', data);
   }
 
   getHotelTrips(
@@ -131,8 +74,9 @@ export class HotelDetailsService extends ApiService {
   ): Observable<Result<HotelTripsResponse>> {
     const params = new HttpParams()
       .set('pageNumber', pageNumber)
-      .set('pageSize', pageSize);
-    return this.adminApi.get<HotelTripsResponse>(`/admin/hotels/${hotelId}/trips`, params);
+      .set('pageSize', pageSize)
+      .set('hotelUserId', hotelId);
+    return this.get<HotelTripsResponse>('/hotels/trips', params);
   }
 
   getDashboardStats(
@@ -145,4 +89,9 @@ export class HotelDetailsService extends ApiService {
 
     return this.adminApi.get<DashboardStatsResponse>('/admin/hotels/dashboard', params);
   }
+
+
+  getHotelKpi(hotelId: string): Observable<Result<HotelKpiResponse>> {
+     return this.get<HotelKpiResponse>(`/hotels/${hotelId}/kpi`); 
+   }
 }

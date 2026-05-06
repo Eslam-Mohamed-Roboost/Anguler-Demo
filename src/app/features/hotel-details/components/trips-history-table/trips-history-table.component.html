@@ -69,7 +69,7 @@
       >
           <!-- Trip Code Cell -->
         <ng-template cellDef="tripId" let-row>
-          <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.tripCode ?? row.id }}</span>
+          <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.tripCode??'--' }}</span>
         </ng-template>
 
         <!-- Hotel Name Cell -->

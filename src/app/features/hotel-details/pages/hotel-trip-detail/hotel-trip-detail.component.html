@@ -48,11 +48,78 @@
           </div>
           <h3 class="text-[15px] font-semibold text-body m-0">{{ 'hotelTrip.title' | translate }}</h3>
         </div>
-        @if (trip()) {
-          <span class="text-xs font-semibold px-3 py-1 rounded-badge" [class]="statusBadgeClass()">
-            {{ statusLabel() | translate }}
-          </span>
-        }
+        <div class="flex items-center gap-3">
+          @if (trip()) {
+            <span class="text-xs font-semibold px-3 py-1 rounded-badge" [class]="statusBadgeClass()">
+              {{ statusLabel() | translate }}
+            </span>
+          }
+          <!-- Trip Actions in header -->
+          @if (!tripLoading() && trip() && (canAccept() || canMarkArrived() || canStartTrip() || canCompleteTrip())) {
+            <div class="flex gap-2">
+              @if (canAccept()) {
+                <button
+                  type="button"
+                  (click)="acceptTrip()"
+                  [disabled]="actionLoading()"
+                  class="flex items-center gap-1.5 rounded-lg bg-warning px-3 py-1.5 text-xs font-medium text-white transition hover:brightness-90 disabled:opacity-50"
+                >
+                  @if (actionLoading()) {
+                    <span class="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
+                  } @else {
+                    <app-icon name="check" size="xs" aria-hidden="true" />
+                  }
+                  {{ 'hotelTrip.acceptTrip' | translate }}
+                </button>
+              }
+              @if (canMarkArrived()) {
+                <button
+                  type="button"
+                  (click)="markArrived()"
+                  [disabled]="actionLoading()"
+                  class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition hover:brightness-90 disabled:opacity-50"
+                >
+                  @if (actionLoading()) {
+                    <span class="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
+                  } @else {
+                    <app-icon name="map-pin" size="xs" aria-hidden="true" />
+                  }
+                  {{ 'hotelTrip.markArrived' | translate }}
+                </button>
+              }
+              @if (canStartTrip()) {
+                <button
+                  type="button"
+                  (click)="startTrip()"
+                  [disabled]="actionLoading()"
+                  class="flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition hover:brightness-90 disabled:opacity-50"
+                >
+                  @if (actionLoading()) {
+                    <span class="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
+                  } @else {
+                    <app-icon name="zap" size="xs" aria-hidden="true" />
+                  }
+                  {{ 'hotelTrip.startTrip' | translate }}
+                </button>
+              }
+              @if (canCompleteTrip()) {
+                <button
+                  type="button"
+                  (click)="completeTrip()"
+                  [disabled]="actionLoading()"
+                  class="flex items-center gap-1.5 rounded-lg bg-status-completed px-3 py-1.5 text-xs font-medium text-white transition hover:brightness-90 disabled:opacity-50"
+                >
+                  @if (actionLoading()) {
+                    <span class="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
+                  } @else {
+                    <app-icon name="check-circle" size="xs" aria-hidden="true" />
+                  }
+                  {{ 'hotelTrip.completeTrip' | translate }}
+                </button>
+              }
+            </div>
+          }
+        </div>
       </div>
 
       <!-- Loading skeleton — mimics the 3-column field grid -->
@@ -115,53 +182,6 @@
         }
       }
 
-      <!-- Admin: Assign Driver — shown only when pending and no driver yet -->
-      @if (isAdmin() && rawStatus() === 'Pending') {
-        <div class="border-t border-gray-100 px-4 py-4">
-          <h4 class="mb-3 flex items-center gap-2 text-sm font-semibold text-body">
-            <app-icon name="users" size="xs" class="text-warning" aria-hidden="true" />
-            {{ 'hotelTrip.assignDriver' | translate }}
-          </h4>
-          @if (driversLoading()) {
-            <div class="flex items-center gap-2 text-sm text-muted">
-              <span class="size-4 animate-spin rounded-full border-2 border-gray-300 border-t-warning block"></span>
-              {{ 'hotelTrip.loadingDrivers' | translate }}
-            </div>
-          } @else {
-            <div class="flex flex-wrap items-end gap-3">
-              <div class="flex-1 min-w-[200px]">
-                <label for="assign-driver-select" class="mb-1 block text-xs font-medium text-muted">
-                  {{ 'hotelTrip.selectDriver' | translate }}
-                </label>
-                <select
-                  id="assign-driver-select"
-                  class="w-full rounded-lg border border-card-border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-warning/30 focus:border-warning"
-                  [value]="selectedDriverId()"
-                  (change)="selectedDriverId.set($any($event.target).value)"
-                >
-                  <option value="" disabled selected>{{ 'hotelTrip.chooseDriver' | translate }}</option>
-                  @for (driver of drivers(); track driver.driverId) {
-                    <option [value]="driver.driverId">{{ driver.fullName }}</option>
-                  }
-                </select>
-              </div>
-              <button
-                type="button"
-                (click)="assignDriver()"
-                [disabled]="assignLoading() || !selectedDriverId()"
-                class="flex items-center gap-2 rounded-lg bg-warning px-5 py-2 text-sm font-medium text-white transition hover:brightness-90 disabled:opacity-50"
-              >
-                @if (assignLoading()) {
-                  <span class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
-                } @else {
-                  <app-icon name="check" size="xs" aria-hidden="true" />
-                }
-                {{ 'hotelTrip.assign' | translate }}
-              </button>
-            </div>
-          }
-        </div>
-      }
 
     </app-card>
   </section>

@@ -17,20 +17,22 @@
     <div class="flex gap-5 items-start max-md:flex-col max-md:gap-4">
       <div class="flex-1 min-w-0">
         <app-input
-          label="Account Holder Name"
+          label="{{ 'withdrawal.accountHolder' | translate }}"
           inputId="accountHolderName"
           type="text"
-          placeholder="User entered text"
+          placeholder="{{ 'withdrawal.accountHolderPlaceholder' | translate }}"
           [field]="fieldTree.accountHolderName"
+          [disabled]="true"
         />
       </div>
       <div class="flex-1 min-w-0">
         <app-input
-          label="Bank Name"
+          label="{{ 'withdrawal.bankName' | translate }}"
           inputId="bankName"
           type="text"
-          placeholder="User entered text"
+          placeholder="{{ 'withdrawal.bankNamePlaceholder' | translate }}"
           [field]="fieldTree.bankName"
+          [disabled]="true"
         />
       </div>
     </div>
@@ -39,29 +41,26 @@
     <div class="flex gap-5 items-start max-md:flex-col max-md:gap-4">
       <div class="flex-1 min-w-0">
         <app-input
-          label="IBAN"
+          label="{{ 'withdrawal.iban' | translate }}"
           inputId="iban"
           type="text"
-          placeholder="User entered text"
+          placeholder="{{ 'withdrawal.ibanPlaceholder' | translate }}"
           [field]="fieldTree.iban"
+          [disabled]="true"
         />
       </div>
       <div class="flex-1 min-w-0">
         <app-input
-          label="Swift Code / BIC"
+          label="{{ 'withdrawal.swiftCode' | translate }}"
           inputId="swiftCode"
           type="text"
-          placeholder="User entered text"
+          placeholder="{{ 'withdrawal.swiftCodePlaceholder' | translate }}"
           [field]="fieldTree.swiftCode"
+          [disabled]="true"
         />
       </div>
     </div>
 
-    <!-- Settle Balance Button -->
-    <div class="flex justify-end mt-2">
-      <button type="submit" class="bg-warning text-white rounded-btn px-6 py-2.5 text-sm font-semibold cursor-pointer hover:brightness-90 transition disabled:bg-gray-300 disabled:text-muted disabled:cursor-not-allowed border-none max-md:w-full" [disabled]="submitLoading()">
-        Settle Balance : {{ amountLabel() }}
-      </button>
-    </div>
+    <!-- Display-only mode; actions are hidden in read-only view -->
   </form>
 </app-card>
