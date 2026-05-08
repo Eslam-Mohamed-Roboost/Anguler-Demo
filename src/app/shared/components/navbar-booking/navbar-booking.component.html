@@ -104,8 +104,12 @@
         </svg>
 
         @if (bellCount() > 0) {
-          <span class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-white">
-            {{ bellCount() }}
+          <span class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-danger text-[9px] font-bold text-white">
+            @if(bellCount() > 99) {
+              99+
+            } @else {
+              {{ bellCount() }}
+            }
           </span>
         }
       </button>

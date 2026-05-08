@@ -36,11 +36,13 @@ export class BillingPanelComponent {
   protected readonly notifications = signal<NotificationItem[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly UnreadCount = signal(0);
 
   constructor() {
     effect(() => {
       if (this.isOpen()) {
         this.loadNotifications();
+        this.UnreadNotificationsCount();
       }
     });
   }
@@ -52,7 +54,7 @@ export class BillingPanelComponent {
       next: (result) => {
         this.loading.set(false);
         if (result.isSuccess && result.data) {
-          this.notifications.set(result.data.notifications);
+          this.notifications.set(result.data.notifications.items);
         } else {
           this.error.set(result.error?.description ?? 'Failed to load notifications');
         }
@@ -63,7 +65,22 @@ export class BillingPanelComponent {
       },
     });
   }
-
+  private UnreadNotificationsCount(): number {
+    this.notificationsService.UnreadNotificationsCount().subscribe({
+      next: (result) => {
+        if (result.isSuccess && result.data !== undefined) {
+          this.UnreadCount.set(result.data?.count??0);
+          return result.data;
+        } else {
+          return 0;
+        }
+      },
+      error: () => {
+        return 0;
+      },
+    });
+    return 0; // Default return value while waiting for the async call
+  }
   protected onClose(): void {
     this.closePanel.emit();
   }

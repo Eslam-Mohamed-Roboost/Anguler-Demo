@@ -32,11 +32,12 @@ import { LoginService } from '../services/login.service';
 import { OtpService } from '../services/otp.service';
 import { VehicleTypeService } from '../services/vehicle-type.service';
 import { TripRequestService } from '../services/trip-request.service';
-import { PlaceTypeService, type PlaceType } from '../services/place-type.service';
+import { LocationItem, PlaceTypeService, type PlaceType } from '../services/place-type.service';
 import { CarOption } from '../../../../shared/components/car-selector/car-selector.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { DriverNoteComponent } from '../driver-note/driver-note.component';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { Subscriber } from 'rxjs';
 
 @Component({
   selector: 'app-booking',
@@ -77,7 +78,11 @@ export class BookingComponent extends BaseComponent {
   readonly carTypesLoading = signal(false);
   readonly placeTypes = signal<PlaceType[]>([]);
   readonly placeTypesLoading = signal(false);
-
+  readonly distnationName = signal<string>('');
+  readonly driverNoteChecked = signal(false);
+  readonly driverNoteText = signal('');
+  readonly clientNameSignal = signal('');
+  readonly roomNoSignal = signal('');
   private vehicleTypesLoaded = false;
   private placeTypesLoaded = false;
 
@@ -117,6 +122,7 @@ export class BookingComponent extends BaseComponent {
     this.loadCities();
     this.loadVehicleTypes(50);
     this.loadPlaceTypes();
+    this.loadDestinations();
 
     // Auto-select Van when many bags is checked
     effect(() => {
@@ -129,6 +135,20 @@ export class BookingComponent extends BaseComponent {
           this.selectedCar.set(vanCar.id);
         }
       }
+    });
+
+    // Sync driver note signals with form model
+    effect(() => {
+      const checked = this.driverNoteChecked();
+      const text = this.driverNoteText();
+      this.formModel.update(m => ({ ...m, addDriverNote: checked, driverNote: text }));
+    });
+
+    // Sync client name and room no signals with form model
+    effect(() => {
+      const clientName = this.clientNameSignal();
+      const roomNo = this.roomNoSignal();
+      this.formModel.update(m => ({ ...m, clientName, roomNo }));
     });
   }
 
@@ -177,7 +197,7 @@ export class BookingComponent extends BaseComponent {
     'Zamalek District',
     'Heliopolis',
   ];
-
+readonly destinationsData = signal<LocationItem[] | null>(null);
   protected readonly selectedCar = signal<string>('');
   protected readonly savedOtherEntityType = signal<string>('');
 
@@ -214,14 +234,6 @@ export class BookingComponent extends BaseComponent {
     driverNote: '',
   });
   protected readonly f = form(this.formModel);
-
-  protected onDriverNoteChecked(checked: boolean): void {
-    this.formModel.update(m => ({ ...m, addDriverNote: checked }));
-  }
-
-  protected onDriverNoteChanged(note: string): void {
-    this.formModel.update(m => ({ ...m, driverNote: note }));
-  }
 
   protected saveOtherEntityType(): void {
     const otherType = this.joinFormModel().otherEntityType || '';
@@ -590,10 +602,11 @@ readonly activeTab = signal<'login' | 'register'>('register');
       return;
     }
     const { destination, clientName, roomNo } = this.formModel();
-    if (!destination || !clientName || !roomNo) {
-      this.showError('Please fill in destination, client name, and room number.');
-      return;
-    }
+    this.distnationName.set(this.destinationsData()?.find(x => x.id === destination)?.name ?? '');
+    // if ( !clientName || !roomNo) {
+    //   this.showError('Please fill in destination, client name, and room number.');
+    //   return;
+    // }
     this.ShowComfirmBookingModel.set(true);
   }
 
@@ -658,10 +671,10 @@ readonly activeTab = signal<'login' | 'register'>('register');
     const { destination, clientName, roomNo, addDriverNote, driverNote } = this.formModel();
     const [lat, lng] = this.mapCenter();
     const car = this.selectedCarOption();
-
+    const dist = this.destinationsData()?.find(x => x.id === destination);
     const payload: any = {
       startLocation: { latitude: lat, longitude: lng, address: 'Current Location', order: 0 },
-      endLocations: [{ latitude: 0, longitude: 0, address: destination, order: 1 }],
+      endLocations: [{ latitude: dist?.latitude, longitude: dist?.longitude, address: dist?.name, order: 1 }],
       isScheduled,
       scheduledAt,
       vehicleTypeId: this.selectedCar(),
@@ -835,5 +848,22 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   private showError(message: string): void {
     this.notifications.showError(message);
+  }
+
+  private loadDestinations(){
+      this.placeTypeService.getdestinations()
+     .pipe(this.takeUntilDestroyed()).subscribe({
+      next: (result) => {
+ 
+        if (result.isSuccess && result.data) {
+          this.destinationsData.set(result.data.locations.items?? null)
+        } else {
+          this.showError(result.error?.description || 'Login failed. Please check your credentials.');
+        }
+      },
+      error: () => {
+         this.showError('An unexpected error occurred. Please try again later.');
+      },
+    });
   }
 }

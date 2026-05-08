@@ -9,14 +9,23 @@ export interface NotificationItem {
   createdDate: string;
   isRead: boolean;
 }
+interface NotificationsCountResponse {
+  count: number;
+}
 
-export interface NotificationsData {
-  notifications: NotificationItem[];
+export interface NotificationsResponse {
+    notifications: {
+      items: NotificationItem[];
+    };
 }
 
 @Injectable({ providedIn: 'root' })
 export class NotificationsService extends ApiService {
-  getAll(): Observable<Result<NotificationsData>> {
-    return this.get<NotificationsData>('/GetNotifications/GetAll');
+  getAll(): Observable<Result<NotificationsResponse>> {
+    return this.get<NotificationsResponse>('/GetNotifications/GetAll');
   }
+    UnreadNotificationsCount(): Observable<Result<NotificationsCountResponse>> {
+    return this.get<NotificationsCountResponse>('/GetNotifications/UnReadCount');
+  }
+
 }

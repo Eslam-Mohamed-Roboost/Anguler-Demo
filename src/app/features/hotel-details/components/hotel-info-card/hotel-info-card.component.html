@@ -32,10 +32,94 @@
     <button
       class="shrink-0 size-8 flex items-center justify-center bg-red-100 text-status-cancelled rounded-full cursor-pointer hover:bg-red-200 transition-colors border-none max-md:absolute max-md:top-0 max-md:end-0"
       type="button"
-      (click)="deleteClick.emit()"
+      (click)="onBlockClick()"
       aria-label="Delete hotel"
     >
       <app-icon name="x-circle" size="sm" />
     </button>
   </div>
 </app-card>
+
+<app-modal
+  [open]="showConfirmBlockModal()"
+  (closed)="closeConfirmBlockModal()"
+>
+  <div class="flex flex-col items-center text-center px-6 py-4">
+
+    @if (hotel().isBlocked) {
+
+      <!-- Block -->
+      <img
+        src="assets/booking/block-img.svg"
+        alt="Block Hotel"
+        class="mb-4 h-40 w-auto object-contain"
+      />
+
+      <h2 class="text-2xl font-bold text-primary-text">
+        {{ 'BlockAccess' | translate }}
+      </h2>
+
+      <p class="mt-2 text-sm font-medium text-[#5B738B] max-w-[260px]">
+        {{ 'blockmessage' | translate }}
+      </p>
+
+    } @else {
+
+      <!-- Unblock -->
+      <img
+        src="assets/booking/unblock-img.svg"
+        alt="Unblock Hotel"
+        class="mb-4 h-40 w-auto object-contain"
+      />
+
+      <h2 class="text-2xl font-bold text-primary-text">
+        {{ 'UnblockAccess' | translate }}
+      </h2>
+
+      <p class="mt-2 text-sm font-medium text-[#5B738B] max-w-[260px]">
+        {{ 'unblockmessage' | translate }}
+      </p>
+
+    }
+
+    <!-- Buttons -->
+    <div class="mt-6 flex w-full gap-3">
+
+      <!-- Cancel -->
+      <button
+        type="button"
+        (click)="closeConfirmBlockModal()"
+        class="flex-1 rounded-lg border border-[#D1D5DB] bg-white py-3 text-base font-semibold text-[#1F2937] transition hover:bg-gray-50"
+      >
+        {{ 'common.cancel' | translate }}
+      </button>
+       @if(hotel().isBlocked) {
+        <!-- Unblock -->
+        <button
+          type="button"
+          (click)="ToggleBlockhotel()"
+          class="flex-1 rounded-lg bg-primary py-3 text-base font-semibold text-white transition hover:brightness-95"
+        >
+          {{ 'btnUnblock' | translate }}
+        </button>
+ }
+ @else{
+  <button
+        type="button"
+        (click)="ToggleBlockhotel()"
+        class="flex-1 rounded-lg bg-[#EE3939] py-3 text-base font-semibold text-white transition hover:brightness-95"
+      >
+        {{ 'btnBlock' | translate }}
+      </button>
+ }
+     
+    
+
+    </div>
+
+  </div>
+</app-modal>
+
+
+
+

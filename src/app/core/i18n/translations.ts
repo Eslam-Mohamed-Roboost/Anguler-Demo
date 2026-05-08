@@ -2,6 +2,9 @@ export type Lang = 'en' | 'ar' | 'de';
 
 export const TRANSLATIONS = {
   en: {
+    'commission.info': 'Any update to the hotel commission will be reflected in their accounts effective from 12:00 AM of the update day.',
+    'hotel.commission': 'Hotels Commissions',
+    'GeneralCommission': 'General Commission (%)',
     // ── Navbar ────────────────────────────────────────────────────────────
     'nav.signIn': 'Sign In',
     'nav.joinUs': 'Join Us Now',
@@ -256,6 +259,7 @@ export const TRANSLATIONS = {
     'billing.closeAriaLabel': 'Close billing panel',
 
     // ── Hotel Details page ────────────────────────────────────────────────
+      'hotelDetails.titlemain': 'Hotel Details',
     'hotelDetails.retry': 'Retry',
     'hotelDetails.title': 'Hotel Integration',
     'hotelDetails.payoutInfo': 'Monthly payouts: Scheduled for the 1st. Deadline for completion is 3 business days.',
@@ -269,6 +273,15 @@ export const TRANSLATIONS = {
     'hotelDetails.statusInProgress': 'In Progress',
     'hotelDetails.selectAll': 'Select all',
     'hotelDetails.actionsFor': 'Actions for',
+    'hotelDetails.settle': 'Settle',
+    'hotelDetails.export': 'Export',
+    'hotelDetails.viewDetails': 'View Details',
+    'hotelDetails.hotelName': 'Hotel Name',
+    'hotelDetails.address': 'Address',
+    'hotelDetails.email': 'Email',
+    'hotelDetails.phone': 'Phone Number',
+    'hotelDetails.code': 'Hotel Code',
+    'hotelDetails.joiningDate': 'Joining Date',
     'admin.pendingRequests.title': 'Pending Hotel Requests',
     'admin.pendingRequests.selectDriver': 'Select driver',
     'admin.pendingRequests.loadingDrivers': 'Loading drivers…',
@@ -325,9 +338,19 @@ export const TRANSLATIONS = {
     'stats.scheduledTrips': 'Scheduled Trips',
     'stats.completedTrips': 'Completed Trips',
     'stats.cancelledTrips': 'Cancelled Trips',
+    'BlockAccess': 'Block Access?',
+    'UnblockAccess': 'Unblock Access?',
+    'blockmessage':'This will suspend the hotel\'s ability to create new trip requests.',
+    'unblockmessage':'This will restore full access and enable trip requests again.',
+    'btnBlock': 'Block Hotel',
+    'btnUnblock': 'Unblock Hotel',
+    'restoreAccess': 'Restore Access',
   },
 
   ar: {
+      'GeneralCommission': 'العمولة العامة (%)',
+        'hotel.commission': 'عمولة الفنادق',
+      'commission.info': 'أي تحديث لعمولة الفندق سينعكس في حساباتهم اعتبارًا من الساعة 12:00 صباحًا من يوم التحديث.',
     // ── Navbar ────────────────────────────────────────────────────────────
     'nav.signIn': 'تسجيل الدخول',
     'nav.joinUs': 'انضم إلينا الآن',
@@ -582,6 +605,7 @@ export const TRANSLATIONS = {
     'billing.closeAriaLabel': 'إغلاق لوحة الإشعارات',
 
     // ── Hotel Details page ────────────────────────────────────────────────
+    'hotelDetails.titlemain': 'تفاصيل الفندق',
     'hotelDetails.retry': 'إعادة المحاولة',
     'hotelDetails.title': 'تكامل الفندق',
     'hotelDetails.payoutInfo': 'المدفوعات الشهرية: مجدولة في اليوم الأول. الموعد النهائي للإتمام هو 3 أيام عمل.',
@@ -595,6 +619,15 @@ export const TRANSLATIONS = {
     'hotelDetails.statusInProgress': 'قيد التنفيذ',
     'hotelDetails.selectAll': 'تحديد الكل',
     'hotelDetails.actionsFor': 'إجراءات لـ',
+    'hotelDetails.settle': 'تسوية',
+    'hotelDetails.export': 'تصدير',
+    'hotelDetails.viewDetails': 'عرض التفاصيل',
+    'hotelDetails.hotelName': 'اسم الفندق',
+    'hotelDetails.address': 'العنوان',
+    'hotelDetails.email': 'البريد الإلكتروني',
+    'hotelDetails.phone': 'رقم الهاتف',
+    'hotelDetails.code': 'رمز الفندق',
+    'hotelDetails.joiningDate': 'تاريخ الانضمام',
     'admin.pendingRequests.title': 'طلبات الفنادق المعلقة',
     'admin.pendingRequests.selectDriver': 'اختر سائقاً',
     'admin.pendingRequests.loadingDrivers': 'جارٍ تحميل السائقين…',
@@ -649,9 +682,20 @@ export const TRANSLATIONS = {
     'stats.scheduledTrips': 'الرحلات المجدولة',
     'stats.completedTrips': 'الرحلات المكتملة',
     'stats.cancelledTrips': 'الرحلات الملغاة',
+    'BlockAccess': 'حظر الوصول؟',
+    'UnblockAccess': 'إلغاء حظر الوصول؟',
+    'blockmessage':'سيؤدي هذا إلى تعليق قدرة الفندق على إنشاء طلبات رحلات جديدة.',
+    'unblockmessage':'سيؤدي هذا إلى استعادة الوصول الكامل وتمكين طلبات الرحلات مرة أخرى.',
+    'btnBlock': 'حظر الفندق',
+    'btnUnblock': 'إلغاء حظر الفندق',
+    'restoreAccess': 'استعادة الوصول',
   },
 
   de: {
+      'GeneralCommission': 'Allgemeine Provision (%)',
+    'hotel.commission': 'Hotels Commissions',
+      'commission.info': 'Any update to hotel commission will reflect in their accounts starting 12:00 AM of the day of update.',
+     'hotelDetails.titlemain': 'Hotel Details',
     // ── Navbar ────────────────────────────────────────────────────────────
     'nav.signIn': 'Anmelden',
     'nav.joinUs': 'Jetzt beitreten',
@@ -906,7 +950,7 @@ export const TRANSLATIONS = {
     'billing.closeAriaLabel': 'Benachrichtigungsfeld schließen',
 
     // ── Hotel Details page ────────────────────────────────────────────────
-    'hotelDetails.retry': 'Erneut versuchen',
+     'hotelDetails.retry': 'Erneut versuchen',
     'hotelDetails.title': 'Hotel-Integration',
     'hotelDetails.payoutInfo': 'Monatliche Auszahlungen: Geplant für den 1. Frist zur Fertigstellung: 3 Werktage.',
     'hotelDetails.tripsTab': 'Hotelfahrten',
@@ -919,6 +963,15 @@ export const TRANSLATIONS = {
     'hotelDetails.statusInProgress': 'In Bearbeitung',
     'hotelDetails.selectAll': 'Alle auswählen',
     'hotelDetails.actionsFor': 'Aktionen für',
+    'hotelDetails.settle': 'Abrechnen',
+    'hotelDetails.export': 'Exportieren',
+    'hotelDetails.viewDetails': 'Details anzeigen',
+    'hotelDetails.hotelName': 'Hotelname',
+    'hotelDetails.address': 'Adresse',
+    'hotelDetails.email': 'E-Mail',
+    'hotelDetails.phone': 'Telefonnummer',
+    'hotelDetails.code': 'Hotelcode',
+    'hotelDetails.joiningDate': 'Beitrittsdatum',
     'admin.pendingRequests.title': 'Ausstehende Hotelanfragen',
     'admin.pendingRequests.selectDriver': 'Fahrer auswählen',
     'admin.pendingRequests.loadingDrivers': 'Fahrer werden geladen…',
@@ -973,6 +1026,13 @@ export const TRANSLATIONS = {
     'stats.scheduledTrips': 'Geplante Fahrten',
     'stats.completedTrips': 'Abgeschlossene Fahrten',
     'stats.cancelledTrips': 'Stornierte Fahrten',
+    'BlockAccess': 'Zugriff blockieren',
+    'UnblockAccess': 'Zugriff entsperren',
+    'blockmessage':'Dies wird die Fähigkeit des Hotels zur Erstellung neuer Fahrtaufträge suspendieren',
+    'unblockmessage':'Dies wird den vollständigen Zugriff wiederherstellen und Fahrtaufträge erneut aktivieren.',
+    'btnBlock': 'Hotelzugriff sperren',
+    'btnUnblock': 'Hotelzugriff entsperren',
+    'restoreAccess': 'Zugriff wiederherstellen',
   },
 } as const;
 

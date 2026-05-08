@@ -19,16 +19,13 @@ import { IconComponent } from '../../../../shared/components/icon/icon.component
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { HotelInfoCardComponent } from '../../components/hotel-info-card/hotel-info-card.component';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
-import { HotelDetailsFormComponent } from '../../components/hotel-details-form/hotel-details-form.component';
-import { WithdrawalDetailsComponent } from '../../components/withdrawal-details/withdrawal-details.component';
-import type { HotelFormData, HotelInfo, TripRecord, WithdrawalFormData } from '../../types/hotel-details.types';
+  import type { HotelFormData, HotelInfo, TripRecord, WithdrawalFormData } from '../../types/hotel-details.types';
 import { HotelDetailsService } from '../../services/hotel-details.service';
 import { HotelApiItem, HotelTripItem } from '../../models/dto';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { TranslatePipe } from "../../../../shared/pipes/translate.pipe";
-import { InputComponent } from "../../../../shared/components/input/input.component";
-
+ 
 @Component({
   selector: 'app-hotel-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -80,19 +77,20 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     address: '',
     phone: '',
     email: '',
+    isBlocked: false,
   });
 readonly amountLabel = signal(0)
   readonly hotelFormData = signal<Partial<HotelFormData>>({});
 
   readonly statistics = signal<StatisticItem[]>([
-    { label: 'Commi. Percentage (%)', value: '--', color: 'orange' },
-    { label: 'Hotel Balance', value: '--', color: 'orange' },
-    { label: 'Hotels Commi.', value: '--', color: 'orange' },
-    { label: 'Lines Net Profit', value: '--', color: 'orange' },
-    { label: 'Active Trips', value: '--', color: 'orange' },
-    { label: 'Scheduled Trips', value: '--', color: 'orange' },
-    { label: 'Completed Trips', value: '--', color: 'orange' },
-    { label: 'Cancelled Trips', value: '--', color: 'orange' },
+    { label: 'stats.commissionPercentage', value: '--', color: 'orange' },
+    { label: 'stats.hotelBalance', value: '--', color: 'orange' },
+    { label: 'stats.hotelCommission', value: '--', color: 'orange' },
+    { label: 'stats.linesNetProfit', value: '--', color: 'orange' },
+    { label: 'stats.activeTrips', value: '--', color: 'orange' },
+    { label: 'stats.scheduledTrips', value: '--', color: 'orange' },
+    { label: 'stats.completedTrips', value: '--', color: 'orange' },
+    { label: 'stats.cancelledTrips', value: '--', color: 'orange' },
   ]);
 
   readonly trips = signal<TripRecord[]>([]);
@@ -122,7 +120,6 @@ readonly amountLabel = signal(0)
   ngOnInit(): void {
     this.renderer.addClass(document.body, 'hotel-details-active');
     const id = this.route.snapshot.paramMap.get('id') ?? '';
-    this.hotelId.set(id);
     if (id && !this.dataLoaded) {
       this.dataLoaded = true;
       this.loadHotel(id);
@@ -145,14 +142,14 @@ readonly amountLabel = signal(0)
           if (result.isSuccess && result.data) {
             const stats = result.data;
             this.statistics.set([
-              { label: 'Commi. Percentage (%)', value: `${(stats.commissionPercentage.value * 100).toFixed(0)}%`, color: 'orange' },
-              { label: 'Hotel Balance', value: `${stats.hotelRevenue.value} CHF`, color: 'orange' },
-              { label: 'Hotels Commi.', value: `${stats.hotelCommission.value} CHF`, color: 'orange' },
-              { label: 'Lines Net Profit', value: `${stats.linesNetProfit.value} CHF`, color: 'orange' },
-              { label: 'Active Trips', value: String(stats.activeTrips.value), color: 'orange' },
-              { label: 'Scheduled Trips', value: String(stats.scheduledTrips.value), color: 'orange' },
-              { label: 'Completed Trips', value: String(stats.completedTrips.value), color: 'orange' },
-              { label: 'Cancelled Trips', value: String(stats.canceledTrips.value), color: 'orange' },
+              { label: 'stats.commissionPercentage', value: `${(stats.commissionPercentage.value * 100).toFixed(0)}%`, color: 'orange' },
+              { label: 'stats.hotelBalance', value: `${stats.hotelRevenue.value} CHF`, color: 'orange' },
+              { label: 'stats.hotelCommission', value: `${stats.hotelCommission.value} CHF`, color: 'orange' },
+              { label: 'stats.linesNetProfit', value: `${stats.linesNetProfit.value} CHF`, color: 'orange' },
+              { label: 'stats.activeTrips', value: String(stats.activeTrips.value), color: 'orange' },
+              { label: 'stats.scheduledTrips', value: String(stats.scheduledTrips.value), color: 'orange' },
+              { label: 'stats.completedTrips', value: String(stats.completedTrips.value), color: 'orange' },
+              { label: 'stats.cancelledTrips', value: String(stats.canceledTrips.value), color: 'orange' },
             ]);
           }
         },
@@ -186,6 +183,7 @@ readonly amountLabel = signal(0)
 
   private applyHotelData(item: HotelApiItem): void {
     this.hotelData.set(item);
+    this.hotelId.set(item.code);
 
     this.hotel.set({
       id: item.id,
@@ -193,6 +191,7 @@ readonly amountLabel = signal(0)
       address: item.address,
       phone: item.phoneNumber,
       email: item.email,
+      isBlocked: item.isBlocked ?? false,
       imageUrl: item.logoUrl || undefined,
     });
 
@@ -207,7 +206,7 @@ readonly amountLabel = signal(0)
 
     const commPct = `${(item.commissionRate * 100).toFixed(0)}%`;
     this.statistics.update(prev =>
-      prev.map(s => s.label === 'Commi. Percentage (%)' ? { ...s, value: commPct } : s),
+      prev.map(s => s.label === 'stats.commissionPercentage' ? { ...s, value: commPct } : s),
     );
   }
 
@@ -240,10 +239,10 @@ readonly amountLabel = signal(0)
     }
     this.statistics.update(prev =>
       prev.map(s => {
-        if (s.label === 'Active Trips') return { ...s, value: String(counts.active) };
-        if (s.label === 'Scheduled Trips') return { ...s, value: String(counts.scheduled) };
-        if (s.label === 'Completed Trips') return { ...s, value: String(counts.completed) };
-        if (s.label === 'Cancelled Trips') return { ...s, value: String(counts.cancelled) };
+        if (s.label === 'stats.activeTrips') return { ...s, value: String(counts.active) };
+        if (s.label === 'stats.scheduledTrips') return { ...s, value: String(counts.scheduled) };
+        if (s.label === 'stats.completedTrips') return { ...s, value: String(counts.completed) };
+        if (s.label === 'stats.cancelledTrips') return { ...s, value: String(counts.cancelled) };
         return s;
       }),
     );
@@ -326,6 +325,8 @@ readonly amountLabel = signal(0)
       commissionRate: currentHotel.commissionRate,
       isActive: currentHotel.isActive,
       isVerified: currentHotel.isVerified,
+      code: currentHotel.code,
+      isBlocked: currentHotel.isBlocked ?? false,
     };
 
     this.formLoading.set(true);

@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   input,
-  output,
+  model,
 } from '@angular/core';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
@@ -14,18 +14,15 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
   styleUrl: './driver-note.component.css',
 })
 export class DriverNoteComponent {
-  readonly isChecked = input(false);
-  readonly noteText = input('');
-
-  readonly checkedChange = output<boolean>();
-  readonly noteChange = output<string>();
+  readonly isChecked = model(false);
+  readonly noteText = model('');
 
   toggleCheckbox(): void {
-    this.checkedChange.emit(!this.isChecked());
+    this.isChecked.set(!this.isChecked());
   }
 
   onNoteChange(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-    this.noteChange.emit(textarea.value);
+    this.noteText.set(textarea.value);
   }
 }

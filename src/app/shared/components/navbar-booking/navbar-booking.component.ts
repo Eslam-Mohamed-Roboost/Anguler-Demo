@@ -22,6 +22,8 @@ import { ClickOutsideDirective } from '../../directives/click-outside.directive'
 import { LoginService } from '../../../features/booking/components/services/login.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ChatService } from '../../../features/TripDetails/services/chat.service';
+import { BaseComponent } from '../../base/base.component';
+import { NotificationsService } from '../../../core/services/notifications.service';
 
 @Component({
   selector: 'app-navbar-booking',
@@ -30,14 +32,13 @@ import { ChatService } from '../../../features/TripDetails/services/chat.service
   templateUrl: './navbar-booking.component.html',
   host: { class: 'relative z-20 block' },
 })
-export class NavbarBookingComponent implements OnInit {
+export class NavbarBookingComponent extends BaseComponent implements OnInit {
   private readonly langService = inject(LanguageService);
   private readonly loginService = inject(LoginService);
   private readonly coreAuth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly chatService = inject(ChatService);
-  private readonly destroyRef = inject(DestroyRef);
-
+ private readonly notifiactionService = inject(NotificationsService)
   /** Logo image source */
   readonly logoSrc = input('assets/booking/logo-lines.png');
 
@@ -141,13 +142,24 @@ export class NavbarBookingComponent implements OnInit {
 
   /** Emitted when profile is clicked */
   readonly profileClick = output<void>();
-
+ 
   ngOnInit(): void {
     if (this.dataLoaded) return;
     this.dataLoaded = true;
     this.loadMessages();
+    this.notificationCount();
   }
-
+  private notificationCount(){
+      this.notifiactionService.UnreadNotificationsCount()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next:(result)=>{
+          if(result.isSuccess){
+              this.bellCount.set(result.data?.count ?? 0)
+          }
+        }
+      })
+  }
   private loadMessages(): void {
     this.messagesLoading.set(true);
     this.chatService
@@ -165,6 +177,7 @@ export class NavbarBookingComponent implements OnInit {
           this.messagesLoading.set(false);
         },
       });
+
        this.chatService
       .getSideBarMessagesCount()
       .pipe(takeUntilDestroyed(this.destroyRef))

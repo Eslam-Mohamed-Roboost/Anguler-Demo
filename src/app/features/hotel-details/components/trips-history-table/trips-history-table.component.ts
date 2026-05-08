@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
   output,
   signal,
@@ -15,6 +16,9 @@ import { IconComponent } from '../../../../shared/components/icon/icon.component
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import type { HotelRecord, TripRecord, TripSearchFilters } from '../../types/hotel-details.types';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { ModalComponent } from "../../../../shared/components/modal/modal.component";
+import { InputComponent } from "../../../../shared/components/input/input.component";
+import { HotelDetailsService } from '../../services/hotel-details.service';
 
 @Component({
   selector: 'app-trips-history-table',
@@ -27,7 +31,8 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
     IconComponent,
     PaginationComponent,
     TranslatePipe,
-  ],
+    ModalComponent
+    ],
   templateUrl: './trips-history-table.component.html',
   styleUrl: './trips-history-table.component.css',
 })
@@ -39,7 +44,7 @@ export class TripsHistoryTableComponent {
   readonly filters = input<TripSearchFilters>({});
   readonly totalTrips = input(0);
   readonly totalHotels = input(0);
-
+ readonly generalCommissionField = signal(0);
   readonly activeTab = signal<'trips' | 'hotels'>('trips');
 
   readonly currentPage = input(1);
@@ -50,7 +55,7 @@ export class TripsHistoryTableComponent {
   readonly tripAction = output<{ type: string; tripId: string; hotelId?: string }>();
   readonly commissionSettings = output<void>();
   readonly pageChange = output<number>();
-
+ private readonly hotelCommissionInfo = inject(HotelDetailsService);
   protected readonly tripColumns = computed<ColumnDef[]>(() => [
     { key: 'tripId', header: 'Trip Code', sortable: true, headerClass: 'w-28' },
     { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-36' },
@@ -84,6 +89,25 @@ export class TripsHistoryTableComponent {
     cancelled: 'text-status-cancelled bg-status-cancelled-bg',
   };
 
+  readonly showCommissionsModal = signal(false);
+
+  protected openCommissionModal(): void {
+    this.showCommissionsModal.set(true);
+  }
+  onGeneralCommissionChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const value = parseFloat(target.value);
+    if (!isNaN(value) && value >= 0 && value <= 100) {
+      this.generalCommissionField.set(value);
+    }
+  }
+  protected saveCommissionSettings(): void {
+    this.commissionSettings.emit();
+    this.closeCommissionModal();
+  }
+  protected closeCommissionModal(): void {
+    this.showCommissionsModal.set(false);
+  }
   protected setTab(tab: 'trips' | 'hotels'): void {
     this.activeTab.set(tab);
   }
@@ -107,5 +131,19 @@ export class TripsHistoryTableComponent {
       minute: '2-digit',
       hour12: false,
     }).format(new Date(dateStr));
+  }
+
+  updateCommissionSettings(): void {
+    this.hotelCommissionInfo.updateHotelCommission(this.generalCommissionField()).subscribe({
+      next: (result) => {
+        if (result.isSuccess) {
+           this.closeCommissionModal();
+        }
+      },
+      error: (err) => {
+        console.error('Error updating commission settings:', err);
+      }
+    });
+ 
   }
 }

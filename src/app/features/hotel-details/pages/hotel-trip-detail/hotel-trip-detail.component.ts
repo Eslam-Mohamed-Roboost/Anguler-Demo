@@ -87,6 +87,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     phone: '',
     email: '',
     imageUrl: '',
+    isBlocked: false,
   });
 
   readonly trip = signal<TripDetail | null>(null);
@@ -169,6 +170,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
               phone: h.phoneNumber,
               email: h.email,
               imageUrl: h.logoUrl ?? '',
+              isBlocked: h.isBlocked ?? false,
             });
           }
         },
@@ -196,6 +198,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
               address: p.address,
               phone: p.phoneNumber,
               email: p.email,
+              isBlocked: p.isBlocked ?? false,
               imageUrl: p.imageUrl ?? '',
             });
           }

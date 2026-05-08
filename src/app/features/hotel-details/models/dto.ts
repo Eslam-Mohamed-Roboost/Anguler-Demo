@@ -26,6 +26,7 @@ export interface HotelProfileResponse {
   phoneNumber: string;
   email: string;
   imageUrl: string | null;
+  isBlocked: boolean;
 }
 
 export interface HotelTripsResponse {
@@ -48,6 +49,8 @@ export interface HotelApiItem {
   commissionRate: number;
   isActive: boolean;
   isVerified: boolean;
+  code: string;
+  isBlocked: boolean;
 }
 
 export interface HotelsListResponse {

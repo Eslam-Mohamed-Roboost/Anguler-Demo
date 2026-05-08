@@ -1,8 +1,17 @@
 // Environment configuration
+// export const environment = {
+//   production: false,
+//   apiUrl: 'https://linesapp-001-site1.rtempurl.com/api',
+//   adminApiUrl: 'http://linesapp-001-site2.rtempurl.com/api',
+//   /** OpenWeatherMap API key — get a free key at https://openweathermap.org/api */
+//   weatherApiKey: '',
+// };
+
 export const environment = {
   production: false,
-  apiUrl: 'https://linesapp-001-site1.rtempurl.com/api',
-  adminApiUrl: 'http://linesapp-001-site2.rtempurl.com/api',
+  apiUrl: 'https://api.lines-trips.com/api',
+  adminApiUrl: 'https://admin.lines-trips.com/api',
   /** OpenWeatherMap API key — get a free key at https://openweathermap.org/api */
   weatherApiKey: '',
 };
+ 

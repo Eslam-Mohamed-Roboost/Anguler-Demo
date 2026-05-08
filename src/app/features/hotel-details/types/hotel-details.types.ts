@@ -5,6 +5,7 @@ export interface HotelInfo {
   phone: string;
   email: string;
   imageUrl?: string;
+  isBlocked: boolean;
 }
 
 export interface HotelStatistics {

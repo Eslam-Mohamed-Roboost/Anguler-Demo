@@ -20,43 +20,51 @@
       <!-- ── Booking form card ── -->
       <app-card variant="booking" bodyClass="space-y-3 sm:space-y-4 lg:space-y-5" [showHeader]="false">
         <div class="space-y-3 sm:space-y-4 lg:space-y-5">
-          <!-- Drop off Location -->
-          <app-select
-            [label]="'form.dropOff' | translate"
-            inputId="destination"
-            [field]="f.destination"
-            [options]="destinations"
-            [placeholder]="'form.chooseDest' | translate"
-            dropdownArrow="custom"
-            selectClass="rounded-full focus-visible:outline-hidden border-input-border bg-input-bg placeholder:text-primary-text"
-          >
-            <span class="text-danger" label-hint> *</span>
-          </app-select>
+                <!-- Drop off Location -->
+      <app-select
+        [label]="'form.dropOff' | translate"
+        inputId="id"
+        [field]="f.destination"
+        [options]="destinationsData()?? []"
+        optionValue="id"
+        optionLabel="name"
+        [placeholder]="'form.chooseDest' | translate"
+        dropdownArrow="custom"
+        selectClass="rounded-full focus-visible:outline-hidden border-input-border bg-input-bg placeholder:text-primary-text"
+      >
+        <span class="text-danger" label-hint> *</span>
+      </app-select>
 
           <!-- Client Name + Room No -->
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_100px] sm:gap-4">
-            <app-input
-              [label]="'form.clientName' | translate"
-              inputId="client-name"
-              [field]="f.clientName"
-              [placeholder]="'form.clientNamePlaceholder' | translate"
-              inputClass="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
-            />
-            <app-input
-              [label]="'form.roomNo' | translate"
-              inputId="room-no"
-              [field]="f.roomNo"
-              [placeholder]="'form.roomNoPlaceholder' | translate"
-              inputClass="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
-            />
+            <div>
+              <label for="client-name" class="mb-1 block text-xs font-medium text-gray-500">{{ 'form.clientName' | translate }}</label>
+              <input
+                type="text"
+                id="client-name"
+                [value]="clientNameSignal()"
+                (input)="clientNameSignal.set($any($event).target.value)"
+                [placeholder]="'form.clientNamePlaceholder' | translate"
+                class="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text w-full px-4 py-2.5 border text-sm"
+              />
+            </div>
+            <div>
+              <label for="room-no" class="mb-1 block text-xs font-medium text-gray-500">{{ 'form.roomNo' | translate }}</label>
+              <input
+                type="text"
+                id="room-no"
+                [value]="roomNoSignal()"
+                (input)="roomNoSignal.set($any($event).target.value)"
+                [placeholder]="'form.roomNoPlaceholder' | translate"
+                class="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text w-full px-4 py-2.5 border text-sm"
+              />
+            </div>
           </div>
 
           <!-- Driver Note -->
           <app-driver-note
-            [isChecked]="formModel().addDriverNote"
-            [noteText]="formModel().driverNote"
-            (checkedChange)="onDriverNoteChecked($event)"
-            (noteChange)="onDriverNoteChanged($event)"
+            [(isChecked)]="driverNoteChecked"
+            [(noteText)]="driverNoteText"
           />
 
           <!-- Many bags checkbox -->
@@ -824,7 +832,7 @@
   <!-- Drop off location -->
   <div class="mt-4 rounded-xl border border-gray-200 p-4">
     <p class="text-sm text-[#5B738B]">{{ 'confirm.dropOff' | translate }}</p>
-    <p class="mt-1 text-base font-bold text-primary-text">{{ formModel().destination || '—' }}</p>
+    <p class="mt-1 text-base font-bold text-primary-text">{{ distnationName() || '—' }}</p>
   </div>
 
   <!-- Client / Room / Bags -->

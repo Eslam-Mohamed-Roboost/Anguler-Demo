@@ -48,7 +48,7 @@
         <button
           class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
           type="button"
-          (click)="commissionSettings.emit()"
+          (click)="openCommissionModal()"
         >
           <app-icon name="layers" size="sm" aria-hidden="true" />
           <span>{{ 'hotelDetails.commSettings' | translate }}</span>
@@ -246,3 +246,104 @@
     </div>
   }
 </app-card>
+
+
+
+<!-- ═══════ Join Us Modal ═══════ -->
+<app-modal [open]="showCommissionsModal()" (closed)="closeCommissionModal()">
+  <!-- Custom header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+       <path d="M-6.63996e-05 2.26777C-6.63996e-05 1.55844 0.205267 1.00311 0.615934 0.601773C1.03593 0.20044 1.5726 -0.000226736 2.22593 -0.000226736C2.87927 -0.000226736 3.41127 0.20044 3.82193 0.601773C4.24193 1.00311 4.45193 1.55844 4.45193 2.26777C4.45193 2.98644 4.24193 3.54644 3.82193 3.94777C3.41127 4.34911 2.87927 4.54977 2.22593 4.54977C1.5726 4.54977 1.03593 4.34911 0.615934 3.94777C0.205267 3.54644 -6.63996e-05 2.98644 -6.63996e-05 2.26777ZM8.98793 0.167773L3.48593 9.96777H1.58193L7.06993 0.167773H8.98793ZM2.21193 1.17577C1.6986 1.17577 1.44193 1.53977 1.44193 2.26777C1.44193 3.00511 1.6986 3.37377 2.21193 3.37377C2.46393 3.37377 2.65993 3.28511 2.79993 3.10777C2.93993 2.92111 3.00993 2.64111 3.00993 2.26777C3.00993 1.53977 2.74393 1.17577 2.21193 1.17577ZM6.14593 7.85377C6.14593 7.13511 6.35127 6.57977 6.76193 6.18777C7.18193 5.78644 7.7186 5.58577 8.37193 5.58577C9.02527 5.58577 9.5526 5.78644 9.95393 6.18777C10.3646 6.57977 10.5699 7.13511 10.5699 7.85377C10.5699 8.57244 10.3646 9.13244 9.95393 9.53377C9.5526 9.93511 9.02527 10.1358 8.37193 10.1358C7.70927 10.1358 7.1726 9.93511 6.76193 9.53377C6.35127 9.13244 6.14593 8.57244 6.14593 7.85377ZM8.35793 6.76177C7.82593 6.76177 7.55993 7.12577 7.55993 7.85377C7.55993 8.59111 7.82593 8.95977 8.35793 8.95977C8.8806 8.95977 9.14193 8.59111 9.14193 7.85377C9.14193 7.12577 8.8806 6.76177 8.35793 6.76177Z" fill="#00C950"/>
+    </svg>
+
+      <h2 class="text-xl font-bold text-primary-text">{{ 'hotel.commission' | translate }}</h2>
+    </div>
+    <button
+      type="button"
+      (click)="closeCommissionModal()"
+      class="flex size-10 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:bg-gray-200"
+      [attr.aria-label]="'common.close' | translate"
+    >
+      <app-icon name="close" size="sm" />
+    </button>
+  </div>
+  <div class="flex items-center gap-2 px-4 py-3 bg-[#F9FAFAB2] border border-[#E1E7EF] rounded-btn text-cell text-[#5B738B] mb-5" role="note">
+    <app-icon name="info" size="sm" aria-hidden="true" />
+    <span>{{ 'commission.info' | translate }}</span>
+  </div>
+ 
+     <div class="flex flex-col mt-4 rounded-xl border border-gray-200 p-4">
+               <label for="client-name" class="mb-1 block text-xs font-medium text-gray-500">{{  'GeneralCommission' | translate }}</label>
+                <input
+                  type="text"
+                  id="client-name"
+                  [value]="generalCommissionField()"
+                  (input)="onGeneralCommissionChange($event)"
+                  [placeholder]="'form.clientNamePlaceholder' | translate"
+                  class="rounded-xl border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text w-full px-4 py-2.5 border text-sm"
+                />
+   
+     </div>
+
+ 
+  <!-- Footer -->
+  <div modal-footer class="flex items-center justify-end gap-3 px-4 pb-4 pt-2">
+    <!-- @if (joinStep() === 1) {
+      <button
+        type="button"
+        (click)="nextStep()"
+        [disabled]="isRegistering()"
+        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        @if (isRegistering()) {
+          <app-icon name="spinner" size="sm" />
+          <span>{{ 'withdrawal.registering' | translate }}</span>
+        } @else {
+          <app-icon name="zap" size="sm" />
+          <span>{{ 'join.next' | translate }}</span>
+        }
+      </button>
+    } @else if (joinStep() === 2) {
+      <button
+        type="button"
+        (click)="prevStep()"
+        class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
+      >
+        {{ 'join.back' | translate }}
+      </button>
+      <button
+        type="button"
+        (click)="nextToWithdrawal()"
+        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
+      >
+        <app-icon name="zap" size="sm" />
+        <span>{{ 'join.next' | translate }}</span>
+      </button>
+    } @else {
+      <button
+        type="button"
+        (click)="prevStep()"
+        class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
+      >
+        {{ 'join.back' | translate }}
+      </button>
+      <button
+        (click)="Register()"
+        type="button"
+        [disabled]="isRegistering()"
+        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        @if (isRegistering()) {
+          <app-icon name="spinner" size="sm" />
+          <span>{{ 'withdrawal.registering' | translate }}</span>
+        } @else {
+          <app-icon name="plus" size="sm" />
+          <span>{{ 'withdrawal.joinNow' | translate }}</span>
+        }
+      </button>
+    } -->
+  </div>
+</app-modal>
+

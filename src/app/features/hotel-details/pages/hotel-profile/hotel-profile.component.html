@@ -2,9 +2,9 @@
 
   <!-- Breadcrumb -->
   <nav class="flex items-center gap-1.5 text-cell mb-4" aria-label="Breadcrumb">
-    <a class="text-muted no-underline hover:text-body-soft hover:underline transition-colors" routerLink="/hotel-details">Hotel Integration</a>
+    <a class="text-muted no-underline hover:text-body-soft hover:underline transition-colors" routerLink="/hotel-details">{{ 'hotelDetails.title' | translate }}</a>
     <span class="text-muted-light" aria-hidden="true">/</span>
-    <span class="text-body font-medium">Hotel Details #{{ hotelId() }}</span>
+    <span class="text-body font-medium">{{ 'hotelDetails.titlemain' | translate }} #{{ hotelId() }}</span>
   </nav>
 
   <!-- Error banner -->
@@ -59,13 +59,13 @@
     <div class="size-7 bg-primary rounded-full flex items-center justify-center text-white shrink-0">
       <app-icon name="home" size="sm" />
     </div>
-    <h3 class="text-base font-semibold text-body max-sm:text-[15px]">Hotel Details</h3>
+    <h3 class="text-base font-semibold text-body max-sm:text-[15px]">{{ 'hotelDetails.titlemain' | translate }}</h3>
   </div>
 
   <div class="grid gap-5">
     <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
       <div>
-        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">Hotel Name</label>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.hotelName' | translate }}</label>
         <input
           class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
           type="text"
@@ -76,7 +76,7 @@
       </div>
 
       <div>
-        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">Address</label>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.address' | translate }}</label>
         <input
           class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
           type="text"
@@ -87,7 +87,7 @@
       </div>
 
       <div>
-        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">Email</label>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.email' | translate }}</label>
         <input
           class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
           type="email"
@@ -100,7 +100,7 @@
 
     <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
       <div>
-        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">Phone Number</label>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.phone' | translate }}</label>
         <input
           class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
           type="tel"
@@ -111,7 +111,7 @@
       </div>
 
       <div>
-        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">Hotel Code</label>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.code' | translate }}</label>
         <input
           class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
           type="text"
@@ -122,7 +122,7 @@
       </div>
 
       <div>
-        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">Joining Date</label>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.joiningDate' | translate }}</label>
         <input
           class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
           type="text"
@@ -151,7 +151,7 @@
       <div class="size-7 bg-primary rounded-full flex items-center justify-center text-white shrink-0">
         <app-icon name="bank-notes" size="sm" />
       </div>
-      <h3 class="text-base font-semibold text-body max-sm:text-[15px]">Withdrawal Details</h3>
+      <h3 class="text-base font-semibold text-body max-sm:text-[15px]">{{ 'withdrawal.title' | translate }}</h3>
     </div>
     <div class="text-sm font-semibold text-warning max-sm:text-cell">
       Awaiting Payout: {{ amountLabel() }}
@@ -226,7 +226,7 @@
           <div class="flex items-center justify-center size-8 rounded-full bg-icon-circle-bg text-icon-circle shrink-0">
             <app-icon name="calendar" size="sm" aria-hidden="true" />
           </div>
-          <h3 class="text-[15px] font-semibold text-body m-0">Trips History</h3>
+          <h3 class="text-[15px] font-semibold text-body m-0">{{ 'riderHistory.title' | translate }}</h3>
         </div>
 
         <div class="flex items-center gap-2 flex-wrap max-lg:w-full">
@@ -235,7 +235,7 @@
             <input
               class="py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-white outline-none w-[180px] focus:border-warning focus:ring-2 focus:ring-warning/10 max-lg:flex-1"
               type="text"
-              placeholder="Search Trips"
+              placeholder="{{ 'Search' | translate }}"
               [value]="searchQuery()"
               (input)="onSearchChange($event)"
               aria-label="Search trips"
@@ -243,12 +243,12 @@
           </div>
           <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer hover:bg-gray-50 whitespace-nowrap transition" type="button">
             <app-icon name="filter" size="sm" aria-hidden="true" />
-            <span>Filter</span>
+            <span>{{ 'filter.Filter' | translate }}</span>
           </button>
-          <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer hover:bg-gray-50 whitespace-nowrap transition" type="button">
+          <!-- <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer hover:bg-gray-50 whitespace-nowrap transition" type="button">
             <app-icon name="download" size="sm" aria-hidden="true" />
             <span>Export</span>
-          </button>
+          </button> -->
         </div>
       </div>
 

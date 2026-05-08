@@ -94,4 +94,12 @@ export class HotelDetailsService extends ApiService {
   getHotelKpi(hotelId: string): Observable<Result<HotelKpiResponse>> {
      return this.get<HotelKpiResponse>(`/hotels/${hotelId}/kpi`); 
    }
+
+   blockToggle(hotelId: string): Observable<Result<boolean>> {
+     return this.post<boolean>('', {});
+  }
+
+    updateHotelCommission( commissionRate: number): Observable<Result<void>> {
+      return this.put<void>(`/hotels/commission`, { commissionRate });
+    }
 }

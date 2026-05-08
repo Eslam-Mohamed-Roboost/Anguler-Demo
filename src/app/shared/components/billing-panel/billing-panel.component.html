@@ -12,6 +12,11 @@
         <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-700">
           <app-icon name="alert-triangle" size="sm" />
           {{ 'billing.title' | translate }}
+           @if (UnreadCount() > 0) {
+            <span class="bg-[#e76500] text-white px-3 py-1 rounded-full text-xs font-medium">
+              {{ UnreadCount() }}
+            </span>
+          }
         </h3>
         <button
           type="button"
