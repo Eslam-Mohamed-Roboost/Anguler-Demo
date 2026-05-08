@@ -12,9 +12,11 @@
     <textarea
       #textareaEl
       [id]="inputId()"
+      [value]="getFieldValue()"
       [placeholder]="placeholder()"
       [rows]="rows()"
       [class]="classes()"
+      (input)="onInputChange($event)"
       (blur)="onFieldBlur()"
     ></textarea>
   } @else {
@@ -23,9 +25,11 @@
         #inputEl
         [id]="inputId()"
         [type]="type()"
+        [value]="getFieldValue()"
         [placeholder]="placeholder()"
         [attr.step]="step() || null"
         [class]="classes()"
+        (input)="onInputChange($event)"
         (blur)="onFieldBlur()"
       />
 

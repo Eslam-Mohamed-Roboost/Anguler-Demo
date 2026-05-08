@@ -81,8 +81,6 @@ export class BookingComponent extends BaseComponent {
   readonly distnationName = signal<string>('');
   readonly driverNoteChecked = signal(false);
   readonly driverNoteText = signal('');
-  readonly clientNameSignal = signal('');
-  readonly roomNoSignal = signal('');
   private vehicleTypesLoaded = false;
   private placeTypesLoaded = false;
 
@@ -142,13 +140,6 @@ export class BookingComponent extends BaseComponent {
       const checked = this.driverNoteChecked();
       const text = this.driverNoteText();
       this.formModel.update(m => ({ ...m, addDriverNote: checked, driverNote: text }));
-    });
-
-    // Sync client name and room no signals with form model
-    effect(() => {
-      const clientName = this.clientNameSignal();
-      const roomNo = this.roomNoSignal();
-      this.formModel.update(m => ({ ...m, clientName, roomNo }));
     });
   }
 
@@ -419,33 +410,34 @@ readonly activeTab = signal<'login' | 'register'>('register');
   nextStep(): void {
     const form = this.joinFormModel();
 
-    if (!form.hotelName || !form.cityId || !form.address || !form.phoneNumber || !form.email || !form.password) {
-      this.showError('Please fill in all required fields.');
-      return;
-    }
+    // if (!form.hotelName || !form.cityId || !form.address || !form.phoneNumber || !form.email || !form.password) {
+    // //  this.showError('Please fill in all required fields.');
+    //   return;
+    // }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    console.log('Validating email:', form.email, 'Result:', emailRegex.test(form.email));
     if (!emailRegex.test(form.email)) {
       this.showError('Please enter a valid email address.');
       return;
     }
 
-    this.isRegistering.set(true);
-
-    this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
-      next: (result) => {
-        this.isRegistering.set(false);
-        if (result.isSuccess) {
-          this.joinStep.set(2);
-        } else {
-          this.showError(result.error?.description || 'Registration failed. Please try again.');
-        }
-      },
-      error: () => {
-        this.isRegistering.set(false);
-        this.showError('An unexpected error occurred. Please try again later.');
-      },
-    });
+    //this.isRegistering.set(true);
+      this.joinStep.set(2);
+    // this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
+    //   next: (result) => {
+    //     this.isRegistering.set(false);
+    //     if (result.isSuccess) {
+    //       this.joinStep.set(2);
+    //     } else {
+    //       this.showError(result.error?.description || 'Registration failed. Please try again.');
+    //     }
+    //   },
+    //   error: () => {
+    //     this.isRegistering.set(false);
+    //     this.showError('An unexpected error occurred. Please try again later.');
+    //   },
+    // });
   }
 
   nextToWithdrawal(): void {

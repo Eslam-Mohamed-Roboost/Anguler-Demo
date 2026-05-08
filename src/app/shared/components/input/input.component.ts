@@ -248,6 +248,42 @@ export class InputComponent {
     }
   }
 
+  protected getFieldValue(): string {
+    const field = this.field();
+    try {
+      // Handle signal forms field structure
+      if (field && typeof field === 'object' && 'value' in field) {
+        const val = (field as any).value?.();
+        return val ?? '';
+      }
+      // Handle legacy structure
+      if (typeof field === 'function') {
+        const val = (field as any)()?.value?.();
+        return val ?? '';
+      }
+    } catch {
+      // Fail silently
+    }
+    return '';
+  }
+
+  protected onInputChange(event: Event): void {
+    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
+    const field = this.field();
+    try {
+      // Handle signal forms field structure
+      if (field && typeof field === 'object' && 'value' in field) {
+        (field as any).value?.set(value);
+      }
+      // Handle legacy structure
+      else if (typeof field === 'function') {
+        (field as any)()?.value?.set(value);
+      }
+    } catch (error) {
+      console.warn('Failed to update field value:', error);
+    }
+  }
+
   protected increment(): void {
     const el = this.inputRef()?.nativeElement;
     if (el) {

@@ -37,28 +37,20 @@
 
           <!-- Client Name + Room No -->
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_100px] sm:gap-4">
-            <div>
-              <label for="client-name" class="mb-1 block text-xs font-medium text-gray-500">{{ 'form.clientName' | translate }}</label>
-              <input
-                type="text"
-                id="client-name"
-                [value]="clientNameSignal()"
-                (input)="clientNameSignal.set($any($event).target.value)"
-                [placeholder]="'form.clientNamePlaceholder' | translate"
-                class="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text w-full px-4 py-2.5 border text-sm"
-              />
-            </div>
-            <div>
-              <label for="room-no" class="mb-1 block text-xs font-medium text-gray-500">{{ 'form.roomNo' | translate }}</label>
-              <input
-                type="text"
-                id="room-no"
-                [value]="roomNoSignal()"
-                (input)="roomNoSignal.set($any($event).target.value)"
-                [placeholder]="'form.roomNoPlaceholder' | translate"
-                class="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text w-full px-4 py-2.5 border text-sm"
-              />
-            </div>
+            <app-input
+              [label]="'form.clientName' | translate"
+              inputId="client-name"
+              [field]="f.clientName"
+              [placeholder]="'form.clientNamePlaceholder' | translate"
+              inputClass="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
+            <app-input
+              [label]="'form.roomNo' | translate"
+              inputId="room-no"
+              [field]="f.roomNo"
+              [placeholder]="'form.roomNoPlaceholder' | translate"
+              inputClass="rounded-full border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text"
+            />
           </div>
 
           <!-- Driver Note -->
@@ -207,13 +199,13 @@
             [attr.aria-label]="'join.changePhoto' | translate"
           >
            <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M18.1499 1.51233C27.3385 1.51233 34.7876 8.96139 34.7876 18.15C34.7876 27.3387 27.3385 34.7877 18.1499 34.7877C8.96126 34.7877 1.51221 27.3387 1.51221 18.15C1.51221 8.96139 8.96126 1.51233 18.1499 1.51233Z" fill="#00A63E"/>
-<path d="M18.1499 1.51233C27.3385 1.51233 34.7876 8.96139 34.7876 18.15C34.7876 27.3387 27.3385 34.7877 18.1499 34.7877C8.96126 34.7877 1.51221 27.3387 1.51221 18.15C1.51221 8.96139 8.96126 1.51233 18.1499 1.51233Z" stroke="white" stroke-width="3.025"/>
-<path d="M14.6606 14.2234V20.471C14.6606 22.58 16.1856 24.1628 18.3524 24.1628" stroke="white" stroke-width="1.13438" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M22.0438 23.8787V17.6311C22.0438 15.5221 20.5188 13.9393 18.3521 13.9393" stroke="white" stroke-width="1.13438"/>
-<path d="M23.4638 22.4589C23.4638 22.4589 22.4181 23.8788 22.0439 23.8788C21.6698 23.8788 20.624 22.4589 20.624 22.4589" stroke="white" stroke-width="1.13438" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M16.0805 15.3594C16.0805 15.3594 15.0348 13.9395 14.6606 13.9395C14.2864 13.9395 13.2407 15.3594 13.2407 15.3594" stroke="white" stroke-width="1.13438" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+            <path d="M18.1499 1.51233C27.3385 1.51233 34.7876 8.96139 34.7876 18.15C34.7876 27.3387 27.3385 34.7877 18.1499 34.7877C8.96126 34.7877 1.51221 27.3387 1.51221 18.15C1.51221 8.96139 8.96126 1.51233 18.1499 1.51233Z" fill="#00A63E"/>
+            <path d="M18.1499 1.51233C27.3385 1.51233 34.7876 8.96139 34.7876 18.15C34.7876 27.3387 27.3385 34.7877 18.1499 34.7877C8.96126 34.7877 1.51221 27.3387 1.51221 18.15C1.51221 8.96139 8.96126 1.51233 18.1499 1.51233Z" stroke="white" stroke-width="3.025"/>
+            <path d="M14.6606 14.2234V20.471C14.6606 22.58 16.1856 24.1628 18.3524 24.1628" stroke="white" stroke-width="1.13438" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22.0438 23.8787V17.6311C22.0438 15.5221 20.5188 13.9393 18.3521 13.9393" stroke="white" stroke-width="1.13438"/>
+            <path d="M23.4638 22.4589C23.4638 22.4589 22.4181 23.8788 22.0439 23.8788C21.6698 23.8788 20.624 22.4589 20.624 22.4589" stroke="white" stroke-width="1.13438" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16.0805 15.3594C16.0805 15.3594 15.0348 13.9395 14.6606 13.9395C14.2864 13.9395 13.2407 15.3594 13.2407 15.3594" stroke="white" stroke-width="1.13438" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
 
             <input
               type="file"
