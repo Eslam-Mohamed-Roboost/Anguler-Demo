@@ -59,6 +59,8 @@ export const TRANSLATIONS = {
     'join.otherEntityTypePlaceholder': 'Enter Your Company Type here',
     'common.save': 'Save',
     'common.saved': 'Saved',
+    'common.saving': 'Saving...',
+    'common.settling': 'Settling...',
     'common.cancel': 'Cancel',
     'common.loading': 'Loading...',
 
@@ -202,7 +204,7 @@ export const TRANSLATIONS = {
     'riderHistory.viewDetails': 'View trip details',
 
     // ── Financial History page ────────────────────────────────────────────
-    'financial.Payouts': 'Your Payouts are scheduled on the 1st of every month. Payments are completed within 3 business days from the scheduling date. Your Commission ( 2% ) for each trip.',
+    'financial.Payouts': 'Your Payouts are scheduled on the 1st of every month. Payments are completed within 3 business days from the scheduling date. Your Commission for each trip:',
     'financial.FinancialHistory': 'Financial History',
     'riderHistory.title': 'Trips History',
 
@@ -328,6 +330,13 @@ export const TRANSLATIONS = {
     'hotelTrip.markArrived': 'Mark Arrived',
     'hotelTrip.startTrip': 'Start Trip',
     'hotelTrip.completeTrip': 'Complete Trip',
+    'hotelTrip.hotelNote': 'Hotel Note',
+    'hotelTrip.tripId': 'Trip ID',
+    'hotelTrip.driver': 'Driver',
+    'hotelTrip.guest': 'Guest',
+    'hotelTrip.route': 'Route',
+    'hotelTrip.status': 'Status',
+    'hotelTrip.duration': 'Duration',
 
     // ── Hotel Statistics / KPI ────────────────────────────────────────────
     'stats.commissionPercentage': 'Commi. Percentage (%)',
@@ -405,6 +414,8 @@ export const TRANSLATIONS = {
     'join.otherEntityTypePlaceholder': 'أدخل نوع شركتك',
     'common.save': 'حفظ',
     'common.saved': 'محفوظ',
+    'common.saving': 'جاري الحفظ...',
+    'common.settling': 'جاري التسوية...',
     'common.cancel': 'إلغاء',
     'common.loading': 'جاري التحميل...',
 
@@ -674,6 +685,13 @@ export const TRANSLATIONS = {
     'hotelTrip.markArrived': 'تحديد الوصول',
     'hotelTrip.startTrip': 'بدء الرحلة',
     'hotelTrip.completeTrip': 'إنهاء الرحلة',
+    'hotelTrip.hotelNote': 'ملاحظة الفندق',
+    'hotelTrip.tripId': 'معرف الرحلة',
+    'hotelTrip.driver': 'السائق',
+    'hotelTrip.guest': 'الضيف',
+    'hotelTrip.route': 'المسار',
+    'hotelTrip.status': 'الحالة',
+    'hotelTrip.duration': 'المدة',
     'stats.commissionPercentage': 'نسبة العمولة (%)',
     'stats.hotelBalance': 'رصيد الفندق',
     'stats.hotelCommission': 'عمولة الفندق',
@@ -750,6 +768,8 @@ export const TRANSLATIONS = {
     'join.otherEntityTypePlaceholder': 'Geben Sie Ihren Unternehmenstyp ein',
     'common.save': 'Speichern',
     'common.saved': 'Gespeichert',
+    'common.saving': 'Wird gespeichert...',
+    'common.settling': 'Wird abgerechnet...',
     'common.cancel': 'Abbrechen',
     'common.loading': 'Wird geladen...',
 
@@ -1018,6 +1038,13 @@ export const TRANSLATIONS = {
     'hotelTrip.markArrived': 'Ankunft markieren',
     'hotelTrip.startTrip': 'Fahrt starten',
     'hotelTrip.completeTrip': 'Fahrt abschließen',
+    'hotelTrip.hotelNote': 'Hotelnotiz',
+    'hotelTrip.tripId': 'Fahrt-ID',
+    'hotelTrip.driver': 'Fahrer',
+    'hotelTrip.guest': 'Gast',
+    'hotelTrip.route': 'Strecke',
+    'hotelTrip.status': 'Status',
+    'hotelTrip.duration': 'Dauer',
     'stats.commissionPercentage': 'Provision Prozentsatz (%)',
     'stats.hotelBalance': 'Hotelguthaben',
     'stats.hotelCommission': 'Hotelprovision',

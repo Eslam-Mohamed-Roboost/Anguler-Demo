@@ -33,6 +33,7 @@ import { OtpService } from '../services/otp.service';
 import { VehicleTypeService } from '../services/vehicle-type.service';
 import { TripRequestService } from '../services/trip-request.service';
 import { LocationItem, PlaceTypeService, type PlaceType } from '../services/place-type.service';
+import { HotelDetailsService } from '../../../hotel-details/services/hotel-details.service';
 import { CarOption } from '../../../../shared/components/car-selector/car-selector.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { DriverNoteComponent } from '../driver-note/driver-note.component';
@@ -71,6 +72,7 @@ export class BookingComponent extends BaseComponent {
   private readonly vehicleTypeService = inject(VehicleTypeService);
   private readonly tripRequestService = inject(TripRequestService);
   private readonly placeTypeService = inject(PlaceTypeService);
+  private readonly hotelDetailsService = inject(HotelDetailsService);
   private readonly notifications = inject(NotificationStore);
 
   // Signals
@@ -81,8 +83,11 @@ export class BookingComponent extends BaseComponent {
   readonly distnationName = signal<string>('');
   readonly driverNoteChecked = signal(false);
   readonly driverNoteText = signal('');
+  readonly servicePreferencesLoading = signal(false);
+  readonly allServicePreferences = signal<Array<{ serviceId: string; serviceName: string; serviceCode: string }>>([]);
   private vehicleTypesLoaded = false;
   private placeTypesLoaded = false;
+  private servicePreferencesLoaded = false;
 
   constructor() {
     super();
@@ -121,6 +126,7 @@ export class BookingComponent extends BaseComponent {
     this.loadVehicleTypes(50);
     this.loadPlaceTypes();
     this.loadDestinations();
+    this.loadServicePreferences();
 
     // Auto-select Van when many bags is checked
     effect(() => {
@@ -376,24 +382,47 @@ readonly activeTab = signal<'login' | 'register'>('register');
     additionalNote: '',
   });
 
-  protected readonly leftPreferences: { key: keyof Omit<ServicePreferencesModel, 'additionalNote'>; label: string }[] = [
-    { key: 'klimaAnlege', label: 'Klima anlege' },
-    { key: 'chauffeurEnglisch', label: 'Chauffeur spricht Englisch' },
-    { key: 'chauffeurArabisch', label: 'Chauffeur spricht Arabisch' },
-    { key: 'zweiSitzerhoehung', label: 'Zwei sitzerhöhung' },
-    { key: 'chauffeureService', label: 'Chauffeure Service' },
-    { key: 'eineSitzerhoehung', label: 'Eine sitzerhöhung' },
-    { key: 'maxicosi', label: 'Maxicosi' },
-  ];
+  protected readonly leftPreferences = computed(() => {
+    const services = this.allServicePreferences();
+    const half = Math.ceil(services.length / 2);
+    return services.slice(0, half).map(s => ({
+      key: s.serviceCode as keyof Omit<ServicePreferencesModel, 'additionalNote'>,
+      label: s.serviceName,
+      serviceId: s.serviceId,
+    }));
+  });
 
-  protected readonly rightPreferences: { key: keyof Omit<ServicePreferencesModel, 'additionalNote'>; label: string }[] = [
-    { key: 'mitRollator', label: 'Mit rollator' },
-    { key: 'mitRollstuhl', label: 'Mit Rollstuhl' },
-    { key: 'allradantrieb', label: 'Allradantrieb' },
-    { key: 'nichtraucherChauffeure', label: 'Nichtraucher Chauffeure' },
-    { key: 'niedertritt', label: 'Niedertritt' },
-    { key: 'roemerKing', label: 'Römer King' },
-  ];
+  protected readonly rightPreferences = computed(() => {
+    const services = this.allServicePreferences();
+    const half = Math.ceil(services.length / 2);
+    return services.slice(half).map(s => ({
+      key: s.serviceCode as keyof Omit<ServicePreferencesModel, 'additionalNote'>,
+      label: s.serviceName,
+      serviceId: s.serviceId,
+    }));
+  });
+
+  private loadServicePreferences(): void {
+    if (this.servicePreferencesLoaded) return;
+
+    this.servicePreferencesLoading.set(true);
+    this.hotelDetailsService
+      .getServicePreferences(1, 100)
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: (result) => {
+          this.servicePreferencesLoading.set(false);
+          if (result.isSuccess && result.data?.services?.items) {
+            this.allServicePreferences.set(result.data.services.items);
+            this.servicePreferencesLoaded = true;
+          }
+        },
+        error: () => {
+          this.servicePreferencesLoading.set(false);
+          console.warn('Failed to load service preferences');
+        },
+      });
+  }
 
   togglePreference(key: keyof Omit<ServicePreferencesModel, 'additionalNote'>): void {
     this.servicePreferencesModel.update(prev => ({ ...prev, [key]: !prev[key] }));
@@ -769,23 +798,12 @@ readonly activeTab = signal<'login' | 'register'>('register');
     }
 
     this.isRegistering.set(true);
-const preferences = this.servicePreferencesModel();
+    const preferences = this.servicePreferencesModel();
+    const allServices = this.allServicePreferences();
 
-      form.selectedPreferenceIds = [
-        preferences.klimaAnlege && 'Klima anlege',
-        preferences.chauffeurEnglisch && 'Chauffeur Englisch',
-        preferences.chauffeurArabisch && 'Chauffeur Arabisch',
-        preferences.zweiSitzerhoehung && 'Zwei Sitzerhöhung',
-        preferences.chauffeureService && 'Chauffeure Service',
-        preferences.eineSitzerhoehung && 'Eine Sitzerhöhung',
-        preferences.maxicosi && 'Maxicosi',
-        preferences.mitRollator && 'Mit Rollator',
-        preferences.mitRollstuhl && 'Mit Rollstuhl',
-        preferences.allradantrieb && 'Allradantrieb',
-        preferences.nichtraucherChauffeure && 'Nichtraucher Chauffeure',
-        preferences.niedertritt && 'Niedertritt',
-        preferences.roemerKing && 'Roemer King',
-      ].filter(Boolean) as string[];    this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
+    form.selectedPreferenceIds = allServices
+      .filter(service => preferences[service.serviceCode as keyof Omit<ServicePreferencesModel, 'additionalNote'>])
+      .map(service => service.serviceName);    this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isRegistering.set(false);
 

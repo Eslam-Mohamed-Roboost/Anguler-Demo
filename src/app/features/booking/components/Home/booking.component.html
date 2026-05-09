@@ -361,7 +361,7 @@
       <div class="flex gap-7">
         <!-- Left column -->
         <div class="flex flex-1 flex-col gap-3">
-          @for (item of leftPreferences; track item.key) {
+          @for (item of leftPreferences(); track item.serviceId) {
             <label class="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
@@ -376,7 +376,7 @@
 
         <!-- Right column -->
         <div class="flex flex-1 flex-col gap-3">
-          @for (item of rightPreferences; track item.key) {
+          @for (item of rightPreferences(); track item.serviceId) {
             <label class="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"

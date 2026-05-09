@@ -65,7 +65,7 @@
     <!-- Auth info -->
     @if (authService.isAuthenticated()) {
       <span class="hidden text-sm text-gray-600 sm:block dark:text-gray-300">
-        {{ authService.userName() }}
+        {{ hotelName() || authService.userName() }}
       </span>
       <button
         type="button"

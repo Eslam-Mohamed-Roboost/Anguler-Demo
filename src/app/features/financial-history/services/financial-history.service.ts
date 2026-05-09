@@ -4,10 +4,12 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import type { Result } from '../../../core/models/result.model';
 import type { FinancialHistoryResponse, FinancialHistoryQuery } from '../models/financialHestory-model';
+import { AdminApiService } from '../../../core/services/admin-api.service';
 
 @Injectable({ providedIn: 'root' })
 export class FinancialHistoryService {
   private readonly api = inject(ApiService);
+  private readonly AdminApi = inject(AdminApiService);
 
   getFinancialHistory(query: FinancialHistoryQuery): Observable<Result<FinancialHistoryResponse>> {
     let params = new HttpParams()
@@ -23,5 +25,9 @@ export class FinancialHistoryService {
     }
 
     return this.api.get<FinancialHistoryResponse>('/financial-history', params);
+  }
+
+  getGlobalCommission(): Observable<Result<number>> {
+    return this.AdminApi.get<number>('/admin/hotels/global-commission');
   }
 }

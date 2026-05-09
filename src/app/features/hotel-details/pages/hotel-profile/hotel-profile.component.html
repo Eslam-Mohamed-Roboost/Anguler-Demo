@@ -146,7 +146,7 @@
  
 <app-card variant="elevated" class="mb-6">
   <!-- Header -->
-  <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
+  <div class="flex items-center justify-between flex-wrap gap-3 mb-6 px-4 pt-4">
     <div class="flex items-center gap-2.5">
       <div class="size-7 bg-primary rounded-full flex items-center justify-center text-white shrink-0">
         <app-icon name="bank-notes" size="sm" />
@@ -154,11 +154,11 @@
       <h3 class="text-base font-semibold text-body max-sm:text-[15px]">{{ 'withdrawal.title' | translate }}</h3>
     </div>
     <div class="text-sm font-semibold text-warning max-sm:text-cell">
-      Awaiting Payout: {{ amountLabel() }}
+      Awaiting Payout: {{ awaitingAmount() }} CHF
     </div>
   </div>
 
-  <form class="flex flex-col gap-5">
+  <form class="flex flex-col gap-5 px-4 pb-4">
     <!-- Row 1: Account Holder Name | Bank Name -->
     <div class="flex gap-5 items-start max-md:flex-col max-md:gap-4">
       <div class="flex-1 min-w-0">
@@ -170,7 +170,6 @@
           readonly
           aria-readonly="true"
         />
-       
       </div>
       <div class="flex-1 min-w-0">
          <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'withdrawal.bankName' | translate }}</label>
@@ -181,7 +180,6 @@
           readonly
           aria-readonly="true"
         />
-       
       </div>
     </div>
 
@@ -205,12 +203,26 @@
           [value]="withdrawalData().swiftCode"
           readonly
           aria-readonly="true"
-      
         />
       </div>
     </div>
 
-    <!-- Display-only mode; actions are hidden in read-only view -->
+    <!-- Settle Balance Button at bottom right -->
+    <div class="flex justify-end pt-2">
+      <button
+        type="button"
+        (click)="settlePayouts()"
+        [disabled]="settleLoading() || awaitingAmount() === 0"
+        class="px-5 py-2 rounded-btn bg-warning text-white text-sm font-medium hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        [attr.aria-busy]="settleLoading()"
+      >
+        @if (settleLoading()) {
+          <span>{{ 'common.settling' | translate }}</span>
+        } @else {
+          <span>Settle Balance: {{ awaitingAmount() }} CHF</span>
+        }
+      </button>
+    </div>
   </form>
 </app-card>
 
@@ -226,7 +238,7 @@
           <div class="flex items-center justify-center size-8 rounded-full bg-icon-circle-bg text-icon-circle shrink-0">
             <app-icon name="calendar" size="sm" aria-hidden="true" />
           </div>
-          <h3 class="text-[15px] font-semibold text-body m-0">{{ 'riderHistory.title' | translate }}</h3>
+          <h3 class="text-[15px] font-semibold text-body m-0"> {{ 'riderHistory.title' | translate }}</h3>
         </div>
 
         <div class="flex items-center gap-2 flex-wrap max-lg:w-full">
@@ -268,29 +280,20 @@
           trackByKey="id"
         >
          <ng-template cellDef="tripCode" let-row>
-            <div class="flex flex-col gap-0.5">
-              <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.tripCode }}</span>
-              @if (row.tripCode) {
-                <span class="text-xs text-muted">{{ row.tripCode }}</span>
-              }
-            </div>
+            <span class="text-cell font-semibold text-body max-sm:text-xs block">{{ row.tripCode || '--' }}</span>
           </ng-template>
+
+          <!-- Driver Cell -->
+          <ng-template cellDef="driver" let-row>
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
+          </ng-template>
+
           <!-- Guest Cell -->
           <ng-template cellDef="guest" let-row>
             <div class="flex flex-col gap-0.5">
               <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.customerName }}</span>
               @if (row.room) {
                 <span class="text-xs text-muted">{{ row.room }}</span>
-              }
-            </div>
-          </ng-template>
-
-          <!-- Driver Cell -->
-          <ng-template cellDef="driver" let-row>
-            <div class="flex flex-col gap-0.5">
-              <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
-              @if (row.driverId) {
-                <span class="text-xs text-muted">{{ row.driverId }}</span>
               }
             </div>
           </ng-template>
@@ -307,6 +310,23 @@
                 <span class="text-cell text-body-soft">{{ row.dropoffLocation }}</span>
               </div>
             </div>
+          </ng-template>
+
+          <!-- Status Cell -->
+          <ng-template cellDef="status" let-row>
+            <span class="inline-block px-2.5 py-1 rounded-badge text-xs font-medium capitalize"
+              [class.bg-yellow-100]="row.status === 'scheduled'"
+              [class.text-yellow-800]="row.status === 'scheduled'"
+              [class.bg-blue-100]="row.status === 'active'"
+              [class.text-blue-800]="row.status === 'active'"
+              [class.bg-green-100]="row.status === 'completed'"
+              [class.text-green-800]="row.status === 'completed'"
+              [class.bg-red-100]="row.status === 'cancelled'"
+              [class.text-red-800]="row.status === 'cancelled'"
+              [class.bg-gray-100]="row.status === 'pending'"
+              [class.text-gray-800]="row.status === 'pending'">
+              {{ row.status }}
+            </span>
           </ng-template>
 
           <!-- Duration Cell -->

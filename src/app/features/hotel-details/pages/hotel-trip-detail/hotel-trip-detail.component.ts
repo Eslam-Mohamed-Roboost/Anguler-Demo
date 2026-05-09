@@ -38,6 +38,7 @@ export interface TripDetail {
   endDate?: string;
   tripRate?: number;
   status: 'active' | 'completed' | 'cancelled' | 'scheduled' | 'pending';
+  hotelNote?: string;
 }
 
 @Component({
@@ -71,6 +72,9 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   readonly tripId = signal('');
   readonly hotelLoading = signal(false);
   readonly tripLoading = signal(false);
+
+  private tripDetailsLoaded = false;
+  private hotelDetailsLoaded = false;
 
   // Assign driver
   readonly drivers = signal<DriverItem[]>([]);
@@ -142,15 +146,17 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     this.renderer.addClass(document.body, 'hotel-details-active');
     const hotelId = this.route.snapshot.paramMap.get('id');
     const tripId = this.route.snapshot.paramMap.get('tripId');
-    if (tripId) {
-      this.tripId.set(tripId);
-      this.loadTripDetails(tripId);
-    }
-    if (hotelId) {
+
+    // Load hotel by ID from route if available
+    if (hotelId && !this.hotelDetailsLoaded && !this.hotelLoading()) {
       this.hotelId.set(hotelId);
       this.loadHotelById(hotelId);
-    } else {
-      this.loadHotelProfile();
+    }
+
+    // Load trip details
+    if (tripId && !this.tripDetailsLoaded && !this.tripLoading()) {
+      this.tripId.set(tripId);
+      this.loadTripDetails(tripId);
     }
   }
 
@@ -161,6 +167,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (result) => {
           this.hotelLoading.set(false);
+          this.hotelDetailsLoaded = true;
           if (result.isSuccess && result.data) {
             const h = result.data;
             this.hotel.set({
@@ -174,37 +181,12 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
             });
           }
         },
-        error: () => { this.hotelLoading.set(false); },
+        error: () => { this.hotelLoading.set(false); this.hotelDetailsLoaded = true; },
       });
   }
 
   ngOnDestroy(): void {
     this.renderer.removeClass(document.body, 'hotel-details-active');
-  }
-
-  private loadHotelProfile(): void {
-    this.hotelLoading.set(true);
-    this.hotelDetailsService.getMyProfile()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (result) => {
-          this.hotelLoading.set(false);
-          if (result.isSuccess && result.data) {
-            const p = result.data;
-            this.hotelId.set(p.hotelId);
-            this.hotel.set({
-              id: p.hotelId,
-              name: p.hotelName,
-              address: p.address,
-              phone: p.phoneNumber,
-              email: p.email,
-              isBlocked: p.isBlocked ?? false,
-              imageUrl: p.imageUrl ?? '',
-            });
-          }
-        },
-        error: () => { this.hotelLoading.set(false); },
-      });
   }
 
   private loadTripDetails(tripRequestId: string): void {
@@ -214,16 +196,17 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (result) => {
           this.tripLoading.set(false);
+          this.tripDetailsLoaded = true;
           if (result.isSuccess && result.data) {
-            console.log('Trip status:', result.data.unifiedStatus);
             this.rawStatus.set(result.data.unifiedStatus);
             this.trip.set(this.toTripDetail(result.data));
+
             if (this.isAdmin() && result.data.unifiedStatus === 'Pending') {
               this.loadDrivers();
             }
           }
         },
-        error: () => { this.tripLoading.set(false); },
+        error: () => { this.tripLoading.set(false); this.tripDetailsLoaded = true; },
       });
   }
 
@@ -251,6 +234,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       endDate: data.endedAt ?? undefined,
       tripRate: undefined,
       status: statusMap[data.unifiedStatus.toLowerCase()] ?? 'pending',
+      hotelNote: data.notes || data.specialRequests,
     };
   }
 

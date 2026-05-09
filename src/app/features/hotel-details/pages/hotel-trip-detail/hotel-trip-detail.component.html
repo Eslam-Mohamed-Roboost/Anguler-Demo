@@ -16,7 +16,7 @@
     }
     <span class="text-muted-light" aria-hidden="true">/</span>
     <span class="text-warning font-semibold">
-      {{ trip()?.tripId ?? tripId() }}
+      {{ trip()?.tripCode ?? '--' }}
     </span>
   </nav>
 
@@ -33,6 +33,28 @@
   } @else {
     <section class="mb-4">
       <app-hotel-info-card [hotel]="hotel()" (deleteClick)="onHotelDelete()" />
+    </section>
+  }
+
+  <!-- Hotel Note Section -->
+  @if (trip()?.hotelNote) {
+    <section class="mb-4">
+      <div class="rounded-card border border-card-border bg-white overflow-hidden">
+        <!-- Header with divider -->
+        <div class="px-4 py-4 border-b border-card-border">
+          <div class="flex items-center gap-2.5 mb-3">
+            <div class="flex items-center justify-center size-6 rounded-full bg-emerald-100 text-emerald-600 shrink-0">
+              <app-icon name="info" size="sm" aria-hidden="true" />
+            </div>
+            <h3 class="text-base font-semibold text-body m-0">{{ 'hotelTrip.hotelNote' | translate }}</h3>
+          </div>
+        </div>
+
+        <!-- Note Content -->
+        <div class="px-4 py-4 bg-gray-50">
+          <p class="text-sm text-body-soft leading-relaxed m-0">{{ trip()?.hotelNote }}</p>
+        </div>
+      </div>
     </section>
   }
 
@@ -140,7 +162,7 @@
           <div class="grid grid-cols-3 gap-4 gap-x-6 p-4 pb-5 max-md:grid-cols-2 max-sm:grid-cols-1">
             <div class="flex flex-col gap-1">
               <span class="text-xs text-muted font-medium">{{ 'hotelTrip.tripCode' | translate }}</span>
-              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.tripId }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.tripCode || '--' }}</span>
             </div>
             <div class="flex flex-col gap-1">
               <span class="text-xs text-muted font-medium">{{ 'hotelTrip.guestName' | translate }}</span>

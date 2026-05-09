@@ -16,6 +16,7 @@ import type { HotelRequestItem } from '../../../RiderHistory/models/trip-model';
 import { HotelRequestsService, type DriverItem } from '../../services/hotel-requests.service';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { HotelsCommissionsComponent } from '../hotels-commissions/hotels-commissions.component';
 
 @Component({
   selector: 'app-pending-requests',
@@ -27,6 +28,7 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
     IconComponent,
     RouterLink,
     TranslatePipe,
+    HotelsCommissionsComponent,
   ],
   templateUrl: './pending-requests.component.html',
   styleUrl: './pending-requests.component.css',
@@ -54,6 +56,7 @@ export class PendingRequestsComponent extends BaseComponent implements OnInit {
   protected readonly loading = signal(false);
   protected readonly drivers = signal<DriverItem[]>([]);
   protected readonly driversLoading = signal(false);
+  protected readonly showCommissionsModal = signal(false);
 
   ngOnInit(): void {
     this.loadDrivers();

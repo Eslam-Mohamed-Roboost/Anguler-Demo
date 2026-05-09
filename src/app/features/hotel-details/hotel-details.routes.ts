@@ -8,6 +8,14 @@ export const HOTEL_DETAILS_ROUTES: Routes = [
     data: { breadcrumb: 'Hotel Integration' },
   },
   {
+    path: ':id/trip/:tripId',
+    loadComponent: () =>
+      import('./pages/hotel-trip-detail/hotel-trip-detail.component').then(
+        (m) => m.HotelTripDetailComponent
+      ),
+    data: { breadcrumb: 'Trip Detail' },
+  },
+  {
     path: 'trip/:tripId',
     loadComponent: () =>
       import('./pages/hotel-trip-detail/hotel-trip-detail.component').then(

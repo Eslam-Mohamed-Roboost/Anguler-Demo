@@ -1,6 +1,15 @@
 <div class="flex flex-col gap-4">
   <div class="flex items-center justify-between">
     <h2 class="text-lg font-semibold text-gray-800">{{ 'admin.pendingRequests.title' | translate }}</h2>
+    <button
+      type="button"
+      (click)="showCommissionsModal.set(true)"
+      class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-dark transition"
+      aria-label="Set global commission"
+    >
+      <span>%</span>
+      <span>Set Commission</span>
+    </button>
   </div>
 
   <app-data-table
@@ -76,4 +85,11 @@
     [pageSize]="pageSize()"
     (pageChange)="onPageChange($event)"
   />
+
+  <!-- Hotels Commissions Modal -->
+  @if (showCommissionsModal()) {
+    <app-hotels-commissions
+      (closeClick)="showCommissionsModal.set(false)"
+    />
+  }
 </div>

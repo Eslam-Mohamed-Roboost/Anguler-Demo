@@ -31,7 +31,7 @@ export const routes: Routes = [
       },
       {
         path: 'FinancialHistory',
-        canActivate: [authGuard, roleGuard(['passenger'])],
+        canActivate: [authGuard, roleGuard(['passenger', 'admin'])],
         loadChildren: () =>
           import('./features/financial-history/financial-history-routes').then((m) => m.financialHistoryRoutes),
       },

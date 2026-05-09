@@ -50,17 +50,24 @@ export class HotelDetailsService extends ApiService {
   getAllHotels(
     pageNumber: number,
     pageSize: number,
-    hotelName?: string,
+    sortBy: number = 0,
+    status?: string,
+    search?: string,
   ): Observable<Result<HotelsListResponse>> {
     let params = new HttpParams()
+      .set('SortBy', sortBy)
       .set('pageNumber', pageNumber)
       .set('pageSize', pageSize);
 
-    if (hotelName) {
-      params = params.set('HotelName', hotelName);
+    if (status) {
+      params = params.set('status', status);
     }
 
-    return this.get<HotelsListResponse>('/hotels', params);
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.adminApi.get<HotelsListResponse>('/admin/hotels/financials', params);
   }
 
   getHotelById(hotelId: string): Observable<Result<HotelApiItem>> {
@@ -95,11 +102,29 @@ export class HotelDetailsService extends ApiService {
      return this.get<HotelKpiResponse>(`/hotels/${hotelId}/kpi`); 
    }
 
-   blockToggle(hotelId: string): Observable<Result<boolean>> {
-     return this.post<boolean>('', {});
+  toggleBlockHotel(hotelId: string): Observable<Result<boolean>> {
+    return this.adminApi.put<boolean>(`/admin/hotels/${hotelId}/toggle-block`, {});
   }
 
-    updateHotelCommission( commissionRate: number): Observable<Result<void>> {
-      return this.put<void>(`/hotels/commission`, { commissionRate });
+    updateHotelCommission(newCommission: number): Observable<Result<void>> {
+      return this.adminApi.put<void>('/admin/hotels/global-commission', { newCommission });
     }
+
+  getUnsettledPayouts(hotelId: string): Observable<Result<number>> {
+    return this.adminApi.get<number>(`/admin/hotels/payouts/${hotelId}/unsettled`);
+  }
+
+  settleAllPayouts(hotelId: string): Observable<Result<void>> {
+    return this.adminApi.put<void>(`/admin/hotels/payouts/${hotelId}/settle-all`, {});
+  }
+
+  getServicePreferences(
+    pageNumber: number = 1,
+    pageSize: number = 20,
+  ): Observable<Result<{ services: { items: Array<{ serviceId: string; serviceName: string; serviceCode: string }>; pageNumber: number; pageSize: number; totalCount: number; totalPages: number } }>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
+    return this.get('/hotels/service-preferences', params);
+  }
 }

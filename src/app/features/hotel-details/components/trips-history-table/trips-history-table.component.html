@@ -37,14 +37,51 @@
       </div>
 
       <div class="flex gap-2">
-        <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5" type="button" [attr.aria-label]="'hotelDetails.sort' | translate">
-          <app-icon name="chevron-down" size="sm" aria-hidden="true" />
+        <button
+          type="button"
+          (click)="toggleSort()"
+          class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
+          [attr.aria-label]="'hotelDetails.sort' | translate"
+        >
+          <app-icon [name]="sortOrder() === 'asc' ? 'chevron-up' : 'chevron-down'" size="sm" aria-hidden="true" />
           <span>{{ 'hotelDetails.sort' | translate }}</span>
         </button>
-        <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5" type="button" [attr.aria-label]="'hotelDetails.filter' | translate">
-          <app-icon name="filter" size="sm" aria-hidden="true" />
-          <span>{{ 'hotelDetails.filter' | translate }}</span>
-        </button>
+        <div class="relative">
+          <button
+            type="button"
+            (click)="toggleFilterDropdown()"
+            class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
+            [attr.aria-label]="'hotelDetails.filter' | translate"
+          >
+            <app-icon name="filter" size="sm" aria-hidden="true" />
+            <span>{{ 'hotelDetails.filter' | translate }}</span>
+          </button>
+          @if (showFilterDropdown()) {
+            <div class="absolute top-full left-0 mt-1 bg-white border border-card-border rounded-lg shadow-lg z-10 min-w-max">
+              <button
+                type="button"
+                (click)="onStatusFilter('')"
+                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 border-b border-gray-100 transition"
+                [class.bg-primary/10]="statusFilter() === ''"
+              >
+                All Status
+              </button>
+              @for (status of statusOptions(); track status) {
+                <button
+                  type="button"
+                  (click)="onStatusFilter(status)"
+                  class="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition"
+                  [class.bg-primary/10]="statusFilter() === status"
+                  [class.border-b="!$last"]
+                  [class.border-b]="!$last"
+                  [class.border-gray-100]="!$last"
+                >
+                  {{ status }}
+                </button>
+              }
+            </div>
+          }
+        </div>
         <button
           class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
           type="button"
@@ -243,14 +280,19 @@
           </div>
         </ng-template>
       </app-data-table>
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalItems]="totalHotels()"
+        [pageSize]="pageSize()"
+        (pageChange)="onHotelPageChange($event)"
+      />
     </div>
   }
 </app-card>
 
 
 
-<!-- ═══════ Join Us Modal ═══════ -->
-<app-modal [open]="showCommissionsModal()" (closed)="closeCommissionModal()">
+ <app-modal [open]="showCommissionsModal()" (closed)="closeCommissionModal()">
   <!-- Custom header -->
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-2">
@@ -289,61 +331,20 @@
 
  
   <!-- Footer -->
-  <div modal-footer class="flex items-center justify-end gap-3 px-4 pb-4 pt-2">
-    <!-- @if (joinStep() === 1) {
-      <button
-        type="button"
-        (click)="nextStep()"
-        [disabled]="isRegistering()"
-        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        @if (isRegistering()) {
-          <app-icon name="spinner" size="sm" />
-          <span>{{ 'withdrawal.registering' | translate }}</span>
-        } @else {
-          <app-icon name="zap" size="sm" />
-          <span>{{ 'join.next' | translate }}</span>
-        }
-      </button>
-    } @else if (joinStep() === 2) {
-      <button
-        type="button"
-        (click)="prevStep()"
-        class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
-      >
-        {{ 'join.back' | translate }}
-      </button>
-      <button
-        type="button"
-        (click)="nextToWithdrawal()"
-        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90"
-      >
-        <app-icon name="zap" size="sm" />
-        <span>{{ 'join.next' | translate }}</span>
-      </button>
-    } @else {
-      <button
-        type="button"
-        (click)="prevStep()"
-        class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-gray-50"
-      >
-        {{ 'join.back' | translate }}
-      </button>
-      <button
-        (click)="Register()"
-        type="button"
-        [disabled]="isRegistering()"
-        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-90 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        @if (isRegistering()) {
-          <app-icon name="spinner" size="sm" />
-          <span>{{ 'withdrawal.registering' | translate }}</span>
-        } @else {
-          <app-icon name="plus" size="sm" />
-          <span>{{ 'withdrawal.joinNow' | translate }}</span>
-        }
-      </button>
-    } -->
+  <div modal-footer class="flex gap-3 px-4 pb-4 pt-2">
+   
+    <button
+      type="button"
+      (click)="saveCommission()"
+      [disabled]="commissionLoading()"
+      class="flex-1 px-4 py-3.5 rounded-lg bg-green-600 text-white font-bold text-base hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+    >
+      @if (commissionLoading()) {
+        {{ 'common.saving' | translate }}
+      } @else {
+        Save Changes
+      }
+    </button>
   </div>
 </app-modal>
 

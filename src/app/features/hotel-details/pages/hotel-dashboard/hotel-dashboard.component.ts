@@ -15,7 +15,7 @@ import type { HotelRecord, TripRecord } from '../../types/hotel-details.types';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
 import { TripsHistoryTableComponent } from '../../components/trips-history-table/trips-history-table.component';
 import { HotelDetailsService } from '../../services/hotel-details.service';
-import { HotelApiItem, HotelTripItem, DashboardStatsResponse } from '../../models/dto';
+import { HotelFinancialsItem, HotelTripItem, DashboardStatsResponse } from '../../models/dto';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
@@ -51,6 +51,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   readonly searchQuery = signal('');
   readonly currentPage = signal(1);
   readonly pageSize = signal(10);
+  readonly statusFilter = signal('');
 
   readonly filteredTrips = computed(() => this.trips());
 
@@ -121,12 +122,12 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     this.renderer.removeClass(document.body, 'hotel-details-active');
   }
 
-  private loadTrips(): void {
+  private loadTrips(search?: string): void {
     this.loading.set(true);
     this.error.set(null);
 
     this.hotelDetailsService
-      .getHotelTrips(this.currentPage(), this.pageSize(), undefined, this.searchQuery() || undefined)
+      .getHotelTrips(this.currentPage(), this.pageSize(), undefined, search)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
@@ -145,9 +146,9 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadHotels(): void {
+  private loadHotels(sortBy: number = 0, search?: string): void {
     this.hotelDetailsService
-      .getAllHotels(1, 100, this.searchQuery() || undefined)
+      .getAllHotels(1, 100, sortBy, this.statusFilter() || undefined, search)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
@@ -159,18 +160,18 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private toHotelRecord(item: HotelApiItem): HotelRecord {
+  private toHotelRecord(item: HotelFinancialsItem): HotelRecord {
     return {
-      id: item.id,
+      id: item.hotelId,
       hotelName: item.hotelName,
       hotelStatus: item.isActive ? 'active' : 'suspended',
-      totalTrips: 0,
-      hotelComm: `${(item.commissionRate * 100).toFixed(0)}%`,
-      hotelProfits: '--',
-      linesProfits: '--',
-      monthlyDues: '--',
-      settlementStatus: 'in-progress',
-      settlementAmount: '--',
+      totalTrips: item.totalTrips,
+      hotelComm: `${(item.commissionRate * 100).toFixed(2)}%`,
+      hotelProfits: item.hotelProfits.toFixed(2),
+      linesProfits: item.linesProfits.toFixed(2),
+      monthlyDues: item.monthlyDues.toFixed(2),
+      settlementStatus: item.status?.toLowerCase() === 'settled' ? 'settled' : 'in-progress',
+      settlementAmount: item.totalFare.toFixed(2),
     };
   }
 
@@ -202,13 +203,24 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   onSearchChange(query: string): void {
     this.searchQuery.set(query);
     this.currentPage.set(1);
-    this.loadTrips();
-    this.loadHotels();
+    this.loadTrips(query || undefined);
+    this.loadHotels(0, query || undefined);
   }
 
   onPageChange(page: number): void {
     this.currentPage.set(page);
-    this.loadTrips();
+    this.loadTrips(this.searchQuery() || undefined);
+  }
+
+  onSortChange(sortOrder: 'asc' | 'desc'): void {
+    this.currentPage.set(1);
+    this.loadHotels(sortOrder === 'asc' ? 0 : 1);
+  }
+
+  onFilterChange(filter: { status?: string }): void {
+    this.statusFilter.set(filter.status ?? '');
+    this.currentPage.set(1);
+    this.loadHotels();
   }
 
   onTripAction(action: { type: string; tripId: string; hotelId?: string }): void {

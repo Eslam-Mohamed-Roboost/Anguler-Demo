@@ -51,6 +51,8 @@ export interface TripDetailsResponse {
   arrivedAt: string | null;
   durationMinutes: number | null;
   distanceInKm: number | null;
+  notes?: string;
+  specialRequests?: string;
 }
 
 export function getTripStatusLabel(status: string): string {

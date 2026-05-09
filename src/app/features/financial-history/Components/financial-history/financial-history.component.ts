@@ -30,6 +30,8 @@ export class FinancialHistoryComponent extends BaseComponent {
   protected readonly pageSize = signal(10);
   protected readonly totalItems = signal(0);
   protected readonly loading = signal(false);
+  protected readonly globalCommissionLoading = signal(false);
+  protected readonly globalCommission = signal<number | null>(null);
   protected readonly fromDate = signal('');
   protected readonly toDate = signal('');
 
@@ -59,6 +61,7 @@ export class FinancialHistoryComponent extends BaseComponent {
 
   constructor() {
     super();
+    this.loadGlobalCommission();
     effect(() => {
       this.currentPage();
       this.fromDate();
@@ -125,5 +128,23 @@ export class FinancialHistoryComponent extends BaseComponent {
   formatCurrency(amount: number | null | undefined, currency: string): string {
     if (amount == null) return '--';
     return currency ? `${amount.toFixed(2)} ${currency}` : `$${amount.toFixed(2)}`;
+  }
+
+  private loadGlobalCommission(): void {
+    this.globalCommissionLoading.set(true);
+    this.financialHistoryService
+      .getGlobalCommission()
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: (result) => {
+          this.globalCommissionLoading.set(false);
+          if (result.isSuccess && result.data !== null) {
+            this.globalCommission.set(result.data * 100);
+          }
+        },
+        error: () => {
+          this.globalCommissionLoading.set(false);
+        },
+      });
   }
 }

@@ -28,14 +28,19 @@
       </div>
     </div>
 
-    <!-- Delete Button -->
+    <!-- Block/Unblock Button -->
     <button
-      class="shrink-0 size-8 flex items-center justify-center bg-red-100 text-status-cancelled rounded-full cursor-pointer hover:bg-red-200 transition-colors border-none max-md:absolute max-md:top-0 max-md:end-0"
+      class="shrink-0 size-8 flex items-center justify-center transition-colors border-none max-md:absolute max-md:top-0 max-md:end-0 rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      [class]="hotel().isBlocked
+        ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+        : 'bg-red-100 text-status-cancelled hover:bg-red-200'"
       type="button"
       (click)="onBlockClick()"
-      aria-label="Delete hotel"
+      [disabled]="toggleLoading()"
+      [attr.aria-label]="hotel().isBlocked ? 'Unblock hotel' : 'Block hotel'"
+      [attr.aria-busy]="toggleLoading()"
     >
-      <app-icon name="x-circle" size="sm" />
+      <app-icon [name]="hotel().isBlocked ? 'check-circle' : 'x-circle'" size="sm" />
     </button>
   </div>
 </app-card>
@@ -97,19 +102,29 @@
         <!-- Unblock -->
         <button
           type="button"
-          (click)="ToggleBlockhotel()"
-          class="flex-1 rounded-lg bg-primary py-3 text-base font-semibold text-white transition hover:brightness-95"
+          (click)="toggleBlockHotel()"
+          [disabled]="toggleLoading()"
+          class="flex-1 rounded-lg bg-primary py-3 text-base font-semibold text-white transition hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {{ 'btnUnblock' | translate }}
+          @if (toggleLoading()) {
+            {{ 'common.loading' | translate }}
+          } @else {
+            {{ 'btnUnblock' | translate }}
+          }
         </button>
  }
  @else{
   <button
         type="button"
-        (click)="ToggleBlockhotel()"
-        class="flex-1 rounded-lg bg-[#EE3939] py-3 text-base font-semibold text-white transition hover:brightness-95"
+        (click)="toggleBlockHotel()"
+        [disabled]="toggleLoading()"
+        class="flex-1 rounded-lg bg-[#EE3939] py-3 text-base font-semibold text-white transition hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {{ 'btnBlock' | translate }}
+        @if (toggleLoading()) {
+          {{ 'common.loading' | translate }}
+        } @else {
+          {{ 'btnBlock' | translate }}
+        }
       </button>
  }
      

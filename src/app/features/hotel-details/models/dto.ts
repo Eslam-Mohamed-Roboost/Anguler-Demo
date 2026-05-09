@@ -53,8 +53,24 @@ export interface HotelApiItem {
   isBlocked: boolean;
 }
 
+export interface HotelFinancialsItem {
+  hotelId: string;
+  hotelName: string;
+  isActive: boolean;
+  year: number;
+  month: number;
+  totalTrips: number;
+  totalFare: number;
+  commissionRate: number;
+  linesProfits: number;
+  hotelProfits: number;
+  payoutId: string;
+  monthlyDues: number;
+  status: string;
+}
+
 export interface HotelsListResponse {
-  items: HotelApiItem[];
+  items: HotelFinancialsItem[];
   pageNumber: number;
   pageSize: number;
   totalCount: number;
