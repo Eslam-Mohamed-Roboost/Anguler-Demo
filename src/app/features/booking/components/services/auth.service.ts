@@ -10,12 +10,7 @@ import { isSuccess, Result } from '../../../../core/models/result.model';
 export class AuthService extends ApiService{
   
   Register(model: JoinUsFormModel): Observable<Result<any>> {
-    console.log('🏨 Registering new hotel:', {
-      hotelName: model.hotelName,
-      email: model.email,
-      cityId: model.cityId,
-      address: model.address
-    });
+ 
 
     return this.post<any>('/hotels', model).pipe(
       tap(result => {

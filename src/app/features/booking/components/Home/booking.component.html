@@ -221,7 +221,7 @@
         <app-select
           [label]="'join.entityType' | translate"
           inputId="join-entity-type"
-          [field]="jf.entityType"
+          [field]="jf.placeTypeId"
           [options]="placeTypes()"
           optionValue="id"
           optionLabel="name"
@@ -422,14 +422,14 @@
           <app-input
             [label]="'withdrawal.accountHolder' | translate"
             inputId="account-holder"
-            [field]="wf.accountHolderName"
+            [field]="jf.bankAccountNumber"
             [placeholder]="'withdrawal.accountHolderPlaceholder' | translate"
             inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
           />
           <app-select
             [label]="'withdrawal.bankName' | translate"
             inputId="bank-name"
-            [field]="wf.bankName"
+            [field]="jf.bankName"
             [options]="banks"
             [placeholder]="'withdrawal.bankNamePlaceholder' | translate"
             dropdownArrow="custom"
@@ -440,14 +440,14 @@
           <app-input
             [label]="'withdrawal.iban' | translate"
             inputId="iban"
-            [field]="wf.iban"
+            [field]="jf.bankRoutingNumber"
             [placeholder]="'withdrawal.ibanPlaceholder' | translate"
             inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
           />
           <app-input
             [label]="'withdrawal.swiftCode' | translate"
             inputId="swift-code"
-            [field]="wf.swiftCode"
+            [field]="jf.bankRoutingNumber"
             [placeholder]="'withdrawal.swiftCodePlaceholder' | translate"
             inputClass="rounded-lg border-[#A9B4BE] bg-white text-sm"
           />

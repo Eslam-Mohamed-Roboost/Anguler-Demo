@@ -146,6 +146,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     if (this.dataLoaded) return;
     this.dataLoaded = true;
+    if (!this.coreAuth.isAuthenticated()) return;
     this.loadMessages();
     this.notificationCount();
   }

@@ -13,6 +13,7 @@ import {
   NotificationItem,
   NotificationsService,
 } from '../../../core/services/notifications.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 export interface  BillingItem{
   id: string;
@@ -28,6 +29,7 @@ export interface  BillingItem{
 })
 export class BillingPanelComponent {
   private readonly notificationsService = inject(NotificationsService);
+  private readonly authService = inject(AuthService);
 
   readonly isOpen = input<boolean>(false);
   readonly closePanel = output<void>();
@@ -40,7 +42,7 @@ export class BillingPanelComponent {
 
   constructor() {
     effect(() => {
-      if (this.isOpen()) {
+      if (this.isOpen() && this.authService.isAuthenticated()) {
         this.loadNotifications();
         this.UnreadNotificationsCount();
       }

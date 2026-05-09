@@ -8,5 +8,11 @@ export interface JoinUsFormModel {
   email: string;
   password: string;
   locationUrl: string;
+  placeTypeId: string
+  otherPlaceText: string
+  selectedPreferenceIds: string[]
+  bankName: string
+  bankAccountNumber: string
+  bankRoutingNumber: string
 }
  

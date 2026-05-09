@@ -14,6 +14,7 @@ import { AvatarComponent } from '../avatar/avatar.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ChatService } from '../../../features/TripDetails/services/chat.service';
 import { BaseComponent } from '../../base/base.component';
+import { AuthService } from '../../../core/services/auth.service';
 
 export interface Message {
   id: string;
@@ -32,6 +33,7 @@ export interface Message {
 })
 export class MessagePanelComponent extends BaseComponent implements OnInit {
   private readonly chatService = inject(ChatService);
+  private readonly authService = inject(AuthService);
  
   /** Whether the panel is open */
   readonly isOpen = input<boolean>(false);
@@ -113,6 +115,7 @@ export class MessagePanelComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.dataLoaded) return;
+    if (!this.authService.isAuthenticated()) return;
     this.dataLoaded = true;
     this.loadMessages();
     this.loadUnreadCount();

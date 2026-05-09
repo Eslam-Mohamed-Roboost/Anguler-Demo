@@ -341,7 +341,13 @@ readonly activeTab = signal<'login' | 'register'>('register');
     phoneNumber: '',
     email: '',
     password: '',
-    locationUrl: ''
+    locationUrl: '',
+    placeTypeId: '',
+    otherPlaceText: '',
+    selectedPreferenceIds: [],
+    bankName: '',
+    bankAccountNumber: '',
+    bankRoutingNumber: ''
   });
   protected readonly jf = form(this.joinFormModel);
 
@@ -763,8 +769,23 @@ readonly activeTab = signal<'login' | 'register'>('register');
     }
 
     this.isRegistering.set(true);
+const preferences = this.servicePreferencesModel();
 
-    this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
+      form.selectedPreferenceIds = [
+        preferences.klimaAnlege && 'Klima anlege',
+        preferences.chauffeurEnglisch && 'Chauffeur Englisch',
+        preferences.chauffeurArabisch && 'Chauffeur Arabisch',
+        preferences.zweiSitzerhoehung && 'Zwei Sitzerhöhung',
+        preferences.chauffeureService && 'Chauffeure Service',
+        preferences.eineSitzerhoehung && 'Eine Sitzerhöhung',
+        preferences.maxicosi && 'Maxicosi',
+        preferences.mitRollator && 'Mit Rollator',
+        preferences.mitRollstuhl && 'Mit Rollstuhl',
+        preferences.allradantrieb && 'Allradantrieb',
+        preferences.nichtraucherChauffeure && 'Nichtraucher Chauffeure',
+        preferences.niedertritt && 'Niedertritt',
+        preferences.roemerKing && 'Roemer King',
+      ].filter(Boolean) as string[];    this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isRegistering.set(false);
 
@@ -781,7 +802,13 @@ readonly activeTab = signal<'login' | 'register'>('register');
             phoneNumber: '',
             email: '',
             password: '',
-            locationUrl: ''
+            locationUrl: '',
+            placeTypeId: '',
+            otherPlaceText: '',
+            selectedPreferenceIds: [],
+            bankName: '',
+            bankAccountNumber: '',
+            bankRoutingNumber: ''
           });
           
           // Switch to login tab after successful registration
