@@ -473,40 +473,95 @@ readonly activeTab = signal<'login' | 'register'>('register');
   }
 
   nextStep(): void {
-    const form = this.joinFormModel();
-
-    // if (!form.hotelName || !form.cityId || !form.address || !form.phoneNumber || !form.email || !form.password) {
-    // //  this.showError('Please fill in all required fields.');
-    //   return;
-    // }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    console.log('Validating email:', form.email, 'Result:', emailRegex.test(form.email));
-    if (!emailRegex.test(form.email)) {
-      this.showError('Please enter a valid email address.');
-      return;
-    }
-
-    //this.isRegistering.set(true);
-      this.joinStep.set(2);
-    // this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
-    //   next: (result) => {
-    //     this.isRegistering.set(false);
-    //     if (result.isSuccess) {
-    //       this.joinStep.set(2);
-    //     } else {
-    //       this.showError(result.error?.description || 'Registration failed. Please try again.');
-    //     }
-    //   },
-    //   error: () => {
-    //     this.isRegistering.set(false);
-    //     this.showError('An unexpected error occurred. Please try again later.');
-    //   },
-    // });
+    if (!this.validateStep1()) return;
+    this.joinStep.set(2);
   }
 
   nextToWithdrawal(): void {
+    if (!this.validateStep2()) return;
     this.joinStep.set(3);
+  }
+
+  private validateStep1(): boolean {
+    const form = this.joinFormModel();
+
+    if (!form.entityType?.trim()) {
+      this.showError('Please select an entity type.');
+      return false;
+    }
+    if (form.entityType === 'Other' && !form.otherEntityType?.trim()) {
+      this.showError('Please specify your entity type.');
+      return false;
+    }
+    if (!form.placeTypeId?.trim()) {
+      this.showError('Please select a place type.');
+      return false;
+    }
+    if (!form.hotelName?.trim()) {
+      this.showError('Please enter the hotel name.');
+      return false;
+    }
+    if (!form.cityId?.trim()) {
+      this.showError('Please select a city.');
+      return false;
+    }
+    if (!form.address?.trim()) {
+      this.showError('Please enter the address.');
+      return false;
+    }
+    if (!form.phoneNumber?.trim()) {
+      this.showError('Please enter the phone number.');
+      return false;
+    }
+    const phoneRegex = /^[+]?[\d\s\-()]{7,20}$/;
+    if (!phoneRegex.test(form.phoneNumber)) {
+      this.showError('Please enter a valid phone number.');
+      return false;
+    }
+    if (!form.email?.trim()) {
+      this.showError('Please enter the email.');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      this.showError('Please enter a valid email address.');
+      return false;
+    }
+    if (!form.password?.trim()) {
+      this.showError('Please enter a password.');
+      return false;
+    }
+    if (form.password.length < 6) {
+      this.showError('Password must be at least 6 characters.');
+      return false;
+    }
+    return true;
+  }
+
+  private validateStep2(): boolean {
+    const form = this.joinFormModel();
+    if (!form.selectedPreferenceIds || form.selectedPreferenceIds.length === 0) {
+      this.showError('Please select at least one service preference.');
+      return false;
+    }
+    return true;
+  }
+
+  private validateStep3(): boolean {
+    const form = this.joinFormModel();
+    if (!form.bankAccountNumber?.trim()) {
+      this.showError('Please enter the account holder name.');
+      return false;
+    }
+    if (!form.bankName?.trim()) {
+      this.showError('Please select a bank.');
+      return false;
+    }
+    if (!form.bankRoutingNumber?.trim()) {
+      this.showError('Please enter your IBAN / Swift code.');
+      return false;
+    }
+    return true;
   }
 
   prevStep(): void {
@@ -798,34 +853,17 @@ readonly activeTab = signal<'login' | 'register'>('register');
     return options;
   }
   public Register(): void {
+    if (!this.validateStep1()) {
+      this.joinStep.set(1);
+      return;
+    }
+    if (!this.validateStep2()) {
+      this.joinStep.set(2);
+      return;
+    }
+    if (!this.validateStep3()) return;
+
     const form = this.joinFormModel();
-    const requiredFields = ['hotelName', 'cityId', 'address', 'phoneNumber', 'email', 'password'];
-    const missingFields = requiredFields.filter(field => !form[field as keyof JoinUsFormModel]);
-    
-    if (missingFields.length > 0) {
-      this.showError(`Please fill in all required fields: ${missingFields.join(', ')}`);
-      return;
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      this.showError('Please enter a valid email address');
-      return;
-    }
-
-    // Phone validation - more flexible to accept common phone formats
-    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-    if (!phoneRegex.test(form.phoneNumber) || form.phoneNumber.length < 6) {
-      this.showError('Please enter a valid phone number (minimum 6 digits)');
-      return;
-    }
-
-    // City ID validation - should be a valid UUID or select from dropdown
-    if (!form.cityId || form.cityId === '') {
-      this.showError('Please select a city');
-      return;
-    }
 
     this.isRegistering.set(true);
     const preferences = this.servicePreferencesModel();
@@ -833,7 +871,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
     form.selectedPreferenceIds = allServices
       .filter(service => preferences[service.serviceCode as keyof Omit<ServicePreferencesModel, 'additionalNote'>])
-      .map(service => service.serviceName);    this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
+      .map(service => service.serviceId);   
+       this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isRegistering.set(false);
 
