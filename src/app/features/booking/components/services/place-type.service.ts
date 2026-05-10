@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpContext, HttpParams } from '@angular/common/http';
+import { HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api.service';
 import { Result } from '../../../../core/models/result.model';
@@ -25,9 +25,10 @@ export interface LocationsData {
 }
 
 export interface LocationsResponse {
- 
+
     locations: LocationsData;
 }
+
 @Injectable({ providedIn: 'root' })
 export class PlaceTypeService extends ApiService {
   getPlaceTypes(): Observable<Result<PlaceType[]>> {
@@ -35,7 +36,7 @@ export class PlaceTypeService extends ApiService {
     return this.get<PlaceType[]>('/place-types', undefined, context);
   }
 
-    getdestinations(): Observable<Result<LocationsResponse>> {
+  getdestinations(): Observable<Result<LocationsResponse>> {
     const context = new HttpContext().set(SKIP_LOADING, true);
     return this.get<LocationsResponse>('/hotels/drop-off-locations?pageNumber=1&pageSize=50', undefined, context);
   }

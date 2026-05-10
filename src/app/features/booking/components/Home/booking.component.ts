@@ -38,6 +38,7 @@ import { CarOption } from '../../../../shared/components/car-selector/car-select
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { DriverNoteComponent } from '../driver-note/driver-note.component';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { AppConfigService } from '../../../../core/services/app-config.service';
 import { Subscriber } from 'rxjs';
 
 @Component({
@@ -74,6 +75,7 @@ export class BookingComponent extends BaseComponent {
   private readonly placeTypeService = inject(PlaceTypeService);
   private readonly hotelDetailsService = inject(HotelDetailsService);
   private readonly notifications = inject(NotificationStore);
+  private readonly appConfig = inject(AppConfigService);
 
   // Signals
   readonly carTypes = signal<CarOption[]>([]);
@@ -147,6 +149,31 @@ export class BookingComponent extends BaseComponent {
       const text = this.driverNoteText();
       this.formModel.update(m => ({ ...m, addDriverNote: checked, driverNote: text }));
     });
+
+    // Auto-select first destination when data loads
+    effect(() => {
+      const destinations = this.destinationsData();
+      if (destinations && destinations.length > 0 && !this.formModel().destination) {
+        this.formModel.update(m => ({ ...m, destination: destinations[0].id }));
+        this.distnationName.set(destinations[0].name);
+      }
+    });
+
+    // Auto-select first city in join form when data loads
+    effect(() => {
+      const cities = this.cities();
+      if (cities && cities.length > 0 && !this.joinFormModel().cityId) {
+        this.joinFormModel.update(m => ({ ...m, cityId: cities[0].id }));
+      }
+    });
+
+    // Auto-select first entity type when data loads
+    effect(() => {
+      const placeTypes = this.placeTypes();
+      if (placeTypes && placeTypes.length > 0 && !this.joinFormModel().placeTypeId) {
+        this.joinFormModel.update(m => ({ ...m, placeTypeId: placeTypes[0].id }));
+      }
+    });
   }
 
   private static readonly fallbackImages: Record<string, string> = {
@@ -207,6 +234,9 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     const m = (mins % 60).toString().padStart(2, '0');
     return `${h}hr : ${m}min : 00sec`;
   });
+
+  readonly commissionPercentage = computed(() => this.appConfig.commissionPercentage());
+
   readonly isCreatingTrip = signal(false);
   readonly createdTripId = signal<string | null>(null);
   readonly hotelImageSrc = signal<string>('assets/booking/hotel-illustration.png');

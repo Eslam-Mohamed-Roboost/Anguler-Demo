@@ -36,7 +36,8 @@ export const TRANSLATIONS = {
 
     // ── Join Us modal ─────────────────────────────────────────────────────
     'join.title': 'Join Us Now',
-    'join.info': 'Join us today to start earning commissions ( 2% ) on every ride you book for your guests. More bookings, more rewards.',
+    'join.infoPrefix': 'Join us today to start earning commissions (',
+    'join.infoSuffix': ') on every ride you book for your guests. More bookings, more rewards.',
     'join.entityType': 'Entity Type',
     'join.hotelName': 'Hotel Name',
     'join.hotelNamePlaceholder': 'Put Hotel Name here',
@@ -66,7 +67,8 @@ export const TRANSLATIONS = {
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'Withdrawal Details',
-    'withdrawal.warning': 'Secure your payouts. Add your details to receive your 2% commissions automatically on the 1st of every month via our encrypted system.',
+    'withdrawal.warningPrefix': 'Secure your payouts. Add your details to receive your ',
+    'withdrawal.warningSuffix': '% commissions automatically on the 1st of every month via our encrypted system.',
     'withdrawal.accountHolder': 'Account Holder Name',
     'withdrawal.accountHolderPlaceholder': 'Put Account Holder Name',
     'withdrawal.bankName': 'Bank Name',
@@ -179,7 +181,7 @@ export const TRANSLATIONS = {
     'Duration': 'Duration',
     'Fare': 'Fare',
     'Start.End.Date': 'Start / End Date',
-    'Trip.Profit': 'Trip Profit (2%)',
+    'Trip.Profit': 'Trip Profit',
     'Commulative.Profit': 'Cumulative Profit',
     'Actions': 'Actions',
 
@@ -391,7 +393,8 @@ export const TRANSLATIONS = {
 
     // ── Join Us modal ─────────────────────────────────────────────────────
     'join.title': 'انضم إلينا الآن',
-    'join.info': 'انضم إلينا اليوم وابدأ في كسب العمولات ( 2% ) على كل رحلة تحجزها لضيوفك. المزيد من الحجوزات، المزيد من المكافآت.',
+    'join.infoPrefix': 'انضم إلينا اليوم وابدأ في كسب العمولات (',
+    'join.infoSuffix': ') على كل رحلة تحجزها لضيوفك. المزيد من الحجوزات، المزيد من المكافآت.',
     'join.entityType': 'نوع الكيان',
     'join.hotelName': 'اسم الفندق',
     'join.hotelNamePlaceholder': 'أدخل اسم الفندق هنا',
@@ -421,7 +424,8 @@ export const TRANSLATIONS = {
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'تفاصيل السحب',
-    'withdrawal.warning': 'أمّن مدفوعاتك. أضف بياناتك لتلقي عمولاتك البالغة 2% تلقائياً في الأول من كل شهر عبر نظامنا المشفر.',
+    'withdrawal.warningPrefix': 'أمّن مدفوعاتك. أضف بياناتك لتلقي عمولاتك البالغة ',
+    'withdrawal.warningSuffix': '% تلقائياً في الأول من كل شهر عبر نظامنا المشفر.',
     'withdrawal.accountHolder': 'اسم صاحب الحساب',
     'withdrawal.accountHolderPlaceholder': 'أدخل اسم صاحب الحساب',
     'withdrawal.bankName': 'اسم البنك',
@@ -534,7 +538,7 @@ export const TRANSLATIONS = {
     'Duration': 'المدة',
     'Fare': 'الأجرة',
     'Start.End.Date': 'بداية / نهاية',
-    'Trip.Profit': 'ربح الرحلة (2%)',
+    'Trip.Profit': 'ربح الرحلة',
     'Commulative.Profit': 'الربح التراكمي',
     'Actions': 'الإجراءات',
 
@@ -559,7 +563,7 @@ export const TRANSLATIONS = {
     'riderHistory.viewDetails': 'عرض تفاصيل الرحلة',
 
     // ── Financial History page ────────────────────────────────────────────
-    'financial.Payouts': 'يتم جدولة مدفوعاتك في الأول من كل شهر. تكتمل المدفوعات في غضون 3 أيام عمل من تاريخ الجدولة. عمولتك ( 2% ) لكل رحلة.',
+    'financial.Payouts': 'يتم جدولة مدفوعاتك في الأول من كل شهر. تكتمل المدفوعات في غضون 3 أيام عمل من تاريخ الجدولة. عمولتك لكل رحلة',
     'financial.FinancialHistory': 'السجل المالي',
     'riderHistory.title': 'سجل الرحلات',
 
@@ -745,7 +749,8 @@ export const TRANSLATIONS = {
 
     // ── Join Us modal ─────────────────────────────────────────────────────
     'join.title': 'Jetzt beitreten',
-    'join.info': 'Treten Sie uns noch heute bei und verdienen Sie Provisionen ( 2% ) auf jede Fahrt, die Sie für Ihre Gäste buchen. Mehr Buchungen, mehr Belohnungen.',
+    'join.infoPrefix': 'Treten Sie uns noch heute bei und verdienen Sie Provisionen (',
+    'join.infoSuffix': ') auf jede Fahrt, die Sie für Ihre Gäste buchen. Mehr Buchungen, mehr Belohnungen.',
     'join.entityType': 'Entitätstyp',
     'join.hotelName': 'Hotelname',
     'join.hotelNamePlaceholder': 'Hotelnamen hier eingeben',
@@ -775,7 +780,8 @@ export const TRANSLATIONS = {
 
     // ── Withdrawal (join flow) ────────────────────────────────────────────
     'withdrawal.title': 'Auszahlungsdetails',
-    'withdrawal.warning': 'Sichern Sie Ihre Auszahlungen. Fügen Sie Ihre Daten hinzu, um Ihre 2% Provisionen automatisch am 1. jedes Monats über unser verschlüsseltes System zu erhalten.',
+    'withdrawal.warningPrefix': 'Sichern Sie Ihre Auszahlungen. Fügen Sie Ihre Daten hinzu, um Ihre ',
+    'withdrawal.warningSuffix': '% Provisionen automatisch am 1. jedes Monats über unser verschlüsseltes System zu erhalten.',
     'withdrawal.accountHolder': 'Name des Kontoinhabers',
     'withdrawal.accountHolderPlaceholder': 'Name des Kontoinhabers eingeben',
     'withdrawal.bankName': 'Bankname',
@@ -888,7 +894,7 @@ export const TRANSLATIONS = {
     'Duration': 'Dauer',
     'Fare': 'Preis',
     'Start.End.Date': 'Start / Ende',
-    'Trip.Profit': 'Fahrgewinn (2%)',
+    'Trip.Profit': 'Fahrgewinn',
     'Commulative.Profit': 'Kumulativer Gewinn',
     'Actions': 'Aktionen',
 
@@ -913,7 +919,7 @@ export const TRANSLATIONS = {
     'riderHistory.viewDetails': 'Fahrtdetails anzeigen',
 
     // ── Financial History page ────────────────────────────────────────────
-    'financial.Payouts': 'Ihre Auszahlungen sind für den 1. jedes Monats geplant. Zahlungen werden innerhalb von 3 Werktagen abgeschlossen. Ihre Provision ( 2% ) pro Fahrt.',
+    'financial.Payouts': 'Ihre Auszahlungen sind für den 1. jedes Monats geplant. Zahlungen werden innerhalb von 3 Werktagen abgeschlossen. Ihre Provision pro Fahrt',
     'financial.FinancialHistory': 'Finanzhistorie',
     'riderHistory.title': 'Fahrtenhistorie',
 
