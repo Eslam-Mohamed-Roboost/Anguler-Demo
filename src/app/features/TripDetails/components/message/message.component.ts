@@ -11,4 +11,10 @@ import type { ChatMessageItem } from '../../models/chat-message.model';
 })
 export class MessageComponent {
   readonly messages = input.required<ChatMessageItem[]>();
+  readonly currentUserRole = input<string>('');
+
+  protected isMine(msg: ChatMessageItem): boolean {
+    const myRole = this.currentUserRole().toLowerCase();
+    return !!myRole && msg.senderRole?.toLowerCase() === myRole;
+  }
 }

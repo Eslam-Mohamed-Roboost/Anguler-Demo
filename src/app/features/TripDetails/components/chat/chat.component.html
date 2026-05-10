@@ -39,14 +39,12 @@
         <span class="size-6 animate-spin rounded-full border-4 border-gray-200 border-t-primary block"></span>
       </div>
     } @else {
-      <app-message [messages]="conversation()?.messages ?? []" />
+      <app-message [messages]="conversation()?.messages ?? []" [currentUserRole]="currentUserRole()" />
     }
   </div>
 
-  <!-- Input (only when open) -->
-  @if (isOpen()) {
-    <div class="chat-input shrink-0 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 sm:px-6 sm:py-4 md:px-12 lg:px-24 xl:px-44 xl:py-4">
-      <app-chat-input (send)="onSend($event)" />
-    </div>
-  }
+  <!-- Input -->
+  <div class="chat-input shrink-0 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 sm:px-6 sm:py-4 md:px-12 lg:px-24 xl:px-44 xl:py-4">
+    <app-chat-input (send)="onSend($event)" />
+  </div>
 </section>

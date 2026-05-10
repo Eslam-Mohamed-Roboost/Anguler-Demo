@@ -37,6 +37,7 @@ export interface TripDetailsResponse {
   roomNumber: number;
   isHotelRequest: boolean;
   hotelId: string | null;
+  hotel?: HotelInfo | null;
   driver: TripDriver | null;
   estimatedPrice: number;
   actualFare: number | null;

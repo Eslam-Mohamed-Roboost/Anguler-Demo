@@ -42,6 +42,10 @@ export class TripDetailsService extends ApiService {
     return this.put<void>(`/trip-requests/${tripRequestId}/complete`, {});
   }
 
+  cancelTrip(tripRequestId: string): Observable<Result<void>> {
+    return this.put<void>(`/trip-requests/${tripRequestId}/cancel`, {});
+  }
+
   getHotelById(hotelId: string): Observable<Result<HotelInfo>> {
     return this.get<HotelInfo>(`/hotels/${hotelId}`);
   }

@@ -101,14 +101,14 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     const currency = (n: number) => `${n.toLocaleString()} CHF`;
     const count = (n: number) => String(n);
     return [
-      { label: 'Total Hotels', value: count(stats?.totalHotels ?? 0), color: 'orange' },
-      { label: 'Total Revenue', value: currency(stats?.totalRevenue ?? 0), color: 'orange' },
-      { label: 'Hotels Comm.', value: currency(stats?.hotelsCommission ?? 0), color: 'orange' },
-      { label: 'Lines Net Profit', value: currency(stats?.linesNetProfit ?? 0), color: 'orange' },
-      { label: 'Active Trips', value: count(stats?.activeTrips ?? 0), color: 'orange' },
-      { label: 'Scheduled Trips', value: count(stats?.scheduledTrips ?? 0), color: 'orange' },
-      { label: 'Completed Trips', value: count(stats?.completedTrips ?? 0), color: 'orange' },
-      { label: 'Canceled Trips', value: count(stats?.canceledTrips ?? 0), color: 'orange' },
+      { label: 'stats.totalHotels', value: count(stats?.totalHotels ?? 0), color: 'orange' },
+      { label: 'stats.totalRevenue', value: currency(stats?.totalRevenue ?? 0), color: 'orange' },
+      { label: 'stats.hotelsCommission', value: currency(stats?.hotelsCommission ?? 0), color: 'orange' },
+      { label: 'stats.linesNetProfit', value: currency(stats?.linesNetProfit ?? 0), color: 'orange' },
+      { label: 'stats.activeTrips', value: count(stats?.activeTrips ?? 0), color: 'orange' },
+      { label: 'stats.scheduledTrips', value: count(stats?.scheduledTrips ?? 0), color: 'orange' },
+      { label: 'stats.completedTrips', value: count(stats?.completedTrips ?? 0), color: 'orange' },
+      { label: 'stats.canceledTrips', value: count(stats?.canceledTrips ?? 0), color: 'orange' },
     ];
   }
 
@@ -180,7 +180,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
     return {
       id: item.tripRequestId,
-      hotelId,
+      hotelId: item.hotelId ?? hotelId,
       hotelName: item.hotelName,
       tripCode: item.tripCode,
       customerName: item.guestName,
@@ -188,7 +188,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       dropoffLocation: item.endLocation.address,
       date: item.startedAt,
       endDate: item.endedAt,
-      status: item.status.toLowerCase() as TripRecord['status'],
+      status: (item.status?.toLowerCase() ?? 'pending') as TripRecord['status'],
       price: item.fare ?? 0,
       currency: item.currency,
       distance: item.distanceInKm,
@@ -228,8 +228,6 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       const hId = action.hotelId ?? this.hotelId();
       if (hId) {
         this.router.navigate(['/hotel-details', hId, 'trip', action.tripId]);
-      } else {
-        this.router.navigate(['/hotel-details', 'trip', action.tripId]);
       }
     }
   }

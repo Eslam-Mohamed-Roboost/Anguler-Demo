@@ -24,6 +24,7 @@ import { SkeletonBlockComponent } from '../../../../shared/components/skeleton/s
 import { AuthService } from '../../../../core/services/auth.service';
 import { HotelRequestsService, type DriverItem } from '../../../admin-dashboard/services/hotel-requests.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { AppConfigService } from '../../../../core/services/app-config.service';
 
 export interface TripDetail {
   tripId: string;
@@ -39,6 +40,7 @@ export interface TripDetail {
   tripRate?: number;
   status: 'active' | 'completed' | 'cancelled' | 'scheduled' | 'pending';
   hotelNote?: string;
+  carType: string;
 }
 
 @Component({
@@ -65,13 +67,16 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   private readonly hotelRequestsService = inject(HotelRequestsService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationStore);
+  private readonly appConfig = inject(AppConfigService);
 
   readonly isAdmin = computed(() => this.authService.hasRole('admin'));
+  readonly commissionPercentage = computed(() => this.appConfig.commissionPercentage());
 
   readonly hotelId = signal('');
   readonly tripId = signal('');
   readonly hotelLoading = signal(false);
   readonly tripLoading = signal(false);
+  readonly chatHasError = signal(false);
 
   private tripDetailsLoaded = false;
   private hotelDetailsLoaded = false;
@@ -142,6 +147,16 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
 
+  readonly canCancelTrip = computed(() => {
+    const status = this.rawStatus().toLowerCase();
+    return status === 'pending' || status === 'scheduled';
+  });
+
+  readonly canEndTrip = computed(() => {
+    const status = this.rawStatus().toLowerCase();
+    return status === 'accepted' || status === 'inprogress' || status === 'arrived';
+  });
+
   ngOnInit(): void {
     this.renderer.addClass(document.body, 'hotel-details-active');
     const hotelId = this.route.snapshot.paramMap.get('id');
@@ -201,6 +216,26 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
             this.rawStatus.set(result.data.unifiedStatus);
             this.trip.set(this.toTripDetail(result.data));
 
+            // If hotel data is nested in trip response, use it directly
+            if (result.data.hotel && !this.hotelDetailsLoaded) {
+              const h = result.data.hotel;
+              this.hotelId.set(h.id);
+              this.hotel.set({
+                id: h.id,
+                name: h.hotelName,
+                address: h.address,
+                phone: h.phoneNumber,
+                email: h.email,
+                imageUrl: h.logoUrl ?? '',
+                isBlocked: false,
+              });
+              this.hotelDetailsLoaded = true;
+            } else if (result.data.hotelId && !this.hotelDetailsLoaded && !this.hotelLoading()) {
+              // Otherwise, load hotel by ID
+              this.hotelId.set(result.data.hotelId);
+              this.loadHotelById(result.data.hotelId);
+            }
+
             if (this.isAdmin() && result.data.unifiedStatus === 'Pending') {
               this.loadDrivers();
             }
@@ -235,6 +270,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       tripRate: undefined,
       status: statusMap[data.unifiedStatus.toLowerCase()] ?? 'pending',
       hotelNote: data.notes || data.specialRequests,
+      carType: 'Van',
     };
   }
 
@@ -338,6 +374,27 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
         },
         error: () => this.actionLoading.set(false),
       });
+  }
+
+  protected cancelTrip(): void {
+    const tripRequestId = this.tripId();
+    if (!tripRequestId || this.actionLoading()) return;
+
+    this.actionLoading.set(true);
+    this.tripDetailsService.cancelTrip(tripRequestId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notifications.showSuccess('Trip cancelled successfully.');
+          this.loadTripDetails(tripRequestId);
+          this.actionLoading.set(false);
+        },
+        error: () => this.actionLoading.set(false),
+      });
+  }
+
+  protected endTrip(): void {
+    this.completeTrip();
   }
 
   onHotelDelete(): void {}

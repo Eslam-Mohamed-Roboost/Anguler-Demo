@@ -233,7 +233,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   private updateTripStats(items: HotelTripItem[]): void {
     const counts = { active: 0, scheduled: 0, completed: 0, cancelled: 0 };
     for (const t of items) {
-      const s = t.status.toLowerCase();
+      const s = t.status?.toLowerCase() ?? '';
       if (s === 'active') counts.active++;
       else if (s === 'scheduled') counts.scheduled++;
       else if (s === 'completed') counts.completed++;
@@ -261,7 +261,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       dropoffLocation: item.endLocation.address,
       date: item.startedAt,
       endDate: item.endedAt,
-      status: item.status.toLowerCase() as TripRecord['status'],
+      status: (item.status?.toLowerCase() ?? 'pending') as TripRecord['status'],
       price: item.fare ?? 0,
       currency: item.currency,
       distance: item.distanceInKm,

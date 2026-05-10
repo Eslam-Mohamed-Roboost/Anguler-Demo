@@ -1,6 +1,7 @@
 
 export interface HotelTripItem {
   tripRequestId: string;
+  hotelId?: string;
   hotelName:string;
   tripCode: string;
   guestName: string;
