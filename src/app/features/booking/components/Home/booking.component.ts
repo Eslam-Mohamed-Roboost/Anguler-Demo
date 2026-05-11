@@ -234,12 +234,18 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     const m = (mins % 60).toString().padStart(2, '0');
     return `${h}hr : ${m}min : 00sec`;
   });
+  readonly isCarSelectorDisabled = computed(() => this.formModel().manyBags);
 
   readonly commissionPercentage = computed(() => this.appConfig.commissionPercentage());
 
   readonly isCreatingTrip = signal(false);
   readonly createdTripId = signal<string | null>(null);
   readonly hotelImageSrc = signal<string>('assets/booking/hotel-illustration.png');
+  readonly isOtherPlaceTypeSelected = computed(() => {
+    const selectedPlaceTypeId = this.joinFormModel().placeTypeId;
+    const otherPlaceType = this.placeTypes().find(p => p.name.toLowerCase() === 'other');
+    return selectedPlaceTypeId === otherPlaceType?.id && !!otherPlaceType;
+  });
 
   onHotelImageChange(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -273,6 +279,11 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   protected editOtherEntityType(): void {
     this.joinFormModel.update(m => ({ ...m, otherEntityType: this.savedOtherEntityType() }));
     this.savedOtherEntityType.set('');
+  }
+
+  protected onOtherEntityTypeInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.joinFormModel.update(m => ({ ...m, otherEntityType: input.value }));
   }
 
   protected readonly signInFormModel = signal({ email: '', password: '' });
@@ -540,10 +551,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   private validateStep2(): boolean {
     const form = this.joinFormModel();
-    if (!form.selectedPreferenceIds || form.selectedPreferenceIds.length === 0) {
-      this.showError('Please select at least one service preference.');
-      return false;
-    }
+ 
     return true;
   }
 

@@ -1,6 +1,6 @@
 <div [attr.role]="loading() ? undefined : 'radiogroup'" [attr.aria-label]="loading() ? undefined : label()">
   @if (label()) {
-    <p class="mb-2 text-sm font-medium text-gray-700">{{ label() }}</p>
+    <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ label() }}</p>
   }
 
   @if (loading()) {
@@ -10,35 +10,48 @@
         <div class="flex flex-col items-center gap-1 rounded-lg border-2 border-transparent p-2">
           <div class="h-9 w-16 animate-pulse rounded bg-gray-200"></div>
           <div class="h-3 w-10 animate-pulse rounded bg-gray-200"></div>
-          <div class="h-2.5 w-8 animate-pulse rounded bg-gray-100"></div>
+          <div class="h-2.5 w-8 animate-pulse rounded bg-gray-100 dark:bg-gray-600"></div>
         </div>
       }
     </div>
   } @else {
     <div class="grid grid-cols-3 gap-2 sm:grid-cols-6">
       @for (car of options(); track car.id) {
-        <button
-          type="button"
-          role="radio"
-          (click)="selectCar(car.id)"
-          class="flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition"
-          [class]="selected() === car.id
-            ? 'border-primary bg-white shadow-sm'
-            : 'border-transparent hover:border-gray-200'"
-          [attr.aria-checked]="selected() === car.id"
-        >
-          <img [src]="car.image" [alt]="car.label" class="h-9 w-16 object-contain" />
-          <span
-            class="text-xs font-medium"
-            [class]="selected() === car.id ? 'text-primary' : 'text-gray-500'"
-          >{{ car.label }}</span>
-          <!-- @if (car.price != null) {
+        <div class="relative">
+          <button
+            type="button"
+            role="radio"
+            (click)="selectCar(car.id)"
+            [disabled]="disabled()"
+            class="flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition w-full"
+            [class]="disabled()
+              ? selected() === car.id
+                ? 'border-2 border-success shadow-lg'
+                : 'border-2 border-gray-300 opacity-60 cursor-not-allowed'
+              : selected() === car.id
+                ? 'border-2 border-primary shadow-md'
+                : 'border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-500'"
+            [attr.aria-checked]="selected() === car.id"
+            [attr.aria-disabled]="disabled()"
+          >
+            <img [src]="car.image" [alt]="car.label" class="h-9 w-16 object-contain" />
             <span
-              class="text-[10px] font-semibold"
-              [class]="selected() === car.id ? 'text-primary' : 'text-gray-400'"
-            >{{ car.price }} CHF</span>
-          } -->
-        </button>
+              class="text-xs font-medium"
+              [class]="selected() === car.id
+                ? disabled()
+                  ? 'text-success font-bold'
+                  : 'text-primary'
+                : 'text-gray-500'"
+            >{{ car.label }}</span>
+          </button>
+          @if (disabled() && selected() === car.id) {
+            <div class="absolute -top-2 -right-2 bg-success rounded-full p-1 shadow-md">
+              <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          }
+        </div>
       }
     </div>
   }

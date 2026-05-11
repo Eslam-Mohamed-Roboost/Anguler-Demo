@@ -72,9 +72,21 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   /** Hotel name to display in profile pill */
   readonly hotelName = input('Salam Hotel');
 
+  /** User name for admin display */
+  readonly userName = input('');
+
+  /** User role for admin display */
+  readonly userRole = input('');
+
   /** Notification counts */
   readonly callCount = signal(3);
   readonly bellCount = signal(3);
+
+  /** Check if user is admin */
+  readonly isAdmin = computed(() => {
+    const role = this.userRole()?.toLowerCase() || '';
+    return role === 'admin' || role === 'super admin';
+  });
 
   /** Panel states */
   protected readonly messagePanelOpen = signal(false);

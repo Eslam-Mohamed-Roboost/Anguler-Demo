@@ -13,23 +13,6 @@
         </span>
       }
     </h3>
-
-    @if (isOpen()) {
-      <button
-        type="button"
-        (click)="closeConversation()"
-        [disabled]="closeLoading()"
-        class="flex items-center gap-1.5 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
-        aria-label="Close conversation"
-      >
-        @if (closeLoading()) {
-          <span class="size-3 animate-spin rounded-full border-2 border-red-300 border-t-red-600 block"></span>
-        } @else {
-          <app-icon name="close" size="xs" />
-        }
-        Close
-      </button>
-    }
   </div>
 
   <!-- Messages -->

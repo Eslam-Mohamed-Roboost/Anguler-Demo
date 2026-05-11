@@ -3,12 +3,10 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* Enable class-based dark mode (.dark on <html>) */
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
   --font-sans: "Poppins", sans-serif;
 
+  /* ── Light mode colors ────────────────────────────── */
   --color-primary: #00A63E;
   --color-primary-text: #223548;
   --color-warning: #E76500;
