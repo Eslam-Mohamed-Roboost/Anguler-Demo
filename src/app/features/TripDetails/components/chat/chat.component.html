@@ -5,11 +5,11 @@
       <span class="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
         <app-icon name="chat-bubble" size="sm" />
       </span>
-      Trip Conversation
+      {{ 'tripDetails.chatConversation' | translate }}
       @if (conversation()?.status) {
         <span class="text-xs font-medium px-2 py-0.5 rounded-full"
           [class]="conversation()?.status === 'Open' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'">
-          {{ conversation()?.status }}
+          {{ conversationStatusKey() | translate }}
         </span>
       }
     </h3>

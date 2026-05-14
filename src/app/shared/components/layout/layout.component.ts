@@ -2,6 +2,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   input,
   signal,
@@ -20,6 +21,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { NavbarBookingComponent } from '../navbar-booking/navbar-booking.component';
 import { JoinUsService } from '../../../features/booking/components/services/join-us.service';
 import { LoginService } from '../../../features/booking/components/services/login.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 const ROUTE_ANIMATION = trigger('routeAnimation', [
   transition('* <=> *', [
@@ -48,14 +50,32 @@ const ROUTE_ANIMATION = trigger('routeAnimation', [
 export class LayoutComponent {
   private readonly joinUsService = inject(JoinUsService);
   private readonly loginService = inject(LoginService);
+  private readonly languageService = inject(LanguageService);
 
   /** Type of navbar to display: 'default' or 'booking' */
   readonly navbarStyle = input<'default' | 'booking'>('default');
 
   protected readonly sidebarOpen = signal(false);
+  protected readonly routeOutletVisible = signal(true);
 
   /** Whether the user is authenticated (for booking navbar) */
   protected readonly isAuthenticated = this.loginService.isLoggedIn;
+
+  constructor() {
+    let initialized = false;
+
+    effect(() => {
+      this.languageService.refreshVersion();
+
+      if (!initialized) {
+        initialized = true;
+        return;
+      }
+
+      this.routeOutletVisible.set(false);
+      queueMicrotask(() => this.routeOutletVisible.set(true));
+    });
+  }
 
   toggleSidebar(): void {
     this.sidebarOpen.update((v) => !v);

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, OnInit, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { getTripStatusLabel, getTripStatusVariant, HotelInfo, TripDetailsResponse } from '../../models/trip-details.model';
@@ -7,11 +8,14 @@ import { TripDetailsService } from '../../services/trip-details.service';
 import { FeedbackService } from '../../services/feedback.service';
 import { HotelRequestsService, type DriverItem } from '../../../admin-dashboard/services/hotel-requests.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import type { TranslationKey } from '../../../../core/i18n/translations';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-details',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BadgeComponent, IconComponent],
+  imports: [BadgeComponent, IconComponent, TranslatePipe],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css',
 })
@@ -21,6 +25,8 @@ export class DetailsComponent implements OnInit {
   private readonly hotelRequestsService = inject(HotelRequestsService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationStore);
+  private readonly language = inject(LanguageService);
+  private readonly router = inject(Router);
 
   readonly data = input.required<TripDetailsResponse>();
   readonly tripRequestId = input.required<string>();
@@ -30,9 +36,15 @@ export class DetailsComponent implements OnInit {
   readonly statusChanged = output<void>();
 
   protected readonly statusLabel = computed(() => getTripStatusLabel(this.data().unifiedStatus));
+  protected readonly statusLabelKey = computed(() => this.statusTranslationKey(this.statusLabel()));
   protected readonly statusVariant = computed(() => getTripStatusVariant(this.data().unifiedStatus));
+  protected readonly canShowScheduledActions = computed(() =>
+    this.data().isScheduled && !this.isCancelledStatus(this.data().unifiedStatus)
+  );
 
   protected readonly actionLoading = signal(false);
+  protected readonly showScheduledMenu = signal(false);
+  protected readonly cancelLoading = signal(false);
   protected readonly feedbackRating = signal(0);
   protected readonly feedbackComment = signal('');
   protected readonly feedbackLoading = signal(false);
@@ -107,6 +119,49 @@ export class DetailsComponent implements OnInit {
     });
   }
 
+  protected toggleScheduledMenu(): void {
+    this.showScheduledMenu.update(open => !open);
+  }
+
+  protected closeScheduledMenu(): void {
+    this.showScheduledMenu.set(false);
+  }
+
+  protected openRescheduleModal(): void {
+    this.closeScheduledMenu();
+    this.router.navigate(['/home'], {
+      queryParams: {
+        rescheduleTripRequestId: this.tripRequestId(),
+        scheduledAt: this.data().scheduledAt,
+      },
+    });
+  }
+
+  protected cancelTrip(): void {
+    const tripRequestId = this.tripRequestId();
+    if (!tripRequestId || this.cancelLoading()) return;
+
+    this.closeScheduledMenu();
+    this.cancelLoading.set(true);
+    this.tripDetailsService.cancelTrip(tripRequestId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.cancelLoading.set(false);
+          if (result.isSuccess) {
+            this.notifications.showSuccess(this.language.translate('tripDetails.cancelSuccess'));
+            this.statusChanged.emit();
+          } else {
+            this.notifications.showError(result.error?.description ?? this.language.translate('tripDetails.cancelError'));
+          }
+        },
+        error: () => {
+          this.cancelLoading.set(false);
+          this.notifications.showError(this.language.translate('tripDetails.cancelError'));
+        },
+      });
+  }
+
   protected submitFeedback(): void {
     const tripId = this.data().tripId;
     const rating = this.feedbackRating();
@@ -126,6 +181,42 @@ export class DetailsComponent implements OnInit {
 
   protected setRating(stars: number): void {
     this.feedbackRating.set(stars);
+  }
+
+  protected ratingUnitKey(stars: number): TranslationKey {
+    return stars === 1 ? 'tripDetails.ratingStar' : 'tripDetails.ratingStars';
+  }
+
+  protected formatScheduledAt(value: string | null): string {
+    if (!value) return '--';
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(new Date(value));
+  }
+
+  protected formatDateTime(value: string | null): string {
+    if (!value) return '--';
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(new Date(value));
+  }
+
+  private statusTranslationKey(status: string): TranslationKey {
+    return `tripDetails.status.${status.replace(/\s+/g, '')}` as TranslationKey;
+  }
+
+  private isCancelledStatus(status: string): boolean {
+    return status.toLowerCase().includes('cancel');
   }
 
   protected readonly stars = [1, 2, 3, 4, 5];

@@ -78,13 +78,29 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   /** User role for admin display */
   readonly userRole = input('');
 
+  readonly currentUserRole = computed(() => {
+    const inputRole = this.userRole().trim();
+    const authRole = this.coreAuth.userRoles()[0] ?? '';
+    const loginRole = this.loginService.isLoggedIn() ? this.loginService.getRole() ?? '' : '';
+    const role = inputRole || authRole || loginRole;
+
+    return this.formatRole(role);
+  });
+
+  readonly currentUserName = computed(() => {
+    const name = this.userName().trim() || this.coreAuth.userName().trim();
+
+    return name || this.hotelName().trim() || 'Account';
+  });
+
   /** Notification counts */
   readonly callCount = signal(3);
   readonly bellCount = signal(3);
 
   /** Check if user is admin */
   readonly isAdmin = computed(() => {
-    const role = this.userRole()?.toLowerCase() || '';
+    const role = this.currentUserRole().toLowerCase();
+
     return role === 'admin' || role === 'super admin';
   });
 
@@ -284,4 +300,15 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
 
   /** Handle view bill */
   protected onViewBill(_item: BillingItem): void {}
+
+  private formatRole(role: string): string {
+    const normalizedRole = role.trim().toLowerCase().replace(/[-_]+/g, ' ');
+
+    if (normalizedRole === 'super admin') return 'Super Admin';
+    if (normalizedRole === 'admin') return 'Admin';
+    if (normalizedRole === 'passenger') return 'Passenger';
+    if (normalizedRole === 'hotel') return 'Hotel';
+
+    return role.trim();
+  }
 }

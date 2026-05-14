@@ -6,7 +6,7 @@ import { TranslationKey } from '../../core/i18n/translations';
 export class TranslatePipe implements PipeTransform {
   private readonly langService = inject(LanguageService);
 
-  transform(key: TranslationKey): string {
+  transform(key: TranslationKey | string): string {
     return this.langService.translate(key);
   }
 }

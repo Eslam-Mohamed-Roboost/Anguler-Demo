@@ -116,7 +116,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
             this.withdrawalModel.set({
               bankName: result.data.bankName,
               accountNumber: result.data.bankAccountNumber,
-              accountHolderName: result.data.accountHolderName,
+              accountHolderName: result.data.bankAccountHolderName ?? result.data.accountHolderName,
               swiftCode: result.data.bankRoutingName,
             });
           } else {
@@ -221,6 +221,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
     this.profileService
       .updateWithdrawalDetails({
+        bankAccountHolderName: model.accountHolderName,
         bankName: model.bankName,
         bankAccountNumber: model.accountNumber,
         bankRoutingNumber: model.swiftCode,

@@ -24,6 +24,7 @@ export interface HotelProfileData {
 }
 
 export interface WithdrawalDetailsData {
+  bankAccountHolderName?: string;
   accountHolderName: string;
   bankName: string;
   bankAccountNumber: string;
@@ -32,6 +33,7 @@ export interface WithdrawalDetailsData {
 }
 
 export interface WithdrawalDetailsUpdate {
+  bankAccountHolderName: string;
   bankName: string;
   bankAccountNumber: string;
   bankRoutingNumber: string;

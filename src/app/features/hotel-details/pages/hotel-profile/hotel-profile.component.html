@@ -211,7 +211,7 @@
     <div class="flex justify-end pt-2">
       <button
         type="button"
-        (click)="settlePayouts()"
+        (click)="openSettleConfirmModal()"
         [disabled]="settleLoading() || awaitingAmount() === 0"
         class="px-5 py-2 rounded-btn bg-warning text-white text-sm font-medium hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition"
         [attr.aria-busy]="settleLoading()"
@@ -228,6 +228,56 @@
 
     }
   </section>
+
+  <app-modal
+    [open]="showSettleConfirmModal()"
+    [closeOnBackdrop]="!settleLoading()"
+    (closed)="closeSettleConfirmModal()"
+  >
+    <div class="flex flex-col items-center px-2 pb-1 pt-2 text-center">
+      <div class="mb-4 flex size-14 items-center justify-center rounded-full bg-[#FFF4E8] text-warning">
+        <app-icon name="bank-notes" size="lg" aria-hidden="true" />
+      </div>
+      <h2 class="mb-2 text-xl font-bold text-[#223548] dark:text-white">
+        {{ 'settleConfirm.title' | translate }}
+      </h2>
+      <p class="max-w-[360px] text-sm leading-6 text-[#5B738B] dark:text-gray-300">
+        {{ 'settleConfirm.description' | translate }}
+      </p>
+      <div class="mt-5 w-full rounded-2xl border border-[#F4D8BE] bg-[#FFF8F1] px-4 py-3">
+        <p class="mb-1 text-xs font-medium text-[#5B738B]">
+          {{ 'settleConfirm.amountLabel' | translate }}
+        </p>
+        <p class="text-2xl font-bold text-warning">
+          {{ awaitingAmountLabel() }}
+        </p>
+      </div>
+    </div>
+
+    <div modal-footer class="flex gap-3 px-4 pb-4 pt-2">
+      <button
+        type="button"
+        class="flex-1 rounded-xl border border-[#D8E0E8] bg-white px-4 py-3 text-sm font-semibold text-[#223548] transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+        [disabled]="settleLoading()"
+        (click)="closeSettleConfirmModal()"
+      >
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button
+        type="button"
+        class="flex-1 rounded-xl bg-warning px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+        [disabled]="settleLoading()"
+        [attr.aria-busy]="settleLoading()"
+        (click)="settlePayouts()"
+      >
+        @if (settleLoading()) {
+          <span>{{ 'common.settling' | translate }}</span>
+        } @else {
+          <span>{{ 'settleConfirm.confirmButton' | translate }}</span>
+        }
+      </button>
+    </div>
+  </app-modal>
 
   <!-- Trips History -->
   <section class="mb-4">

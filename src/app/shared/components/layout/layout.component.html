@@ -22,11 +22,15 @@
     <!-- Main content -->
     @if (navbarStyle() === 'booking') {
       <div class="flex-1 overflow-hidden font-sans">
-        <router-outlet />
+        @if (routeOutletVisible()) {
+          <router-outlet />
+        }
       </div>
     } @else {
       <main id="main-content" class="flex-1 overflow-y-auto" @routeAnimation>
-        <router-outlet />
+        @if (routeOutletVisible()) {
+          <router-outlet />
+        }
       </main>
     }
   </div>

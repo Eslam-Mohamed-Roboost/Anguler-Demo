@@ -135,7 +135,7 @@
               <img src="assets/booking/icon-app-store.svg" alt="App Store" class="size-5 sm:size-6" />
             </a>
           </div>
-          <img src="assets/booking/qr-code.png" alt="QR Code" class="size-12 rounded shadow-md sm:size-14" />
+          <!-- <img src="assets/booking/qr-code.png" alt="QR Code" class="size-12 rounded shadow-md sm:size-14" /> -->
         </div>
       </div>
     </div>
@@ -288,10 +288,10 @@
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <app-input
-            [label]="'join.hotelName' | translate"
+            [label]="entityNameLabel()"
             inputId="hotel-name"
             [field]="jf.hotelName"
-            [placeholder]="'join.hotelNamePlaceholder' | translate"
+            [placeholder]="entityNamePlaceholder()"
             inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
           />
           <app-select
@@ -411,7 +411,7 @@
           <app-input
             [label]="'withdrawal.accountHolder' | translate"
             inputId="account-holder"
-            [field]="jf.bankAccountNumber"
+            [field]="jf.bankAccountHolderName"
             [placeholder]="'withdrawal.accountHolderPlaceholder' | translate"
             inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
           />
@@ -419,7 +419,9 @@
             [label]="'withdrawal.bankName' | translate"
             inputId="bank-name"
             [field]="jf.bankName"
-            [options]="banks"
+            [options]="banks()"
+            optionValue="name"
+            optionLabel="name"
             [placeholder]="'withdrawal.bankNamePlaceholder' | translate"
             dropdownArrow="custom"
             selectClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
@@ -429,7 +431,7 @@
           <app-input
             [label]="'withdrawal.iban' | translate"
             inputId="iban"
-            [field]="jf.bankRoutingNumber"
+            [field]="jf.bankAccountNumber"
             [placeholder]="'withdrawal.ibanPlaceholder' | translate"
             inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
           />
@@ -1021,14 +1023,22 @@
     <button
       type="button"
       (click)="confirmScheduledTrip()"
-      [disabled]="isCreatingTrip()"
+      [disabled]="isCreatingTrip() || isReschedulingTrip()"
       class="flex w-full items-center justify-center gap-1.5 rounded-full bg-warning px-6 py-3 text-base font-semibold text-white transition hover:bg-warning-light hover:text-warning disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      @if (isCreatingTrip()) {
+      @if (isCreatingTrip() || isReschedulingTrip()) {
         <app-icon name="spinner" size="sm" />
-        <span>{{ 'confirm.creating' | translate }}</span>
+        @if (isRescheduleMode()) {
+          <span>{{ 'tripDetails.rescheduling' | translate }}</span>
+        } @else {
+          <span>{{ 'confirm.creating' | translate }}</span>
+        }
       } @else {
-        <span>{{ 'pickup.schedule' | translate }}</span>
+        @if (isRescheduleMode()) {
+          <span>{{ 'tripDetails.confirmReschedule' | translate }}</span>
+        } @else {
+          <span>{{ 'pickup.schedule' | translate }}</span>
+        }
       }
     </button>
     <button

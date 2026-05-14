@@ -28,15 +28,20 @@ export interface TripRecord {
   id: string;
   hotelId?: string;
   tripCode?: string;
+  tripId?: string;
   customerName: string;
   pickupLocation: string;
   dropoffLocation: string;
-  date: string;
+  date?: string;
   status: 'completed' | 'active' | 'pending' | 'cancelled' | 'scheduled';
+  tripStatus: string;
+  tripStatusKey: string;
+  requestStatus: string;
+  requestStatusKey: string;
   price: number;
   currency: string;
-  distance: number;
-  duration: number;
+  distance: number | null;
+  duration: number | null;
   rating?: number;
   paymentStatus: string;
   customerPhone?: string;
@@ -48,7 +53,11 @@ export interface TripRecord {
   driverId?: string;
   room?: string;
   commission?: number;
-  endDate?: string;
+  endDate?: string | null;
+  requestedAt?: string | null;
+  notes?: string | null;
+  placeTypeName?: string | null;
+  otherPlaceText?: string | null;
 }
 
 

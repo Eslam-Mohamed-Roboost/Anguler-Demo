@@ -16,11 +16,13 @@ import type { ChatConversation } from '../../models/chat-message.model';
 import { ChatService } from '../../services/chat.service';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { AuthService } from '../../../../core/services/auth.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import type { TranslationKey } from '../../../../core/i18n/translations';
 
 @Component({
   selector: 'app-chat',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent, ChatInputComponent, MessageComponent],
+  imports: [IconComponent, ChatInputComponent, MessageComponent, TranslatePipe],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css',
 })
@@ -43,6 +45,9 @@ export class ChatComponent extends BaseComponent implements OnInit {
     if (roles.includes('driver')) return 'Driver';
     return roles[0] ?? '';
   });
+  protected readonly conversationStatusKey = computed(() =>
+    this.statusTranslationKey(this.conversation()?.status ?? '')
+  );
   private lastLoadedId = '';
 
   ngOnInit(): void {
@@ -131,5 +136,9 @@ export class ChatComponent extends BaseComponent implements OnInit {
       },
       error: () => this.closeLoading.set(false),
     });
+  }
+
+  private statusTranslationKey(status: string): TranslationKey {
+    return `tripDetails.chatStatus.${status || 'Unknown'}` as TranslationKey;
   }
 }

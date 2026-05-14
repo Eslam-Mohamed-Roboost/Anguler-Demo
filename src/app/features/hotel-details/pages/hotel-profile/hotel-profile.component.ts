@@ -17,6 +17,7 @@ import { DataTableComponent } from '../../../../shared/components/data-table/dat
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { HotelInfoCardComponent } from '../../components/hotel-info-card/hotel-info-card.component';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
   import type { HotelFormData, HotelInfo, TripRecord, WithdrawalFormData } from '../../types/hotel-details.types';
@@ -37,6 +38,7 @@ import { TranslatePipe } from "../../../../shared/pipes/translate.pipe";
     CellDefDirective,
     HotelInfoCardComponent,
     StatisticsCardComponent,
+    ModalComponent,
      PaginationComponent,
     TranslatePipe],
   templateUrl: './hotel-profile.component.html',
@@ -57,6 +59,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   readonly formLoading = signal(false);
   readonly withdrawalLoading = signal(false);
   readonly settleLoading = signal(false);
+  readonly showSettleConfirmModal = signal(false);
   readonly error = signal<string | null>(null);
   private dataLoaded = false;
 
@@ -105,6 +108,10 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       t.dropoffLocation.toLowerCase().includes(q),
     );
   });
+
+  readonly awaitingAmountLabel = computed(() =>
+    `${this.awaitingAmount().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} CHF`
+  );
 
   protected readonly columns = computed<ColumnDef[]>(() => [
     { key: 'tripCode', header: 'hotelTrip.tripId', sortable: false, headerClass: 'w-28' },
@@ -233,7 +240,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   private updateTripStats(items: HotelTripItem[]): void {
     const counts = { active: 0, scheduled: 0, completed: 0, cancelled: 0 };
     for (const t of items) {
-      const s = t.status?.toLowerCase() ?? '';
+      const s = this.toUiTripStatus(t.tripStatusString || t.requestStatusString);
       if (s === 'active') counts.active++;
       else if (s === 'scheduled') counts.scheduled++;
       else if (s === 'completed') counts.completed++;
@@ -253,15 +260,25 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   private toTripRecord(item: HotelTripItem): TripRecord {
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
+    const requestStatus = item.requestStatusString || 'Pending';
+    const tripStatus = item.tripStatusString || '';
+    const status = this.toUiTripStatus(tripStatus || requestStatus);
     return {
       id: item.tripRequestId,
-      tripCode: item.tripCode,
+      tripId: item.tripId ?? undefined,
+      hotelId: item.hotelId,
+      hotelName: item.hotelName,
+      tripCode: item.tripCode ?? undefined,
       customerName: item.guestName,
-      pickupLocation: item.startLocation.address,
-      dropoffLocation: item.endLocation.address,
-      date: item.startedAt,
+      pickupLocation: item.startLocation?.address ?? '--',
+      dropoffLocation: item.endLocation?.address ?? '--',
+      date: item.startedAt ?? item.requestedAt ?? undefined,
       endDate: item.endedAt,
-      status: (item.status?.toLowerCase() ?? 'pending') as TripRecord['status'],
+      status,
+      tripStatus: tripStatus || 'Not Started',
+      tripStatusKey: this.normalizeStatus(tripStatus || 'not-started'),
+      requestStatus,
+      requestStatusKey: this.normalizeStatus(requestStatus),
       price: item.fare ?? 0,
       currency: item.currency,
       distance: item.distanceInKm,
@@ -270,7 +287,26 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       driverName,
       room: item.roomNumber != null ? String(item.roomNumber) : undefined,
       commission: item.commission ?? undefined,
+      requestedAt: item.requestedAt,
+      notes: item.notes,
+      placeTypeName: item.placeTypeName,
+      otherPlaceText: item.otherPlaceText,
     };
+  }
+
+  private toUiTripStatus(status: string): TripRecord['status'] {
+    const normalized = this.normalizeStatus(status);
+
+    if (normalized.includes('complete')) return 'completed';
+    if (normalized.includes('active') || normalized.includes('progress')) return 'active';
+    if (normalized.includes('schedule')) return 'scheduled';
+    if (normalized.includes('cancel')) return 'cancelled';
+
+    return 'pending';
+  }
+
+  private normalizeStatus(status: string): string {
+    return status.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
 
   onPageChange(page: number): void {
@@ -300,10 +336,10 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
           this.withdrawalLoading.set(false);
           if (result.isSuccess && result.data) {
             this.withdrawalData.set({
-              accountHolderName: result.data.accountHolderName,
+              accountHolderName: result.data.bankAccountHolderName ?? result.data.accountHolderName ?? '',
               bankName: result.data.bankName,
               iban: result.data.bankAccountNumber,
-              swiftCode: result.data.bankRoutingName,
+              swiftCode: result.data.bankRoutingNumber ?? result.data.bankRoutingName ?? '',
             });
           }
         },
@@ -358,6 +394,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     this.withdrawalLoading.set(true);
     this.service
       .updateWithdrawalDetails({
+        bankAccountHolderName: data.accountHolderName,
         bankName: data.bankName,
         bankAccountNumber: data.iban,
         bankRoutingNumber: data.swiftCode,
@@ -369,10 +406,10 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
           if (result.isSuccess && result.data) {
             this.notifications.showSuccess('Withdrawal details updated successfully.');
             this.withdrawalData.set({
-              accountHolderName: result.data.accountHolderName,
+              accountHolderName: result.data.bankAccountHolderName ?? result.data.accountHolderName ?? '',
               bankName: result.data.bankName,
               iban: result.data.bankAccountNumber,
-              swiftCode: result.data.bankRoutingName,
+              swiftCode: result.data.bankRoutingNumber ?? result.data.bankRoutingName ?? '',
             });
           } else {
             this.notifications.showError(result.error?.description ?? 'Failed to update withdrawal details.');
@@ -403,6 +440,16 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       });
   }
 
+  openSettleConfirmModal(): void {
+    if (this.awaitingAmount() === 0 || this.settleLoading()) return;
+    this.showSettleConfirmModal.set(true);
+  }
+
+  closeSettleConfirmModal(): void {
+    if (this.settleLoading()) return;
+    this.showSettleConfirmModal.set(false);
+  }
+
   settlePayouts(): void {
     const hotelId = this.route.snapshot.paramMap.get('id');
     if (!hotelId) return;
@@ -415,6 +462,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
         next: (result) => {
           this.settleLoading.set(false);
           if (result.isSuccess) {
+            this.showSettleConfirmModal.set(false);
             this.notifications.showSuccess('Payouts settled successfully.');
             this.loadUnsettledPayouts(hotelId);
           } else {

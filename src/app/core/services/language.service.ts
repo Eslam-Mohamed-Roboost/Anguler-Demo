@@ -10,6 +10,8 @@ export class LanguageService {
 
   private readonly _lang = signal<Lang>('en');
   readonly lang = this._lang.asReadonly();
+  private readonly _refreshVersion = signal(0);
+  readonly refreshVersion = this._refreshVersion.asReadonly();
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
@@ -30,12 +32,16 @@ export class LanguageService {
     });
   }
 
-  translate(key: TranslationKey): string {
-    return TRANSLATIONS[this._lang()][key];
+  translate(key: TranslationKey | string): string {
+    const translations = TRANSLATIONS[this._lang()] as Record<string, string>;
+    return translations[key] ?? key;
   }
 
   setLang(lang: Lang): void {
+    if (this._lang() === lang) return;
+
     this._lang.set(lang);
+    this._refreshVersion.update((version) => version + 1);
   }
 
   toggleLang(): void {

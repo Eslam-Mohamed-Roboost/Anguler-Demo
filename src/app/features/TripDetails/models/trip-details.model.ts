@@ -63,7 +63,15 @@ export function getTripStatusLabel(status: string): string {
     case 'Arrived': return 'Arrived';
     case 'InProgress': return 'In Progress';
     case 'Completed': return 'Completed';
-    case 'Cancelled': return 'Cancelled';
+    case 'Canceled':
+    case 'Cancelled':
+    case 'CanceledByDriver':
+    case 'CancelledByDriver':
+    case 'CanceledByPassenger':
+    case 'CancelledByPassenger':
+    case 'CanceledByHotel':
+    case 'CancelledByHotel':
+      return 'Cancelled';
     case 'Rejected': return 'Rejected';
     default: return status;
   }
@@ -72,7 +80,14 @@ export function getTripStatusLabel(status: string): string {
 export function getTripStatusVariant(status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {
   switch (status) {
     case 'Completed': return 'success';
+    case 'Canceled':
     case 'Cancelled':
+    case 'CanceledByDriver':
+    case 'CancelledByDriver':
+    case 'CanceledByPassenger':
+    case 'CancelledByPassenger':
+    case 'CanceledByHotel':
+    case 'CancelledByHotel':
     case 'Rejected': return 'danger';
     case 'InProgress': return 'info';
     case 'Pending':

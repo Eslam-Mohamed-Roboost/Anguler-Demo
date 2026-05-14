@@ -33,13 +33,13 @@ import { OtpService } from '../services/otp.service';
 import { VehicleTypeService } from '../services/vehicle-type.service';
 import { TripRequestService } from '../services/trip-request.service';
 import { LocationItem, PlaceTypeService, type PlaceType } from '../services/place-type.service';
+import { Bank, BankService } from '../services/bank.service';
 import { HotelDetailsService } from '../../../hotel-details/services/hotel-details.service';
 import { CarOption } from '../../../../shared/components/car-selector/car-selector.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { DriverNoteComponent } from '../driver-note/driver-note.component';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { AppConfigService } from '../../../../core/services/app-config.service';
-import { Subscriber } from 'rxjs';
 
 @Component({
   selector: 'app-booking',
@@ -73,6 +73,7 @@ export class BookingComponent extends BaseComponent {
   private readonly vehicleTypeService = inject(VehicleTypeService);
   private readonly tripRequestService = inject(TripRequestService);
   private readonly placeTypeService = inject(PlaceTypeService);
+  private readonly bankService = inject(BankService);
   private readonly hotelDetailsService = inject(HotelDetailsService);
   private readonly notifications = inject(NotificationStore);
   private readonly appConfig = inject(AppConfigService);
@@ -82,6 +83,8 @@ export class BookingComponent extends BaseComponent {
   readonly carTypesLoading = signal(false);
   readonly placeTypes = signal<PlaceType[]>([]);
   readonly placeTypesLoading = signal(false);
+  readonly banks = signal<Bank[]>([]);
+  readonly banksLoading = signal(false);
   readonly distnationName = signal<string>('');
   readonly driverNoteChecked = signal(false);
   readonly driverNoteText = signal('');
@@ -120,6 +123,14 @@ export class BookingComponent extends BaseComponent {
       if (params['signin'] === '1') {
         this.signInModalOpen();
         this.router.navigate([], { queryParams: {}, replaceUrl: true });
+        return;
+      }
+
+      const rescheduleTripRequestId = params['rescheduleTripRequestId'];
+      if (rescheduleTripRequestId) {
+        const scheduledAt = typeof params['scheduledAt'] === 'string' ? params['scheduledAt'] : null;
+        this.openReschedulePickupTime(rescheduleTripRequestId, scheduledAt);
+        this.router.navigate([], { queryParams: {}, replaceUrl: true });
       }
     });
 
@@ -128,6 +139,7 @@ export class BookingComponent extends BaseComponent {
     this.loadVehicleTypes(50);
     this.loadPlaceTypes();
     this.loadDestinations();
+    this.loadBanks();
     this.loadServicePreferences();
 
     // Auto-select Van when many bags is checked
@@ -239,6 +251,9 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   readonly commissionPercentage = computed(() => this.appConfig.commissionPercentage());
 
   readonly isCreatingTrip = signal(false);
+  readonly isReschedulingTrip = signal(false);
+  readonly rescheduleTripRequestId = signal<string | null>(null);
+  readonly isRescheduleMode = computed(() => !!this.rescheduleTripRequestId());
   readonly createdTripId = signal<string | null>(null);
   readonly hotelImageSrc = signal<string>('assets/booking/hotel-illustration.png');
   readonly isOtherPlaceTypeSelected = computed(() => {
@@ -246,6 +261,19 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     const otherPlaceType = this.placeTypes().find(p => p.name.toLowerCase() === 'other');
     return selectedPlaceTypeId === otherPlaceType?.id && !!otherPlaceType;
   });
+  readonly selectedEntityTypeName = computed(() => {
+    const selectedPlaceTypeId = this.joinFormModel().placeTypeId;
+    const selectedPlaceType = this.placeTypes().find(p => p.id === selectedPlaceTypeId);
+    const selectedName = selectedPlaceType?.name?.trim() ?? '';
+
+    if (selectedName.toLowerCase() === 'other') {
+      return this.savedOtherEntityType() || 'Company';
+    }
+
+    return selectedName || 'Hotel';
+  });
+  readonly entityNameLabel = computed(() => `${this.selectedEntityTypeName()} Name`);
+  readonly entityNamePlaceholder = computed(() => `Enter ${this.selectedEntityTypeName()} name`);
 
   onHotelImageChange(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -373,11 +401,26 @@ readonly activeTab = signal<'login' | 'register'>('register');
       });
   }
 
-  readonly banks = [
-    'National Bank of Egypt', 'Banque Misr', 'CIB',
-    'QNB Alahli', 'HSBC Egypt', 'Arab African International Bank',
-    'Banque du Caire', 'Faisal Islamic Bank',
-  ];
+  private loadBanks(): void {
+    this.banksLoading.set(true);
+
+    this.bankService.getBanks()
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: (response) => {
+          this.banksLoading.set(false);
+          if (response.isSuccess && response.data?.banks) {
+            this.banks.set(response.data.banks);
+          } else {
+            this.showError(response.error?.description || 'Failed to load banks.');
+          }
+        },
+        error: () => {
+          this.banksLoading.set(false);
+          this.showError('Failed to load banks.');
+        },
+      });
+  }
 
   protected readonly joinFormModel = signal<JoinUsFormModel>({
     entityType: 'Hotel',
@@ -392,6 +435,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
     placeTypeId: '',
     otherPlaceText: '',
     selectedPreferenceIds: [],
+    bankAccountHolderName: '',
     bankName: '',
     bankAccountNumber: '',
     bankRoutingNumber: ''
@@ -542,8 +586,9 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.showError('Please enter a password.');
       return false;
     }
-    if (form.password.length < 6) {
-      this.showError('Password must be at least 6 characters.');
+    const passwordError = this.getPasswordValidationError(form.password);
+    if (passwordError) {
+      this.showError(passwordError);
       return false;
     }
     return true;
@@ -557,7 +602,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   private validateStep3(): boolean {
     const form = this.joinFormModel();
-    if (!form.bankAccountNumber?.trim()) {
+    if (!form.bankAccountHolderName?.trim()) {
       this.showError('Please enter the account holder name.');
       return false;
     }
@@ -660,6 +705,11 @@ readonly activeTab = signal<'login' | 'register'>('register');
     const { newPassword, confirmPassword } = this.resetPasswordFormModel();
     if (!newPassword) {
       this.showError('Please enter a new password.');
+      return;
+    }
+    const passwordError = this.getPasswordValidationError(newPassword);
+    if (passwordError) {
+      this.showError(passwordError);
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -768,14 +818,23 @@ readonly activeTab = signal<'login' | 'register'>('register');
       return;
     }
     this.showPickupTimeModal.set(true);
+    this.syncPickupPickerScroll();
   }
 
   closePickupTimeModal(): void {
     this.showPickupTimeModal.set(false);
+    if (this.isRescheduleMode() && !this.isReschedulingTrip()) {
+      this.rescheduleTripRequestId.set(null);
+    }
   }
 
   confirmScheduledTrip(): void {
-    this.closePickupTimeModal();
+    if (this.isRescheduleMode()) {
+      this.rescheduleTrip();
+      return;
+    }
+
+    this.showPickupTimeModal.set(false);
     this.createTrip(true, this.getScheduledAt());
   }
 
@@ -828,6 +887,69 @@ readonly activeTab = signal<'login' | 'register'>('register');
         this.showError('An unexpected error occurred. Please try again later.');
       },
     });
+  }
+
+  private openReschedulePickupTime(tripRequestId: string, scheduledAt: string | null): void {
+    this.rescheduleTripRequestId.set(tripRequestId);
+    if (scheduledAt) {
+      this.setPickupFromDate(new Date(scheduledAt));
+    }
+    this.showPickupTimeModal.set(true);
+    this.syncPickupPickerScroll();
+  }
+
+  private setPickupFromDate(date: Date): void {
+    if (Number.isNaN(date.getTime())) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const target = new Date(date);
+    target.setHours(0, 0, 0, 0);
+    const dayDiff = Math.round((target.getTime() - today.getTime()) / 86_400_000);
+
+    this.selectedPickupDateIndex.set(Math.min(Math.max(dayDiff, 0), this.pickupDateOptions.length - 1));
+    this.selectedPickupHourIndex.set(date.getHours());
+    this.selectedPickupMinuteIndex.set(date.getMinutes());
+  }
+
+  private syncPickupPickerScroll(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    window.setTimeout(() => {
+      const itemHeight = 40;
+      const columns = Array.from(document.querySelectorAll<HTMLElement>('.pickup-picker-scroll'));
+      const [dateColumn, hourColumn, minuteColumn] = columns;
+
+      if (dateColumn) dateColumn.scrollTop = this.selectedPickupDateIndex() * itemHeight;
+      if (hourColumn) hourColumn.scrollTop = this.selectedPickupHourIndex() * itemHeight;
+      if (minuteColumn) minuteColumn.scrollTop = this.selectedPickupMinuteIndex() * itemHeight;
+    });
+  }
+
+  private rescheduleTrip(): void {
+    const tripRequestId = this.rescheduleTripRequestId();
+    if (!tripRequestId || this.isReschedulingTrip()) return;
+
+    this.isReschedulingTrip.set(true);
+    this.tripRequestService.rescheduleTrip(tripRequestId, this.getScheduledAt())
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: (result) => {
+          this.isReschedulingTrip.set(false);
+          if (result.isSuccess) {
+            this.showPickupTimeModal.set(false);
+            this.rescheduleTripRequestId.set(null);
+            this.showSuccess('Trip rescheduled successfully.');
+            this.router.navigate(['/TripDetails', tripRequestId]);
+          } else {
+            this.showError(result.error?.description || 'Failed to reschedule trip. Please try again.');
+          }
+        },
+        error: () => {
+          this.isReschedulingTrip.set(false);
+          this.showError('An unexpected error occurred. Please try again later.');
+        },
+      });
   }
   openScheduledRiderModel(): void {
     this.ShowScheduledRiderModel.set(true);
@@ -901,6 +1023,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
             placeTypeId: '',
             otherPlaceText: '',
             selectedPreferenceIds: [],
+            bankAccountHolderName: '',
             bankName: '',
             bankAccountNumber: '',
             bankRoutingNumber: ''
@@ -938,6 +1061,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
         if (result.isSuccess && result.data) {
           this.loginService.saveSession(result.data.token, result.data.role);
           this.coreAuth.setSession(result.data.token, result.data.role);
+          this.coreAuth.refreshProfile();
           this.signInFormModel.set({ email: '', password: '' });
           this.closeSignInModal();
           this.showSuccess('Login successful! Welcome back.');
@@ -962,6 +1086,30 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   private showError(message: string): void {
     this.notifications.showError(message);
+  }
+
+  private getPasswordValidationError(password: string): string | null {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long.';
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      return 'Password must contain at least one uppercase letter.';
+    }
+
+    if (!/[a-z]/.test(password)) {
+      return 'Password must contain at least one lowercase letter.';
+    }
+
+    if (!/\d/.test(password)) {
+      return 'Password must contain at least one digit.';
+    }
+
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      return 'Password must contain at least one non-alphanumeric character.';
+    }
+
+    return null;
   }
 
   private loadDestinations(){

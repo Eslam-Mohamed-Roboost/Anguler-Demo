@@ -1,69 +1,113 @@
 <section class="flex h-full flex-col rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 mx-8 px-4 py-4">
   <!-- Header with Status -->
-  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-4 py-4 dark:border-gray-700 sm:px-5 sm:py-5">
+  <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5">
     <h2 class="flex items-center gap-2 text-lg font-bold text-primary-text sm:text-xl">
-      <app-icon name="users" size="sm" class="text-primary" />
-      Trip Details
+      <app-icon name="truck" size="sm" class="text-primary" />
+      {{ 'tripDetails.title' | translate }}
     </h2>
-    <app-badge [variant]="statusVariant()">{{ statusLabel() }}</app-badge>
+    <div class="relative flex items-center gap-3">
+      @if (canShowScheduledActions()) {
+        <span class="rounded-lg bg-[#FFF2D8] px-3 py-2 text-xs font-bold text-warning">
+          {{ 'tripDetails.status.Scheduled' | translate }}
+        </span>
+        <button
+          type="button"
+          class="flex size-9 items-center justify-center rounded-xl text-[#223548] transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-warning/30"
+          [attr.aria-label]="'tripDetails.scheduledActions' | translate"
+          [attr.aria-expanded]="showScheduledMenu()"
+          (click)="toggleScheduledMenu()"
+        >
+          <span class="flex flex-col gap-0.5" aria-hidden="true">
+            <span class="size-1 rounded-full bg-current"></span>
+            <span class="size-1 rounded-full bg-current"></span>
+            <span class="size-1 rounded-full bg-current"></span>
+          </span>
+        </button>
+
+        @if (showScheduledMenu()) {
+          <div class="absolute end-0 top-11 z-20 w-[210px] rounded-sm border border-[#D8E0E8] bg-white py-1 shadow-lg">
+            <button
+              type="button"
+              class="flex w-full items-center gap-2 px-4 py-3 text-start text-sm font-medium text-[#223548] transition hover:bg-[#FFF8F1]"
+              (click)="openRescheduleModal()"
+            >
+              <app-icon name="calendar" size="xs" class="text-warning" />
+              {{ 'tripDetails.rescheduleTrip' | translate }}
+            </button>
+            <div class="mx-4 h-px bg-[#E4EAF0]"></div>
+            <button
+              type="button"
+              class="flex w-full items-center gap-2 px-4 py-3 text-start text-sm font-medium text-[#223548] transition hover:bg-red-50 disabled:opacity-60"
+              [disabled]="cancelLoading()"
+              (click)="cancelTrip()"
+            >
+              <app-icon name="close" size="xs" class="text-red-500" />
+              {{ 'tripDetails.cancelTrip' | translate }}
+            </button>
+          </div>
+        }
+      } @else {
+        <app-badge [variant]="statusVariant()">{{ statusLabelKey() | translate }}</app-badge>
+      }
+    </div>
   </div>
 
   <!-- Trip Information Grid -->
-  <div class="flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
-      <!-- Left Column -->
-      <div class="space-y-4">
-        @if (data().tripCode) {
-          <div>
-            <label class="mb-1 block text-sm font-medium text-gray-500 dark:text-gray-400">Trip Code</label>
-            <p class="font-medium text-primary-text">{{ data().tripCode }}</p>
-          </div>
-        }
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-500 dark:text-gray-400">Guest</label>
-          <p class="font-medium text-primary-text">{{ data().guestName }}</p>
-          <p class="text-sm text-gray-400">Room {{ data().roomNumber }}</p>
-        </div>
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-500 dark:text-gray-400">Fare</label>
-          <p class="font-medium text-primary-text">
-            {{ data().actualFare ?? data().estimatedPrice }} {{ data().currency }}
-          </p>
-        </div>
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-500 dark:text-gray-400">Payment</label>
-          <p class="font-medium text-primary-text">{{ data().paymentMethodType }}</p>
+  <div class="flex-1 overflow-y-auto px-4 pb-4 sm:px-5 sm:pb-5">
+    <div class="grid grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-3">
+      <div>
+        <label class="mb-1.5 block text-xs font-medium text-[#6B7E92]">{{ 'tripDetails.tripId' | translate }}</label>
+        <div class="min-h-11 rounded-lg border border-[#E4EAF0] bg-white px-4 py-3 text-sm text-[#52647A]">
+          {{ data().tripCode || '--' }}
         </div>
       </div>
-
-      <!-- Right Column -->
-      <div class="space-y-4">
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-500 dark:text-gray-400">Pickup</label>
-          <p class="font-medium text-primary-text">{{ data().startLocation.address }}</p>
+      <div>
+        <label class="mb-1.5 block text-xs font-medium text-[#6B7E92]">{{ 'tripDetails.passenger' | translate }}</label>
+        <div class="min-h-11 rounded-lg border border-[#E4EAF0] bg-white px-4 py-3 text-sm text-[#52647A]">
+          {{ data().guestName || '--' }}
         </div>
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-500 dark:text-gray-400">Drop-off</label>
-          <p class="font-medium text-primary-text">{{ data().endLocation.address }}</p>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-xs font-medium text-[#6B7E92]">{{ 'form.roomNo' | translate }}</label>
+        <div class="min-h-11 rounded-lg border border-[#E4EAF0] bg-white px-4 py-3 text-sm text-[#52647A]">
+          {{ data().roomNumber }}
         </div>
-        @if (data().driver) {
-          <div>
-            <label class="mb-1 block text-sm font-medium text-gray-500 dark:text-gray-400">Driver</label>
-            <p class="font-medium text-primary-text">{{ data().driver!.fullName }}</p>
-            @if (data().driver!.phoneNumber) {
-              <p class="text-sm text-gray-400">{{ data().driver!.phoneNumber }}</p>
-            }
-          </div>
-        }
-        @if (data().durationMinutes !== null || data().distanceInKm !== null) {
-          <div>
-            <label class="mb-1 block text-sm font-medium text-gray-500 dark:text-gray-400">Duration / Distance</label>
-            <p class="font-medium text-primary-text">
-              @if (data().durationMinutes !== null) { {{ data().durationMinutes }} min }
-              @if (data().distanceInKm !== null) { · {{ data().distanceInKm }} km }
-            </p>
-          </div>
-        }
+      </div>
+      <div>
+        <label class="mb-1.5 block text-xs font-medium text-[#6B7E92]">{{ 'tripDetails.destinations' | translate }}</label>
+        <div class="min-h-11 rounded-lg border border-[#E4EAF0] bg-white px-4 py-3 text-sm text-[#52647A]">
+          {{ data().endLocation.address || '--' }}
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-xs font-medium text-[#6B7E92]">{{ 'tripDetails.fareChf' | translate }}</label>
+        <div class="min-h-11 rounded-lg border border-[#E4EAF0] bg-white px-4 py-3 text-sm text-[#52647A]">
+          {{ data().actualFare ?? data().estimatedPrice }}
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-xs font-medium text-[#6B7E92]">{{ 'tripDetails.hotelProfitWithRate' | translate }}</label>
+        <div class="min-h-11 rounded-lg border border-[#E4EAF0] bg-white px-4 py-3 text-sm text-[#52647A]">
+          --
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-xs font-medium text-[#6B7E92]">{{ 'tripDetails.startDate' | translate }}</label>
+        <div class="min-h-11 rounded-lg border border-[#E4EAF0] bg-white px-4 py-3 text-sm text-[#52647A]">
+          {{ formatDateTime(data().scheduledAt || data().startedAt || data().requestedAt) }}
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-xs font-medium text-[#6B7E92]">{{ 'tripDetails.endDate' | translate }}</label>
+        <div class="min-h-11 rounded-lg border border-[#E4EAF0] bg-white px-4 py-3 text-sm text-[#52647A]">
+          {{ formatDateTime(data().endedAt) }}
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-xs font-medium text-[#6B7E92]">{{ 'tripDetails.tripRate' | translate }}</label>
+        <div class="min-h-11 rounded-lg border border-[#E4EAF0] bg-white px-4 py-3 text-sm text-[#52647A]">
+          {{ data().driver?.rating ?? '--' }}
+        </div>
       </div>
     </div>
 
@@ -72,38 +116,38 @@
       <div class="mt-5 border-t border-gray-200 pt-5 dark:border-gray-700">
         <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
           <app-icon name="home" size="xs" class="text-primary" />
-          Hotel Information
+          {{ 'tripDetails.hotelInfo' | translate }}
         </h3>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Hotel Name</label>
+            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.hotelName' | translate }}</label>
             <p class="text-sm font-medium text-primary-text">{{ hotel.hotelName }}</p>
           </div>
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Address</label>
+            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.hotelAddress' | translate }}</label>
             <p class="text-sm text-primary-text">{{ hotel.address }}</p>
           </div>
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Phone</label>
+            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.hotelPhone' | translate }}</label>
             <p class="text-sm text-primary-text">{{ hotel.phoneNumber }}</p>
           </div>
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Email</label>
+            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.hotelEmail' | translate }}</label>
             <p class="text-sm text-primary-text">{{ hotel.email }}</p>
           </div>
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Commission Rate</label>
+            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.commissionRate' | translate }}</label>
             <p class="text-sm text-primary-text">{{ hotel.commissionRate }}%</p>
           </div>
           <div class="flex items-center gap-3">
             <span
               class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
               [class]="hotel.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'"
-            >{{ hotel.isActive ? 'Active' : 'Inactive' }}</span>
+            >{{ hotel.isActive ? ('tripDetails.active' | translate) : ('tripDetails.inactive' | translate) }}</span>
             @if (hotel.isVerified) {
               <span class="inline-flex items-center gap-1 text-xs text-emerald-600">
                 <app-icon name="check" size="xs" />
-                Verified
+                {{ 'tripDetails.verified' | translate }}
               </span>
             }
           </div>
@@ -116,24 +160,24 @@
       <div class="mt-5 border-t border-gray-200 pt-5 dark:border-gray-700">
         <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
           <app-icon name="users" size="xs" class="text-primary" />
-          Assign Driver
+          {{ 'tripDetails.assignDriver' | translate }}
         </h3>
         @if (driversLoading()) {
           <div class="flex items-center gap-2 text-sm text-gray-400">
             <span class="size-4 animate-spin rounded-full border-2 border-gray-300 border-t-primary block"></span>
-            Loading drivers…
+            {{ 'tripDetails.loadingDrivers' | translate }}
           </div>
         } @else {
           <div class="flex flex-wrap items-end gap-3">
             <div class="flex-1 min-w-[200px]">
-              <label for="assign-driver-select" class="mb-1 block text-xs font-medium text-gray-500">Select Driver</label>
+              <label for="assign-driver-select" class="mb-1 block text-xs font-medium text-gray-500">{{ 'tripDetails.selectDriver' | translate }}</label>
               <select
                 id="assign-driver-select"
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-white"
                 [value]="selectedDriverId()"
                 (change)="selectedDriverId.set($any($event.target).value)"
               >
-                <option value="" disabled selected>Choose a driver…</option>
+                <option value="" disabled selected>{{ 'tripDetails.chooseDriver' | translate }}</option>
                 @for (driver of drivers(); track driver.driverId) {
                   <option [value]="driver.driverId">{{ driver.fullName }}</option>
                 }
@@ -150,7 +194,7 @@
               } @else {
                 <app-icon name="check" size="xs" />
               }
-              Assign
+              {{ 'tripDetails.assign' | translate }}
             </button>
           </div>
         }
@@ -170,9 +214,9 @@
             <span class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
           }
           @switch (data().unifiedStatus) {
-            @case ('Accepted') { Mark Arrived }
-            @case ('Arrived') { Start Trip }
-            @case ('InProgress') { Complete Trip }
+            @case ('Accepted') { {{ 'tripDetails.markArrived' | translate }} }
+            @case ('Arrived') { {{ 'tripDetails.startTrip' | translate }} }
+            @case ('InProgress') { {{ 'tripDetails.completeTrip' | translate }} }
           }
         </button>
       </div>
@@ -182,24 +226,24 @@
     @if (!isAdmin() && data().unifiedStatus === 'Completed' && data().tripId) {
       <div class="mt-5 border-t border-gray-200 pt-5 dark:border-gray-700">
         @if (feedbackSubmitted()) {
-          <p class="text-sm font-medium text-emerald-600">Thank you for your feedback!</p>
+          <p class="text-sm font-medium text-emerald-600">{{ 'tripDetails.feedbackThanks' | translate }}</p>
         } @else {
-          <h3 class="mb-3 text-sm font-semibold text-gray-700">Rate this trip</h3>
-          <div class="flex gap-1 mb-3" role="radiogroup" aria-label="Rating">
+          <h3 class="mb-3 text-sm font-semibold text-gray-700">{{ 'tripDetails.rateTrip' | translate }}</h3>
+          <div class="flex gap-1 mb-3" role="radiogroup" [attr.aria-label]="'tripDetails.ratingAria' | translate">
             @for (star of stars; track star) {
               <button
                 type="button"
                 (click)="setRating(star)"
                 class="text-2xl transition"
                 [class]="star <= feedbackRating() ? 'text-amber-400' : 'text-gray-300'"
-                [attr.aria-label]="star + ' star'"
+                [attr.aria-label]="star + ' ' + (ratingUnitKey(star) | translate)"
               >★</button>
             }
           </div>
           <textarea
             class="w-full rounded-lg border border-gray-300 p-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-400"
             rows="2"
-            placeholder="Comment (optional)"
+            [placeholder]="'tripDetails.commentPlaceholder' | translate"
             [value]="feedbackComment()"
             (input)="feedbackComment.set($any($event.target).value)"
           ></textarea>
@@ -212,7 +256,7 @@
             @if (feedbackLoading()) {
               <span class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
             }
-            Submit Feedback
+            {{ 'tripDetails.submitFeedback' | translate }}
           </button>
         }
       </div>

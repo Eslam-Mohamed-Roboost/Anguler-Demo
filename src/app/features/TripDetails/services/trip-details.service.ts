@@ -31,19 +31,24 @@ export class TripDetailsService extends ApiService {
   }
 
   markArrived(tripRequestId: string): Observable<Result<void>> {
-    return this.put<void>(`/trip-requests/${tripRequestId}/arrived`, {});
+    return this.put<void>(`/trip-request/${tripRequestId}/arrived`, {});
   }
 
   startTrip(tripRequestId: string): Observable<Result<void>> {
-    return this.put<void>(`/trip-requests/${tripRequestId}/start`, {});
+    return this.put<void>(`/trip-request/${tripRequestId}/start`, {});
   }
 
   completeTrip(tripRequestId: string): Observable<Result<void>> {
-    return this.put<void>(`/trip-requests/${tripRequestId}/complete`, {});
+    return this.put<void>(`/trip-request/${tripRequestId}/complete`, {});
   }
 
   cancelTrip(tripRequestId: string): Observable<Result<void>> {
-    return this.put<void>(`/trip-requests/${tripRequestId}/cancel`, {});
+    const CancellationReason =  'No reason provided';
+    return this.put<void>(`/trip-request/cancel`, {tripRequestId, CancellationReason});
+  }
+
+  rescheduleTripRequest(tripRequestId: string, newScheduledAt: string): Observable<Result<void>> {
+    return this.put<void>(`/trip-request/${tripRequestId}/reschedule`, { newScheduledAt });
   }
 
   getHotelById(hotelId: string): Observable<Result<HotelInfo>> {

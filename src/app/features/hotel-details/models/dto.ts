@@ -1,23 +1,33 @@
 
 export interface HotelTripItem {
   tripRequestId: string;
+  tripId: string | null;
   hotelId?: string;
   hotelName:string;
-  tripCode: string;
+  tripCode: string | null;
   guestName: string;
   roomNumber: number;
+  notes: string | null;
+  placeTypeId: string | null;
+  placeTypeName: string | null;
+  otherPlaceText: string | null;
   driverName: string | null;
   driverAvatarUrl: string | null;
-  startLocation: { address: string };
-  endLocation: { address: string };
-  status: string;
-  durationMinutes: number;
-  distanceInKm: number;
+  startLocation: { latitude?: number; longitude?: number; address: string };
+  endLocation: { latitude?: number; longitude?: number; address: string };
+  status?: string;
+  requestStatusString: string;
+  requestStatusEnum: number | null;
+  tripStatusString: string;
+  tripStatusEnum: number | null;
+  durationMinutes: number | null;
+  distanceInKm: number | null;
   fare: number | null;
   commission: number | null;
   currency: string;
-  startedAt: string;
-  endedAt: string;
+  startedAt: string | null;
+  endedAt: string | null;
+  requestedAt: string | null;
 }
 
 export interface HotelProfileResponse {
@@ -80,16 +90,19 @@ export interface HotelsListResponse {
 
 export interface WithdrawalDetailsResponse {
   id: string;
-  accountHolderName: string;
+  bankAccountHolderName?: string;
+  accountHolderName?: string;
   bankName: string;
   bankAccountNumber: string;
-  bankRoutingName: string;
-  payoutCycle: string;
-  payoutMethod: string;
-  walletAddress: string;
+  bankRoutingNumber?: string;
+  bankRoutingName?: string;
+  payoutCycle?: string;
+  payoutMethod?: string;
+  walletAddress?: string;
 }
 
 export interface WithdrawalDetailsUpdate {
+  bankAccountHolderName: string;
   bankName: string;
   bankAccountNumber: string;
   bankRoutingNumber: string;

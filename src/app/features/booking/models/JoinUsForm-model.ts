@@ -11,6 +11,7 @@ export interface JoinUsFormModel {
   placeTypeId: string
   otherPlaceText: string
   selectedPreferenceIds: string[]
+  bankAccountHolderName: string
   bankName: string
   bankAccountNumber: string
   bankRoutingNumber: string

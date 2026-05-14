@@ -178,17 +178,25 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   private toTripRecord(item: HotelTripItem, hotelId?: string): TripRecord {
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
+    const requestStatus = item.requestStatusString || 'Pending';
+    const tripStatus = item.tripStatusString || '';
+    const status = this.toUiTripStatus(tripStatus || requestStatus);
     return {
       id: item.tripRequestId,
+      tripId: item.tripId ?? undefined,
       hotelId: item.hotelId ?? hotelId,
       hotelName: item.hotelName,
-      tripCode: item.tripCode,
+      tripCode: item.tripCode ?? undefined,
       customerName: item.guestName,
-      pickupLocation: item.startLocation.address,
-      dropoffLocation: item.endLocation.address,
-      date: item.startedAt,
+      pickupLocation: item.startLocation?.address ?? '--',
+      dropoffLocation: item.endLocation?.address ?? '--',
+      date: item.startedAt ?? item.requestedAt ?? undefined,
       endDate: item.endedAt,
-      status: (item.status?.toLowerCase() ?? 'pending') as TripRecord['status'],
+      status,
+      tripStatus: tripStatus || 'Not Started',
+      tripStatusKey: this.normalizeStatus(tripStatus || 'not-started'),
+      requestStatus,
+      requestStatusKey: this.normalizeStatus(requestStatus),
       price: item.fare ?? 0,
       currency: item.currency,
       distance: item.distanceInKm,
@@ -197,7 +205,26 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       driverName,
       room: item.roomNumber != null ? String(item.roomNumber) : undefined,
       commission: item.commission ?? undefined,
+      requestedAt: item.requestedAt,
+      notes: item.notes,
+      placeTypeName: item.placeTypeName,
+      otherPlaceText: item.otherPlaceText,
     };
+  }
+
+  private toUiTripStatus(status: string): TripRecord['status'] {
+    const normalized = this.normalizeStatus(status);
+
+    if (normalized.includes('complete')) return 'completed';
+    if (normalized.includes('active') || normalized.includes('progress')) return 'active';
+    if (normalized.includes('schedule')) return 'scheduled';
+    if (normalized.includes('cancel')) return 'cancelled';
+
+    return 'pending';
+  }
+
+  private normalizeStatus(status: string): string {
+    return status.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
 
   onSearchChange(query: string): void {

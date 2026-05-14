@@ -59,7 +59,7 @@ export class TripsHistoryTableComponent {
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly showFilterDropdown = signal(false);
   readonly statusFilter = signal('');
-  readonly statusOptions = signal(['Scheduled', 'Settled', 'In Progress']);
+  readonly statusOptions = signal(['Pending', 'Scheduled', 'Active', 'Completed', 'Cancelled', 'CancelledByDriver']);
 
  private readonly hotelCommissionInfo = inject(HotelDetailsService);
   protected readonly tripColumns = computed<ColumnDef[]>(() => [
@@ -68,7 +68,8 @@ export class TripsHistoryTableComponent {
     { key: 'guestName', header: 'Guest Name', sortable: true, headerClass: 'w-32' },
     { key: 'driverName', header: 'Driver Name', sortable: true, headerClass: 'w-32' },
     { key: 'route', header: 'Route', sortable: false, headerClass: 'w-40' },
-    { key: 'status', header: 'Status', sortable: true, headerClass: 'w-28' },
+    { key: 'requestStatus', header: 'Request Status', sortable: true, headerClass: 'w-36' },
+    { key: 'tripStatus', header: 'Trip Status', sortable: true, headerClass: 'w-32' },
     { key: 'fare', header: 'Fare (CHF)', sortable: true, headerClass: 'w-28' },
     { key: 'startEndDate', header: 'Start.End.Date', sortable: true, headerClass: 'w-36' },
     { key: 'actions', header: 'Actions', sortable: false, headerClass: 'w-20' },
@@ -93,6 +94,9 @@ export class TripsHistoryTableComponent {
     pending: 'text-status-scheduled bg-status-scheduled-bg',
     scheduled: 'text-status-scheduled bg-status-scheduled-bg',
     cancelled: 'text-status-cancelled bg-status-cancelled-bg',
+    'cancelled-by-driver': 'text-status-cancelled bg-status-cancelled-bg',
+    'cancelled-by-passenger': 'text-status-cancelled bg-status-cancelled-bg',
+    'not-started': 'text-muted bg-gray-100',
   };
 
   readonly showCommissionsModal = signal(false);
@@ -157,6 +161,19 @@ export class TripsHistoryTableComponent {
       minute: '2-digit',
       hour12: false,
     }).format(new Date(dateStr));
+  }
+
+  protected statusColorClass(statusKey: string): string {
+    return this.tripStatusColorMap[statusKey] || 'text-status-scheduled bg-status-scheduled-bg';
+  }
+
+  protected formatStatus(status: string): string {
+    if (!status) return '--';
+
+    return status
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/[-_]+/g, ' ')
+      .trim();
   }
 
   updateCommissionSettings(): void {
