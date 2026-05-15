@@ -14,6 +14,7 @@ export interface TripDriver {
 
 export interface HotelInfo {
   id: string;
+  code: string;
   hotelName: string;
   cityId: string;
   address: string;

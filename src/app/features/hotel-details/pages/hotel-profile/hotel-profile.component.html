@@ -115,7 +115,7 @@
         <input
           class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
           type="text"
-          [value]="hotel().id"
+          [value]="hotel().code"
           readonly
           aria-readonly="true"
         />
@@ -303,10 +303,24 @@
               aria-label="Search trips"
             />
           </div>
-          <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer hover:bg-gray-50 whitespace-nowrap transition" type="button">
+          <div
+            class="relative flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer hover:bg-gray-50 whitespace-nowrap transition"
+          >
             <app-icon name="filter" size="sm" aria-hidden="true" />
             <span>{{ 'filter.Filter' | translate }}</span>
-          </button>
+            <select
+              class="absolute inset-0 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+              [value]="selectedStatus()"
+              [disabled]="statusesLoading()"
+              (change)="onStatusChange($event)"
+              [attr.aria-label]="'hotelTrip.statusFilter' | translate"
+            >
+              <option value="">{{ 'hotelTrip.allStatuses' | translate }}</option>
+              @for (status of statusOptions(); track status.id) {
+                <option [value]="status.name">{{ status.name }}</option>
+              }
+            </select>
+          </div>
           <!-- <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer hover:bg-gray-50 whitespace-nowrap transition" type="button">
             <app-icon name="download" size="sm" aria-hidden="true" />
             <span>Export</span>
@@ -379,6 +393,10 @@
             </span>
           </ng-template>
 
+          <ng-template cellDef="requestStatus" let-row>
+            <span class="text-cell font-medium text-body-soft max-sm:text-xs">{{ row.requestStatus || '--' }}</span>
+          </ng-template>
+
           <!-- Duration Cell -->
           <ng-template cellDef="duration" let-row>
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.duration }} min</span>
@@ -425,6 +443,8 @@
             (pageChange)="onPageChange($event)"
           />
         </div>
+      } @else {
+        <div class="h-5" aria-hidden="true"></div>
       }
     </app-card>
   </section>

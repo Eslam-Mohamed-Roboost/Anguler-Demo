@@ -33,6 +33,7 @@ export class BillingPanelComponent {
 
   readonly isOpen = input<boolean>(false);
   readonly closePanel = output<void>();
+  readonly notificationRead = output<void>();
   readonly billingItems = input<BillingItem[]>([]);
 
   protected readonly notifications = signal<NotificationItem[]>([]);
@@ -87,8 +88,51 @@ export class BillingPanelComponent {
     this.closePanel.emit();
   }
 
+  protected onNotificationClick(item: NotificationItem): void {
+    if (item.isRead) return;
+
+    this.notifications.update((items) =>
+      items.map((notification) =>
+        notification.id === item.id ? { ...notification, isRead: true } : notification,
+      ),
+    );
+    this.UnreadCount.update((count) => Math.max(0, count - 1));
+
+    this.notificationsService.markAsRead(item.id).subscribe({
+      next: (result) => {
+        if (result.isSuccess) {
+          this.refreshUnreadCount();
+          this.notificationRead.emit();
+          return;
+        }
+
+        this.restoreUnreadNotification(item.id);
+      },
+      error: () => this.restoreUnreadNotification(item.id),
+    });
+  }
+
   protected formatDate(dateStr: string): string {
     const date = new Date(dateStr);
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  private refreshUnreadCount(): void {
+    this.notificationsService.UnreadNotificationsCount().subscribe({
+      next: (result) => {
+        if (result.isSuccess) {
+          this.UnreadCount.set(result.data?.count ?? 0);
+        }
+      },
+    });
+  }
+
+  private restoreUnreadNotification(id: string): void {
+    this.notifications.update((items) =>
+      items.map((notification) =>
+        notification.id === id ? { ...notification, isRead: false } : notification,
+      ),
+    );
+    this.refreshUnreadCount();
   }
 }

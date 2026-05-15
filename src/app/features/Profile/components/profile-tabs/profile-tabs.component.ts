@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InputComponent } from '../../../../shared/components/input/input.component';
 import { PasswordInputComponent } from '../../../../shared/components/password-input/password-input.component';
@@ -117,7 +118,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
               bankName: result.data.bankName,
               accountNumber: result.data.bankAccountNumber,
               accountHolderName: result.data.bankAccountHolderName ?? result.data.accountHolderName,
-              swiftCode: result.data.bankRoutingName,
+              swiftCode: result.data.bankRoutingNumber,
             });
           } else {
             this.notifications.showError(result.error?.description ?? 'Failed to load withdrawal details');
@@ -140,11 +141,13 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
   submitChangePassword(): void {
     const { currentPassword, newPassword, confirmPassword } = this.passwordModel();
+    console.log('Submitting password change:', { currentPassword, newPassword, confirmPassword });
 
     if (!currentPassword || !newPassword || !confirmPassword) {
       this.passwordError.set('All password fields are required.');
       return;
     }
+    console.log('Submitting password change:', { currentPassword, newPassword, confirmPassword });
 
     if (newPassword !== confirmPassword) {
       this.passwordError.set('New password and confirmation do not match.');
@@ -154,7 +157,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
     this.passwordLoading.set(true);
     this.passwordError.set(null);
     this.passwordSuccess.set(false);
-
+    console.log('Submitting password change:', { currentPassword, newPassword, confirmPassword });
     this.profileService
       .changePassword({
         currentPassword,
@@ -165,6 +168,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
       .subscribe({
         next: (result) => {
           this.passwordLoading.set(false);
+          console.log(result);
           if (result.isSuccess) {
             this.passwordSuccess.set(true);
             this.passwordModel.set({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -172,9 +176,9 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
             this.passwordError.set(result.error?.description ?? 'Failed to change password.');
           }
         },
-        error: () => {
+        error: (error: unknown) => {
           this.passwordLoading.set(false);
-          this.passwordError.set('An unexpected error occurred.');
+          this.passwordError.set(this.getErrorMessage(error, 'Failed to change password.'));
         },
       });
   }
@@ -266,5 +270,34 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
           this.notifications.showError('Failed to load cities');
         },
       });
+  }
+
+  private getErrorMessage(error: unknown, fallback: string): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return fallback;
+    }
+
+    if (typeof error.error === 'string' && error.error.trim()) {
+      return error.error.trim();
+    }
+
+    if (error.error && typeof error.error === 'object') {
+      const body = error.error as Record<string, unknown>;
+      const message = body['message'] ?? body['title'] ?? body['detail'];
+      const resultError = body['error'];
+
+      if (typeof message === 'string' && message.trim()) {
+        return message.trim();
+      }
+
+      if (resultError && typeof resultError === 'object') {
+        const description = (resultError as Record<string, unknown>)['description'];
+        if (typeof description === 'string' && description.trim()) {
+          return description.trim();
+        }
+      }
+    }
+
+    return error.statusText && error.statusText !== 'OK' ? error.statusText : fallback;
   }
 }

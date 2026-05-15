@@ -22,7 +22,7 @@ import { HotelInfoCardComponent } from '../../components/hotel-info-card/hotel-i
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
   import type { HotelFormData, HotelInfo, TripRecord, WithdrawalFormData } from '../../types/hotel-details.types';
 import { HotelDetailsService } from '../../services/hotel-details.service';
-import { HotelApiItem, HotelTripItem } from '../../models/dto';
+import { HotelApiItem, HotelTripItem, TripRequestStatusItem } from '../../models/dto';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { TranslatePipe } from "../../../../shared/pipes/translate.pipe";
@@ -52,10 +52,13 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
 
   readonly hotelId = signal('');
   readonly searchQuery = signal('');
+  readonly selectedStatus = signal('');
+  readonly statusOptions = signal<TripRequestStatusItem[]>([]);
   readonly awaitingAmount = signal(0);
 
   readonly loading = signal(false);
   readonly tripsLoading = signal(false);
+  readonly statusesLoading = signal(false);
   readonly formLoading = signal(false);
   readonly withdrawalLoading = signal(false);
   readonly settleLoading = signal(false);
@@ -77,6 +80,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
 
   readonly hotel = signal<HotelInfo>({
     id: '',
+    code: '',
     name: '',
     address: '',
     phone: '',
@@ -119,6 +123,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     { key: 'guest', header: 'hotelTrip.guest', sortable: false, headerClass: 'w-32' },
     { key: 'route', header: 'hotelTrip.route', sortable: false, headerClass: 'w-40' },
     { key: 'status', header: 'hotelTrip.status', sortable: false, headerClass: 'w-24' },
+    { key: 'requestStatus', header: 'hotelTrip.requestStatus', sortable: false, headerClass: 'w-32' },
     { key: 'duration', header: 'hotelTrip.duration', sortable: false, headerClass: 'w-24' },
     { key: 'fare', header: 'hotelTrip.fare', sortable: false, headerClass: 'w-24' },
     { key: 'date', header: 'hotelTrip.startDate', sortable: false, headerClass: 'w-32' },
@@ -130,6 +135,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     const id = this.route.snapshot.paramMap.get('id') ?? '';
     if (id && !this.dataLoaded) {
       this.dataLoaded = true;
+      this.loadTripStatuses();
       this.loadHotel(id);
       this.loadTrips(id);
       this.loadWithdrawalDetails(id);
@@ -196,6 +202,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
 
     this.hotel.set({
       id: item.id,
+      code: item.code,
       name: item.hotelName,
       address: item.address,
       phone: item.phoneNumber,
@@ -209,7 +216,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       address: item.address,
       email: item.email,
       phone: item.phoneNumber,
-      hotelCode: item.id,
+      hotelCode: item.code,
       joiningDate: '',
     });
 
@@ -219,10 +226,33 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     );
   }
 
+  private getCurrentHotelRouteId(): string {
+    return this.route.snapshot.paramMap.get('id') ?? this.hotelId();
+  }
+
+  private loadTripStatuses(): void {
+    this.statusesLoading.set(true);
+    this.service
+      .getTripRequestStatuses()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.statusesLoading.set(false);
+          if (result.isSuccess && result.data) {
+            this.statusOptions.set(result.data.status);
+          }
+        },
+        error: () => {
+          this.statusesLoading.set(false);
+          this.notifications.showError('Failed to load trip statuses.');
+        },
+      });
+  }
+
   private loadTrips(id: string): void {
     this.tripsLoading.set(true);
     this.service
-      .getHotelTripsById(id, this.currentPage(), this.pageSize())
+      .getHotelTripsById(id, this.currentPage(), this.pageSize(), this.selectedStatus())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
@@ -311,11 +341,17 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
 
   onPageChange(page: number): void {
     this.currentPage.set(page);
-    this.loadTrips(this.hotelId());
+    this.loadTrips(this.getCurrentHotelRouteId());
   }
 
   protected onSearchChange(event: Event): void {
     this.searchQuery.set((event.target as HTMLInputElement).value);
+  }
+
+  protected onStatusChange(event: Event): void {
+    this.selectedStatus.set((event.target as HTMLSelectElement).value);
+    this.currentPage.set(1);
+    this.loadTrips(this.getCurrentHotelRouteId());
   }
 
   protected formatDate(dateStr: string | undefined): string {

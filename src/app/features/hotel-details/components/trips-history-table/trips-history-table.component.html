@@ -226,23 +226,24 @@
         ariaLabel="All hotels table"
         trackByKey="id"
       >
-        <!-- Select Cell -->
-        <!-- <ng-template cellDef="select" let-row>
-          <input
-            type="checkbox"
-            class="size-4 cursor-pointer accent-warning"
-            [attr.aria-label]="'Select ' + row.hotelName"
-          />
-        </ng-template> -->
+        <ng-template cellDef="id" let-row>
+          <span class="text-cell font-medium text-body-soft max-sm:text-xs">{{ row.displayId }}</span>
+        </ng-template>
 
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
-          <div class="flex flex-col gap-0.5">
-            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName }}</span>
-            <span class="flex items-center gap-1 text-xs font-medium"
-                  [class]="row.hotelStatus === 'active' ? 'text-status-completed' : 'text-status-cancelled'">
-              <span class="inline-block size-[7px] rounded-full"
-                    [class]="row.hotelStatus === 'active' ? 'bg-status-completed' : 'bg-status-cancelled'"></span>
+          <div class="flex min-w-[170px] max-w-[240px] flex-col items-start gap-0.5 text-start">
+            <span class="block max-w-full whitespace-normal break-all text-cell font-medium leading-snug text-body max-sm:text-xs">
+              {{ row.hotelName }}
+            </span>
+            <span
+              class="inline-flex items-center gap-1 text-xs font-medium leading-none"
+              [class]="row.hotelStatus === 'active' ? 'text-status-completed' : 'text-status-cancelled'"
+            >
+              <span
+                class="inline-block size-[7px] shrink-0 rounded-full"
+                [class]="row.hotelStatus === 'active' ? 'bg-status-completed' : 'bg-status-cancelled'"
+              ></span>
               {{ row.hotelStatus === 'active' ? 'Active' : 'Suspended' }}
             </span>
           </div>
@@ -275,22 +276,72 @@
 
         <!-- Status Cell -->
         <ng-template cellDef="status" let-row>
-          <span class="text-cell font-semibold"
-                [class]="row.settlementStatus === 'in-progress' ? 'text-warning' : 'text-status-completed'">
-            {{ row.settlementStatus === 'in-progress' ? 'In Progress' : 'Settled' }} : {{ row.settlementAmount }}
+          <span
+            class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold"
+            [class.bg-[#FFF3D8]]="row.settlementStatus === 'in-progress'"
+            [class.text-[#FF7A00]]="row.settlementStatus === 'in-progress'"
+            [class.bg-[#EAFBF2]]="row.settlementStatus === 'settled'"
+            [class.text-[#00B64F]]="row.settlementStatus === 'settled'"
+          >
+            {{ row.settlementStatus === 'in-progress' ? 'In Progress' : 'Settled' }} : {{ row.settlementAmount }} CHF
           </span>
         </ng-template>
 
         <!-- Actions Cell -->
         <ng-template cellDef="actions" let-row>
-          <div class="flex gap-1.5">
-            <a
-              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
-              [routerLink]="['/hotel-details', row.id]"
-              aria-label="View hotel details"
+          <div class="relative flex justify-center">
+            <button
+              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-gray-50 text-muted hover:bg-gray-100"
+              type="button"
+              (click)="toggleHotelActionMenu(row.id)"
+              aria-label="Open hotel actions"
+              [attr.aria-expanded]="openHotelActionId() === row.id"
             >
-              <app-icon name="eye" size="sm" aria-hidden="true" />
-            </a>
+              <span class="flex flex-col items-center gap-0.5" aria-hidden="true">
+                <span class="size-1 rounded-full bg-current"></span>
+                <span class="size-1 rounded-full bg-current"></span>
+                <span class="size-1 rounded-full bg-current"></span>
+              </span>
+            </button>
+
+            @if (openHotelActionId() === row.id) {
+              <div class="absolute end-0 top-full z-30 mt-2 min-w-[194px] rounded-xl bg-white p-3 text-start shadow-[0_12px_30px_rgba(15,23,42,0.16)] ring-1 ring-black/5">
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
+                  (click)="onHotelAction('view', row)"
+                >
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M1.25 7.5S3.4375 3.125 7.5 3.125 13.75 7.5 13.75 7.5 11.5625 11.875 7.5 11.875 1.25 7.5 1.25 7.5Z" stroke="#FF7A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7.5 9.375C8.53553 9.375 9.375 8.53553 9.375 7.5C9.375 6.46447 8.53553 5.625 7.5 5.625C6.46447 5.625 5.625 6.46447 5.625 7.5C5.625 8.53553 6.46447 9.375 7.5 9.375Z" stroke="#FF7A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>View Hotel Info</span>
+                </button>
+
+                @if (row.settlementStatus === 'in-progress') {
+                  <button
+                    type="button"
+                    class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
+                    (click)="onHotelAction('settle', row)"
+                  >
+                    <span class="w-[15px] text-center text-xl leading-none text-[#6D28D9]" aria-hidden="true">$</span>
+                    <span>Settle Balance</span>
+                  </button>
+                }
+
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
+                  (click)="onHotelAction('block', row)"
+                >
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M7.5 13.75C10.9518 13.75 13.75 10.9518 13.75 7.5C13.75 4.04822 10.9518 1.25 7.5 1.25C4.04822 1.25 1.25 4.04822 1.25 7.5C1.25 10.9518 4.04822 13.75 7.5 13.75Z" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3.0625 3.0625L11.9375 11.9375" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>{{ row.hotelStatus === 'active' ? 'Block Hotel' : 'Unblock Hotel' }}</span>
+                </button>
+              </div>
+            }
           </div>
         </ng-template>
       </app-data-table>

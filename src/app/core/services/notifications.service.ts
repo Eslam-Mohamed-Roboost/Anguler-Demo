@@ -24,8 +24,12 @@ export class NotificationsService extends ApiService {
   getAll(): Observable<Result<NotificationsResponse>> {
     return this.get<NotificationsResponse>('/GetNotifications/GetAll');
   }
-    UnreadNotificationsCount(): Observable<Result<NotificationsCountResponse>> {
+
+  UnreadNotificationsCount(): Observable<Result<NotificationsCountResponse>> {
     return this.get<NotificationsCountResponse>('/GetNotifications/UnReadCount');
   }
 
+  markAsRead(id: string): Observable<Result<boolean>> {
+    return this.put<boolean>(`/notifications/read?Id=${encodeURIComponent(id)}`, {});
+  }
 }

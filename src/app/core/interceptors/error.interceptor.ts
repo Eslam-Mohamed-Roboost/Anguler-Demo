@@ -9,12 +9,62 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      const message = mapErrorMessage(error.status);
+      console.error('API Error:', error);
+      const message = getErrorMessage(error);
       notifications.showError(message);
       return throwError(() => error);
     }),
   );
 };
+
+function getErrorMessage(error: HttpErrorResponse): string {
+  const backendMessage = extractBackendMessage(error);
+
+  return backendMessage || mapErrorMessage(error.status);
+}
+
+function extractBackendMessage(error: HttpErrorResponse): string {
+  if (typeof error.error === 'string' && error.error.trim()) {
+    return error.error.trim();
+  }
+
+  if (error.error && typeof error.error === 'object') {
+    const body = error.error as Record<string, unknown>;
+    const message = body['message'] ?? body['title'] ?? body['detail'];
+    const resultError = body['error'];
+
+    if (typeof message === 'string' && message.trim()) {
+      return message.trim();
+    }
+
+    if (resultError && typeof resultError === 'object') {
+      const description = (resultError as Record<string, unknown>)['description'];
+      if (typeof description === 'string' && description.trim()) {
+        return description.trim();
+      }
+    }
+  }
+
+  return isCustomStatusText(error.statusText) ? error.statusText.trim() : '';
+}
+
+function isCustomStatusText(statusText: string): boolean {
+  const normalized = statusText.trim().toLowerCase();
+
+  if (!normalized || normalized === 'ok') return false;
+
+  return ![
+    'unknown error',
+    'bad request',
+    'unauthorized',
+    'forbidden',
+    'not found',
+    'conflict',
+    'unprocessable entity',
+    'too many requests',
+    'internal server error',
+  ].includes(normalized);
+}
 
 function mapErrorMessage(status: number): string {
   switch (status) {

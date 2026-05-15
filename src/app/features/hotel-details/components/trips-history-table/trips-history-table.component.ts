@@ -7,7 +7,6 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CellDefDirective } from '../../../../shared/components/data-table/cell-def.directive';
 import type { ColumnDef } from '../../../../shared/components/data-table/column-def';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
@@ -23,7 +22,6 @@ import { HotelDetailsService } from '../../services/hotel-details.service';
   selector: 'app-trips-history-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
     DataTableComponent,
     CellDefDirective,
     CardComponent,
@@ -41,6 +39,7 @@ export class TripsHistoryTableComponent {
   readonly loading = input(false);
   readonly searchQuery = input('');
   readonly filters = input<TripSearchFilters>({});
+  readonly statusOptions = input<string[]>([]);
   readonly totalTrips = input(0);
   readonly totalHotels = input(0);
  readonly generalCommissionField = signal(0);
@@ -51,7 +50,9 @@ export class TripsHistoryTableComponent {
 
   readonly searchChange = output<string>();
   readonly filterChange = output<TripSearchFilters>();
+  readonly tabChange = output<'trips' | 'hotels'>();
   readonly tripAction = output<{ type: string; tripId: string; hotelId?: string }>();
+  readonly hotelAction = output<{ type: 'view' | 'settle' | 'block'; hotel: HotelRecord }>();
   readonly commissionSettings = output<void>();
   readonly pageChange = output<number>();
   readonly sortChange = output<'asc' | 'desc'>();
@@ -59,7 +60,7 @@ export class TripsHistoryTableComponent {
   readonly sortOrder = signal<'asc' | 'desc'>('asc');
   readonly showFilterDropdown = signal(false);
   readonly statusFilter = signal('');
-  readonly statusOptions = signal(['Pending', 'Scheduled', 'Active', 'Completed', 'Cancelled', 'CancelledByDriver']);
+  readonly openHotelActionId = signal<string | null>(null);
 
  private readonly hotelCommissionInfo = inject(HotelDetailsService);
   protected readonly tripColumns = computed<ColumnDef[]>(() => [
@@ -76,9 +77,8 @@ export class TripsHistoryTableComponent {
   ]);
 
   protected readonly hotelColumns = computed<ColumnDef[]>(() => [
-    { key: 'select', header: '', sortable: false, headerClass: 'w-10' },
-   // { key: 'id', header: 'ID', sortable: true, headerClass: 'w-20' },
-    { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-44' },
+    { key: 'id', header: 'ID', sortable: true, headerClass: 'w-24' },
+    { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-56', cellClass: 'text-start' },
     { key: 'totalTrips', header: 'Total Trips', sortable: true, headerClass: 'w-24' },
     { key: 'hotelComm', header: 'Hotel Comm.', sortable: true, headerClass: 'w-24' },
     { key: 'hotelProfits', header: 'Hotel Profits', sortable: true, headerClass: 'w-28' },
@@ -121,6 +121,9 @@ export class TripsHistoryTableComponent {
   }
   protected setTab(tab: 'trips' | 'hotels'): void {
     this.activeTab.set(tab);
+    this.statusFilter.set('');
+    this.showFilterDropdown.set(false);
+    this.tabChange.emit(tab);
   }
 
   protected toggleSort(): void {
@@ -145,6 +148,15 @@ export class TripsHistoryTableComponent {
 
   protected onTripAction(trip: TripRecord, action: string): void {
     this.tripAction.emit({ type: action, tripId: trip.id,hotelId:trip.hotelId });
+  }
+
+  protected toggleHotelActionMenu(hotelId: string): void {
+    this.openHotelActionId.update(openId => openId === hotelId ? null : hotelId);
+  }
+
+  protected onHotelAction(type: 'view' | 'settle' | 'block', hotel: HotelRecord): void {
+    this.openHotelActionId.set(null);
+    this.hotelAction.emit({ type, hotel });
   }
 
   protected onHotelPageChange(page: number): void {

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { AdminApiService } from '../../../core/services/admin-api.service';
 import type { Result } from '../../../core/models/result.model';
-import { DashboardStatsResponse, HotelApiItem, HotelKpiResponse, HotelProfileResponse, HotelsListResponse, HotelTripsResponse, WithdrawalDetailsResponse, WithdrawalDetailsUpdate } from '../models/dto';
+import { DashboardStatsResponse, HotelApiItem, HotelKpiResponse, HotelProfileResponse, HotelsListResponse, HotelTripsResponse, TripRequestStatusesResponse, WithdrawalDetailsResponse, WithdrawalDetailsUpdate } from '../models/dto';
 
 @Injectable({ providedIn: 'root' })
 export class HotelDetailsService extends ApiService {
@@ -78,12 +78,26 @@ export class HotelDetailsService extends ApiService {
     hotelId: string,
     pageNumber: number,
     pageSize: number,
+    status?: string,
   ): Observable<Result<HotelTripsResponse>> {
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('pageNumber', pageNumber)
       .set('pageSize', pageSize)
       .set('hotelUserId', hotelId);
+
+    if (status) {
+      params = params.set('status', status);
+    }
+
     return this.get<HotelTripsResponse>('/hotels/trips', params);
+  }
+
+  getTripRequestStatuses(): Observable<Result<TripRequestStatusesResponse>> {
+    return this.get<TripRequestStatusesResponse>('/trip-request/all-status');
+  }
+
+  getPayoutAllStatuses(): Observable<Result<TripRequestStatusesResponse>> {
+    return this.adminApi.get<TripRequestStatusesResponse>('/admin/hotels/payout-all-status');
   }
 
   getDashboardStats(

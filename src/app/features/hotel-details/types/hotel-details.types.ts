@@ -1,5 +1,6 @@
 export interface HotelInfo {
   id: string;
+  code: string;
   name: string;
   address: string;
   phone: string;
@@ -87,6 +88,8 @@ export interface TableColumn {
 
 export interface HotelRecord {
   id: string;
+  code: string;
+  displayId: string;
   hotelName: string;
   hotelStatus: 'active' | 'suspended';
   totalTrips: number;

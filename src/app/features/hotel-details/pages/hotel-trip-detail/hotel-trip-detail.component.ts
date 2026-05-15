@@ -91,6 +91,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
 
   readonly hotel = signal<HotelInfo>({
     id: '',
+    code: '',
     name: '',
     address: '',
     phone: '',
@@ -187,6 +188,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
             const h = result.data;
             this.hotel.set({
               id: h.id,
+              code: h.code,
               name: h.hotelName,
               address: h.address,
               phone: h.phoneNumber,
@@ -228,6 +230,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
                 email: h.email,
                 imageUrl: h.logoUrl ?? '',
                 isBlocked: false,
+                code: h.code ?? '',
               });
               this.hotelDetailsLoaded = true;
             } else if (result.data.hotelId && !this.hotelDetailsLoaded && !this.hotelLoading()) {

@@ -40,7 +40,17 @@
       [attr.aria-label]="hotel().isBlocked ? 'Unblock hotel' : 'Block hotel'"
       [attr.aria-busy]="toggleLoading()"
     >
-      <app-icon [name]="hotel().isBlocked ? 'check-circle' : 'x-circle'" size="sm" />
+      @if (hotel().isBlocked) {
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M5.625 6.25L7.66125 7.7775C7.7874 7.87211 7.94465 7.91554 8.10148 7.89908C8.25831 7.88262 8.40312 7.80749 8.50688 7.68875L12.5 3.125" stroke="#00C950" stroke-width="1.25" stroke-linecap="round"/>
+          <path d="M13.125 7.50002C13.125 8.67535 12.7569 9.82116 12.0723 10.7765C11.3877 11.7319 10.421 12.4488 9.30807 12.8266C8.19512 13.2044 6.99178 13.2241 5.86707 12.8829C4.74235 12.5417 3.75277 11.8568 3.0373 10.9243C2.32183 9.99182 1.91642 8.85865 1.87801 7.68395C1.8396 6.50925 2.17011 5.35203 2.82314 4.37481C3.47617 3.39759 4.41889 2.64947 5.51892 2.23553C6.61894 1.82159 7.82099 1.76262 8.95625 2.0669" stroke="#00C950" stroke-width="1.25" stroke-linecap="round"/>
+        </svg>
+      } @else {
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M7.5 13.75C10.9518 13.75 13.75 10.9518 13.75 7.5C13.75 4.04822 10.9518 1.25 7.5 1.25C4.04822 1.25 1.25 4.04822 1.25 7.5C1.25 10.9518 4.04822 13.75 7.5 13.75Z" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3.0625 3.0625L11.9375 11.9375" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      }
     </button>
   </div>
 </app-card>
@@ -134,7 +144,6 @@
 
   </div>
 </app-modal>
-
 
 
 

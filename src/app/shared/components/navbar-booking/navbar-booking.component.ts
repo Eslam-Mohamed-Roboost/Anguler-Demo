@@ -178,7 +178,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
     this.loadMessages();
     this.notificationCount();
   }
-  private notificationCount(){
+  protected notificationCount(): void {
       this.notifiactionService.UnreadNotificationsCount()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

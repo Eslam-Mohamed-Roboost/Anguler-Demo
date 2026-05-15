@@ -24,12 +24,15 @@ export interface HotelProfileData {
 }
 
 export interface WithdrawalDetailsData {
+  id?: string;
   bankAccountHolderName?: string;
   accountHolderName: string;
   bankName: string;
   bankAccountNumber: string;
   bankRoutingNumber: string;
-  bankRoutingName: string;
+  payoutCycle?: string | null;
+  payoutMethod?: string | null;
+  walletAddress?: string | null;
 }
 
 export interface WithdrawalDetailsUpdate {
@@ -44,6 +47,7 @@ export class ProfileService {
   private readonly api = inject(ApiService);
 
   changePassword(payload: ChangePasswordRequest): Observable<Result<void>> {
+    console.log('ProfileService.changePassword called with payload:', payload);
     return this.api.put<void>('/users/change-password', payload);
   }
 

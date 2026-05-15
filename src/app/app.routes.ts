@@ -5,6 +5,7 @@ import { LayoutBookingComponent } from './shared/components/layout-booking/layou
 import { NotFoundComponent } from './features/not-found/not-found.component';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { DefaultPageComponent } from './core/components/default-page/default-page.component';
 
 export const routes: Routes = [
   {
@@ -53,7 +54,7 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/admin-dashboard/admin.routes').then((m) => m.Admin_ROUTES),
       },
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: '', component: DefaultPageComponent, pathMatch: 'full' },
     ],
   },
   {

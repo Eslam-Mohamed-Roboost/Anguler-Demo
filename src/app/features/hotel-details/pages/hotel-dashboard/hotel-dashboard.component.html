@@ -36,11 +36,14 @@
       [totalHotels]="totalHotels()"
       [currentPage]="currentPage()"
       [pageSize]="pageSize()"
+      [statusOptions]="statusOptions()"
       (searchChange)="onSearchChange($event)"
       (tripAction)="onTripAction($event)"
       (pageChange)="onPageChange($event)"
       (sortChange)="onSortChange($event)"
       (filterChange)="onFilterChange($event)"
+      (tabChange)="onTabChange($event)"
+      (hotelAction)="onHotelAction($event)"
     />
   </section>
 </div>

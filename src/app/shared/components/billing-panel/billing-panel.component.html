@@ -60,8 +60,13 @@
           <div class="flex flex-col gap-3">
             @for (item of notifications(); track item.id) {
               <div
-                class="flex items-start gap-3 rounded-xl border p-4 transition-colors"
+                role="button"
+                tabindex="0"
+                class="flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2"
                 [class]="item.isRead ? 'border-gray-200 bg-white' : 'border-primary/20 bg-primary/5'"
+                (click)="onNotificationClick(item)"
+                (keydown.enter)="onNotificationClick(item)"
+                (keydown.space)="$event.preventDefault(); onNotificationClick(item)"
               >
                 <!-- Read/unread dot -->
                 <span

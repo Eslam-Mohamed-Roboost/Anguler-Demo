@@ -8,6 +8,7 @@ describe('HotelInfoCardComponent', () => {
 
   const mockHotelInfo: HotelInfo = {
     id: '1',
+    code: 'HTL-001',
     name: 'Massa Hotel',
     address: '12 Taq. st., Jadda Square, Egypt.',
     phone: '00215236582458',

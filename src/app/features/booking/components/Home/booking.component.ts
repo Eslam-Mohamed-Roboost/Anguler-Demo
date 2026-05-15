@@ -40,6 +40,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { DriverNoteComponent } from '../driver-note/driver-note.component';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { AppConfigService } from '../../../../core/services/app-config.service';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-booking',
@@ -77,6 +78,7 @@ export class BookingComponent extends BaseComponent {
   private readonly hotelDetailsService = inject(HotelDetailsService);
   private readonly notifications = inject(NotificationStore);
   private readonly appConfig = inject(AppConfigService);
+  private readonly languageService = inject(LanguageService);
 
   // Signals
   readonly carTypes = signal<CarOption[]>([]);
@@ -84,7 +86,12 @@ export class BookingComponent extends BaseComponent {
   readonly placeTypes = signal<PlaceType[]>([]);
   readonly placeTypesLoading = signal(false);
   readonly banks = signal<Bank[]>([]);
+  readonly bankOptions = computed<Bank[]>(() =>
+    this.banks().map(bank => ({ ...bank, id: bank.name })),
+  );
   readonly banksLoading = signal(false);
+  readonly otherBankName = signal('');
+  readonly savedOtherBankName = signal('');
   readonly distnationName = signal<string>('');
   readonly driverNoteChecked = signal(false);
   readonly driverNoteText = signal('');
@@ -196,7 +203,6 @@ export class BookingComponent extends BaseComponent {
     pet:      'assets/booking/car-pet.png',
     kids:     'assets/booking/car-kids.png',
   };
-
   private loadVehicleTypes(km: number): void {
     if (this.vehicleTypesLoaded) return;
     this.vehicleTypesLoaded = true;
@@ -262,18 +268,35 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     return selectedPlaceTypeId === otherPlaceType?.id && !!otherPlaceType;
   });
   readonly selectedEntityTypeName = computed(() => {
+    this.languageService.lang();
     const selectedPlaceTypeId = this.joinFormModel().placeTypeId;
     const selectedPlaceType = this.placeTypes().find(p => p.id === selectedPlaceTypeId);
     const selectedName = selectedPlaceType?.name?.trim() ?? '';
 
     if (selectedName.toLowerCase() === 'other') {
-      return this.savedOtherEntityType() || 'Company';
+      return this.savedOtherEntityType() || this.languageService.translate('join.defaultEntityCompany');
     }
 
-    return selectedName || 'Hotel';
+    return selectedName || this.languageService.translate('join.defaultEntityHotel');
   });
-  readonly entityNameLabel = computed(() => `${this.selectedEntityTypeName()} Name`);
-  readonly entityNamePlaceholder = computed(() => `Enter ${this.selectedEntityTypeName()} name`);
+  readonly entityNameLabel = computed(() =>
+    this.formatEntityNameText('join.entityNameLabelTemplate'),
+  );
+  readonly entityNamePlaceholder = computed(() =>
+    this.formatEntityNameText('join.entityNamePlaceholderTemplate'),
+  );
+  readonly entityPhoneLabel = computed(() =>
+    this.formatEntityNameText('join.entityPhoneLabelTemplate'),
+  );
+  readonly entityPhonePlaceholder = computed(() =>
+    this.formatEntityNameText('join.entityPhonePlaceholderTemplate'),
+  );
+  readonly entityEmailLabel = computed(() =>
+    this.formatEntityNameText('join.entityEmailLabelTemplate'),
+  );
+  readonly isOtherBankSelected = computed(() =>
+    this.isOtherBankValue(this.joinFormModel().bankName),
+  );
 
   onHotelImageChange(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -312,6 +335,25 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   protected onOtherEntityTypeInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.joinFormModel.update(m => ({ ...m, otherEntityType: input.value }));
+  }
+
+  protected onOtherBankInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.otherBankName.set(input.value);
+  }
+
+  protected saveOtherBankName(): void {
+    const bankName = this.otherBankName();
+
+    if (bankName.trim()) {
+      this.savedOtherBankName.set(bankName.trim());
+      this.otherBankName.set('');
+    }
+  }
+
+  protected editOtherBankName(): void {
+    this.otherBankName.set(this.savedOtherBankName());
+    this.savedOtherBankName.set('');
   }
 
   protected readonly signInFormModel = signal({ email: '', password: '' });
@@ -608,6 +650,14 @@ readonly activeTab = signal<'login' | 'register'>('register');
     }
     if (!form.bankName?.trim()) {
       this.showError('Please select a bank.');
+      return false;
+    }
+    if (
+      this.isOtherBankValue(form.bankName) &&
+      !this.savedOtherBankName().trim() &&
+      !this.otherBankName().trim()
+    ) {
+      this.showError('Please enter the bank name.');
       return false;
     }
     if (!form.bankRoutingNumber?.trim()) {
@@ -999,14 +1049,22 @@ readonly activeTab = signal<'login' | 'register'>('register');
     const preferences = this.servicePreferencesModel();
     const allServices = this.allServicePreferences();
 
-    form.selectedPreferenceIds = allServices
-      .filter(service => preferences[service.serviceCode as keyof Omit<ServicePreferencesModel, 'additionalNote'>])
-      .map(service => service.serviceId);   
-       this.authService.Register(form).pipe(this.takeUntilDestroyed()).subscribe({
+    const payload: JoinUsFormModel = {
+      ...form,
+      bankName: this.isOtherBankValue(form.bankName)
+        ? this.savedOtherBankName().trim() || this.otherBankName().trim()
+        : form.bankName,
+      selectedPreferenceIds: allServices
+        .filter(service => preferences[service.serviceCode as keyof Omit<ServicePreferencesModel, 'additionalNote'>])
+        .map(service => service.serviceId),
+    };
+
+       this.authService.Register(payload).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isRegistering.set(false);
 
         if (result.isSuccess) {
+          this.closeJoinModal();
           this.showWelcomeModal.set(true);
           this.showSuccess('Hotel registered successfully! You will be redirected to login.');
           
@@ -1028,6 +1086,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
             bankAccountNumber: '',
             bankRoutingNumber: ''
           });
+          this.otherBankName.set('');
+          this.savedOtherBankName.set('');
           
           // Switch to login tab after successful registration
           setTimeout(() => {
@@ -1086,6 +1146,34 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   private showError(message: string): void {
     this.notifications.showError(message);
+  }
+
+  private formatEntityNameText(key: string): string {
+    this.languageService.lang();
+
+    return this.languageService
+      .translate(key)
+      .replace('{entity}', this.selectedEntityTypeName());
+  }
+
+  private isOtherBankValue(value: string): boolean {
+    const normalizedValue = this.normalizeBankName(value);
+
+    if (!normalizedValue) return false;
+
+    return this.banks().some((bank) => {
+      const normalizedId = this.normalizeBankName(bank.id);
+      const normalizedName = this.normalizeBankName(bank.name);
+
+      return (
+        (normalizedValue === normalizedId || normalizedValue === normalizedName) &&
+        (normalizedId === 'other' || normalizedName === 'other' || normalizedName === 'اخرى' || normalizedName === 'أخرى' || normalizedName === 'andere')
+      );
+    });
+  }
+
+  private normalizeBankName(value: string): string {
+    return value.trim().toLowerCase();
   }
 
   private getPasswordValidationError(password: string): string | null {

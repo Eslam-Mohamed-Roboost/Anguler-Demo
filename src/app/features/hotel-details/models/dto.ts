@@ -48,6 +48,15 @@ export interface HotelTripsResponse {
   pageSize: number;
 }
 
+export interface TripRequestStatusItem {
+  id: number;
+  name: string;
+}
+
+export interface TripRequestStatusesResponse {
+  status: TripRequestStatusItem[];
+}
+
 export interface HotelApiItem {
   id: string;
   hotelName: string;
@@ -66,6 +75,7 @@ export interface HotelApiItem {
 
 export interface HotelFinancialsItem {
   hotelId: string;
+  code?: string | null;
   hotelName: string;
   isActive: boolean;
   year: number;
