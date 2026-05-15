@@ -191,7 +191,7 @@
   <!-- Trip Conversation -->
   @if (!chatHasError()) {
     <section class="mb-4">
-      <app-chat [tripRequestId]="tripId()" (chatError)="chatHasError.set($event)" />
+      <app-chat [tripRequestId]="tripId()" senderRole="Hotel" (chatError)="chatHasError.set($event)" />
     </section>
   }
 

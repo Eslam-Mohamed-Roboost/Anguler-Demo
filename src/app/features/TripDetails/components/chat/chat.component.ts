@@ -1,14 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   OnInit,
   computed,
   inject,
   input,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
-import { distinctUntilChanged } from 'rxjs';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { MessageComponent } from '../message/message.component';
@@ -29,8 +30,10 @@ import type { TranslationKey } from '../../../../core/i18n/translations';
 export class ChatComponent extends BaseComponent implements OnInit {
   private readonly chatService = inject(ChatService);
   private readonly authService = inject(AuthService);
+  private readonly messagesContainer = viewChild<ElementRef<HTMLElement>>('messagesContainer');
 
   readonly tripRequestId = input.required<string>();
+  readonly senderRole = input<string | null>(null);
   readonly chatError = output<boolean>();
 
   protected readonly conversation = signal<ChatConversation | null>(null);
@@ -39,11 +42,26 @@ export class ChatComponent extends BaseComponent implements OnInit {
   protected readonly sendLoading = signal(false);
   protected readonly closeLoading = signal(false);
   protected readonly currentUserRole = computed(() => {
+    const explicitRole = this.senderRole();
+    if (explicitRole) return this.displayRole(explicitRole);
+
     const roles = this.authService.userRoles();
-    if (roles.includes('hotel')) return 'Hotel';
-    if (roles.includes('admin')) return 'Admin';
-    if (roles.includes('driver')) return 'Driver';
-    return roles[0] ?? '';
+    if (roles.some(role => this.normalizeRole(role) === 'hotel')) return 'Hotel';
+    if (roles.some(role => this.normalizeRole(role) === 'admin')) return 'Admin';
+    if (roles.some(role => this.normalizeRole(role) === 'driver')) return 'Driver';
+    return roles[0] ? this.displayRole(roles[0]) : '';
+  });
+  protected readonly currentUserId = computed(() => {
+    const userId = this.authService.user()?.id;
+    if (userId && userId !== 0) return String(userId);
+
+    const profile = this.authService.profile();
+    const profileId = this.profileString(profile, 'id')
+      || this.profileString(profile, 'hotelId')
+      || this.profileString(profile, 'userId')
+      || this.profileString(profile, 'accountId');
+
+    return profileId;
   });
   protected readonly conversationStatusKey = computed(() =>
     this.statusTranslationKey(this.conversation()?.status ?? '')
@@ -74,6 +92,7 @@ export class ChatComponent extends BaseComponent implements OnInit {
       next: (result) => {
         if (result.isSuccess && result.data) {
           this.conversation.set(result.data);
+          this.scrollMessagesToBottom();
         } else if (showLoading) {
           this.chatError.emit(true);
         }
@@ -90,36 +109,14 @@ export class ChatComponent extends BaseComponent implements OnInit {
 
   protected onSend(text: string): void {
     const id = this.tripRequestId();
-    if (!text.trim() || !id) return;
+    const messageText = text.trim();
+    if (!messageText || !id || this.sendLoading()) return;
 
-    // Optimistically add message to UI
-    const optimisticMessage = {
-      id: `temp-${Date.now()}`,
-      senderId: 'me',
-      senderRole: this.currentUserRole(),
-      message: text.trim(),
-      createdAt: new Date().toISOString(),
-    };
-    this.conversation.update(conv => {
-      if (!conv) {
-        return {
-          conversationId: '',
-          tripId: id,
-          conversationType: 'Trip',
-          status: 'Open',
-          createdAt: new Date().toISOString(),
-          closedAt: null,
-          messages: [optimisticMessage],
-        };
-      }
-      return { ...conv, messages: [...conv.messages, optimisticMessage] };
-    });
-
-    this.sendLoading.set(true);
-    this.chatService.sendMessage(id, text).subscribe({
+    //this.sendLoading.set(true);
+    this.chatService.sendMessage(id, messageText).subscribe({
       next: () => {
         this.sendLoading.set(false);
-        this.refreshChat();
+        this.appendSentMessage(id, messageText);
       },
       error: () => this.sendLoading.set(false),
     });
@@ -140,5 +137,80 @@ export class ChatComponent extends BaseComponent implements OnInit {
 
   private statusTranslationKey(status: string): TranslationKey {
     return `tripDetails.chatStatus.${status || 'Unknown'}` as TranslationKey;
+  }
+
+  private normalizeRole(role: string): string {
+    const normalized = role.toLowerCase().replace(/[^a-z]/g, '');
+    if (normalized.includes('hotel')) return 'hotel';
+    if (normalized.includes('admin')) return 'admin';
+    if (normalized.includes('driver')) return 'driver';
+    if (normalized.includes('passenger')) return 'passenger';
+    return normalized;
+  }
+
+  private displayRole(role: string): string {
+    const normalized = this.normalizeRole(role);
+    const roleMap: Record<string, string> = {
+      hotel: 'Hotel',
+      admin: 'Admin',
+      driver: 'Driver',
+      passenger: 'Passenger',
+    };
+
+    return roleMap[normalized] ?? role;
+  }
+
+  private optimisticSenderRole(): string {
+    const currentRole = this.currentUserRole();
+    return this.normalizeRole(currentRole) === 'passenger' ? 'Hotel' : this.displayRole(currentRole);
+  }
+
+  private appendSentMessage(tripId: string, message: string): void {
+    const sentMessage = {
+      id: `sent-${Date.now()}`,
+      senderId: 'me',
+      senderRole: this.optimisticSenderRole(),
+      message,
+      createdAt: new Date().toISOString(),
+    };
+
+    this.conversation.update(conv => {
+      if (!conv) {
+        return {
+          conversationId: '',
+          tripId,
+          conversationType: 'Trip',
+          status: 'Open',
+          createdAt: new Date().toISOString(),
+          closedAt: null,
+          messages: [sentMessage],
+        };
+      }
+
+      return { ...conv, messages: [...conv.messages, sentMessage] };
+    });
+    this.scrollMessagesToBottom();
+  }
+
+  private profileString(profile: Record<string, unknown> | null, key: string): string {
+    const value = profile?.[key];
+    return typeof value === 'string' && value.trim() ? value.trim() : '';
+  }
+
+  private scrollMessagesToBottom(): void {
+    queueMicrotask(() => {
+      const container = this.messagesContainer()?.nativeElement;
+      if (!container) return;
+
+      const scroll = () => {
+        container.scrollTop = container.scrollHeight;
+      };
+
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(scroll);
+      } else {
+        scroll();
+      }
+    });
   }
 }

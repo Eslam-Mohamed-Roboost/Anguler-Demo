@@ -16,18 +16,22 @@
   </div>
 
   <!-- Messages -->
-  <div class="chat-messages min-h-0 flex-1 overflow-y-scroll px-4 py-4 sm:px-6 sm:py-5 md:px-12 md:py-6 lg:px-24 xl:px-44 xl:py-6">
+  <div #messagesContainer class="chat-messages min-h-0 flex-1 overflow-y-scroll px-4 py-4 sm:px-6 sm:py-5 md:px-12 md:py-6 lg:px-24 xl:px-44 xl:py-6">
     @if (chatLoading()) {
       <div class="flex h-full items-center justify-center">
         <span class="size-6 animate-spin rounded-full border-4 border-gray-200 border-t-primary block"></span>
       </div>
     } @else {
-      <app-message [messages]="conversation()?.messages ?? []" [currentUserRole]="currentUserRole()" />
+      <app-message
+        [messages]="conversation()?.messages ?? []"
+        [currentUserRole]="currentUserRole()"
+        [currentUserId]="currentUserId()"
+      />
     }
   </div>
 
   <!-- Input -->
   <div class="chat-input shrink-0 border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800 sm:px-6 sm:py-4 md:px-12 lg:px-24 xl:px-44 xl:py-4">
-    <app-chat-input (send)="onSend($event)" />
+    <app-chat-input [loading]="sendLoading()" (send)="onSend($event)" />
   </div>
 </section>

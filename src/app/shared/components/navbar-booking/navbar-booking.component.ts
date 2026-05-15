@@ -185,6 +185,8 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
         next:(result)=>{
           if(result.isSuccess){
               this.bellCount.set(result.data?.count ?? 0)
+          }else{
+              this.bellCount.set(0)
           }
         }
       })

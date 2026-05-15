@@ -1,19 +1,23 @@
-import { Component, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-chat-input',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslatePipe],
   templateUrl: './chat-input.component.html',
   styleUrl: './chat-input.component.css',
 })
 export class ChatInputComponent {
+  readonly loading = input(false);
   readonly send = output<string>();
   readonly mention = output<void>();
   readonly attach = output<void>();
   readonly addImage = output<void>();
 
   protected onSend(input: HTMLInputElement): void {
+    if (this.loading()) return;
+
     const text = input.value.trim();
     if (text) {
       this.send.emit(text);
