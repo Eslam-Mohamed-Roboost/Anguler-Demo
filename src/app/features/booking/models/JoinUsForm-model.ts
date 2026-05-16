@@ -8,12 +8,13 @@ export interface JoinUsFormModel {
   email: string;
   password: string;
   locationUrl: string;
-  placeTypeId: string
-  otherPlaceText: string
-  selectedPreferenceIds: string[]
-  bankAccountHolderName: string
-  bankName: string
-  bankAccountNumber: string
-  bankRoutingNumber: string
+  placeTypeId: string;
+  otherPlaceText: string;
+  selectedPreferenceIds: string[];
+  bankAccountHolderName: string;
+  bankName: string;
+  bankAccountNumber: string;
+  bankRoutingNumber: string;
+  note: string;
 }
  

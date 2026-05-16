@@ -380,19 +380,17 @@
       </div>
 
       <!-- Additional Note -->
-      <div class="mt-4 flex flex-col gap-2">
-        <label for="additional-note" class="text-[14px] text-[#5b738b]">
-          {{ 'join.additionalNote' | translate }}
-        </label>
-        <textarea
-          id="additional-note"
-          rows="3"
-          [value]="servicePreferencesModel().additionalNote"
-          (input)="onAdditionalNoteChange($event)"
-          class="w-full rounded-lg border-[0.5px] border-[#a9b4be] px-3 py-3 text-[14px] text-[#223548] placeholder:text-[#223548]/60 outline-none resize-none focus:border-[#a9b4be]"
-          [placeholder]="'join.additionalNotePlaceholder' | translate"
-        ></textarea>
-      </div>
+      <app-input
+        class="mt-4 block"
+        [label]="'join.additionalNote' | translate"
+        inputId="additional-note"
+        [field]="jf.note"
+        [rows]="3"
+        inputClass="rounded-lg border-[0.5px] border-[#a9b4be] px-3 py-3 text-[14px] text-[#223548] outline-none resize-none focus:border-[#a9b4be]"
+        placeholderClass="placeholder:text-[#223548]/60"
+        labelClass="text-[14px] text-[#5b738b]"
+        [placeholder]="'join.additionalNotePlaceholder' | translate"
+      />
     </div>
   }
 

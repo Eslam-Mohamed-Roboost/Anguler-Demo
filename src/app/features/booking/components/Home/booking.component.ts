@@ -480,7 +480,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
     bankAccountHolderName: '',
     bankName: '',
     bankAccountNumber: '',
-    bankRoutingNumber: ''
+    bankRoutingNumber: '',
+    note: '',
   });
   protected readonly jf = form(this.joinFormModel);
 
@@ -553,11 +554,6 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   togglePreference(key: keyof Omit<ServicePreferencesModel, 'additionalNote'>): void {
     this.servicePreferencesModel.update(prev => ({ ...prev, [key]: !prev[key] }));
-  }
-
-  onAdditionalNoteChange(event: Event): void {
-    const value = (event.target as HTMLTextAreaElement).value;
-    this.servicePreferencesModel.update(prev => ({ ...prev, additionalNote: value }));
   }
 
   openJoinModal(): void {
@@ -1058,7 +1054,6 @@ readonly activeTab = signal<'login' | 'register'>('register');
         .filter(service => preferences[service.serviceCode as keyof Omit<ServicePreferencesModel, 'additionalNote'>])
         .map(service => service.serviceId),
     };
-
        this.authService.Register(payload).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isRegistering.set(false);
@@ -1084,7 +1079,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
             bankAccountHolderName: '',
             bankName: '',
             bankAccountNumber: '',
-            bankRoutingNumber: ''
+            bankRoutingNumber: '',
+            note: '',
           });
           this.otherBankName.set('');
           this.savedOtherBankName.set('');

@@ -10,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ChatComponent } from '../../../TripDetails/components/chat/chat.component';
@@ -47,7 +47,7 @@ export interface TripDetail {
   selector: 'app-hotel-trip-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
+    // RouterLink,
     CardComponent,
     IconComponent,
     ChatComponent,

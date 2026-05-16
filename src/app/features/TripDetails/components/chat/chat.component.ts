@@ -19,6 +19,7 @@ import { BaseComponent } from '../../../../shared/base/base.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import type { TranslationKey } from '../../../../core/i18n/translations';
+import { RealTimeService } from '../../../../core/services/real-time.service';
 
 @Component({
   selector: 'app-chat',
@@ -31,7 +32,7 @@ export class ChatComponent extends BaseComponent implements OnInit {
   private readonly chatService = inject(ChatService);
   private readonly authService = inject(AuthService);
   private readonly messagesContainer = viewChild<ElementRef<HTMLElement>>('messagesContainer');
-
+  private readonly realTimeService = inject(RealTimeService);
   readonly tripRequestId = input.required<string>();
   readonly senderRole = input<string | null>(null);
   readonly chatError = output<boolean>();
@@ -70,6 +71,8 @@ export class ChatComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadChat();
+    this.realTimeService.startConnection();
+    this.realTimeService.addMessageListener();
   }
 
   private loadChat(): void {
