@@ -256,6 +256,9 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     return `${h}hr : ${m}min : 00sec`;
   });
   readonly isCarSelectorDisabled = computed(() => this.formModel().manyBags);
+  readonly shouldShowManyBagsNotice = computed(() =>
+    this.formModel().manyBags || this.selectedCarOption()?.label.toLowerCase().includes('van') === true,
+  );
 
   readonly commissionPercentage = computed(() => this.appConfig.commissionPercentage());
 
