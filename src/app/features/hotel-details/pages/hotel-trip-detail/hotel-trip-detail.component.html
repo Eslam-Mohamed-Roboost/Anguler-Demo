@@ -142,7 +142,7 @@
           <div class="grid grid-cols-3 gap-4 gap-x-6 p-4 pb-5 max-md:grid-cols-2 max-sm:grid-cols-1">
             <div class="flex flex-col gap-1">
               <span class="text-xs text-muted font-medium">{{ 'hotelTrip.tripId' | translate }}</span>
-              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.tripId || '--' }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.tripCode || '--' }}</span>
             </div>
             <div class="flex flex-col gap-1">
               <span class="text-xs text-muted font-medium">{{ 'hotelTrip.guestName' | translate }}</span>
@@ -168,11 +168,11 @@
 
             <div class="flex flex-col gap-1">
               <span class="text-xs text-muted font-medium">{{ 'hotelTrip.startDate' | translate }}</span>
-              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.startDate }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ formatDateOnly(t.startDate) }}</span>
             </div>
             <div class="flex flex-col gap-1">
               <span class="text-xs text-muted font-medium">{{ 'hotelTrip.endDate' | translate }}</span>
-              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.endDate ?? '--' }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ formatDateOnly(t.endDate) }}</span>
             </div>
             <div class="flex flex-col gap-1">
               <span class="text-xs text-muted font-medium">{{ 'hotelTrip.tripRate' | translate }}</span>

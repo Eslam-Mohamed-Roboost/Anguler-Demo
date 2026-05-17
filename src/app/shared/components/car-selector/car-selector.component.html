@@ -23,34 +23,25 @@
             role="radio"
             (click)="selectCar(car.id)"
             [disabled]="disabled()"
-            class="flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition w-full"
+            class="group flex w-full flex-col items-center gap-1 rounded-lg border-2 p-2 transition"
             [class]="disabled()
               ? selected() === car.id
-                ? 'border-2 border-success shadow-lg'
+                ? 'border-2 border-primary shadow-md'
                 : 'border-2 border-gray-300 opacity-60 cursor-not-allowed'
               : selected() === car.id
                 ? 'border-2 border-primary shadow-md'
-                : 'border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-500'"
+                : 'border-2 border-transparent hover:border-primary'"
             [attr.aria-checked]="selected() === car.id"
             [attr.aria-disabled]="disabled()"
           >
             <img [src]="car.image" [alt]="car.label" class="h-9 w-16 object-contain" />
             <span
-              class="text-xs font-medium"
+              class="text-xs font-medium transition-colors"
               [class]="selected() === car.id
-                ? disabled()
-                  ? 'text-success font-bold'
-                  : 'text-primary'
-                : 'text-gray-500'"
+                ? 'text-primary font-bold'
+                : 'text-gray-500 group-hover:text-primary'"
             >{{ car.label }}</span>
           </button>
-          @if (disabled() && selected() === car.id) {
-            <div class="absolute -top-2 -right-2 bg-success rounded-full p-1 shadow-md">
-              <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-            </div>
-          }
         </div>
       }
     </div>

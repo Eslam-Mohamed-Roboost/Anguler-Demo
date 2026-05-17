@@ -817,12 +817,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.signInModalOpen();
       return;
     }
-    const { destination, clientName, roomNo } = this.formModel();
+    const { destination } = this.formModel();
     this.distnationName.set(this.destinationsData()?.find(x => x.id === destination)?.name ?? '');
-    // if ( !clientName || !roomNo) {
-    //   this.showError('Please fill in destination, client name, and room number.');
-    //   return;
-    // }
     this.ShowComfirmBookingModel.set(true);
   }
 
@@ -849,6 +845,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
     const tripId = this.createdTripId();
     if (tripId) {
       this.closeRideRequestSentModel();
+      this.closeScheduledRiderModel();
       this.router.navigate(['/TripDetails', tripId]);
     }
   }
@@ -858,9 +855,9 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.signInModalOpen();
       return;
     }
-    const { destination, clientName, roomNo } = this.formModel();
-    if (!destination || !clientName || !roomNo) {
-      this.showError('Please fill in destination, client name, and room number.');
+    const { destination } = this.formModel();
+    if (!destination) {
+      this.showError('Please select a destination.');
       return;
     }
     this.showPickupTimeModal.set(true);
@@ -923,7 +920,11 @@ readonly activeTab = signal<'login' | 'register'>('register');
         if (result.isSuccess) {
           this.createdTripId.set(result.data as string);
           this.ShowComfirmBookingModel.set(false);
-          this.ShowRideRequestSentModel.set(true);
+          if (isScheduled) {
+            this.ShowScheduledRiderModel.set(true);
+          } else {
+            this.ShowRideRequestSentModel.set(true);
+          }
         } else {
           this.showError(result.error?.description || 'Failed to create trip. Please try again.');
         }
