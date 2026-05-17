@@ -19,6 +19,12 @@ export interface HotelRequestItem {
   startLocation: StartLocation
   endLocation: EndLocation
   status: string
+  requestStatusString?: string
+  requestStatusEnum?: number | null
+  tripRequestStatusString?: string
+  tripRequestStatusEnum?: number | null
+  tripStatusString?: string
+  tripStatusEnum?: number | null
   durationMinutes: any
   distanceInKm: any
   fare: number
@@ -52,4 +58,14 @@ export interface HotelRequestsQuery {
   pageNumber: number;
   pageSize: number;
   search?: string;
+  status?: string;
+}
+
+export interface TripRequestStatusItem {
+  id: number;
+  name: string;
+}
+
+export interface TripRequestStatusesResponse {
+  status: TripRequestStatusItem[];
 }

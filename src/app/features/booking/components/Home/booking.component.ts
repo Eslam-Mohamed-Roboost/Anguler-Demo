@@ -41,6 +41,8 @@ import { DriverNoteComponent } from '../driver-note/driver-note.component';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { AppConfigService } from '../../../../core/services/app-config.service';
 import { LanguageService } from '../../../../core/services/language.service';
+import { ImageUploadService } from '../../../../core/services/image-upload.service';
+import { of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-booking',
@@ -79,6 +81,7 @@ export class BookingComponent extends BaseComponent {
   private readonly notifications = inject(NotificationStore);
   private readonly appConfig = inject(AppConfigService);
   private readonly languageService = inject(LanguageService);
+  private readonly imageUploadService = inject(ImageUploadService);
 
   // Signals
   readonly carTypes = signal<CarOption[]>([]);
@@ -196,12 +199,12 @@ export class BookingComponent extends BaseComponent {
   }
 
   private static readonly fallbackImages: Record<string, string> = {
-    classic:  'assets/booking/car-taxi.png',
-    sport:    'assets/booking/car-premium.png',
-    van:      'assets/booking/car-van.png',
-    comfort:  'assets/booking/car-comfort.png',
-    pet:      'assets/booking/car-pet.png',
-    kids:     'assets/booking/car-kids.png',
+    classic:  'assets/booking/car-taxi.webp',
+    sport:    'assets/booking/car-premium.webp',
+    van:      'assets/booking/car-van.webp',
+    comfort:  'assets/booking/car-comfort.webp',
+    pet:      'assets/booking/car-pet.webp',
+    kids:     'assets/booking/car-kids.webp',
   };
   private loadVehicleTypes(km: number): void {
     if (this.vehicleTypesLoaded) return;
@@ -262,6 +265,7 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   readonly isRescheduleMode = computed(() => !!this.rescheduleTripRequestId());
   readonly createdTripId = signal<string | null>(null);
   readonly hotelImageSrc = signal<string>('assets/booking/hotel-illustration.png');
+  readonly selectedHotelImageFile = signal<File | null>(null);
   readonly isOtherPlaceTypeSelected = computed(() => {
     const selectedPlaceTypeId = this.joinFormModel().placeTypeId;
     const otherPlaceType = this.placeTypes().find(p => p.name.toLowerCase() === 'other');
@@ -302,6 +306,7 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
+      this.selectedHotelImageFile.set(file);
       const reader = new FileReader();
       reader.onload = (e) => this.hotelImageSrc.set(e.target?.result as string);
       reader.readAsDataURL(file);
@@ -313,7 +318,7 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     destination: '',
     clientName: '',
     roomNo: '',
-    manyBags: true,
+    manyBags: false,
     addDriverNote: false,
     driverNote: '',
   });
@@ -474,6 +479,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
     email: '',
     password: '',
     locationUrl: '',
+    logoUrl: '',
     placeTypeId: '',
     otherPlaceText: '',
     selectedPreferenceIds: [],
@@ -1055,7 +1061,13 @@ readonly activeTab = signal<'login' | 'register'>('register');
         .filter(service => preferences[service.serviceCode as keyof Omit<ServicePreferencesModel, 'additionalNote'>])
         .map(service => service.serviceId),
     };
-       this.authService.Register(payload).pipe(this.takeUntilDestroyed()).subscribe({
+
+    const imageFile = this.selectedHotelImageFile();
+    const request$ = (imageFile ? this.imageUploadService.uploadImage(imageFile) : of('')).pipe(
+      switchMap((logoUrl) => this.authService.Register({ ...payload, logoUrl })),
+    );
+
+       request$.pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.isRegistering.set(false);
 
@@ -1074,6 +1086,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
             email: '',
             password: '',
             locationUrl: '',
+            logoUrl: '',
             placeTypeId: '',
             otherPlaceText: '',
             selectedPreferenceIds: [],
@@ -1085,6 +1098,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
           });
           this.otherBankName.set('');
           this.savedOtherBankName.set('');
+          this.selectedHotelImageFile.set(null);
+          this.hotelImageSrc.set('assets/booking/hotel-illustration.png');
           
           // Switch to login tab after successful registration
           setTimeout(() => {

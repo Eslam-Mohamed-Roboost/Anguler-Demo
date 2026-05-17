@@ -270,7 +270,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   private updateTripStats(items: HotelTripItem[]): void {
     const counts = { active: 0, scheduled: 0, completed: 0, cancelled: 0 };
     for (const t of items) {
-      const s = this.toUiTripStatus(t.tripStatusString || t.requestStatusString);
+      const s = this.toUiTripStatus(t.tripStatusString || t.tripRequestStatusString || t.requestStatusString);
       if (s === 'active') counts.active++;
       else if (s === 'scheduled') counts.scheduled++;
       else if (s === 'completed') counts.completed++;
@@ -290,7 +290,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   private toTripRecord(item: HotelTripItem): TripRecord {
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
-    const requestStatus = item.requestStatusString || 'Pending';
+    const requestStatus = item.tripRequestStatusString || item.requestStatusString || 'Pending';
     const tripStatus = item.tripStatusString || '';
     const status = this.toUiTripStatus(tripStatus || requestStatus);
     return {

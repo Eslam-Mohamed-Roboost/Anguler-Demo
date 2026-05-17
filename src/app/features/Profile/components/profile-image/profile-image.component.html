@@ -2,12 +2,17 @@
     <div class="relative">
         <div class="w-32 h-32 rounded-full overflow-hidden">
             <img 
-                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=128&h=128&fit=crop&crop=center" 
-                alt="Salam Hotel" 
+                [src]="imageSrc()" 
+                [alt]="hotelName() + ' logo'" 
                 class="w-full h-full object-cover"
             />
         </div>
-        <div class="absolute bottom-0 right-0 bg-white rounded-full ">
+        <label
+            for="profile-image-upload"
+            class="absolute bottom-0 right-0 cursor-pointer rounded-full bg-white"
+            [class.pointer-events-none]="uploading()"
+            [attr.aria-label]="'Change profile image'"
+        >
             <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M24 2C36.1503 2 46 11.8497 46 24C46 36.1503 36.1503 46 24 46C11.8497 46 2 36.1503 2 24C2 11.8497 11.8497 2 24 2Z" fill="#00A63E"/>
                 <path d="M24 2C36.1503 2 46 11.8497 46 24C46 36.1503 36.1503 46 24 46C11.8497 46 2 36.1503 2 24C2 11.8497 11.8497 2 24 2Z" stroke="white" stroke-width="4"/>
@@ -16,9 +21,22 @@
                 <path d="M31.1884 29.8651C31.1884 29.8651 29.8056 31.7427 29.3109 31.7427C28.8161 31.7427 27.4333 29.8651 27.4333 29.8651" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M21.4251 20.4775C21.4251 20.4775 20.0423 18.5999 19.5475 18.5999C19.0527 18.5999 17.6699 20.4775 17.6699 20.4775" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-        </div>
+            <input
+                id="profile-image-upload"
+                type="file"
+                accept="image/*"
+                class="sr-only"
+                [disabled]="uploading()"
+                (change)="onImageChange($event)"
+            />
+        </label>
     </div>
-    <h2 class="text-lg font-semibold">test test</h2>
-    <h3 class="text-sm text-[#E76500] bg-[#FFF8D6] p-2 rounded-md">ID: 123245364</h3>
+    <h2 class="text-lg font-semibold">{{ hotelName() }}</h2>
+    @if (hotelId()) {
+        <h3 class="rounded-md bg-[#FFF8D6] p-2 text-sm text-[#E76500]">ID: {{ hotelId() }}</h3>
+    }
+    @if (uploading()) {
+        <p class="text-sm text-[#5B738B]" role="status">Uploading image...</p>
+    }
 
 </div>

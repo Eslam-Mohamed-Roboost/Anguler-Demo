@@ -50,7 +50,8 @@ export class RiderHistoryComponent extends BaseComponent {
     { key: 'guestName', header: 'Guest Name', sortable: true },
     { key: 'roomNumber', header: 'Room No.' },
     { key: 'route', header: 'Route' },
-    { key: 'status', header: 'Status', sortable: true },
+    { key: 'requestStatus', header: 'Request Status', sortable: true },
+    { key: 'tripStatus', header: 'Trip Status', sortable: true },
     { key: 'duration', header: 'Duration' },
     { key: 'fare', header: 'Fare', sortable: true },
     { key: 'startEndDate', header: 'Start.End.Date', sortable: true },
@@ -65,14 +66,17 @@ export class RiderHistoryComponent extends BaseComponent {
   protected readonly totalItems = signal(0);
   protected readonly loading = signal(false);
   protected readonly cancelLoading = signal<string | null>(null);
+  protected readonly showFilterDropdown = signal(false);
+  protected readonly statusFilter = signal('');
+  protected readonly statusOptions = signal<string[]>([]);
 
   protected readonly filteredTrips = computed(() => {
     let result = this.trips();
     const { column, direction } = this.sortState();
     if (column && direction) {
       result = [...result].sort((a, b) => {
-        const aVal = (a as unknown as Record<string, unknown>)[column];
-        const bVal = (b as unknown as Record<string, unknown>)[column];
+        const aVal = this.getSortValue(a, column);
+        const bVal = this.getSortValue(b, column);
         if (typeof aVal === 'string' && typeof bVal === 'string') {
           return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
         }
@@ -87,9 +91,12 @@ export class RiderHistoryComponent extends BaseComponent {
 
   constructor() {
     super();
+    this.loadStatusOptions();
+
     effect(() => {
       this.currentPage(); // track — re-run loadTrips on page/search change
       this.searchQuery();
+      this.statusFilter();
       this.loadTrips();
     });
   }
@@ -101,6 +108,7 @@ export class RiderHistoryComponent extends BaseComponent {
         pageNumber: this.currentPage(),
         pageSize: this.pageSize(),
         search: this.searchQuery() || undefined,
+        status: this.statusFilter() || undefined,
       })
       .pipe(this.takeUntilDestroyed())
       .subscribe({
@@ -131,12 +139,22 @@ export class RiderHistoryComponent extends BaseComponent {
     this.currentPage.set(page);
   }
 
+  toggleFilterDropdown(): void {
+    this.showFilterDropdown.update(show => !show);
+  }
+
+  onStatusFilter(status: string): void {
+    this.statusFilter.set(status);
+    this.showFilterDropdown.set(false);
+    this.currentPage.set(1);
+  }
+
   clearSort(): void {
     this.sortState.set({ column: '', direction: null });
   }
 
-  isCancellable(status: string): boolean {
-    const s = status.toLowerCase();
+  isCancellable(row: HotelRequestItem): boolean {
+    const s = this.requestStatus(row).toLowerCase();
     return s === 'pending' || s === 'accepted';
   }
 
@@ -164,8 +182,25 @@ export class RiderHistoryComponent extends BaseComponent {
     if (normalized === 'cancelled') return 'danger';
     if (normalized === 'scheduled') return 'info';
     if (normalized === 'waiting driver' || normalized === 'pending') return 'warning';
-    if (normalized === 'active' || normalized === 'in progress') return 'success';
+    if (normalized === 'active' || normalized === 'in progress' || normalized === 'accepted') return 'success';
     return 'neutral';
+  }
+
+  requestStatus(row: HotelRequestItem): string {
+    return row.tripRequestStatusString || row.requestStatusString || row.status || '--';
+  }
+
+  tripStatus(row: HotelRequestItem): string {
+    return row.tripStatusString || row.status || 'Not Started';
+  }
+
+  formatStatus(status: string): string {
+    if (!status) return '--';
+
+    return status
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/[-_]+/g, ' ')
+      .trim();
   }
 
   formatDate(dateStr: string): string {
@@ -186,5 +221,33 @@ export class RiderHistoryComponent extends BaseComponent {
       return `${amount.toFixed(2)} ${currency}`;
     }
     return `$ ${amount.toFixed(2)}`;
+  }
+
+  private loadStatusOptions(): void {
+    this.riderHistoryService
+      .getTripRequestStatuses()
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.statusOptions.set(result.data.status.map(status => status.name));
+          } else {
+            this.statusOptions.set([]);
+          }
+        },
+        error: () => this.statusOptions.set([]),
+      });
+  }
+
+  private getSortValue(row: HotelRequestItem, column: string): unknown {
+    if (column === 'requestStatus') {
+      return this.requestStatus(row);
+    }
+
+    if (column === 'tripStatus') {
+      return this.tripStatus(row);
+    }
+
+    return (row as unknown as Record<string, unknown>)[column];
   }
 }

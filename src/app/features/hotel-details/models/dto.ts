@@ -18,6 +18,8 @@ export interface HotelTripItem {
   status?: string;
   requestStatusString: string;
   requestStatusEnum: number | null;
+  tripRequestStatusString?: string;
+  tripRequestStatusEnum?: number | null;
   tripStatusString: string;
   tripStatusEnum: number | null;
   durationMinutes: number | null;

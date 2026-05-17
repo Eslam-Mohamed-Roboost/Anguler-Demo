@@ -10,7 +10,7 @@ import { TabDef } from '../../models/TabDef-mode';
 import { HotelInfoModel } from '../../models/HotelInfo-model';
 import { PasswordModel } from '../../models/Password-model';
 import { WithdrawalModel } from '../../models/Withdrawal-model';
-import { ProfileService } from '../../services/profile.service';
+import { HotelProfileData, ProfileService } from '../../services/profile.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { SelectComponent } from '../../../../shared/components/select/select.component';
 import { CitiesService } from '../../../booking/components/services/cities.service';
@@ -45,6 +45,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   protected readonly passwordSuccess = signal(false);
   protected readonly hotelInfoLoading = signal(false);
   protected readonly withdrawalLoading = signal(false);
+  private readonly currentHotelProfile = signal<HotelProfileData | null>(null);
   readonly cities = signal<{ id: string; name: string }[]>([]);
 
   protected readonly hotelInfoModel = signal<HotelInfoModel>({
@@ -87,6 +88,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
         next: (result) => {
           this.hotelInfoLoading.set(false);
           if (result.isSuccess && result.data) {
+            this.currentHotelProfile.set(result.data);
             this.hotelInfoModel.set({
               name: result.data.hotelName,
               city: result.data.cityId,
@@ -189,23 +191,23 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
     this.profileService
       .updateHotelProfile({
-        id: '',
+        ...this.emptyHotelProfile(),
+        ...this.currentHotelProfile(),
+        id: this.currentHotelProfile()?.id ?? '',
         hotelName: model.name,
         address: model.address,
         phoneNumber: model.phone,
         email: model.email,
         cityId: model.city,
-        locationUrl: '',
-        logoUrl: '',
-        commissionRate: 0,
-        isActive: true,
-        isVerified: true,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.hotelInfoLoading.set(false);
           if (result.isSuccess) {
+            if (result.data) {
+              this.currentHotelProfile.set(result.data);
+            }
             this.notifications.showSuccess('Hotel profile updated successfully');
             this.DisableHotleInfo.set(true);
           } else {
@@ -299,5 +301,21 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
     }
 
     return error.statusText && error.statusText !== 'OK' ? error.statusText : fallback;
+  }
+
+  private emptyHotelProfile(): HotelProfileData {
+    return {
+      id: '',
+      hotelName: '',
+      address: '',
+      phoneNumber: '',
+      email: '',
+      cityId: '',
+      locationUrl: '',
+      logoUrl: '',
+      commissionRate: 0,
+      isActive: true,
+      isVerified: true,
+    };
   }
 }

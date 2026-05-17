@@ -20,20 +20,59 @@
         />
       </div>
 
-      <!-- Filter / Clear Sort button -->
-      <button
-        type="button"
-        (click)="clearSort()"
-        class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition sm:flex-none"
-        [class]="sortState().direction
-          ? 'border-primary bg-primary/10 text-primary hover:bg-primary/20'
-          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'"
-      >
-        <app-icon name="filter" size="sm" />
-        <span>{{ sortState().direction ? ('filter.ClearSort'| translate) : ('filter.Filter'| translate) }}</span>
-      </button>
+      <!-- Filter -->
+      <div class="relative flex-1 sm:flex-none">
+        <button
+          type="button"
+          (click)="toggleFilterDropdown()"
+          class="flex w-full items-center justify-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:w-auto"
+          [class]="statusFilter()
+            ? 'border-primary bg-primary/10 text-primary'
+            : 'border-gray-300 bg-white text-gray-700'"
+          [attr.aria-expanded]="showFilterDropdown()"
+          aria-haspopup="menu"
+        >
+          <app-icon name="filter" size="sm" />
+          <span>{{ statusFilter() || ('filter.Filter' | translate) }}</span>
+        </button>
+        @if (showFilterDropdown()) {
+          <div class="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-lg border border-gray-200 bg-white shadow-lg">
+            <button
+              type="button"
+              (click)="onStatusFilter('')"
+              class="w-full border-b border-gray-100 px-4 py-2 text-left text-sm transition hover:bg-gray-50"
+              [class.bg-primary/10]="statusFilter() === ''"
+            >
+              All Status
+            </button>
+            @for (status of statusOptions(); track status) {
+              <button
+                type="button"
+                (click)="onStatusFilter(status)"
+                class="w-full px-4 py-2 text-left text-sm transition hover:bg-gray-50"
+                [class.bg-primary/10]="statusFilter() === status"
+                [class.border-b]="!$last"
+                [class.border-gray-100]="!$last"
+              >
+                {{ status }}
+              </button>
+            }
+          </div>
+        }
+      </div>
 
-      <!-- Export button -->
+      @if (sortState().direction) {
+        <button
+          type="button"
+          (click)="clearSort()"
+          class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition hover:bg-primary/20 sm:flex-none"
+        >
+          <app-icon name="close" size="sm" />
+          <span>{{ 'filter.ClearSort' | translate }}</span>
+        </button>
+      }
+
+      <!-- Export button hidden for now.
       <button
         type="button"
         class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:flex-none"
@@ -41,6 +80,7 @@
         <app-icon name="download" size="sm" />
         <span>{{'Export' | translate}}</span>
       </button>
+      -->
     </div>
   </header>
 
@@ -82,10 +122,17 @@
         </div>
       </ng-template>
 
-      <!-- Custom cell: Status badge -->
-      <ng-template cellDef="status" let-row>
-        <app-badge [variant]="getStatusVariant(row.status)">
-          {{ row.status }}
+      <!-- Custom cell: Request Status badge -->
+      <ng-template cellDef="requestStatus" let-row>
+        <app-badge [variant]="getStatusVariant(requestStatus(row))">
+          {{ formatStatus(requestStatus(row)) }}
+        </app-badge>
+      </ng-template>
+
+      <!-- Custom cell: Trip Status badge -->
+      <ng-template cellDef="tripStatus" let-row>
+        <app-badge [variant]="getStatusVariant(tripStatus(row))">
+          {{ formatStatus(tripStatus(row)) }}
         </app-badge>
       </ng-template>
 
@@ -129,7 +176,7 @@
           >
             <app-icon name="eye" size="sm" />
           </a>
-          @if (isCancellable(row.status)) {
+          @if (isCancellable(row)) {
             <button
               type="button"
               (click)="cancelTrip(row.tripRequestId)"

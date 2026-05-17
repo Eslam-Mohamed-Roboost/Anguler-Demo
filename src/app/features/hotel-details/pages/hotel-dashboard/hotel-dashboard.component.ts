@@ -211,7 +211,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   private toTripRecord(item: HotelTripItem, hotelId?: string): TripRecord {
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
-    const requestStatus = item.requestStatusString || 'Pending';
+    const requestStatus = item.tripRequestStatusString || item.requestStatusString || 'Pending';
     const tripStatus = item.tripStatusString || '';
     const status = this.toUiTripStatus(tripStatus || requestStatus);
     return {
