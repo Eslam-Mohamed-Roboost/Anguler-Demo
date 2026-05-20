@@ -64,6 +64,7 @@ export function getTripStatusLabel(status: string): string {
     case 'Arrived': return 'Arrived';
     case 'InProgress': return 'In Progress';
     case 'Completed': return 'Completed';
+    case 'Scheduled': return 'Scheduled';
     case 'Canceled':
     case 'Cancelled':
     case 'CanceledByDriver':
@@ -91,6 +92,7 @@ export function getTripStatusVariant(status: string): 'success' | 'danger' | 'wa
     case 'CancelledByHotel':
     case 'Rejected': return 'danger';
     case 'InProgress': return 'info';
+    case 'Scheduled': return 'info';
     case 'Pending':
     case 'Accepted':
     case 'Arrived': return 'warning';

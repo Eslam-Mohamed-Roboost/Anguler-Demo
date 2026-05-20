@@ -25,6 +25,7 @@ export interface HotelRequestItem {
   tripRequestStatusEnum?: number | null
   tripStatusString?: string
   tripStatusEnum?: number | null
+  isScheduled?: boolean
   durationMinutes: any
   distanceInKm: any
   fare: number

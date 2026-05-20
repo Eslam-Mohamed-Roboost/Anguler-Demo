@@ -645,39 +645,39 @@
       <app-card>
         <h3 card-header>Pipes</h3>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm dark:text-gray-200">
+          <table class="w-full text-center text-sm dark:text-gray-200">
             <thead>
               <tr class="border-b text-gray-600 dark:border-gray-700 dark:text-gray-400">
-                <th class="px-2 py-2">Pipe</th>
-                <th class="px-2 py-2">Input</th>
-                <th class="px-2 py-2">Output</th>
+                <th class="px-2 py-2 text-center">Pipe</th>
+                <th class="px-2 py-2 text-center">Input</th>
+                <th class="px-2 py-2 text-center">Output</th>
               </tr>
             </thead>
             <tbody>
               <tr class="border-b dark:border-gray-700">
-                <td class="px-2 py-2 font-medium">truncate</td>
-                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">"{{ longText }}"</td>
-                <td class="px-2 py-2"><app-badge variant="info">{{ longText | truncate:40 }}</app-badge></td>
+                <td class="px-2 py-2 text-center font-medium">truncate</td>
+                <td class="px-2 py-2 text-center text-xs text-gray-500 dark:text-gray-400">"{{ longText }}"</td>
+                <td class="px-2 py-2 text-center"><app-badge variant="info">{{ longText | truncate:40 }}</app-badge></td>
               </tr>
               <tr class="border-b dark:border-gray-700">
-                <td class="px-2 py-2 font-medium">relativeTime</td>
-                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">3 hours in the past</td>
-                <td class="px-2 py-2"><app-badge variant="success">{{ pastDate | relativeTime }}</app-badge></td>
+                <td class="px-2 py-2 text-center font-medium">relativeTime</td>
+                <td class="px-2 py-2 text-center text-xs text-gray-500 dark:text-gray-400">3 hours in the past</td>
+                <td class="px-2 py-2 text-center"><app-badge variant="success">{{ pastDate | relativeTime }}</app-badge></td>
               </tr>
               <tr class="border-b dark:border-gray-700">
-                <td class="px-2 py-2 font-medium">fileSize</td>
-                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">{{ fileBytes }} bytes</td>
-                <td class="px-2 py-2"><app-badge variant="warning">{{ fileBytes | fileSize }}</app-badge></td>
+                <td class="px-2 py-2 text-center font-medium">fileSize</td>
+                <td class="px-2 py-2 text-center text-xs text-gray-500 dark:text-gray-400">{{ fileBytes }} bytes</td>
+                <td class="px-2 py-2 text-center"><app-badge variant="warning">{{ fileBytes | fileSize }}</app-badge></td>
               </tr>
               <tr class="border-b dark:border-gray-700">
-                <td class="px-2 py-2 font-medium">initials</td>
-                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">"Alice Johnson"</td>
-                <td class="px-2 py-2"><app-badge variant="neutral">{{ 'Alice Johnson' | initials }}</app-badge></td>
+                <td class="px-2 py-2 text-center font-medium">initials</td>
+                <td class="px-2 py-2 text-center text-xs text-gray-500 dark:text-gray-400">"Alice Johnson"</td>
+                <td class="px-2 py-2 text-center"><app-badge variant="neutral">{{ 'Alice Johnson' | initials }}</app-badge></td>
               </tr>
               <tr class="border-b dark:border-gray-700">
-                <td class="px-2 py-2 font-medium">initials:3</td>
-                <td class="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">"John Michael Doe"</td>
-                <td class="px-2 py-2"><app-badge variant="neutral">{{ 'John Michael Doe' | initials:3 }}</app-badge></td>
+                <td class="px-2 py-2 text-center font-medium">initials:3</td>
+                <td class="px-2 py-2 text-center text-xs text-gray-500 dark:text-gray-400">"John Michael Doe"</td>
+                <td class="px-2 py-2 text-center"><app-badge variant="neutral">{{ 'John Michael Doe' | initials:3 }}</app-badge></td>
               </tr>
             </tbody>
           </table>

@@ -127,7 +127,7 @@ export class DataTableComponent {
 
   /** CSS classes for sortable header */
   protected headerClasses(col: ColumnDef): string {
-    const base = 'px-3 py-3';
+    const base = 'px-3 py-3 text-center';
     const sortable = col.sortable ? 'cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-800/50' : '';
     const extra = col.headerClass ?? '';
     return [base, sortable, extra].filter(Boolean).join(' ');

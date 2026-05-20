@@ -20,10 +20,11 @@ import { Lang } from '../../../core/i18n/translations';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { LoginService } from '../../../features/booking/components/services/login.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthProfile, AuthService } from '../../../core/services/auth.service';
 import { ChatService } from '../../../features/TripDetails/services/chat.service';
 import { BaseComponent } from '../../base/base.component';
 import { NotificationsService } from '../../../core/services/notifications.service';
+import { ApiService } from '../../../core/services/api.service';
 
 @Component({
   selector: 'app-navbar-booking',
@@ -38,7 +39,8 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   private readonly coreAuth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly chatService = inject(ChatService);
- private readonly notifiactionService = inject(NotificationsService)
+  private readonly notifiactionService = inject(NotificationsService);
+  private readonly api = inject(ApiService);
   /** Logo image source */
   readonly logoSrc = input('assets/booking/logo-lines.png');
 
@@ -103,6 +105,11 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
 
     return role === 'admin' || role === 'super admin';
   });
+
+  readonly logoLink = computed(() => (this.isAdmin() ? '/hotel-details' : '/home'));
+
+  readonly userImageUrl = computed(() => this.getProfileImageUrl(this.coreAuth.profile()));
+  readonly profileImageSrc = computed(() => this.userImageUrl() || this.logoSrc());
 
   /** Panel states */
   protected readonly messagePanelOpen = signal(false);
@@ -175,6 +182,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
     if (this.dataLoaded) return;
     this.dataLoaded = true;
     if (!this.coreAuth.isAuthenticated()) return;
+    this.loadHotelProfileForNavbar();
     this.loadMessages();
     this.notificationCount();
   }
@@ -312,5 +320,42 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
     if (normalizedRole === 'hotel') return 'Hotel';
 
     return role.trim();
+  }
+
+  private getProfileImageUrl(profile: AuthProfile | null): string {
+    if (!profile) return '';
+
+    const imageKeys = [
+      'logoUrl',
+      'imageUrl',
+      'avatarUrl',
+      'profileImageUrl',
+      'profileImage',
+      'photoUrl',
+      'userImageUrl',
+    ];
+
+    for (const key of imageKeys) {
+      const value = profile[key];
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+    }
+
+    return '';
+  }
+
+  private loadHotelProfileForNavbar(): void {
+    if (this.isAdmin() || this.userImageUrl()) return;
+
+    this.api.get<AuthProfile>('/hotels/profile')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.coreAuth.setProfile({ ...this.coreAuth.profile(), ...result.data });
+          }
+        },
+      });
   }
 }

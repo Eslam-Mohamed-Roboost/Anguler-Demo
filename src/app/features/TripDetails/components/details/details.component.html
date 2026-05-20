@@ -46,9 +46,8 @@
             </button>
           </div>
         }
-      } @else {
-        <app-badge [variant]="statusVariant()">{{ statusLabelKey() | translate }}</app-badge>
       }
+      <app-badge [variant]="statusVariant()">{{ statusLabelKey() | translate }}</app-badge>
     </div>
   </div>
 
@@ -156,7 +155,7 @@
     }
 
     <!-- Admin: Assign Driver (Pending trips with no driver yet) -->
-    @if (isAdmin() && data().unifiedStatus === 'Pending') {
+    @if (canAssignDriver()) {
       <div class="mt-5 border-t border-gray-200 pt-5 dark:border-gray-700">
         <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
           <app-icon name="users" size="xs" class="text-primary" />

@@ -191,6 +191,10 @@ export class RiderHistoryComponent extends BaseComponent {
   }
 
   tripStatus(row: HotelRequestItem): string {
+    if (row.isScheduled && this.isPendingRequest(row) && !row.tripStatusString) {
+      return 'Scheduled';
+    }
+
     return row.tripStatusString || row.status || 'Not Started';
   }
 
@@ -249,5 +253,9 @@ export class RiderHistoryComponent extends BaseComponent {
     }
 
     return (row as unknown as Record<string, unknown>)[column];
+  }
+
+  private isPendingRequest(row: HotelRequestItem): boolean {
+    return this.requestStatus(row).toLowerCase() === 'pending';
   }
 }

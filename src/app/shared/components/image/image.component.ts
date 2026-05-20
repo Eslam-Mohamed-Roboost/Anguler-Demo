@@ -37,8 +37,8 @@
  *   />
  *
  * Fallback:
- *   When the image fails to load, a placeholder with an icon is shown.
- *   Provide [fallbackSrc] to show a replacement image instead.
+ *   When the image fails to load, the app logo is shown by default.
+ *   Provide [fallbackSrc] to show a different replacement image instead.
  */
 import {
   ChangeDetectionStrategy,
@@ -49,6 +49,8 @@ import {
 } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
+
+const DEFAULT_FALLBACK_IMAGE = 'assets/booking/logo-lines.png';
 
 @Component({
   selector: 'app-image',
@@ -80,7 +82,7 @@ export class ImageComponent {
   readonly placeholder = input<string | boolean>(false);
 
   /** Optional fallback image URL shown when src fails to load */
-  readonly fallbackSrc = input('');
+  readonly fallbackSrc = input(DEFAULT_FALLBACK_IMAGE);
 
   /** Visual variant */
   readonly variant = input<'default' | 'rounded' | 'avatar' | 'thumbnail'>('default');

@@ -43,7 +43,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
+  ElementRef,
   input,
+  viewChild,
 } from '@angular/core';
 import { FormField } from '@angular/forms/signals';
 import { IconComponent } from '../icon/icon.component';
@@ -92,6 +95,11 @@ export class SelectComponent {
   /** Extra CSS classes for the select element */
   readonly selectClass = input('');
 
+  /** Disable the select field */
+  readonly disabled = input(false);
+
+  protected readonly selectRef = viewChild<ElementRef<HTMLSelectElement>>('selectEl');
+
   /**
    * Controls the dropdown arrow visibility.
    *
@@ -138,6 +146,15 @@ export class SelectComponent {
   protected readonly errors = computed((): { message: string }[] => {
     try { return ((this.field() as any)?.()?.errors?.() ?? []) as { message: string }[]; } catch { return []; }
   });
+
+  constructor() {
+    effect(() => {
+      const selectEl = this.selectRef()?.nativeElement;
+      if (selectEl) {
+        selectEl.disabled = this.disabled();
+      }
+    });
+  }
 
   protected getValue(option: unknown): string {
     if (this.isObjectOptions()) {

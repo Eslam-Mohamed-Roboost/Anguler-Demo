@@ -70,12 +70,12 @@
   <!-- ═══════ Table container ═══════ -->
   <div class="px-6 pb-6 flex flex-col gap-8">
     <div class="rounded-[12px] border border-[#e1e7ef] overflow-auto">
-      <table class="w-full min-w-[960px] text-sm" role="table" aria-label="Hotels summary">
+      <table class="w-full min-w-[960px] text-center text-sm" role="table" aria-label="Hotels summary">
 
         <!-- Head -->
         <thead>
           <tr class="border-b-[0.5px] border-[#a9b4be]">
-            <th class="w-9 pl-2.5 py-3.5" scope="col">
+            <th class="w-9 pl-2.5 py-3.5 text-center" scope="col">
               <input
                 type="checkbox"
                 [checked]="allSelected()"
@@ -85,15 +85,15 @@
                 [attr.aria-label]="'hotelDetails.selectAll' | translate"
               />
             </th>
-            <th class="px-4 py-3.5 text-start font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">ID</th>
-            <th class="px-4 py-3.5 text-start font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Hotel Name</th>
-            <th class="px-4 py-3.5 text-start font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Total Trips</th>
-            <th class="px-4 py-3.5 text-start font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Hotel Comm.</th>
-            <th class="px-4 py-3.5 text-start font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Hotel Profits</th>
-            <th class="px-4 py-3.5 text-start font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Lines profits</th>
-            <th class="px-4 py-3.5 text-start font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Monthly Dues</th>
-            <th class="px-4 py-3.5 text-start font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Status</th>
-            <th class="px-2 py-3.5 text-end font-normal text-[12px] text-[#5b738b] tracking-[0.4px]" scope="col">Actions</th>
+            <th class="px-4 py-3.5 text-center font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">ID</th>
+            <th class="px-4 py-3.5 text-center font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Hotel Name</th>
+            <th class="px-4 py-3.5 text-center font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Total Trips</th>
+            <th class="px-4 py-3.5 text-center font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Hotel Comm.</th>
+            <th class="px-4 py-3.5 text-center font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Hotel Profits</th>
+            <th class="px-4 py-3.5 text-center font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Lines profits</th>
+            <th class="px-4 py-3.5 text-center font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Monthly Dues</th>
+            <th class="px-4 py-3.5 text-center font-normal text-[12px] text-[#5b738b] tracking-[0.4px] whitespace-nowrap" scope="col">Status</th>
+            <th class="px-2 py-3.5 text-center font-normal text-[12px] text-[#5b738b] tracking-[0.4px]" scope="col">Actions</th>
           </tr>
         </thead>
 
@@ -102,9 +102,9 @@
           @if (loading()) {
             @for (_ of [1, 2, 3, 4, 5, 6, 7, 8]; track $index) {
               <tr class="border-b-[0.5px] border-[#a9b4be] h-16" aria-hidden="true">
-                <td class="pl-2.5 py-3"><div class="size-[13px] animate-pulse rounded bg-gray-100"></div></td>
+                <td class="pl-2.5 py-3 text-center"><div class="mx-auto size-[13px] animate-pulse rounded bg-gray-100"></div></td>
                 @for (__ of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track $index) {
-                  <td class="px-4 py-3"><div class="h-4 w-full animate-pulse rounded bg-gray-100"></div></td>
+                  <td class="px-4 py-3 text-center"><div class="mx-auto h-4 w-full animate-pulse rounded bg-gray-100"></div></td>
                 }
               </tr>
             }
@@ -115,7 +115,7 @@
                 [class.bg-green-50]="selectedIds().has(hotel.hotelUserId)"
               >
                 <!-- Checkbox -->
-                <td class="pl-2.5">
+                <td class="pl-2.5 text-center">
                   <input
                     type="checkbox"
                     [checked]="selectedIds().has(hotel.hotelUserId)"
@@ -126,15 +126,15 @@
                 </td>
 
                 <!-- ID -->
-                <td class="pl-2.5 pr-4">
+                <td class="pl-2.5 pr-4 text-center">
                   <span class="text-[13.2px] text-[#223548]">PO{{ hotel.hotelUserId.slice(-3).toUpperCase() }}</span>
                 </td>
 
                 <!-- Hotel Name + status -->
-                <td class="px-4">
-                  <div class="flex flex-col">
+                <td class="px-4 text-center">
+                  <div class="flex flex-col items-center text-center">
                     <span class="text-[13.2px] text-[#223548]">{{ hotel.hotelName }}</span>
-                    <div class="flex items-center gap-[2px] mt-0.5">
+                    <div class="flex items-center justify-center gap-[2px] mt-0.5">
                       <span class="size-[6px] rounded-full bg-[#00c950] shrink-0"></span>
                       <span class="text-[12px] text-[#00c950] tracking-[0.4px]">{{ 'hotelDetails.statusSettled' | translate }}</span>
                     </div>
@@ -142,32 +142,32 @@
                 </td>
 
                 <!-- Total Trips -->
-                <td class="px-4">
+                <td class="px-4 text-center">
                   <span class="text-[13.2px] text-[#223548]">{{ hotel.totalRides }}</span>
                 </td>
 
                 <!-- Hotel Comm. % -->
-                <td class="px-4">
+                <td class="px-4 text-center">
                   <span class="text-[13.2px] text-[#223548]">{{ commissionPercent(hotel) }}</span>
                 </td>
 
                 <!-- Hotel Profits (totalRevenue) -->
-                <td class="px-4">
+                <td class="px-4 text-center">
                   <span class="text-[13.2px] text-[#223548]">{{ formatChf(hotel.totalRevenue) }}</span>
                 </td>
 
                 <!-- Lines profits (totalPlatformCommission) -->
-                <td class="px-4">
+                <td class="px-4 text-center">
                   <span class="text-[13.2px] text-[#223548]">{{ formatChf(hotel.totalPlatformCommission) }}</span>
                 </td>
 
                 <!-- Monthly Dues (totalHotelEarnings) -->
-                <td class="px-4">
+                <td class="px-4 text-center">
                   <span class="text-[13.2px] text-[#223548]">{{ formatChf(hotel.totalHotelEarnings) }}</span>
                 </td>
 
                 <!-- Status badge -->
-                <td class="px-4">
+                <td class="px-4 text-center">
                   @if (isSettled(hotel)) {
                     <div class="inline-flex items-center rounded-[8px] bg-[#f0fdf4] px-2 py-1">
                       <span class="text-[14px] font-semibold text-[#00a63e] tracking-[0.1px] whitespace-nowrap">
@@ -184,7 +184,7 @@
                 </td>
 
                 <!-- Actions -->
-                <td class="pr-4 text-end">
+                <td class="pr-4 text-center">
                   <button
                     type="button"
                     class="inline-flex items-center justify-center size-8 rounded-[5.3px] bg-[rgba(249,250,250,0.7)] hover:bg-gray-100 transition"

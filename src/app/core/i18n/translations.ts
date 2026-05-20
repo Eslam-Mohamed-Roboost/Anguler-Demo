@@ -141,6 +141,7 @@ export const TRANSLATIONS = {
     'confirm.vehicle': 'Vehicle Type',
     'confirm.creating': 'Sending Request...',
     'confirm.button': 'Confirm Booking & Send Request',
+    'confirm.scheduleButton': 'Confirm Scheduling & Send Request',
     'confirm.goBack': 'Go Back',
     'common.yes': 'Yes',
     'common.no': 'No',
@@ -318,7 +319,7 @@ export const TRANSLATIONS = {
     'profile.currentPasswordPlaceholder': 'Enter current password',
     'profile.newPasswordPlaceholder': 'Enter new password',
     'profile.confirmPasswordPlaceholder': 'Confirm new password',
-    'profile.accountNumber': 'Account Number',
+    'profile.accountNumber': 'IBAN',
     'profile.swiftCode': 'SWIFT Code',
 
     // ── Message Panel ─────────────────────────────────────────────────────
@@ -586,6 +587,7 @@ export const TRANSLATIONS = {
     'confirm.vehicle': 'نوع المركبة',
     'confirm.creating': 'جارٍ الإرسال...',
     'confirm.button': 'تأكيد الحجز وإرسال الطلب',
+    'confirm.scheduleButton': 'تأكيد الجدولة وإرسال الطلب',
     'confirm.goBack': 'العودة',
     'common.yes': 'نعم',
     'common.no': 'لا',
@@ -763,7 +765,7 @@ export const TRANSLATIONS = {
     'profile.currentPasswordPlaceholder': 'أدخل كلمة المرور الحالية',
     'profile.newPasswordPlaceholder': 'أدخل كلمة المرور الجديدة',
     'profile.confirmPasswordPlaceholder': 'تأكيد كلمة المرور الجديدة',
-    'profile.accountNumber': 'رقم الحساب',
+    'profile.accountNumber': 'IBAN',
     'profile.swiftCode': 'رمز SWIFT',
 
     // ── Message Panel ─────────────────────────────────────────────────────
@@ -1030,6 +1032,7 @@ export const TRANSLATIONS = {
     'confirm.vehicle': 'Fahrzeugtyp',
     'confirm.creating': 'Anfrage wird gesendet...',
     'confirm.button': 'Buchung bestätigen & Anfrage senden',
+    'confirm.scheduleButton': 'Planung bestätigen & Anfrage senden',
     'confirm.goBack': 'Zurück',
     'common.yes': 'Ja',
     'common.no': 'Nein',
@@ -1207,7 +1210,7 @@ export const TRANSLATIONS = {
     'profile.currentPasswordPlaceholder': 'Aktuelles Passwort eingeben',
     'profile.newPasswordPlaceholder': 'Neues Passwort eingeben',
     'profile.confirmPasswordPlaceholder': 'Neues Passwort bestätigen',
-    'profile.accountNumber': 'Kontonummer',
+    'profile.accountNumber': 'IBAN',
     'profile.swiftCode': 'SWIFT-Code',
 
     // ── Message Panel ─────────────────────────────────────────────────────

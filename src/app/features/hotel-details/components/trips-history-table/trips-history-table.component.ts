@@ -78,7 +78,7 @@ export class TripsHistoryTableComponent {
 
   protected readonly hotelColumns = computed<ColumnDef[]>(() => [
     { key: 'id', header: 'ID', sortable: true, headerClass: 'w-24' },
-    { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-56', cellClass: 'text-start' },
+    { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-56', cellClass: 'text-center' },
     { key: 'totalTrips', header: 'Total Trips', sortable: true, headerClass: 'w-24' },
     { key: 'hotelComm', header: 'Hotel Comm.', sortable: true, headerClass: 'w-24' },
     { key: 'hotelProfits', header: 'Hotel Profits', sortable: true, headerClass: 'w-28' },

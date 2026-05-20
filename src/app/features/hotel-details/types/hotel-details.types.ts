@@ -39,6 +39,7 @@ export interface TripRecord {
   tripStatusKey: string;
   requestStatus: string;
   requestStatusKey: string;
+  isScheduled?: boolean;
   price: number;
   currency: string;
   distance: number | null;
@@ -99,6 +100,7 @@ export interface HotelRecord {
   monthlyDues: string;
   settlementStatus: 'in-progress' | 'settled';
   settlementAmount: string;
+  hotelPhone: string;
 }
 
 export interface TripSearchFilters {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InputComponent } from '../../../../shared/components/input/input.component';
@@ -14,6 +14,7 @@ import { HotelProfileData, ProfileService } from '../../services/profile.service
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { SelectComponent } from '../../../../shared/components/select/select.component';
 import { CitiesService } from '../../../booking/components/services/cities.service';
+import { Bank, BankService } from '../../../booking/components/services/bank.service';
 import { BaseComponent } from '../../../../shared/base/base.component';
 
 @Component({
@@ -27,7 +28,8 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   private readonly langService = inject(LanguageService);
   private readonly profileService = inject(ProfileService);
   private readonly notifications = inject(NotificationStore);
-   private readonly citiesService = inject(CitiesService);
+  private readonly citiesService = inject(CitiesService);
+  private readonly bankService = inject(BankService);
 
   readonly lang = this.langService.lang;
 
@@ -47,6 +49,28 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   protected readonly withdrawalLoading = signal(false);
   private readonly currentHotelProfile = signal<HotelProfileData | null>(null);
   readonly cities = signal<{ id: string; name: string }[]>([]);
+  protected readonly banks = signal<Bank[]>([]);
+  protected readonly banksLoading = signal(false);
+  protected readonly otherBankName = signal('');
+  private readonly otherBankOption: Bank = { id: 'Other', name: 'Other' };
+  protected readonly bankOptions = computed<Bank[]>(() => {
+    const options = this.banks().map((bank) => ({ ...bank, id: bank.name }));
+    const hasOther = options.some((bank) => this.isOtherBankValue(bank.id) || this.isOtherBankValue(bank.name));
+
+    return hasOther ? options : [...options, this.otherBankOption];
+  });
+  protected readonly isOtherBankSelected = computed(() => this.isOtherBankValue(this.withdrawalModel().bankName));
+  protected readonly bankNameDisplay = computed(() => {
+    const bankName = this.withdrawalModel().bankName;
+
+    return this.isOtherBankValue(bankName) ? this.otherBankName() : bankName;
+  });
+  protected readonly cityDisplay = computed(() => {
+    const cityId = this.hotelInfoModel().city;
+    const city = this.cities().find((item) => item.id === cityId);
+
+    return city?.name ?? cityId;
+  });
 
   protected readonly hotelInfoModel = signal<HotelInfoModel>({
     name: '',
@@ -77,6 +101,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
     this.loadHotelProfile();
     this.loadWithdrawalDetails();
     this.loadCities();
+    this.loadBanks();
   }
 
   private loadHotelProfile(): void {
@@ -122,6 +147,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
               accountHolderName: result.data.bankAccountHolderName ?? result.data.accountHolderName,
               swiftCode: result.data.bankRoutingNumber,
             });
+            this.syncCustomBankSelection();
           } else {
             this.notifications.showError(result.error?.description ?? 'Failed to load withdrawal details');
           }
@@ -139,6 +165,11 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
   ChangeDiableForwithdrawal(): void {
     this.Disablewithdrawal.set(!this.Disablewithdrawal());
+  }
+
+  protected onOtherBankNameInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.otherBankName.set(input.value);
   }
 
   submitChangePassword(): void {
@@ -223,12 +254,19 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
   submitWithdrawalDetails(): void {
     const model = this.withdrawalModel();
+    const bankName = this.isOtherBankValue(model.bankName) ? this.otherBankName().trim() : model.bankName.trim();
+
+    if (!bankName) {
+      this.notifications.showError('Please enter the bank name.');
+      return;
+    }
+
     this.withdrawalLoading.set(true);
 
     this.profileService
       .updateWithdrawalDetails({
         bankAccountHolderName: model.accountHolderName,
-        bankName: model.bankName,
+        bankName,
         bankAccountNumber: model.accountNumber,
         bankRoutingNumber: model.swiftCode,
       })
@@ -238,6 +276,8 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
           this.withdrawalLoading.set(false);
           if (result.isSuccess) {
             this.notifications.showSuccess('Withdrawal details updated successfully');
+            this.withdrawalModel.update((current) => ({ ...current, bankName }));
+            this.syncCustomBankSelection();
             this.Disablewithdrawal.set(true);
           } else {
             this.notifications.showError(result.error?.description ?? 'Failed to update withdrawal details');
@@ -272,6 +312,60 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
           this.notifications.showError('Failed to load cities');
         },
       });
+  }
+
+  private loadBanks(): void {
+    this.banksLoading.set(true);
+
+    this.bankService.getBanks()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.banksLoading.set(false);
+          if (response.isSuccess && response.data?.banks) {
+            this.banks.set(response.data.banks);
+            this.syncCustomBankSelection();
+          } else {
+            this.notifications.showError(response.error?.description ?? 'Failed to load banks.');
+          }
+        },
+        error: () => {
+          this.banksLoading.set(false);
+          this.notifications.showError('Failed to load banks.');
+        },
+      });
+  }
+
+  private syncCustomBankSelection(): void {
+    const currentBankName = this.withdrawalModel().bankName.trim();
+
+    if (!currentBankName || this.isOtherBankValue(currentBankName) || this.isKnownBank(currentBankName)) {
+      return;
+    }
+
+    this.otherBankName.set(currentBankName);
+    this.withdrawalModel.update((model) => ({ ...model, bankName: 'Other' }));
+  }
+
+  private isKnownBank(value: string): boolean {
+    const normalizedValue = this.normalizeBankName(value);
+
+    return this.banks().some((bank) => {
+      const normalizedId = this.normalizeBankName(bank.id);
+      const normalizedName = this.normalizeBankName(bank.name);
+
+      return normalizedValue === normalizedId || normalizedValue === normalizedName;
+    });
+  }
+
+  private isOtherBankValue(value: string): boolean {
+    const normalizedValue = this.normalizeBankName(value);
+
+    return normalizedValue === 'other' || normalizedValue === 'اخرى' || normalizedValue === 'أخرى' || normalizedValue === 'andere';
+  }
+
+  private normalizeBankName(value: string): string {
+    return value.trim().toLowerCase();
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
@@ -316,6 +410,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
       commissionRate: 0,
       isActive: true,
       isVerified: true,
+      code: '',
     };
   }
 }

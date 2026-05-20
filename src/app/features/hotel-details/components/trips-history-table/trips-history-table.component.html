@@ -111,17 +111,23 @@
 
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
-          <div class="flex flex-col gap-0.5">
-            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName ?? '--' }}</span>
-            @if (row.hotelName) {
-              <span class="text-xs text-muted">{{ row.hotelName }}</span>
+          <div class="mx-auto flex min-w-0 max-w-32 flex-col items-center gap-0.5 text-center sm:max-w-36">
+            <span class="block max-w-full truncate text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName ?? '--' }}</span>
+            @if (row.hotelPhone) {
+              <span class="phone-line inline-flex max-w-full items-center gap-1 text-xs text-muted">
+                <svg class="size-3 shrink-0" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="#5B738B" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="min-w-0 truncate" dir="ltr" [title]="row.hotelPhone">{{ row.hotelPhone }}</span>
+              </span>
             }
+
           </div>
         </ng-template>
 
         <!-- Guest Name Cell -->
         <ng-template cellDef="guestName" let-row>
-          <div class="flex flex-col gap-0.5">
+          <div class="flex flex-col items-center gap-0.5 text-center">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.customerName }}</span>
             @if (row.room) {
               <span class="text-xs text-muted">{{ row.room }}</span>
@@ -131,7 +137,7 @@
 
         <!-- Driver Name Cell -->
         <ng-template cellDef="driverName" let-row>
-          <div class="flex flex-col gap-0.5">
+          <div class="flex flex-col items-center gap-0.5 text-center">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
             @if (row.driverId) {
               <span class="text-xs text-muted">{{ row.driverId }}</span>
@@ -141,12 +147,12 @@
 
         <!-- Route Cell -->
         <ng-template cellDef="route" let-row>
-          <div class="flex flex-col gap-1">
-            <div class="flex items-center gap-1.5">
+          <div class="flex flex-col items-center gap-1 text-center">
+            <div class="flex items-center justify-center gap-1.5">
               <span class="inline-block size-2 rounded-full shrink-0 bg-status-completed" aria-hidden="true"></span>
               <span class="text-cell text-body-soft">{{ row.pickupLocation }}</span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center justify-center gap-1.5">
               <span class="inline-block size-2 rounded-full shrink-0 bg-status-cancelled" aria-hidden="true"></span>
               <span class="text-cell text-body-soft">{{ row.dropoffLocation }}</span>
             </div>
@@ -171,7 +177,7 @@
 
         <!-- Fare Cell -->
         <ng-template cellDef="fare" let-row>
-          <div class="flex flex-col gap-0.5">
+          <div class="flex flex-col items-center gap-0.5 text-center">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price.toFixed(2) }} CHF</span>
             @if (row.commission != null) {
               <span class="text-xs text-muted">Comm.: {{ row.commission.toFixed(2) }}</span>
@@ -181,7 +187,7 @@
 
         <!-- Start/End Date Cell -->
         <ng-template cellDef="startEndDate" let-row>
-          <div class="flex flex-col gap-0.5">
+          <div class="flex flex-col items-center gap-0.5 text-center">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ formatDate(row.date) }}</span>
             <span class="text-xs text-muted">
               @if (row.endDate) {
@@ -195,7 +201,7 @@
 
         <!-- Actions Cell -->
         <ng-template cellDef="actions" let-row>
-          <div class="flex gap-1.5">
+          <div class="flex justify-center gap-1.5">
             <button
               class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
               type="button"
@@ -232,12 +238,12 @@
 
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
-          <div class="flex min-w-[170px] max-w-[240px] flex-col items-start gap-0.5 text-start">
+          <div class="mx-auto flex min-w-[170px] max-w-[240px] flex-col items-center gap-0.5 text-center">
             <span class="block max-w-full whitespace-normal break-all text-cell font-medium leading-snug text-body max-sm:text-xs">
               {{ row.hotelName }}
             </span>
             <span
-              class="inline-flex items-center gap-1 text-xs font-medium leading-none"
+              class="inline-flex items-center justify-center gap-1 text-xs font-medium leading-none"
               [class]="row.hotelStatus === 'active' ? 'text-status-completed' : 'text-status-cancelled'"
             >
               <span

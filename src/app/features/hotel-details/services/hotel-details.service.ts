@@ -124,8 +124,8 @@ export class HotelDetailsService extends ApiService {
       return this.adminApi.put<void>(`/admin/hotels/global-commission?newCommission=${newCommission}`, { newCommission });
     }
 
-  getUnsettledPayouts(hotelId: string): Observable<Result<number>> {
-    return this.adminApi.get<number>(`/admin/hotels/payouts/${hotelId}/unsettled`);
+  getUnsettledPayouts(hotelId: string): Observable<Result<SettlementInfo>> {
+    return this.adminApi.get<SettlementInfo>(`/admin/hotels/payouts/${hotelId}/last-settle-info`);
   }
 
   settleAllPayouts(hotelId: string): Observable<Result<void>> {
@@ -141,4 +141,19 @@ export class HotelDetailsService extends ApiService {
       .set('pageSize', pageSize);
     return this.get('/hotels/service-preferences', params);
   }
+}
+export interface SettlementInfo {
+  value: string | number;
+  settelStatue?: SettlementStatus | keyof typeof SettlementStatus;
+  settleStatus?: SettlementStatus | keyof typeof SettlementStatus;
+  status?: SettlementStatus | keyof typeof SettlementStatus;
+  statusEnum?: SettlementStatus;
+  statusString?: keyof typeof SettlementStatus;
+}
+
+export enum SettlementStatus {
+  Pending,
+  AwaitingPayout,
+  Settled,
+  Failed,
 }

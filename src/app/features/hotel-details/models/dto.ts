@@ -4,6 +4,7 @@ export interface HotelTripItem {
   tripId: string | null;
   hotelId?: string;
   hotelName:string;
+  hotelPhone?: string | null;
   tripCode: string | null;
   guestName: string;
   roomNumber: number;
@@ -22,6 +23,7 @@ export interface HotelTripItem {
   tripRequestStatusEnum?: number | null;
   tripStatusString: string;
   tripStatusEnum: number | null;
+  isScheduled?: boolean;
   durationMinutes: number | null;
   distanceInKm: number | null;
   fare: number | null;
@@ -79,6 +81,7 @@ export interface HotelFinancialsItem {
   hotelId: string;
   code?: string | null;
   hotelName: string;
+  hotelPhone: string;
   isActive: boolean;
   year: number;
   month: number;

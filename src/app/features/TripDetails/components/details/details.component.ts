@@ -35,9 +35,21 @@ export class DetailsComponent implements OnInit {
 
   readonly statusChanged = output<void>();
 
-  protected readonly statusLabel = computed(() => getTripStatusLabel(this.data().unifiedStatus));
+  protected readonly statusLabel = computed(() => {
+    const trip = this.data();
+    if (trip.isScheduled && !trip.driver && this.isScheduledStatus(trip.unifiedStatus)) {
+      return 'Pending';
+    }
+
+    return getTripStatusLabel(trip.unifiedStatus);
+  });
   protected readonly statusLabelKey = computed(() => this.statusTranslationKey(this.statusLabel()));
-  protected readonly statusVariant = computed(() => getTripStatusVariant(this.data().unifiedStatus));
+  protected readonly statusVariant = computed(() => getTripStatusVariant(this.statusLabel()));
+  protected readonly canAssignDriver = computed(() =>
+    this.isAdmin() &&
+    !this.data().driver &&
+    (this.isPendingStatus(this.data().unifiedStatus) || this.isScheduledStatus(this.data().unifiedStatus))
+  );
   protected readonly canShowScheduledActions = computed(() =>
     this.data().isScheduled && !this.isCancelledStatus(this.data().unifiedStatus)
   );
@@ -57,7 +69,7 @@ export class DetailsComponent implements OnInit {
   protected readonly assignLoading = signal(false);
 
   ngOnInit(): void {
-    if (this.isAdmin() && this.data().unifiedStatus === 'Pending') {
+    if (this.canAssignDriver()) {
       this.loadDrivers();
     }
   }
@@ -217,6 +229,15 @@ export class DetailsComponent implements OnInit {
 
   private isCancelledStatus(status: string): boolean {
     return status.toLowerCase().includes('cancel');
+  }
+
+  private isPendingStatus(status: string): boolean {
+    return status.trim().toLowerCase() === 'pending';
+  }
+
+  private isScheduledStatus(status: string): boolean {
+    const normalized = status.trim().toLowerCase();
+    return normalized === 'scheduled' || normalized === 'schedualed';
   }
 
   protected readonly stars = [1, 2, 3, 4, 5];

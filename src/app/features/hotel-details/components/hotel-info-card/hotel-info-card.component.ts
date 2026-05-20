@@ -17,6 +17,8 @@ import { ModalComponent } from "../../../../shared/components/modal/modal.compon
 import { HotelDetailsService } from '../../services/hotel-details.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 
+const DEFAULT_HOTEL_IMAGE = 'assets/booking/logo-lines.png';
+
 @Component({
   selector: 'app-hotel-info-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +35,7 @@ export class HotelInfoCardComponent {
 
   readonly showConfirmBlockModal = signal(false);
   readonly toggleLoading = signal(false);
+  protected readonly defaultHotelImage = DEFAULT_HOTEL_IMAGE;
 
   closeConfirmBlockModal(): void {
     this.showConfirmBlockModal.set(false);

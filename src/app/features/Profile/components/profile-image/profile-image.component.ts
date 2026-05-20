@@ -5,6 +5,8 @@ import { ImageUploadService } from '../../../../core/services/image-upload.servi
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { HotelProfileData, ProfileService } from '../../services/profile.service';
  
+const DEFAULT_PROFILE_IMAGE = 'assets/booking/logo-lines.png';
+
 @Component({
   selector: 'app-profile-image',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,11 +22,11 @@ export class ProfileImageComponent {
   private readonly coreAuth = inject(CoreAuthService);
 
   protected readonly profile = signal<HotelProfileData | null>(null);
-  protected readonly imageSrc = signal('assets/booking/hotel-illustration.png');
+  protected readonly imageSrc = signal(DEFAULT_PROFILE_IMAGE);
   protected readonly uploading = signal(false);
 
   protected readonly hotelName = computed(() => this.profile()?.hotelName || 'Hotel');
-  protected readonly hotelId = computed(() => this.profile()?.id || '');
+  protected readonly hotelId = computed(() => this.profile()?.code || '');
 
   constructor() {
     this.loadProfile();
@@ -64,7 +66,7 @@ export class ProfileImageComponent {
         next: (result) => {
           if (result.isSuccess && result.data) {
             this.profile.set(result.data);
-            this.imageSrc.set(result.data.logoUrl || 'assets/booking/hotel-illustration.png');
+            this.imageSrc.set(result.data.logoUrl || DEFAULT_PROFILE_IMAGE);
           } else {
             this.notifications.showError(result.error?.description ?? 'Failed to load hotel profile');
           }
@@ -93,9 +95,10 @@ export class ProfileImageComponent {
           this.uploading.set(false);
 
           if (result.isSuccess && result.data) {
-            this.profile.set(result.data);
-            this.imageSrc.set(result.data.logoUrl || logoUrl);
-            this.coreAuth.setProfile({ ...result.data });
+            const updatedProfile = { ...profile, ...result.data, logoUrl: result.data.logoUrl || logoUrl };
+            this.profile.set(updatedProfile);
+            this.imageSrc.set(updatedProfile.logoUrl || DEFAULT_PROFILE_IMAGE);
+            this.coreAuth.setProfile(updatedProfile);
             this.notifications.showSuccess('Profile image updated successfully');
           } else {
             this.notifications.showError(result.error?.description ?? 'Failed to update profile image');
@@ -111,6 +114,6 @@ export class ProfileImageComponent {
   }
 
   private resetImagePreview(): void {
-    this.imageSrc.set(this.profile()?.logoUrl || 'assets/booking/hotel-illustration.png');
+    this.imageSrc.set(this.profile()?.logoUrl || DEFAULT_PROFILE_IMAGE);
   }
 }

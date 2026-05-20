@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { switchMap, timer } from 'rxjs';
 import type { HotelRecord, TripRecord } from '../../types/hotel-details.types';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
 import { TripsHistoryTableComponent } from '../../components/trips-history-table/trips-history-table.component';
@@ -19,6 +20,8 @@ import { HotelFinancialsItem, HotelTripItem, DashboardStatsResponse } from '../.
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+
+const DASHBOARD_STATS_REFRESH_MS = 30_000;
 
 @Component({
   selector: 'app-hotel-dashboard',
@@ -67,7 +70,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     this.loadStatusOptions('trips');
     this.loadTrips();
     this.loadHotels();
-    this.loadDashboardStats();
+    this.startDashboardStatsRefresh();
   }
 
   private loadProfile(): void {
@@ -83,12 +86,26 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
+  private startDashboardStatsRefresh(): void {
+    timer(0, DASHBOARD_STATS_REFRESH_MS)
+      .pipe(
+        switchMap(() => {
+          const { fromDate, toDate } = this.getDashboardDateRange();
+          return this.hotelDetailsService.getDashboardStats(fromDate, toDate);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.statistics.set(this.buildStatistics(result.data));
+          }
+        },
+      });
+  }
+
   private loadDashboardStats(): void {
-    const now = new Date();
-    const yearAgo = new Date(now);
-    yearAgo.setFullYear(now.getFullYear() - 1);
-    const fromDate = this.formatDateParam(yearAgo);
-    const toDate = this.formatDateParam(now);
+    const { fromDate, toDate } = this.getDashboardDateRange();
 
     this.hotelDetailsService
       .getDashboardStats(fromDate, toDate)
@@ -100,6 +117,17 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
           }
         },
       });
+  }
+
+  private getDashboardDateRange(): { fromDate: string; toDate: string } {
+    const now = new Date();
+    const yearAgo = new Date(now);
+    yearAgo.setFullYear(now.getFullYear() - 1);
+
+    return {
+      fromDate: this.formatDateParam(yearAgo),
+      toDate: this.formatDateParam(now),
+    };
   }
 
   private buildStatistics(stats?: DashboardStatsResponse): StatisticItem[] {
@@ -186,7 +214,6 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
 
   private toHotelRecord(item: HotelFinancialsItem, index: number): HotelRecord {
     const code = item.code?.trim() || this.buildFallbackHotelCode(index);
-
     return {
       id: item.hotelId,
       code,
@@ -200,6 +227,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       monthlyDues: item.monthlyDues.toFixed(2),
       settlementStatus: item.status?.toLowerCase() === 'settled' ? 'settled' : 'in-progress',
       settlementAmount: item.totalFare.toFixed(2),
+      hotelPhone: item.hotelPhone,
     };
   }
 
@@ -212,13 +240,14 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
     const requestStatus = item.tripRequestStatusString || item.requestStatusString || 'Pending';
-    const tripStatus = item.tripStatusString || '';
+    const tripStatus = item.tripStatusString || (item.isScheduled ? 'Scheduled' : '');
     const status = this.toUiTripStatus(tripStatus || requestStatus);
     return {
       id: item.tripRequestId,
       tripId: item.tripId ?? undefined,
       hotelId: item.hotelId ?? hotelId,
       hotelName: item.hotelName,
+      hotelPhone: item.hotelPhone?.trim() || undefined,
       tripCode: item.tripCode ?? undefined,
       customerName: item.guestName,
       pickupLocation: item.startLocation?.address ?? '--',
@@ -230,6 +259,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       tripStatusKey: this.normalizeStatus(tripStatus || 'not-started'),
       requestStatus,
       requestStatusKey: this.normalizeStatus(requestStatus),
+      isScheduled: item.isScheduled,
       price: item.fare ?? 0,
       currency: item.currency,
       distance: item.distanceInKm,
@@ -250,7 +280,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
 
     if (normalized.includes('complete')) return 'completed';
     if (normalized.includes('active') || normalized.includes('progress')) return 'active';
-    if (normalized.includes('schedule')) return 'scheduled';
+    if (normalized.includes('schedule') || normalized.includes('schedual')) return 'scheduled';
     if (normalized.includes('cancel')) return 'cancelled';
 
     return 'pending';

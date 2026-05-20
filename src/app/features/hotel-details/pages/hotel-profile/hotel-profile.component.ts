@@ -21,7 +21,7 @@ import { ModalComponent } from '../../../../shared/components/modal/modal.compon
 import { HotelInfoCardComponent } from '../../components/hotel-info-card/hotel-info-card.component';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
   import type { HotelFormData, HotelInfo, TripRecord, WithdrawalFormData } from '../../types/hotel-details.types';
-import { HotelDetailsService } from '../../services/hotel-details.service';
+import { HotelDetailsService, SettlementInfo, SettlementStatus } from '../../services/hotel-details.service';
 import { HotelApiItem, HotelTripItem, TripRequestStatusItem } from '../../models/dto';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { BaseComponent } from '../../../../shared/base/base.component';
@@ -55,6 +55,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   readonly selectedStatus = signal('');
   readonly statusOptions = signal<TripRequestStatusItem[]>([]);
   readonly awaitingAmount = signal(0);
+  readonly settlementInfo = signal<SettlementInfo | null>(null);
 
   readonly loading = signal(false);
   readonly tripsLoading = signal(false);
@@ -114,8 +115,29 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   });
 
   readonly awaitingAmountLabel = computed(() =>
-    `${this.awaitingAmount().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} CHF`
+    `${this.awaitingAmount().toLocaleString('en-US', { maximumFractionDigits: 2 })} CHF`
   );
+  readonly settlementBadgeLabel = computed(() =>
+    `${this.settlementStatusText(this.currentSettlementStatus())} : ${this.awaitingAmountLabel()}`
+  );
+  readonly settlementBadgeClass = computed(() => {
+    const status = this.currentSettlementStatus();
+
+    if (status === SettlementStatus.Settled) {
+      return 'bg-[#EAFBF2] text-[#00A63E]';
+    }
+
+    if (status === SettlementStatus.Failed) {
+      return 'bg-[#FFECEC] text-[#E03131]';
+    }
+
+    return 'bg-[#FFF1F4] text-[#FF2D55]';
+  });
+  readonly canSettlePayout = computed(() => {
+    const status = this.currentSettlementStatus();
+
+    return status === SettlementStatus.AwaitingPayout;
+  });
 
   protected readonly columns = computed<ColumnDef[]>(() => [
     { key: 'tripCode', header: 'hotelTrip.tripId', sortable: false, headerClass: 'w-28' },
@@ -467,7 +489,8 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       .subscribe({
         next: (result) => {
           if (result.isSuccess && result.data !== null) {
-            this.awaitingAmount.set(result.data);
+            this.settlementInfo.set(result.data);
+            this.awaitingAmount.set(Number(result.data.value) || 0);
           }
         },
         error: () => {
@@ -477,7 +500,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   }
 
   openSettleConfirmModal(): void {
-    if (this.awaitingAmount() === 0 || this.settleLoading()) return;
+    if (!this.canSettlePayout() || this.settleLoading()) return;
     this.showSettleConfirmModal.set(true);
   }
 
@@ -510,5 +533,56 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
           this.notifications.showError('Failed to settle payouts.');
         },
       });
+  }
+
+  private settlementStatusText(status: SettlementStatus | null): string {
+    switch (status) {
+      case SettlementStatus.Pending:
+        return 'Pending';
+      case SettlementStatus.AwaitingPayout:
+        return 'Awaiting Payout';
+      case SettlementStatus.Settled:
+        return 'Settled';
+      case SettlementStatus.Failed:
+        return 'Failed';
+      default:
+        return 'Awaiting Payout';
+    }
+  }
+
+  private currentSettlementStatus(): SettlementStatus | null {
+    const info = this.settlementInfo();
+
+    return this.normalizeSettlementStatus(
+      info?.settelStatue ?? info?.settleStatus ?? info?.status ?? info?.statusEnum ?? info?.statusString,
+    );
+  }
+
+  private normalizeSettlementStatus(
+    status: SettlementInfo['settelStatue'] | SettlementInfo['statusEnum'] | undefined,
+  ): SettlementStatus | null {
+    if (typeof status === 'number') {
+      return status;
+    }
+
+    if (!status) {
+      return null;
+    }
+
+    const normalized = status.trim().toLowerCase();
+
+    switch (normalized) {
+      case 'pending':
+        return SettlementStatus.Pending;
+      case 'awaitingpayout':
+      case 'awaiting payout':
+        return SettlementStatus.AwaitingPayout;
+      case 'settled':
+        return SettlementStatus.Settled;
+      case 'failed':
+        return SettlementStatus.Failed;
+      default:
+        return null;
+    }
   }
 }

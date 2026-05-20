@@ -1,7 +1,7 @@
 <nav class="flex items-center justify-between px-3 py-2 sm:px-5 sm:py-3 lg:px-8 xl:px-10" [attr.aria-label]="'nav.mainNavAriaLabel' | translate">
   <!-- Left: Logo + Language toggle -->
   <div class="flex items-center gap-2 sm:gap-4">
-    <a href="/" class="shrink-0">
+    <a [routerLink]="logoLink()" class="shrink-0">
       <img [src]="logoSrc()" [alt]="logoAlt()" class="h-7 w-auto sm:h-8" />
     </a>
     <div class="relative" (appClickOutside)="closeLangDropdown()">
@@ -152,12 +152,19 @@
             <!-- Admin user card -->
             <div class="flex items-center gap-1.5">
               <span class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded bg-[#FFE5B8]">
-                <img
-                  src="assets/booking/admin-avatar-bg.png"
-                  alt=""
-                  class="size-full rounded object-cover"
-                  aria-hidden="true"
-                />
+                @if (userImageUrl()) {
+                  <img
+                    [src]="profileImageSrc()"
+                    [alt]="currentUserName()"
+                    class="size-full rounded object-cover"
+                  />
+                } @else {
+                  <img
+                    [src]="profileImageSrc()"
+                    [alt]="currentUserName()"
+                    class="size-full rounded object-contain"
+                  />
+                }
               </span>
               <div class="hidden w-[85px] flex-col items-start overflow-hidden sm:flex">
                 <span class="w-full truncate text-[13px] font-normal leading-5 text-[#020817]">
@@ -170,13 +177,12 @@
             </div>
           } @else {
             <!-- Hotel card -->
-            <span class="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary sm:size-8">
-              <svg class="size-4 sm:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 21h18"/>
-                <path d="M5 21V7l8-4v18"/>
-                <path d="M19 21V11l-6-4"/>
-                <path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>
-              </svg>
+            <span class="flex size-7 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-primary sm:size-8">
+              <img
+                [src]="profileImageSrc()"
+                [alt]="currentUserName()"
+                class="size-full rounded-full object-cover"
+              />
             </span>
             <span class="hidden text-sm font-semibold text-primary-text sm:inline">{{ currentUserName() }}</span>
           }

@@ -96,7 +96,7 @@ export class AuthService {
   refreshProfile(): void {
     if (!this._token()) return;
 
-    this.api.get<AuthProfile>('/hotels/profile').subscribe({
+    this.api.get<AuthProfile>('/users/profile').subscribe({
       next: (result) => {
         if (result.isSuccess && result.data) {
           this.setProfile(result.data);
@@ -106,7 +106,8 @@ export class AuthService {
   }
 
   setProfile(profile: AuthProfile): void {
-    this._profile.set(profile);
+    const mergedProfile = { ...(this._profile() ?? {}), ...profile };
+    this._profile.set(mergedProfile);
     this._user.update((user) => {
       if (!user) return user;
 
@@ -114,7 +115,7 @@ export class AuthService {
     });
 
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('auth_profile', JSON.stringify(profile));
+      localStorage.setItem('auth_profile', JSON.stringify(mergedProfile));
       const user = this._user();
       if (user) {
         localStorage.setItem('auth_user', JSON.stringify(user));

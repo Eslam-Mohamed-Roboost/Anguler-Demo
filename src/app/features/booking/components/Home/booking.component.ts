@@ -181,6 +181,12 @@ export class BookingComponent extends BaseComponent {
       }
     });
 
+    effect(() => {
+      if (this.coreAuth.isAuthenticated() && this.destinationsData() === null) {
+        this.loadDestinations();
+      }
+    });
+
     // Auto-select first city in join form when data loads
     effect(() => {
       const cities = this.cities();
@@ -267,7 +273,7 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   readonly rescheduleTripRequestId = signal<string | null>(null);
   readonly isRescheduleMode = computed(() => !!this.rescheduleTripRequestId());
   readonly createdTripId = signal<string | null>(null);
-  readonly hotelImageSrc = signal<string>('assets/booking/hotel-illustration.png');
+  readonly hotelImageSrc = signal<string>('assets/booking/logo-lines.png');
   readonly selectedHotelImageFile = signal<File | null>(null);
   readonly isOtherPlaceTypeSelected = computed(() => {
     const selectedPlaceTypeId = this.joinFormModel().placeTypeId;
@@ -389,6 +395,8 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   readonly ShowRideRequestSentModel = signal(false);
   readonly showPickupTimeModal = signal(false);
 readonly ShowScheduledRiderModel = signal(false);
+  readonly confirmationMode = signal<'booking' | 'scheduled'>('booking');
+  readonly scheduledAtToConfirm = signal<string | null>(null);
 readonly activeTab = signal<'login' | 'register'>('register');
   readonly isRegistering = signal(false);
   readonly isLoggingIn = signal(false);
@@ -828,19 +836,24 @@ readonly activeTab = signal<'login' | 'register'>('register');
     }
     const { destination } = this.formModel();
     this.distnationName.set(this.destinationsData()?.find(x => x.id === destination)?.name ?? '');
+    this.confirmationMode.set('booking');
+    this.scheduledAtToConfirm.set(null);
     this.ShowComfirmBookingModel.set(true);
   }
 
   openComfirmBookingModel(): void {
+    this.confirmationMode.set('booking');
     this.ShowComfirmBookingModel.set(true);
   }
 
   CloseComfirmBookingModel(): void {
     this.ShowComfirmBookingModel.set(false);
+    this.scheduledAtToConfirm.set(null);
   }
 
   confirmBooking(): void {
-    this.createTrip(false, null);
+    const isScheduled = this.confirmationMode() === 'scheduled';
+    this.createTrip(isScheduled, isScheduled ? this.scheduledAtToConfirm() : null);
   }
 
   openRideRequestSentModel():void{
@@ -886,8 +899,12 @@ readonly activeTab = signal<'login' | 'register'>('register');
       return;
     }
 
+    const { destination } = this.formModel();
+    this.distnationName.set(this.destinationsData()?.find(x => x.id === destination)?.name ?? '');
+    this.scheduledAtToConfirm.set(this.getScheduledAt());
+    this.confirmationMode.set('scheduled');
     this.showPickupTimeModal.set(false);
-    this.createTrip(true, this.getScheduledAt());
+    this.ShowComfirmBookingModel.set(true);
   }
 
   private getScheduledAt(): string {
@@ -1102,7 +1119,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
           this.otherBankName.set('');
           this.savedOtherBankName.set('');
           this.selectedHotelImageFile.set(null);
-          this.hotelImageSrc.set('assets/booking/hotel-illustration.png');
+          this.hotelImageSrc.set('assets/booking/logo-lines.png');
           
           // Switch to login tab after successful registration
           setTimeout(() => {
@@ -1222,12 +1239,14 @@ readonly activeTab = signal<'login' | 'register'>('register');
  
         if (result.isSuccess && result.data) {
           this.destinationsData.set(result.data.locations.items?? null)
-        } else {
-          this.showError(result.error?.description || 'Login failed. Please check your credentials.');
+        } else if (this.coreAuth.isAuthenticated()) {
+          this.showError(result.error?.description || 'Failed to load destinations.');
         }
       },
       error: () => {
-         this.showError('An unexpected error occurred. Please try again later.');
+        if (this.coreAuth.isAuthenticated()) {
+          this.showError('Failed to load destinations. Please try again later.');
+        }
       },
     });
   }

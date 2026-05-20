@@ -21,6 +21,7 @@ export interface HotelProfileData {
   commissionRate: number;
   isActive: boolean;
   isVerified: boolean;
+  code: string;
 }
 
 export interface WithdrawalDetailsData {
