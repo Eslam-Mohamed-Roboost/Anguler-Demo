@@ -171,12 +171,29 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   protected readonly messages = signal<Message[]>(this.defaultMessages);
   protected readonly messagesLoading = signal(false);
   private dataLoaded = false;
+  private profileLoadRequested = false;
 
   /** Emitted when Trips History is clicked */
   readonly tripsHistoryClick = output<void>();
 
   /** Emitted when profile is clicked */
   readonly profileClick = output<void>();
+
+  constructor() {
+    super();
+
+    effect(() => {
+      if (!this.coreAuth.isAuthenticated()) {
+        this.profileLoadRequested = false;
+        return;
+      }
+
+      if (this.profileLoadRequested) return;
+
+      this.profileLoadRequested = true;
+      this.loadHotelProfileForNavbar();
+    });
+  }
  
   ngOnInit(): void {
     if (this.dataLoaded) return;
