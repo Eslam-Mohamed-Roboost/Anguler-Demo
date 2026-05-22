@@ -15,7 +15,7 @@ export interface JoinUsFormModel {
   bankAccountHolderName: string;
   bankName: string;
   bankAccountNumber: string;
-  bankRoutingNumber: string;
+  bankRoutingNumber?: string;
   note: string;
 }
  

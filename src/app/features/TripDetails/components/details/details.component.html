@@ -221,44 +221,5 @@
       </div>
     }
 
-    <!-- Feedback (Completed trips — passenger only) -->
-    @if (!isAdmin() && data().unifiedStatus === 'Completed' && data().tripId) {
-      <div class="mt-5 border-t border-gray-200 pt-5 dark:border-gray-700">
-        @if (feedbackSubmitted()) {
-          <p class="text-sm font-medium text-emerald-600">{{ 'tripDetails.feedbackThanks' | translate }}</p>
-        } @else {
-          <h3 class="mb-3 text-sm font-semibold text-gray-700">{{ 'tripDetails.rateTrip' | translate }}</h3>
-          <div class="flex gap-1 mb-3" role="radiogroup" [attr.aria-label]="'tripDetails.ratingAria' | translate">
-            @for (star of stars; track star) {
-              <button
-                type="button"
-                (click)="setRating(star)"
-                class="text-2xl transition"
-                [class]="star <= feedbackRating() ? 'text-amber-400' : 'text-gray-300'"
-                [attr.aria-label]="star + ' ' + (ratingUnitKey(star) | translate)"
-              >★</button>
-            }
-          </div>
-          <textarea
-            class="w-full rounded-lg border border-gray-300 p-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-400"
-            rows="2"
-            [placeholder]="'tripDetails.commentPlaceholder' | translate"
-            [value]="feedbackComment()"
-            (input)="feedbackComment.set($any($event.target).value)"
-          ></textarea>
-          <button
-            type="button"
-            (click)="submitFeedback()"
-            [disabled]="feedbackLoading() || feedbackRating() === 0"
-            class="mt-2 flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:opacity-50"
-          >
-            @if (feedbackLoading()) {
-              <span class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
-            }
-            {{ 'tripDetails.submitFeedback' | translate }}
-          </button>
-        }
-      </div>
-    }
   </div>
 </section>

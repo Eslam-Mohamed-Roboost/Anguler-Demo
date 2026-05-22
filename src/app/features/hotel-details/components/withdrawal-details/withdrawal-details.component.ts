@@ -56,7 +56,6 @@ export class WithdrawalDetailsComponent extends BaseFormComponent<WithdrawalForm
     required(s.accountHolderName, { message: 'Account holder name is required' });
     required(s.bankName, { message: 'Bank name is required' });
     required(s.iban, { message: 'IBAN is required' });
-    required(s.swiftCode, { message: 'Swift code is required' });
   }
 
   onSubmit(value: WithdrawalFormData): void {

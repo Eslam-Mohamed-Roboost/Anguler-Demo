@@ -76,7 +76,7 @@ export interface WithdrawalFormData {
   accountHolderName: string;
   bankName: string;
   iban: string;
-  swiftCode: string;
+  swiftCode?: string;
 }
 
 export interface TableColumn {

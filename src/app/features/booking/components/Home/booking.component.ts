@@ -223,7 +223,7 @@ export class BookingComponent extends BaseComponent {
         if (result.isSuccess && result.data) {
           const options: CarOption[] = result.data.map(v => {
             const key = v.name.toLowerCase().split(' ')[0];
-            const image = BookingComponent.fallbackImages[key] ?? 'assets/booking/car-premium.png';
+            const image = BookingComponent.fallbackImages[key] ?? 'assets/booking/car-premium.webp';
             const price = v.expectedPriceAfterDiscount ?? v.expectedPrice;
             return { id: v.id, label: v.name, image, price, estimatedMinutes: v.estimatedTimeInMinutes };
           });
@@ -673,8 +673,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.showError('Please enter the bank name.');
       return false;
     }
-    if (!form.bankRoutingNumber?.trim()) {
-      this.showError('Please enter your IBAN / Swift code.');
+    if (!form.bankAccountNumber?.trim()) {
+      this.showError('Please enter your IBAN.');
       return false;
     }
     return true;
@@ -1074,6 +1074,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
     const payload: JoinUsFormModel = {
       ...form,
+      bankRoutingNumber: form.bankRoutingNumber?.trim() ?? '',
       bankName: this.isOtherBankValue(form.bankName)
         ? this.savedOtherBankName().trim() || this.otherBankName().trim()
         : form.bankName,

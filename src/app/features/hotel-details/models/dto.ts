@@ -120,7 +120,7 @@ export interface WithdrawalDetailsUpdate {
   bankAccountHolderName: string;
   bankName: string;
   bankAccountNumber: string;
-  bankRoutingNumber: string;
+  bankRoutingNumber?: string;
 }
 
 export interface DashboardStatsResponse {

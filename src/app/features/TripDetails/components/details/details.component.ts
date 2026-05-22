@@ -5,7 +5,6 @@ import { BadgeComponent } from '../../../../shared/components/badge/badge.compon
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { getTripStatusLabel, getTripStatusVariant, HotelInfo, TripDetailsResponse } from '../../models/trip-details.model';
 import { TripDetailsService } from '../../services/trip-details.service';
-import { FeedbackService } from '../../services/feedback.service';
 import { HotelRequestsService, type DriverItem } from '../../../admin-dashboard/services/hotel-requests.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -21,7 +20,6 @@ import { LanguageService } from '../../../../core/services/language.service';
 })
 export class DetailsComponent implements OnInit {
   private readonly tripDetailsService = inject(TripDetailsService);
-  private readonly feedbackService = inject(FeedbackService);
   private readonly hotelRequestsService = inject(HotelRequestsService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationStore);
@@ -57,10 +55,6 @@ export class DetailsComponent implements OnInit {
   protected readonly actionLoading = signal(false);
   protected readonly showScheduledMenu = signal(false);
   protected readonly cancelLoading = signal(false);
-  protected readonly feedbackRating = signal(0);
-  protected readonly feedbackComment = signal('');
-  protected readonly feedbackLoading = signal(false);
-  protected readonly feedbackSubmitted = signal(false);
 
   // Assign driver
   protected readonly drivers = signal<DriverItem[]>([]);
@@ -174,31 +168,6 @@ export class DetailsComponent implements OnInit {
       });
   }
 
-  protected submitFeedback(): void {
-    const tripId = this.data().tripId;
-    const rating = this.feedbackRating();
-    if (!tripId || rating === 0 || this.feedbackLoading()) return;
-
-    this.feedbackLoading.set(true);
-    this.feedbackService.submitFeedback(tripId, rating, this.feedbackComment())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.feedbackLoading.set(false);
-          this.feedbackSubmitted.set(true);
-        },
-        error: () => this.feedbackLoading.set(false),
-      });
-  }
-
-  protected setRating(stars: number): void {
-    this.feedbackRating.set(stars);
-  }
-
-  protected ratingUnitKey(stars: number): TranslationKey {
-    return stars === 1 ? 'tripDetails.ratingStar' : 'tripDetails.ratingStars';
-  }
-
   protected formatScheduledAt(value: string | null): string {
     if (!value) return '--';
     return new Intl.DateTimeFormat('en-US', {
@@ -239,6 +208,4 @@ export class DetailsComponent implements OnInit {
     const normalized = status.trim().toLowerCase();
     return normalized === 'scheduled' || normalized === 'schedualed';
   }
-
-  protected readonly stars = [1, 2, 3, 4, 5];
 }

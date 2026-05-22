@@ -145,7 +145,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
               bankName: result.data.bankName,
               accountNumber: result.data.bankAccountNumber,
               accountHolderName: result.data.bankAccountHolderName ?? result.data.accountHolderName,
-              swiftCode: result.data.bankRoutingNumber,
+              swiftCode: result.data.bankRoutingNumber ?? '',
             });
             this.syncCustomBankSelection();
           } else {
@@ -268,7 +268,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
         bankAccountHolderName: model.accountHolderName,
         bankName,
         bankAccountNumber: model.accountNumber,
-        bankRoutingNumber: model.swiftCode,
+        bankRoutingNumber: model.swiftCode?.trim() ?? '',
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

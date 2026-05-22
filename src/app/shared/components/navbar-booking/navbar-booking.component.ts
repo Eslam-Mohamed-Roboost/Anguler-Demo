@@ -183,25 +183,40 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
     super();
 
     effect(() => {
-      if (!this.coreAuth.isAuthenticated()) {
+      const authenticated = this.isAuthenticated() || this.coreAuth.isAuthenticated();
+
+      if (!authenticated) {
         this.profileLoadRequested = false;
+        this.dataLoaded = false;
         return;
       }
 
-      if (this.profileLoadRequested) return;
+      if (!this.dataLoaded) {
+        this.dataLoaded = true;
+        this.loadMessages();
+        this.notificationCount();
+      }
 
-      this.profileLoadRequested = true;
-      this.loadHotelProfileForNavbar();
+      if (!this.profileLoadRequested) {
+        this.profileLoadRequested = true;
+        this.loadHotelProfileForNavbar();
+      }
     });
   }
  
   ngOnInit(): void {
-    if (this.dataLoaded) return;
-    this.dataLoaded = true;
-    if (!this.coreAuth.isAuthenticated()) return;
-    this.loadHotelProfileForNavbar();
-    this.loadMessages();
-    this.notificationCount();
+    if (!this.isAuthenticated() && !this.coreAuth.isAuthenticated()) return;
+
+    if (!this.dataLoaded) {
+      this.dataLoaded = true;
+      this.loadMessages();
+      this.notificationCount();
+    }
+
+    if (!this.profileLoadRequested) {
+      this.profileLoadRequested = true;
+      this.loadHotelProfileForNavbar();
+    }
   }
   protected notificationCount(): void {
       this.notifiactionService.UnreadNotificationsCount()
@@ -363,7 +378,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   }
 
   private loadHotelProfileForNavbar(): void {
-    if (this.isAdmin() || this.userImageUrl()) return;
+    if (this.isAdmin()) return;
 
     this.api.get<AuthProfile>('/hotels/profile')
       .pipe(takeUntilDestroyed(this.destroyRef))

@@ -455,7 +455,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
         bankAccountHolderName: data.accountHolderName,
         bankName: data.bankName,
         bankAccountNumber: data.iban,
-        bankRoutingNumber: data.swiftCode,
+        bankRoutingNumber: data.swiftCode?.trim() ?? '',
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

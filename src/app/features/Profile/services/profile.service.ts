@@ -30,7 +30,7 @@ export interface WithdrawalDetailsData {
   accountHolderName: string;
   bankName: string;
   bankAccountNumber: string;
-  bankRoutingNumber: string;
+  bankRoutingNumber?: string;
   payoutCycle?: string | null;
   payoutMethod?: string | null;
   walletAddress?: string | null;
@@ -40,7 +40,7 @@ export interface WithdrawalDetailsUpdate {
   bankAccountHolderName: string;
   bankName: string;
   bankAccountNumber: string;
-  bankRoutingNumber: string;
+  bankRoutingNumber?: string;
 }
 
 @Injectable({ providedIn: 'root' })
