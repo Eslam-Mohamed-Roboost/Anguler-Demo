@@ -8,6 +8,8 @@ export interface JoinUsFormModel {
   email: string;
   password: string;
   locationUrl: string;
+  latitude?: number;
+  longitude?: number;
   logoUrl?: string;
   placeTypeId: string;
   otherPlaceText: string;

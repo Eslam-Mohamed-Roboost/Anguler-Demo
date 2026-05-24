@@ -20,20 +20,72 @@
       <!-- ── Booking form card ── -->
       <app-card variant="booking" bodyClass="space-y-3 sm:space-y-4 lg:space-y-5" [showHeader]="false">
         <div class="space-y-3 sm:space-y-4 lg:space-y-5">
-                <!-- Drop off Location -->
-      <app-select
-        [label]="'form.dropOff' | translate"
-        inputId="id"
-        [field]="f.destination"
-        [options]="destinationsData()?? []"
-        optionValue="id"
-        optionLabel="name"
-        [placeholder]="'form.chooseDest' | translate"
-        dropdownArrow="custom"
-        selectClass="rounded-full focus-visible:outline-hidden border border-input-border bg-input-bg text-gray-900 placeholder:text-primary-text "
-      >
-        <span class="text-danger" label-hint> *</span>
-      </app-select>
+          <!-- Drop off Location -->
+          <div class="space-y-2">
+            <div class="space-y-1">
+              <label for="drop-off-google-search" class="block text-sm font-medium text-primary-text">
+                {{ 'form.searchDropOff' | translate }}
+              </label>
+              <div class="relative">
+                <app-icon
+                  name="search"
+                  size="sm"
+                  class="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-[#5B738B]"
+                />
+                <input
+                  #dropOffSearchInput
+                  id="drop-off-google-search"
+                  type="search"
+                  autocomplete="off"
+                  [value]="dropOffSearchText()"
+                  (input)="onDropOffSearchInput($event)"
+                  (focus)="onDropOffSearchFocus()"
+                  (blur)="onDropOffSearchBlur()"
+                  [placeholder]="'form.searchDropOffPlaceholder' | translate"
+                  class="h-11 w-full rounded-full border border-input-border bg-input-bg pe-4 ps-11 text-sm text-gray-900 placeholder:text-primary-text focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30"
+                />
+                @if (dropOffSuggestionsOpen()) {
+                  <div class="absolute start-0 top-full z-30 mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-input-border bg-white py-2 shadow-xl">
+                    @for (suggestion of dropOffSuggestions(); track suggestion.placeId) {
+                      <button
+                        type="button"
+                        (click)="selectDropOffSuggestion(suggestion)"
+                        class="flex w-full flex-col items-start gap-0.5 px-4 py-2.5 text-start text-sm transition hover:bg-primary/5 focus:bg-primary/5 focus:outline-none"
+                      >
+                        <span class="font-semibold text-primary-text">{{ suggestion.mainText }}</span>
+                        @if (suggestion.secondaryText) {
+                          <span class="text-xs text-[#5B738B]">{{ suggestion.secondaryText }}</span>
+                        }
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+              @if (dropOffSuggestionsLoading()) {
+                <p class="text-xs text-[#5B738B]">{{ 'common.loading' | translate }}</p>
+              }
+              @if (googleDropOffLocation(); as location) {
+                <p class="text-xs font-medium text-[#5B738B]">
+                  {{ 'form.googleDropOffSelected' | translate }}:
+                  <span class="text-primary-text">{{ location.address }}</span>
+                </p>
+              }
+            </div>
+
+            <app-select
+              [label]="'form.dropOff' | translate"
+              inputId="id"
+              [field]="f.destination"
+              [options]="destinationOptions()"
+              optionValue="id"
+              optionLabel="name"
+              [placeholder]="'form.chooseDest' | translate"
+              dropdownArrow="custom"
+              selectClass="rounded-full focus-visible:outline-hidden border border-input-border bg-input-bg text-gray-900 placeholder:text-primary-text "
+            >
+              <span class="text-danger" label-hint> *</span>
+            </app-select>
+          </div>
 
           <!-- Client Name + Room No -->
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_100px] sm:gap-4">
@@ -185,6 +237,18 @@
   <!-- ═══ Step 1: Hotel Details ═══ -->
   @if (joinStep() === 1) {
     <div class="mt-4 rounded-xl border border-gray-200 p-4">
+      <div class="mb-3 flex items-center justify-end">
+        <button
+          type="button"
+          (click)="openJoinLocationMap()"
+          class="flex size-10 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary transition hover:bg-primary hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+          [attr.aria-label]="'join.pickLocation' | translate"
+          [title]="'join.pickLocation' | translate"
+        >
+          <app-icon name="map-pin" size="sm" />
+        </button>
+      </div>
+
       <!-- Hotel photo uploader -->
       <div class="mb-4 flex justify-center">
         <div class="relative">
@@ -313,6 +377,20 @@
           [placeholder]="'join.addressPlaceholder' | translate"
           inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
         />
+        @if (joinSelectedLocation(); as location) {
+          <div class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm text-primary-text">
+            <div class="flex items-start gap-2">
+              <app-icon name="map-pin" size="sm" class="mt-0.5 text-primary" />
+              <div class="min-w-0">
+                <p class="font-semibold">{{ 'join.selectedLocation' | translate }}</p>
+                <p class="mt-1 truncate text-[#5B738B]">{{ location.address }}</p>
+                <p class="mt-1 text-xs text-[#5B738B]">
+                  {{ location.lat }}, {{ location.lng }}
+                </p>
+              </div>
+            </div>
+          </div>
+        }
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <app-input
             [label]="entityPhoneLabel()"
@@ -557,7 +635,30 @@
   </div>
 </app-modal>
 
-
+@if (showJoinLocationMap()) {
+  <app-modal
+    [open]="showJoinLocationMap()"
+    (closed)="closeJoinLocationMap()"
+    [closeOnBackdrop]="false"
+  >
+    <div class="mb-3 flex items-center justify-between">
+      <h3 class="text-base font-bold text-primary-text">{{ 'join.pickLocation' | translate }}</h3>
+      <button
+        type="button"
+        (click)="closeJoinLocationMap()"
+        class="flex size-9 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:text-gray-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+        [attr.aria-label]="'common.close' | translate"
+      >
+        <app-icon name="close" size="sm" />
+      </button>
+    </div>
+    <app-location-picker
+      [initialLocation]="joinSelectedLocation()"
+      [confirmLabel]="'join.useSelectedLocation' | translate"
+      (locationSelected)="onJoinLocationSelected($event)"
+    />
+  </app-modal>
+}
 
 <!-- Sign In Modal-->
 <app-modal [open]="showSiginInModal()" (closed)="closeSignInModal()">

@@ -31,7 +31,7 @@ import { CitiesService } from '../services/cities.service';
 import { LoginService } from '../services/login.service';
 import { OtpService } from '../services/otp.service';
 import { VehicleTypeService } from '../services/vehicle-type.service';
-import { TripRequestService } from '../services/trip-request.service';
+import { TripRequestService, type CreateTripRequest } from '../services/trip-request.service';
 import { LocationItem, PlaceTypeService, type PlaceType } from '../services/place-type.service';
 import { Bank, BankService } from '../services/bank.service';
 import { HotelDetailsService } from '../../../hotel-details/services/hotel-details.service';
@@ -43,6 +43,13 @@ import { AppConfigService } from '../../../../core/services/app-config.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ImageUploadService } from '../../../../core/services/image-upload.service';
 import { of, switchMap } from 'rxjs';
+import {
+  getGoogleMapsSearchErrorMessage,
+  GoogleMapsLoaderService,
+  GooglePlaceSuggestion,
+  LocationSelection,
+} from '../services/google-maps-loader.service';
+import { LocationPickerComponent } from '../location-picker/location-picker.component';
 
 @Component({
   selector: 'app-booking',
@@ -60,7 +67,8 @@ import { of, switchMap } from 'rxjs';
     PasswordInputComponent,
     DriverNoteComponent,
     TranslatePipe,
-],
+    LocationPickerComponent,
+  ],
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css',
 })
@@ -82,6 +90,7 @@ export class BookingComponent extends BaseComponent {
   private readonly appConfig = inject(AppConfigService);
   private readonly languageService = inject(LanguageService);
   private readonly imageUploadService = inject(ImageUploadService);
+  private readonly googleMapsLoader = inject(GoogleMapsLoaderService);
 
   // Signals
   readonly carTypes = signal<CarOption[]>([]);
@@ -100,12 +109,34 @@ export class BookingComponent extends BaseComponent {
   readonly driverNoteText = signal('');
   readonly servicePreferencesLoading = signal(false);
   readonly allServicePreferences = signal<Array<{ serviceId: string; serviceName: string; serviceCode: string }>>([]);
-  private vehicleTypesLoaded = false;
+  readonly dropOffSearchText = signal('');
+  readonly dropOffSuggestions = signal<GooglePlaceSuggestion[]>([]);
+  readonly dropOffSuggestionsOpen = signal(false);
+  readonly dropOffSuggestionsLoading = signal(false);
+  readonly googleDropOffLocation = signal<LocationSelection | null>(null);
+  readonly googleDestinationOption = signal<LocationItem | null>(null);
+  readonly destinationOptions = computed<LocationItem[]>(() => {
+    const apiDestinations = this.destinationsData() ?? [];
+    const googleDestination = this.googleDestinationOption();
+    if (!googleDestination) return apiDestinations;
+
+    return [
+      googleDestination,
+      ...apiDestinations.filter((destination) => destination.id !== googleDestination.id),
+    ];
+  });
+  readonly showJoinLocationMap = signal(false);
+  readonly joinSelectedLocation = signal<LocationSelection | null>(null);
+  private vehicleTypesRequestKey = '';
+  private dropOffSearchTimer: ReturnType<typeof setTimeout> | null = null;
+  private dropOffSearchRequestId = 0;
+  private googleSearchLoadFailed = false;
   private placeTypesLoaded = false;
   private servicePreferencesLoaded = false;
 
   constructor() {
     super();
+
     this.joinUsService.openRequested$
       .pipe(this.takeUntilDestroyed())
       .subscribe(() => this.openJoinModal());
@@ -182,6 +213,14 @@ export class BookingComponent extends BaseComponent {
     });
 
     effect(() => {
+      const destination = this.selectedDestinationLocation();
+      if (!destination) return;
+
+      this.distnationName.set(destination.name);
+      this.loadVehicleTypes(50, destination.latitude, destination.longitude);
+    });
+
+    effect(() => {
       if (this.coreAuth.isAuthenticated() && this.destinationsData() === null) {
         this.loadDestinations();
       }
@@ -214,12 +253,13 @@ export class BookingComponent extends BaseComponent {
     taxi:     'https://api.lines-trips.com/uploads/vehicle-documents/car-taxi.webp',
     premium:  'https://api.lines-trips.com/uploads/vehicle-documents/car-premium.webp',
   };
-  private loadVehicleTypes(km: number): void {
-    if (this.vehicleTypesLoaded) return;
-    this.vehicleTypesLoaded = true;
+  private loadVehicleTypes(km: number, latitude?: number, longitude?: number): void {
+    const requestKey = `${km}:${latitude ?? ''}:${longitude ?? ''}`;
+    if (this.vehicleTypesRequestKey === requestKey) return;
+    this.vehicleTypesRequestKey = requestKey;
     
     this.carTypesLoading.set(true);
-    this.vehicleTypeService.getAll(km).pipe(this.takeUntilDestroyed()).subscribe({
+    this.vehicleTypeService.getAll(km, latitude, longitude).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         this.carTypesLoading.set(false);
         if (result.isSuccess && result.data) {
@@ -234,7 +274,10 @@ export class BookingComponent extends BaseComponent {
           if (options.length > 0) this.selectedCar.set(options[0].id);
         }
       },
-      error: () => this.carTypesLoading.set(false),
+      error: () => {
+        this.vehicleTypesRequestKey = '';
+        this.carTypesLoading.set(false);
+      },
     });
   }
 
@@ -385,6 +428,125 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     this.weatherLng.set(center.lng);
   }
 
+  protected onDropOffSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const query = input.value;
+    this.dropOffSearchText.set(query);
+
+    if (this.dropOffSearchTimer) {
+      clearTimeout(this.dropOffSearchTimer);
+    }
+
+    if (query.trim().length < 3) {
+      this.dropOffSuggestions.set([]);
+      this.dropOffSuggestionsOpen.set(false);
+      this.dropOffSuggestionsLoading.set(false);
+      this.googleMapsLoader.resetAutocompleteSession();
+      return;
+    }
+
+    this.dropOffSuggestionsLoading.set(true);
+    const requestId = ++this.dropOffSearchRequestId;
+    this.dropOffSearchTimer = setTimeout(() => {
+      void this.loadDropOffSuggestions(query, requestId);
+    }, 250);
+  }
+
+  protected onDropOffSearchFocus(): void {
+    if (this.dropOffSuggestions().length > 0) {
+      this.dropOffSuggestionsOpen.set(true);
+    }
+  }
+
+  protected onDropOffSearchBlur(): void {
+    setTimeout(() => this.dropOffSuggestionsOpen.set(false), 150);
+  }
+
+  protected selectDropOffSuggestion(suggestion: GooglePlaceSuggestion): void {
+    this.dropOffSuggestionsLoading.set(true);
+    void this.googleMapsLoader.resolvePlaceSuggestion(suggestion)
+      .then((location) => {
+        this.applyDropOffLocation(location);
+        this.dropOffSuggestions.set([]);
+        this.dropOffSuggestionsOpen.set(false);
+      })
+      .catch((error) => {
+        console.warn('Google Maps place could not be resolved.', error);
+        this.showError('Could not read this location. Please choose another result.');
+      })
+      .finally(() => this.dropOffSuggestionsLoading.set(false));
+  }
+
+  protected openJoinLocationMap(): void {
+    this.showJoinLocationMap.set(true);
+  }
+
+  protected closeJoinLocationMap(): void {
+    this.showJoinLocationMap.set(false);
+  }
+
+  protected onJoinLocationSelected(location: LocationSelection): void {
+    this.joinSelectedLocation.set(location);
+    this.joinFormModel.update((model) => ({
+      ...model,
+      address: location.address,
+      locationUrl: this.googleMapsUrl(location),
+      latitude: location.lat,
+      longitude: location.lng,
+    }));
+    this.closeJoinLocationMap();
+  }
+
+  private async loadDropOffSuggestions(query: string, requestId: number): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      const [lat, lng] = this.mapCenter();
+      const suggestions = await this.googleMapsLoader.fetchPlaceSuggestions(query, { lat, lng });
+      if (requestId !== this.dropOffSearchRequestId) return;
+
+      this.dropOffSuggestions.set(suggestions);
+      this.dropOffSuggestionsOpen.set(suggestions.length > 0);
+    } catch (error) {
+      console.warn('Google Places search request failed.', error);
+      if (!this.googleSearchLoadFailed) {
+        this.googleSearchLoadFailed = true;
+        this.showError(getGoogleMapsSearchErrorMessage(error));
+      }
+    } finally {
+      if (requestId === this.dropOffSearchRequestId) {
+        this.dropOffSuggestionsLoading.set(false);
+      }
+    }
+  }
+
+  private applyDropOffLocation(location: LocationSelection): void {
+    const id = `google:${location.placeId ?? `${location.lat},${location.lng}`}`;
+    const destination: LocationItem = {
+      id,
+      name: location.name || location.address,
+      latitude: location.lat,
+      longitude: location.lng,
+    };
+
+    this.googleDropOffLocation.set(location);
+    this.googleDestinationOption.set(destination);
+    this.dropOffSearchText.set(destination.name);
+    this.formModel.update((model) => ({ ...model, destination: id }));
+    this.distnationName.set(destination.name);
+    this.loadVehicleTypes(50, destination.latitude, destination.longitude);
+  }
+
+  private selectedDestinationLocation(): LocationItem | null {
+    const destinationId = this.formModel().destination;
+    if (!destinationId) return null;
+
+    return this.destinationOptions().find((destination) => destination.id === destinationId) ?? null;
+  }
+
+  private googleMapsUrl(location: LocationSelection): string {
+    return `https://www.google.com/maps?q=${location.lat},${location.lng}`;
+  }
+
   /* ── Join Us Modal ──────────────────────────────────── */
   readonly showJoinModal = signal(false);
   readonly showSiginInModal = signal(false);
@@ -492,6 +654,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
     email: '',
     password: '',
     locationUrl: '',
+    latitude: undefined,
+    longitude: undefined,
     logoUrl: '',
     placeTypeId: '',
     otherPlaceText: '',
@@ -836,8 +1000,13 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.signInModalOpen();
       return;
     }
-    const { destination } = this.formModel();
-    this.distnationName.set(this.destinationsData()?.find(x => x.id === destination)?.name ?? '');
+    const destination = this.selectedDestinationLocation();
+    if (!destination) {
+      this.showError('Please select a destination.');
+      return;
+    }
+
+    this.distnationName.set(destination.name);
     this.confirmationMode.set('booking');
     this.scheduledAtToConfirm.set(null);
     this.ShowComfirmBookingModel.set(true);
@@ -879,8 +1048,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.signInModalOpen();
       return;
     }
-    const { destination } = this.formModel();
-    if (!destination) {
+    if (!this.selectedDestinationLocation()) {
       this.showError('Please select a destination.');
       return;
     }
@@ -901,8 +1069,13 @@ readonly activeTab = signal<'login' | 'register'>('register');
       return;
     }
 
-    const { destination } = this.formModel();
-    this.distnationName.set(this.destinationsData()?.find(x => x.id === destination)?.name ?? '');
+    const destination = this.selectedDestinationLocation();
+    if (!destination) {
+      this.showError('Please select a destination.');
+      return;
+    }
+
+    this.distnationName.set(destination.name);
     this.scheduledAtToConfirm.set(this.getScheduledAt());
     this.confirmationMode.set('scheduled');
     this.showPickupTimeModal.set(false);
@@ -918,13 +1091,23 @@ readonly activeTab = signal<'login' | 'register'>('register');
   }
 
   private createTrip(isScheduled: boolean, scheduledAt: string | null): void {
-    const { destination, clientName, roomNo, addDriverNote, driverNote } = this.formModel();
+    const { clientName, roomNo, addDriverNote, driverNote } = this.formModel();
     const [lat, lng] = this.mapCenter();
     const car = this.selectedCarOption();
-    const dist = this.destinationsData()?.find(x => x.id === destination);
-    const payload: any = {
+    const destination = this.selectedDestinationLocation();
+    if (!destination) {
+      this.showError('Please select a destination.');
+      return;
+    }
+
+    const payload: CreateTripRequest = {
       startLocation: { latitude: lat, longitude: lng, address: 'Current Location', order: 0 },
-      endLocations: [{ latitude: dist?.latitude, longitude: dist?.longitude, address: dist?.name, order: 1 }],
+      endLocations: [{
+        latitude: destination.latitude,
+        longitude: destination.longitude,
+        address: destination.name,
+        order: 1,
+      }],
       isScheduled,
       scheduledAt,
       vehicleTypeId: this.selectedCar(),
@@ -937,8 +1120,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
       guestName: clientName,
     };
 
-    if (addDriverNote && driverNote) {
-      payload.notes = driverNote;
+    if (addDriverNote && driverNote.trim()) {
+      payload.notes = driverNote.trim();
     }
 
     this.isCreatingTrip.set(true);
@@ -1109,6 +1292,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
             email: '',
             password: '',
             locationUrl: '',
+            latitude: undefined,
+            longitude: undefined,
             logoUrl: '',
             placeTypeId: '',
             otherPlaceText: '',
@@ -1121,6 +1306,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
           });
           this.otherBankName.set('');
           this.savedOtherBankName.set('');
+          this.joinSelectedLocation.set(null);
           this.selectedHotelImageFile.set(null);
           this.hotelImageSrc.set('assets/booking/logo-lines.png');
           

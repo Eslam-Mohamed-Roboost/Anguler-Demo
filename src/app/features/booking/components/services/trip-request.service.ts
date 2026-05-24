@@ -23,6 +23,7 @@ export interface CreateTripRequest {
   paymentMethodType: number;
   roomNumber: number;
   guestName: string;
+  notes?: string;
 }
 
 @Injectable({ providedIn: 'root' })

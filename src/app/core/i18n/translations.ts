@@ -19,6 +19,9 @@ export const TRANSLATIONS = {
 
     // ── Booking form ──────────────────────────────────────────────────────
     'form.dropOff': 'Drop off Location',
+    'form.searchDropOff': 'Search Google Maps',
+    'form.searchDropOffPlaceholder': 'Search by place, address, or landmark',
+    'form.googleDropOffSelected': 'Selected from Google Maps',
     'form.chooseDest': 'Choose Your Destination',
     'form.clientName': 'Client Name',
     'form.clientNamePlaceholder': 'ex: Hesham Mousa',
@@ -45,6 +48,9 @@ export const TRANSLATIONS = {
     'join.cityPlaceholder': 'Select city',
     'join.address': 'Address',
     'join.addressPlaceholder': 'Put Hotel location link here or type it in details',
+    'join.pickLocation': 'Pick location on map',
+    'join.selectedLocation': 'Selected location',
+    'join.useSelectedLocation': 'Use selected location',
     'join.phone': 'Hotel Phone Number',
     'join.phonePlaceholder': 'Put Hotel Phone Number here',
     'join.email': 'Hotel Email',
@@ -465,6 +471,9 @@ export const TRANSLATIONS = {
 
     // ── Booking form ──────────────────────────────────────────────────────
     'form.dropOff': 'موقع التوصيل',
+    'form.searchDropOff': 'البحث في خرائط Google',
+    'form.searchDropOffPlaceholder': 'ابحث باسم المكان أو العنوان أو معلم قريب',
+    'form.googleDropOffSelected': 'تم الاختيار من خرائط Google',
     'form.chooseDest': 'اختر وجهتك',
     'form.clientName': 'اسم العميل',
     'form.clientNamePlaceholder': 'مثال: هشام موسى',
@@ -491,6 +500,9 @@ export const TRANSLATIONS = {
     'join.cityPlaceholder': 'اختر المدينة',
     'join.address': 'العنوان',
     'join.addressPlaceholder': 'أدخل رابط موقع الفندق أو اكتبه بالتفصيل',
+    'join.pickLocation': 'اختيار الموقع على الخريطة',
+    'join.selectedLocation': 'الموقع المختار',
+    'join.useSelectedLocation': 'استخدام الموقع المختار',
     'join.phone': 'رقم هاتف الفندق',
     'join.phonePlaceholder': 'أدخل رقم هاتف الفندق هنا',
     'join.email': 'البريد الإلكتروني للفندق',
@@ -910,6 +922,9 @@ export const TRANSLATIONS = {
 
     // ── Booking form ──────────────────────────────────────────────────────
     'form.dropOff': 'Abgabeort',
+    'form.searchDropOff': 'Google Maps durchsuchen',
+    'form.searchDropOffPlaceholder': 'Nach Ort, Adresse oder Wahrzeichen suchen',
+    'form.googleDropOffSelected': 'Aus Google Maps ausgewählt',
     'form.chooseDest': 'Ziel wählen',
     'form.clientName': 'Kundenname',
     'form.clientNamePlaceholder': 'z.B.: Hesham Mousa',
@@ -936,6 +951,9 @@ export const TRANSLATIONS = {
     'join.cityPlaceholder': 'Stadt auswählen',
     'join.address': 'Adresse',
     'join.addressPlaceholder': 'Standortlink des Hotels eingeben oder im Detail beschreiben',
+    'join.pickLocation': 'Standort auf Karte wählen',
+    'join.selectedLocation': 'Ausgewählter Standort',
+    'join.useSelectedLocation': 'Ausgewählten Standort verwenden',
     'join.phone': 'Telefonnummer des Hotels',
     'join.phonePlaceholder': 'Telefonnummer des Hotels eingeben',
     'join.email': 'Hotel-E-Mail',

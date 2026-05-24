@@ -16,8 +16,13 @@ export interface VehicleTypeItem {
 
 @Injectable({ providedIn: 'root' })
 export class VehicleTypeService extends ApiService {
-  getAll(km: number): Observable<Result<VehicleTypeItem[]>> {
-    const params = new HttpParams().set('Km', km.toString());
+  getAll(km: number, latitude?: number, longitude?: number): Observable<Result<VehicleTypeItem[]>> {
+    let params = new HttpParams().set('Km', km.toString());
+    if (latitude !== undefined && longitude !== undefined) {
+      params = params
+        .set('Latitude', latitude.toString())
+        .set('Longitude', longitude.toString());
+    }
     const context = new HttpContext().set(SKIP_LOADING, true);
     return this.get<VehicleTypeItem[]>('/vehicle-type-with-expected-price/getall', params, context);
   }
