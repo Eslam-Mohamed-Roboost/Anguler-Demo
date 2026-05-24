@@ -17,6 +17,7 @@ import type { HotelRecord, TripRecord, TripSearchFilters } from '../../types/hot
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ModalComponent } from "../../../../shared/components/modal/modal.component";
 import { HotelDetailsService } from '../../services/hotel-details.service';
+import { AppConfigService } from '../../../../core/services/app-config.service';
 
 @Component({
   selector: 'app-trips-history-table',
@@ -62,7 +63,8 @@ export class TripsHistoryTableComponent {
   readonly statusFilter = signal('');
   readonly openHotelActionId = signal<string | null>(null);
 
- private readonly hotelCommissionInfo = inject(HotelDetailsService);
+  private readonly hotelCommissionInfo = inject(HotelDetailsService);
+  private readonly appConfig = inject(AppConfigService);
   protected readonly tripColumns = computed<ColumnDef[]>(() => [
     { key: 'tripId', header: 'Trip Code', sortable: true, headerClass: 'w-28' },
     { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-36' },
@@ -78,7 +80,7 @@ export class TripsHistoryTableComponent {
 
   protected readonly hotelColumns = computed<ColumnDef[]>(() => [
     { key: 'id', header: 'ID', sortable: true, headerClass: 'w-24' },
-    { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-56', cellClass: 'text-center' },
+    { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-56' },
     { key: 'totalTrips', header: 'Total Trips', sortable: true, headerClass: 'w-24' },
     { key: 'hotelComm', header: 'Hotel Comm.', sortable: true, headerClass: 'w-24' },
     { key: 'hotelProfits', header: 'Hotel Profits', sortable: true, headerClass: 'w-28' },
@@ -101,9 +103,11 @@ export class TripsHistoryTableComponent {
 
   readonly showCommissionsModal = signal(false);
   readonly commissionLoading = signal(false);
+  readonly commissionSaving = signal(false);
 
   protected openCommissionModal(): void {
     this.showCommissionsModal.set(true);
+    this.loadCurrentCommission();
   }
   onGeneralCommissionChange(event: Event): void {
     const target = event.target as HTMLInputElement;
@@ -202,19 +206,42 @@ export class TripsHistoryTableComponent {
   }
 
   protected saveCommission(): void {
-    this.commissionLoading.set(true);
+    const commission = this.generalCommissionField();
+
+    if (commission < 0 || commission > 100) {
+      return;
+    }
+
+    this.commissionSaving.set(true);
     this.hotelCommissionInfo
-      .updateHotelCommission(this.generalCommissionField())
+      .updateHotelCommission(commission)
       .subscribe({
         next: (result) => {
-          this.commissionLoading.set(false);
+          this.commissionSaving.set(false);
           if (result.isSuccess) {
+            this.appConfig.setCommissionPercentage(commission);
             this.closeCommissionModal();
           }
         },
         error: () => {
-          this.commissionLoading.set(false);
+          this.commissionSaving.set(false);
         },
       });
+  }
+
+  private loadCurrentCommission(): void {
+    this.commissionLoading.set(true);
+    this.hotelCommissionInfo.getGlobalCommission().subscribe({
+      next: (result) => {
+        this.commissionLoading.set(false);
+        if (result.isSuccess && result.data !== null && result.data !== undefined) {
+          this.generalCommissionField.set(result.data);
+          this.appConfig.setCommissionPercentage(result.data);
+        }
+      },
+      error: () => {
+        this.commissionLoading.set(false);
+      },
+    });
   }
 }

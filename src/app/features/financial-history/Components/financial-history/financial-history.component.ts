@@ -139,7 +139,7 @@ export class FinancialHistoryComponent extends BaseComponent {
         next: (result) => {
           this.globalCommissionLoading.set(false);
           if (result.isSuccess && result.data !== null) {
-            this.globalCommission.set(result.data * 100);
+            this.globalCommission.set(result.data);
           }
         },
         error: () => {

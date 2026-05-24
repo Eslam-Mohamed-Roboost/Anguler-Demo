@@ -129,8 +129,8 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   });
 
   readonly canAccept = computed(() => {
-    const status = this.rawStatus().toLowerCase();
-    return status === 'pending';
+    const status = this.normalizeStatus(this.rawStatus());
+    return status === 'pending' || this.isScheduledStatus(status);
   });
 
   readonly canMarkArrived = computed(() => {
@@ -149,8 +149,8 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   });
 
   readonly canCancelTrip = computed(() => {
-    const status = this.rawStatus().toLowerCase();
-    return status === 'pending' || status === 'scheduled';
+    const status = this.normalizeStatus(this.rawStatus());
+    return status === 'pending' || this.isScheduledStatus(status);
   });
 
   readonly canEndTrip = computed(() => {
@@ -239,7 +239,8 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
               this.loadHotelById(result.data.hotelId);
             }
 
-            if (this.isAdmin() && result.data.unifiedStatus === 'Pending') {
+            const status = this.normalizeStatus(result.data.unifiedStatus);
+            if (this.isAdmin() && (status === 'pending' || this.isScheduledStatus(status))) {
               this.loadDrivers();
             }
           }
@@ -258,6 +259,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       cancelled: 'cancelled',
       rejected: 'cancelled',
       scheduled: 'scheduled',
+      schedualed: 'scheduled',
     };
 
     return {
@@ -271,7 +273,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       startDate: data.startedAt ?? data.requestedAt,
       endDate: data.endedAt ?? undefined,
       tripRate: undefined,
-      status: statusMap[data.unifiedStatus.toLowerCase()] ?? 'pending',
+      status: statusMap[this.normalizeStatus(data.unifiedStatus)] ?? 'pending',
       hotelNote: data.notes || data.specialRequests,
       carType: 'Van',
     };
@@ -414,6 +416,14 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       minute: '2-digit',
       hour12: true,
     }).format(date);
+  }
+
+  private normalizeStatus(status: string): string {
+    return status.trim().toLowerCase();
+  }
+
+  private isScheduledStatus(status: string): boolean {
+    return status === 'scheduled' || status === 'schedualed';
   }
 
   onHotelDelete(): void {}

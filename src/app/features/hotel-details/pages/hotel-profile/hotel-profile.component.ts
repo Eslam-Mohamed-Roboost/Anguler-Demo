@@ -351,7 +351,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
 
     if (normalized.includes('complete')) return 'completed';
     if (normalized.includes('active') || normalized.includes('progress')) return 'active';
-    if (normalized.includes('schedule')) return 'scheduled';
+    if (normalized.includes('schedule') || normalized.includes('schedual')) return 'scheduled';
     if (normalized.includes('cancel')) return 'cancelled';
 
     return 'pending';

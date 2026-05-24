@@ -111,7 +111,7 @@
 
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
-          <div class="mx-auto flex min-w-0 max-w-32 flex-col items-center gap-0.5 text-center sm:max-w-36">
+          <div class="flex min-w-0 max-w-32 flex-col items-start gap-0.5 text-left sm:max-w-36">
             <span class="block max-w-full truncate text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName ?? '--' }}</span>
             @if (row.hotelPhone) {
               <span class="phone-line inline-flex max-w-full items-center gap-1 text-xs text-muted">
@@ -127,7 +127,7 @@
 
         <!-- Guest Name Cell -->
         <ng-template cellDef="guestName" let-row>
-          <div class="flex flex-col items-center gap-0.5 text-center">
+          <div class="flex flex-col items-start gap-0.5 text-left">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.customerName }}</span>
             @if (row.room) {
               <span class="text-xs text-muted">{{ row.room }}</span>
@@ -137,7 +137,7 @@
 
         <!-- Driver Name Cell -->
         <ng-template cellDef="driverName" let-row>
-          <div class="flex flex-col items-center gap-0.5 text-center">
+          <div class="flex flex-col items-start gap-0.5 text-left">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
             @if (row.driverId) {
               <span class="text-xs text-muted">{{ row.driverId }}</span>
@@ -147,12 +147,12 @@
 
         <!-- Route Cell -->
         <ng-template cellDef="route" let-row>
-          <div class="flex flex-col items-center gap-1 text-center">
-            <div class="flex items-center justify-center gap-1.5">
+          <div class="flex flex-col items-start gap-1 text-left">
+            <div class="flex items-center justify-start gap-1.5">
               <span class="inline-block size-2 rounded-full shrink-0 bg-status-completed" aria-hidden="true"></span>
               <span class="text-cell text-body-soft">{{ row.pickupLocation }}</span>
             </div>
-            <div class="flex items-center justify-center gap-1.5">
+            <div class="flex items-center justify-start gap-1.5">
               <span class="inline-block size-2 rounded-full shrink-0 bg-status-cancelled" aria-hidden="true"></span>
               <span class="text-cell text-body-soft">{{ row.dropoffLocation }}</span>
             </div>
@@ -177,7 +177,7 @@
 
         <!-- Fare Cell -->
         <ng-template cellDef="fare" let-row>
-          <div class="flex flex-col items-center gap-0.5 text-center">
+          <div class="flex flex-col items-start gap-0.5 text-left">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price.toFixed(2) }} CHF</span>
             @if (row.commission != null) {
               <span class="text-xs text-muted">Comm.: {{ row.commission.toFixed(2) }}</span>
@@ -187,7 +187,7 @@
 
         <!-- Start/End Date Cell -->
         <ng-template cellDef="startEndDate" let-row>
-          <div class="flex flex-col items-center gap-0.5 text-center">
+          <div class="flex flex-col items-start gap-0.5 text-left">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ formatDate(row.date) }}</span>
             <span class="text-xs text-muted">
               @if (row.endDate) {
@@ -201,7 +201,7 @@
 
         <!-- Actions Cell -->
         <ng-template cellDef="actions" let-row>
-          <div class="flex justify-center gap-1.5">
+          <div class="flex justify-start gap-1.5">
             <button
               class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
               type="button"
@@ -238,12 +238,12 @@
 
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
-          <div class="mx-auto flex min-w-[170px] max-w-[240px] flex-col items-center gap-0.5 text-center">
+          <div class="flex min-w-[170px] max-w-[240px] flex-col items-start gap-0.5 text-left">
             <span class="block max-w-full whitespace-normal break-all text-cell font-medium leading-snug text-body max-sm:text-xs">
               {{ row.hotelName }}
             </span>
             <span
-              class="inline-flex items-center justify-center gap-1 text-xs font-medium leading-none"
+              class="inline-flex items-center justify-start gap-1 text-xs font-medium leading-none"
               [class]="row.hotelStatus === 'active' ? 'text-status-completed' : 'text-status-cancelled'"
             >
               <span
@@ -295,7 +295,7 @@
 
         <!-- Actions Cell -->
         <ng-template cellDef="actions" let-row>
-          <div class="relative flex justify-center">
+          <div class="relative flex justify-start">
             <button
               class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-gray-50 text-muted hover:bg-gray-100"
               type="button"
@@ -394,8 +394,9 @@
                   id="client-name"
                   [value]="generalCommissionField()"
                   (input)="onGeneralCommissionChange($event)"
+                  [disabled]="commissionLoading() || commissionSaving()"
                   [placeholder]="'form.clientNamePlaceholder' | translate"
-                  class="rounded-xl border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text w-full px-4 py-2.5 border text-sm"
+                  class="rounded-xl border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text w-full px-4 py-2.5 border text-sm disabled:opacity-50"
                 />
    
      </div>
@@ -407,10 +408,12 @@
     <button
       type="button"
       (click)="saveCommission()"
-      [disabled]="commissionLoading()"
+      [disabled]="commissionLoading() || commissionSaving()"
       class="flex-1 px-4 py-3.5 rounded-lg bg-green-600 text-white font-bold text-base hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
     >
       @if (commissionLoading()) {
+        Loading...
+      } @else if (commissionSaving()) {
         {{ 'common.saving' | translate }}
       } @else {
         Save Changes

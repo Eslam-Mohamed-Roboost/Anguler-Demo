@@ -124,6 +124,10 @@ export class HotelDetailsService extends ApiService {
       return this.adminApi.put<void>(`/admin/hotels/global-commission?newCommission=${newCommission}`, { newCommission });
     }
 
+  getGlobalCommission(): Observable<Result<number>> {
+    return this.adminApi.get<number>('/admin/hotels/global-commission');
+  }
+
   getUnsettledPayouts(hotelId: string): Observable<Result<SettlementInfo>> {
     return this.adminApi.get<SettlementInfo>(`/admin/hotels/payouts/${hotelId}/last-settle-info`);
   }

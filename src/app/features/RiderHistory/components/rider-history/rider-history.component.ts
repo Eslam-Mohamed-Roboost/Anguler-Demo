@@ -180,7 +180,7 @@ export class RiderHistoryComponent extends BaseComponent {
     const normalized = status.toLowerCase();
     if (normalized === 'completed') return 'success';
     if (normalized === 'cancelled') return 'danger';
-    if (normalized === 'scheduled') return 'info';
+    if (normalized === 'scheduled' || normalized === 'schedualed') return 'info';
     if (normalized === 'waiting driver' || normalized === 'pending') return 'warning';
     if (normalized === 'active' || normalized === 'in progress' || normalized === 'accepted') return 'success';
     return 'neutral';

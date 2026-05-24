@@ -205,17 +205,19 @@ export class BookingComponent extends BaseComponent {
   }
 
   private static readonly fallbackImages: Record<string, string> = {
-    classic:  'assets/booking/car-taxi.webp',
-    sport:    'assets/booking/car-premium.webp',
-    van:      'assets/booking/car-van.webp',
-    comfort:  'assets/booking/car-comfort.webp',
-    pet:      'assets/booking/car-pet.webp',
-    kids:     'assets/booking/car-kids.webp',
+    classic:  'https://api.lines-trips.com/uploads/vehicle-documents/car-taxi.webp',
+    sport:    'https://api.lines-trips.com/uploads/vehicle-documents/car-premium.webp',
+    van:      'https://api.lines-trips.com/uploads/vehicle-documents/car-van.webp',
+    comfort:  'https://api.lines-trips.com/uploads/vehicle-documents/car-comfort.webp',
+    pet:      'https://api.lines-trips.com/uploads/vehicle-documents/car-pet.webp',
+    kids:     'https://api.lines-trips.com/uploads/vehicle-documents/car-kids.webp',
+    taxi:     'https://api.lines-trips.com/uploads/vehicle-documents/car-taxi.webp',
+    premium:  'https://api.lines-trips.com/uploads/vehicle-documents/car-premium.webp',
   };
   private loadVehicleTypes(km: number): void {
     if (this.vehicleTypesLoaded) return;
     this.vehicleTypesLoaded = true;
-
+    
     this.carTypesLoading.set(true);
     this.vehicleTypeService.getAll(km).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
@@ -223,7 +225,7 @@ export class BookingComponent extends BaseComponent {
         if (result.isSuccess && result.data) {
           const options: CarOption[] = result.data.map(v => {
             const key = v.name.toLowerCase().split(' ')[0];
-            const image = BookingComponent.fallbackImages[key] ?? 'assets/booking/car-premium.webp';
+            const image = BookingComponent.fallbackImages[key] ?? 'https://api.lines-trips.com/uploads/vehicle-documents/car-taxi.webp';
             const price = v.expectedPriceAfterDiscount ?? v.expectedPrice;
             return { id: v.id, label: v.name, image, price, estimatedMinutes: v.estimatedTimeInMinutes };
           });

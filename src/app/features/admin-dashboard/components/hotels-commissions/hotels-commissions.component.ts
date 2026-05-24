@@ -12,6 +12,7 @@ import { IconComponent } from '../../../../shared/components/icon/icon.component
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { HotelDetailsService } from '../../../hotel-details/services/hotel-details.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { AppConfigService } from '../../../../core/services/app-config.service';
 
 @Component({
   selector: 'app-hotels-commissions',
@@ -23,6 +24,7 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
 export class HotelsCommissionsComponent {
   private readonly hotelService = inject(HotelDetailsService);
   private readonly notifications = inject(NotificationStore);
+  private readonly appConfig = inject(AppConfigService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly commission = signal<number>(0);
@@ -36,8 +38,24 @@ export class HotelsCommissionsComponent {
 
   private loadCommission(): void {
     this.loading.set(true);
-    // Load current commission if needed
-    this.loading.set(false);
+    this.hotelService
+      .getGlobalCommission()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.loading.set(false);
+          if (result.isSuccess && result.data !== null && result.data !== undefined) {
+            this.commission.set(result.data);
+            this.appConfig.setCommissionPercentage(result.data);
+          } else {
+            this.notifications.showError(result.error?.description ?? 'Failed to load commission.');
+          }
+        },
+        error: () => {
+          this.loading.set(false);
+          this.notifications.showError('Failed to load commission.');
+        },
+      });
   }
 
   saveChanges(): void {
@@ -56,6 +74,7 @@ export class HotelsCommissionsComponent {
         next: (result) => {
           this.saving.set(false);
           if (result.isSuccess) {
+            this.appConfig.setCommissionPercentage(newCommission);
             this.notifications.showSuccess('Global commission updated successfully. Changes effective from 12:00 AM.');
             this.closeClick.emit();
           } else {
