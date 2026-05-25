@@ -3,19 +3,32 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { NotificationStore } from '../stores/notification.store';
+import { environment } from '../../../environments/environment';
+import { SKIP_ERROR_NOTIFICATION } from '../tokens/skip-error-notification.token';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const notifications = inject(NotificationStore);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      console.error('API Error:', error);
-      const message = getErrorMessage(error);
-      notifications.showError(message);
+      const endpoint = req.urlWithParams;
+      console.error('API Error:', { endpoint, error });
+      if (!req.context.get(SKIP_ERROR_NOTIFICATION)) {
+        const message = withDevelopmentEndpoint(getErrorMessage(error), endpoint);
+        notifications.showError(message);
+      }
       return throwError(() => error);
     }),
   );
 };
+
+function withDevelopmentEndpoint(message: string, endpoint: string): string {
+  if (environment.production) {
+    return message;
+  }
+
+  return `${message} Endpoint: ${endpoint}`;
+}
 
 function getErrorMessage(error: HttpErrorResponse): string {
   const backendMessage = extractBackendMessage(error);

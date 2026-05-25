@@ -1,17 +1,23 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { AdminApiService } from '../../../core/services/admin-api.service';
 import type { Result } from '../../../core/models/result.model';
-import { DashboardStatsResponse, HotelApiItem, HotelKpiResponse, HotelProfileResponse, HotelsListResponse, HotelTripsResponse, TripRequestStatusesResponse, WithdrawalDetailsResponse, WithdrawalDetailsUpdate } from '../models/dto';
+import { DashboardStatsResponse, HotelApiItem, HotelKpiResponse, HotelProfileResponse, HotelsListResponse, HotelTripsResponse, TripRequestStatusesResponse, UserProfileResponse, WithdrawalDetailsResponse, WithdrawalDetailsUpdate } from '../models/dto';
 
 @Injectable({ providedIn: 'root' })
 export class HotelDetailsService extends ApiService {
   private readonly adminApi = inject(AdminApiService);
 
   getMyProfile(): Observable<Result<HotelProfileResponse>> {
-    return this.get<HotelProfileResponse>('/hotels/profile');
+    return this.get<UserProfileResponse>('/users/profile').pipe(
+      map(result => ({
+        ...result,
+        data: result.data ? this.toHotelProfileResponse(result.data) : null,
+      })),
+    );
   }
 
   updateProfile(data: HotelApiItem): Observable<Result<HotelApiItem>> {
@@ -72,6 +78,15 @@ export class HotelDetailsService extends ApiService {
 
   getHotelById(hotelId: string): Observable<Result<HotelApiItem>> {
     return this.get<HotelApiItem>(`/hotels/${hotelId}`);
+  }
+
+  getCurrentUserHotelProfile(): Observable<Result<HotelApiItem>> {
+    return this.get<UserProfileResponse>('/users/profile').pipe(
+      map(result => ({
+        ...result,
+        data: result.data ? this.toHotelApiItem(result.data) : null,
+      })),
+    );
   }
 
   getHotelTripsById(
@@ -144,6 +159,40 @@ export class HotelDetailsService extends ApiService {
       .set('pageNumber', pageNumber)
       .set('pageSize', pageSize);
     return this.get('/hotels/service-preferences', params);
+  }
+
+  private toHotelApiItem(profile: UserProfileResponse): HotelApiItem {
+    const configuration = profile.configuration;
+
+    return {
+      id: profile.id,
+      hotelName: profile.userName,
+      cityId: configuration?.cityId ?? '',
+      address: configuration?.address ?? '',
+      locationUrl: configuration?.locationUrl ?? '',
+      phoneNumber: profile.phoneNumber,
+      email: profile.email,
+      logoUrl: configuration?.logoUrl ?? '',
+      commissionRate: configuration?.commissionRate ?? 0,
+      isActive: profile.isActive,
+      isVerified: configuration?.isVerified ?? false,
+      code: configuration?.code ?? '',
+      isBlocked: configuration?.isBlocked ?? false,
+    };
+  }
+
+  private toHotelProfileResponse(profile: UserProfileResponse): HotelProfileResponse {
+    const configuration = profile.configuration;
+
+    return {
+      hotelId: profile.id,
+      hotelName: profile.userName,
+      address: configuration?.address ?? '',
+      phoneNumber: profile.phoneNumber,
+      email: profile.email,
+      imageUrl: configuration?.logoUrl ?? null,
+      isBlocked: configuration?.isBlocked ?? false,
+    };
   }
 }
 export interface SettlementInfo {

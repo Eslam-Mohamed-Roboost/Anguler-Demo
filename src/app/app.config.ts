@@ -13,7 +13,6 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { langInterceptor } from './core/interceptors/lang.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
-import { mockInterceptor } from './core/interceptors/mock.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor, langInterceptor, errorInterceptor, loadingInterceptor, mockInterceptor]),
+      withInterceptors([authInterceptor, langInterceptor, errorInterceptor, loadingInterceptor]),
     ),
     provideRouter(routes, withComponentInputBinding(), withViewTransitions()),
     provideClientHydration(withEventReplay()),

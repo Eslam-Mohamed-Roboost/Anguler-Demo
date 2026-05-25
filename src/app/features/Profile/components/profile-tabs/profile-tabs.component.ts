@@ -69,7 +69,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
     const cityId = this.hotelInfoModel().city;
     const city = this.cities().find((item) => item.id === cityId);
 
-    return city?.name ?? cityId;
+    return city?.name ?? this.currentHotelProfile()?.cityName ?? cityId;
   });
 
   protected readonly hotelInfoModel = signal<HotelInfoModel>({
@@ -127,7 +127,6 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
         },
         error: () => {
           this.hotelInfoLoading.set(false);
-          this.notifications.showError('Failed to load hotel profile');
         },
       });
   }
@@ -154,7 +153,6 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
         },
         error: () => {
           this.withdrawalLoading.set(false);
-          this.notifications.showError('Failed to load withdrawal details');
         },
       });
   }
@@ -247,7 +245,6 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
         },
         error: () => {
           this.hotelInfoLoading.set(false);
-          this.notifications.showError('Failed to update hotel profile');
         },
       });
   }
@@ -302,14 +299,11 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
             if (cityExists) {
               // City is valid, keep it
-            } else if (response.data.items.length > 0) {
-              // City not found or empty, set first city as default
+            } else if (currentCity && response.data.items.length > 0) {
+              // City id is stale, so keep the form selectable with a valid option.
               this.hotelInfoModel.update(m => ({ ...m, city: response.data!.items[0].id }));
             }
           }
-        },
-        error: () => {
-          this.notifications.showError('Failed to load cities');
         },
       });
   }
@@ -331,7 +325,6 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
         },
         error: () => {
           this.banksLoading.set(false);
-          this.notifications.showError('Failed to load banks.');
         },
       });
   }
@@ -405,6 +398,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
       phoneNumber: '',
       email: '',
       cityId: '',
+      cityName: '',
       locationUrl: '',
       logoUrl: '',
       commissionRate: 0,
