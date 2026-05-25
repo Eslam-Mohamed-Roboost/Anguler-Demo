@@ -16,6 +16,7 @@ export interface AuthUser {
 export interface AuthProfile {
   hotelName?: string;
   name?: string;
+  userName?: string;
   email?: string;
   [key: string]: unknown;
 }
@@ -42,7 +43,7 @@ export class AuthService {
   readonly userRoles = computed(() => this._user()?.roles ?? []);
   readonly profileName = computed(() => {
     const profile = this._profile();
-    return profile?.hotelName?.trim() || profile?.name?.trim() || '';
+    return profile?.hotelName?.trim() || profile?.name?.trim() || profile?.userName?.trim() || '';
   });
 
   constructor() {

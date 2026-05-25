@@ -71,9 +71,6 @@ export class ProfileImageComponent {
             this.notifications.showError(result.error?.description ?? 'Failed to load hotel profile');
           }
         },
-        error: () => {
-          this.notifications.showError('Failed to load hotel profile');
-        },
       });
   }
 
@@ -107,7 +104,6 @@ export class ProfileImageComponent {
         },
         error: () => {
           this.uploading.set(false);
-          this.notifications.showError('Failed to update profile image');
           this.resetImagePreview();
         },
       });

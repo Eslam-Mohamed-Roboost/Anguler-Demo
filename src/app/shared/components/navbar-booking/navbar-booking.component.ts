@@ -92,7 +92,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   readonly currentUserName = computed(() => {
     const name = this.userName().trim() || this.coreAuth.userName().trim();
 
-    return name || this.hotelName().trim() || 'Account';
+    return name || (this.isAdmin() ? '' : this.hotelName().trim()) || 'Account';
   });
 
   /** Notification counts */
@@ -374,13 +374,19 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
       }
     }
 
+    const configuration = profile['configuration'];
+    if (configuration && typeof configuration === 'object' && 'logoUrl' in configuration) {
+      const logoUrl = configuration.logoUrl;
+      if (typeof logoUrl === 'string' && logoUrl.trim()) {
+        return logoUrl.trim();
+      }
+    }
+
     return '';
   }
 
   private loadHotelProfileForNavbar(): void {
-    if (this.isAdmin()) return;
-
-    this.api.get<AuthProfile>('/hotels/profile')
+    this.api.get<AuthProfile>('/users/profile')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {

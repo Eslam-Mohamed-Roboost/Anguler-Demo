@@ -179,7 +179,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
           if (result.isSuccess && result.data) {
             const stats = result.data;
             this.statistics.set([
-              { label: 'stats.commissionPercentage', value: `${(stats.commissionPercentage.value * 100).toFixed(0)}%`, color: 'orange' },
+              { label: 'stats.commissionPercentage', value: `${stats.commissionPercentage.value}%`, color: 'orange' },
               { label: 'stats.hotelBalance', value: `${stats.hotelRevenue.value} CHF`, color: 'orange' },
               { label: 'stats.hotelCommission', value: `${stats.hotelCommission.value} CHF`, color: 'orange' },
               { label: 'stats.linesNetProfit', value: `${stats.linesNetProfit.value} CHF`, color: 'orange' },
@@ -242,7 +242,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       joiningDate: '',
     });
 
-    const commPct = `${(item.commissionRate * 100).toFixed(0)}%`;
+    const commPct = `${item.commissionRate}%`;
     this.statistics.update(prev =>
       prev.map(s => s.label === 'stats.commissionPercentage' ? { ...s, value: commPct } : s),
     );

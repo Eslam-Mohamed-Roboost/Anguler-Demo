@@ -77,6 +77,33 @@ export interface HotelApiItem {
   isBlocked: boolean;
 }
 
+export interface UserProfileConfiguration {
+  cityId: string;
+  cityName: string;
+  address: string;
+  locationUrl: string;
+  logoUrl: string;
+  commissionRate: number;
+  isVerified: boolean;
+  isBlocked: boolean;
+  placeTypeId: string;
+  placeTypeName: string;
+  otherPlaceText: string;
+  code: string;
+  createdDate: string;
+}
+
+export interface UserProfileResponse {
+  id: string;
+  userName: string;
+  email: string;
+  phoneNumber: string;
+  userType: number;
+  isDeleted: boolean;
+  isActive: boolean;
+  configuration: UserProfileConfiguration | null;
+}
+
 export interface HotelFinancialsItem {
   hotelId: string;
   code?: string | null;

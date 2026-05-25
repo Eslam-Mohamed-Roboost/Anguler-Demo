@@ -44,7 +44,7 @@ export class TripDetailsService extends ApiService {
 
   cancelTrip(tripRequestId: string): Observable<Result<void>> {
     const CancellationReason =  'No reason provided';
-    return this.put<void>(`/trip-request/cancel`, {tripRequestId, CancellationReason});
+    return this.put<void>(`/trip-request/${tripRequestId}/cancel-by-driver`, {tripRequestId, CancellationReason});
   }
 
   rescheduleTripRequest(tripRequestId: string, newScheduledAt: string): Observable<Result<void>> {
