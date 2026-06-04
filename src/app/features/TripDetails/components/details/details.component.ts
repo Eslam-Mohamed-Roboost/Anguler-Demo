@@ -222,24 +222,25 @@ export class DetailsComponent implements OnInit {
     return value.toFixed(2);
   }
 
-  private statusTranslationKey(status: string): TranslationKey {
-    return `tripDetails.status.${status.replace(/\s+/g, '')}` as TranslationKey;
+  private statusTranslationKey(status: string | null | undefined): TranslationKey {
+    const normalized = status?.trim().replace(/\s+/g, '') || 'Unknown';
+    return `tripDetails.status.${normalized}` as TranslationKey;
   }
 
-  private isCancelledStatus(status: string): boolean {
-    return status.toLowerCase().includes('cancel');
+  private isCancelledStatus(status: string | null | undefined): boolean {
+    return status?.toLowerCase().includes('cancel') ?? false;
   }
 
   private toCommissionMultiplier(value: number): number {
     return value > 1 ? value / 100 : value;
   }
 
-  private isCompletedStatus(status: string): boolean {
-    return status.toLowerCase().includes('complete');
+  private isCompletedStatus(status: string | null | undefined): boolean {
+    return status?.toLowerCase().includes('complete') ?? false;
   }
 
-  private isFinishedStatus(status: string): boolean {
-    const normalized = status.trim().toLowerCase();
+  private isFinishedStatus(status: string | null | undefined): boolean {
+    const normalized = status?.trim().toLowerCase() ?? '';
     return this.isCompletedStatus(normalized) || this.isCancelledStatus(normalized) || normalized === 'rejected';
   }
 
@@ -260,12 +261,12 @@ export class DetailsComponent implements OnInit {
       '';
   }
 
-  private isPendingStatus(status: string): boolean {
-    return status.trim().toLowerCase() === 'pending';
+  private isPendingStatus(status: string | null | undefined): boolean {
+    return status?.trim().toLowerCase() === 'pending';
   }
 
-  private isScheduledStatus(status: string): boolean {
-    const normalized = status.trim().toLowerCase();
+  private isScheduledStatus(status: string | null | undefined): boolean {
+    const normalized = status?.trim().toLowerCase() ?? '';
     return normalized === 'scheduled' || normalized === 'schedualed';
   }
 }

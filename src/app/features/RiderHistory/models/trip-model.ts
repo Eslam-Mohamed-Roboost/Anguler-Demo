@@ -33,6 +33,7 @@ export interface HotelRequestItem {
   currency: string
   startedAt: any
   endedAt: any
+  scheduledAt?: string | null
   requestedAt: string
 }
 

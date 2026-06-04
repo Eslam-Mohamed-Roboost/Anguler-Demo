@@ -61,7 +61,7 @@ export interface TripDetailsResponse {
   specialRequests?: string;
 }
 
-export function getTripStatusLabel(status: string): string {
+export function getTripStatusLabel(status: string | null | undefined): string {
   switch (status) {
     case 'Pending': return 'Pending';
     case 'Accepted': return 'Accepted';
@@ -80,11 +80,11 @@ export function getTripStatusLabel(status: string): string {
     case 'CancelledByHotel':
       return 'Cancelled';
     case 'Rejected': return 'Rejected';
-    default: return status;
+    default: return status?.trim() || 'Unknown';
   }
 }
 
-export function getTripStatusVariant(status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {
+export function getTripStatusVariant(status: string | null | undefined): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {
   switch (status) {
     case 'Completed': return 'success';
     case 'Canceled':

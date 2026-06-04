@@ -191,11 +191,15 @@ export class RiderHistoryComponent extends BaseComponent {
   }
 
   tripStatus(row: HotelRequestItem): string {
-    if (row.isScheduled && this.isPendingRequest(row) && !row.tripStatusString) {
+    if (this.isScheduledBeforeStart(row)) {
       return 'Scheduled';
     }
 
     return row.tripStatusString || row.status || 'Not Started';
+  }
+
+  startDate(row: HotelRequestItem): string {
+    return row.scheduledAt ?? row.startedAt ?? row.requestedAt;
   }
 
   formatStatus(status: string): string {
@@ -255,7 +259,10 @@ export class RiderHistoryComponent extends BaseComponent {
     return (row as unknown as Record<string, unknown>)[column];
   }
 
-  private isPendingRequest(row: HotelRequestItem): boolean {
-    return this.requestStatus(row).toLowerCase() === 'pending';
+  private isScheduledBeforeStart(row: HotelRequestItem): boolean {
+    if (!row.isScheduled || row.startedAt) return false;
+
+    const status = (row.tripStatusString || row.status || '').toLowerCase();
+    return !status.includes('complete') && !status.includes('cancel') && status !== 'rejected';
   }
 }

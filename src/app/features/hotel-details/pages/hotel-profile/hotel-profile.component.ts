@@ -139,8 +139,12 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   });
   readonly canSettlePayout = computed(() => {
     const status = this.currentSettlementStatus();
+    const hasAwaitingAmount = this.awaitingAmount() > 0;
 
-    return status === SettlementStatus.AwaitingPayout;
+    return hasAwaitingAmount && (
+      status === SettlementStatus.Pending ||
+      status === SettlementStatus.AwaitingPayout
+    );
   });
 
   protected readonly columns = computed<ColumnDef[]>(() => [
@@ -316,12 +320,13 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   private updateTripStats(items: HotelTripItem[]): void {
     const counts = { active: 0, scheduled: 0, completed: 0, cancelled: 0 };
     for (const t of items) {
+      const isScheduledTrip = this.isScheduledBeforeStart(t);
       const s = this.toUiTripStatus(
         this.resolveTripStatusText(
-          t.tripStatusString || '',
+          isScheduledTrip ? 'Scheduled' : t.tripStatusString || '',
           t.tripRequestStatusString || t.requestStatusString || 'Pending',
         ),
-        !!t.isScheduled && !t.startedAt,
+        isScheduledTrip,
       );
       if (s === 'active') counts.active++;
       else if (s === 'scheduled') counts.scheduled++;
@@ -343,8 +348,8 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
     const requestStatus = item.tripRequestStatusString || item.requestStatusString || 'Pending';
-    const isScheduledTrip = !!item.isScheduled && !item.startedAt;
-    const tripStatus = item.tripStatusString || (isScheduledTrip ? 'Scheduled' : '');
+    const isScheduledTrip = this.isScheduledBeforeStart(item);
+    const tripStatus = isScheduledTrip ? 'Scheduled' : item.tripStatusString || '';
     const effectiveTripStatus = this.resolveTripStatusText(tripStatus, requestStatus);
     const status = this.toUiTripStatus(effectiveTripStatus, isScheduledTrip);
     return {
@@ -389,6 +394,13 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     if (normalized.includes('schedule') || normalized.includes('schedual')) return 'scheduled';
 
     return 'pending';
+  }
+
+  private isScheduledBeforeStart(item: HotelTripItem): boolean {
+    if (!item.isScheduled || item.startedAt) return false;
+
+    const status = this.normalizeStatus(this.resolveTripStatusText(item.tripStatusString || '', item.tripRequestStatusString || item.requestStatusString || ''));
+    return !status.includes('complete') && !status.includes('cancel') && status !== 'rejected';
   }
 
   private resolveTripStatusText(tripStatus: string, requestStatus: string): string {
@@ -616,7 +628,12 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     const info = this.settlementInfo();
 
     return this.normalizeSettlementStatus(
-      info?.settelStatue ?? info?.settleStatus ?? info?.status ?? info?.statusEnum ?? info?.statusString,
+      info?.settelStatue ??
+      info?.settleStatue ??
+      info?.settleStatus ??
+      info?.status ??
+      info?.statusEnum ??
+      info?.statusString,
     );
   }
 
@@ -632,12 +649,18 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     }
 
     const normalized = status.trim().toLowerCase();
+    const numericStatus = Number(normalized);
 
-    switch (normalized) {
+    if (Number.isInteger(numericStatus) && numericStatus in SettlementStatus) {
+      return numericStatus as SettlementStatus;
+    }
+
+    const normalizedKey = normalized.replace(/[^a-z0-9]+/g, '');
+
+    switch (normalizedKey) {
       case 'pending':
         return SettlementStatus.Pending;
       case 'awaitingpayout':
-      case 'awaiting payout':
         return SettlementStatus.AwaitingPayout;
       case 'settled':
         return SettlementStatus.Settled;

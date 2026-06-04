@@ -161,7 +161,7 @@
       <!-- Custom cell: Start/End Date -->
       <ng-template cellDef="startEndDate" let-row>
         <div class="flex flex-col text-xs text-gray-600">
-          <span>{{ formatDate(row.startedAt) }}</span>
+          <span>{{ formatDate(startDate(row)) }}</span>
           <span class="text-gray-400">{{ formatDate(row.endedAt) }}</span>
         </div>
       </ng-template>

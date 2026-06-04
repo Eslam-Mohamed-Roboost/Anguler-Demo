@@ -209,10 +209,11 @@ export class HotelDetailsService extends ApiService {
 export interface SettlementInfo {
   value: string | number;
   settelStatue?: SettlementStatus | keyof typeof SettlementStatus;
+  settleStatue?: SettlementStatus | keyof typeof SettlementStatus;
   settleStatus?: SettlementStatus | keyof typeof SettlementStatus;
   status?: SettlementStatus | keyof typeof SettlementStatus;
-  statusEnum?: SettlementStatus;
-  statusString?: keyof typeof SettlementStatus;
+  statusEnum?: SettlementStatus | string;
+  statusString?: keyof typeof SettlementStatus | string;
 }
 
 export enum SettlementStatus {

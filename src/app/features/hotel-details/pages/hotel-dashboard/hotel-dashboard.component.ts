@@ -303,8 +303,8 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
     const requestStatus = item.tripRequestStatusString || item.requestStatusString || 'Pending';
-    const isScheduledTrip = !!item.isScheduled && !item.startedAt;
-    const tripStatus = item.tripStatusString || (isScheduledTrip ? 'Scheduled' : '');
+    const isScheduledTrip = this.isScheduledBeforeStart(item);
+    const tripStatus = isScheduledTrip ? 'Scheduled' : item.tripStatusString || '';
     const effectiveTripStatus = this.resolveTripStatusText(tripStatus, requestStatus);
     const status = this.toUiTripStatus(effectiveTripStatus, isScheduledTrip);
     return {
@@ -351,6 +351,13 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     if (normalized.includes('schedule') || normalized.includes('schedual')) return 'scheduled';
 
     return 'pending';
+  }
+
+  private isScheduledBeforeStart(item: HotelTripItem): boolean {
+    if (!item.isScheduled || item.startedAt) return false;
+
+    const status = this.normalizeStatus(this.resolveTripStatusText(item.tripStatusString || '', item.tripRequestStatusString || item.requestStatusString || ''));
+    return !status.includes('complete') && !status.includes('cancel') && status !== 'rejected';
   }
 
   private resolveTripStatusText(tripStatus: string, requestStatus: string): string {

@@ -299,6 +299,7 @@ export const TRANSLATIONS = {
     'tripDetails.status.Cancelled': 'Cancelled',
     'tripDetails.status.Rejected': 'Rejected',
     'tripDetails.status.Scheduled': 'Scheduled',
+    'tripDetails.status.Unknown': 'Unknown',
 
     // ── Profile page ──────────────────────────────────────────────────────
     'profile.hotelInfo': 'Hotel Info.',
@@ -745,6 +746,7 @@ export const TRANSLATIONS = {
     'tripDetails.status.Cancelled': 'ملغاة',
     'tripDetails.status.Rejected': 'مرفوضة',
     'tripDetails.status.Scheduled': 'مجدولة',
+    'tripDetails.status.Unknown': 'غير معروف',
 
     // ── Profile page ──────────────────────────────────────────────────────
     'profile.hotelInfo': 'معلومات الفندق',
@@ -1190,6 +1192,7 @@ export const TRANSLATIONS = {
     'tripDetails.status.Cancelled': 'Storniert',
     'tripDetails.status.Rejected': 'Abgelehnt',
     'tripDetails.status.Scheduled': 'Geplant',
+    'tripDetails.status.Unknown': 'Unbekannt',
 
     // ── Profile page ──────────────────────────────────────────────────────
     'profile.hotelInfo': 'Hotelinformationen',
