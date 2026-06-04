@@ -32,8 +32,7 @@ export class FinancialHistoryComponent extends BaseComponent {
   protected readonly loading = signal(false);
   protected readonly globalCommissionLoading = signal(false);
   protected readonly globalCommission = signal<number | null>(null);
-  protected readonly fromDate = signal('');
-  protected readonly toDate = signal('');
+  protected readonly searchTerm = signal('');
 
   protected readonly sortedTrips = computed(() => {
     const { column, direction } = this.sortState();
@@ -55,7 +54,7 @@ export class FinancialHistoryComponent extends BaseComponent {
     let running = 0;
     return this.sortedTrips().map((trip) => {
       running += trip.platformCommission;
-      return running;
+      return trip.cumulativeProfit ?? running;
     });
   });
 
@@ -64,8 +63,7 @@ export class FinancialHistoryComponent extends BaseComponent {
     this.loadGlobalCommission();
     effect(() => {
       this.currentPage();
-      this.fromDate();
-      this.toDate();
+      this.searchTerm();
       this.loadTrips();
     });
   }
@@ -76,8 +74,7 @@ export class FinancialHistoryComponent extends BaseComponent {
       .getFinancialHistory({
         pageNumber: this.currentPage(),
         pageSize: this.pageSize(),
-        fromDate: this.fromDate() || undefined,
-        toDate: this.toDate() || undefined,
+        searchTerm: this.searchTerm() || undefined,
       })
       .pipe(this.takeUntilDestroyed())
       .subscribe({
@@ -103,13 +100,8 @@ export class FinancialHistoryComponent extends BaseComponent {
     this.sortState.set({ column: '', direction: null });
   }
 
-  onFromDateChange(date: string): void {
-    this.fromDate.set(date);
-    this.currentPage.set(1);
-  }
-
-  onToDateChange(date: string): void {
-    this.toDate.set(date);
+  onSearchChange(searchTerm: string): void {
+    this.searchTerm.set(searchTerm);
     this.currentPage.set(1);
   }
 
