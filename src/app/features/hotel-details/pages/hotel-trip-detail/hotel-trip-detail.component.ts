@@ -122,11 +122,11 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     const status = this.trip()?.status;
     if (!status) return '';
     const map: Record<string, string> = {
-      active: 'text-status-scheduled bg-status-scheduled-bg',
+      active: 'text-status-active bg-status-active-bg',
       pending: 'text-status-scheduled bg-status-scheduled-bg',
       completed: 'text-status-completed bg-status-completed-bg',
       cancelled: 'text-status-cancelled bg-status-cancelled-bg',
-      scheduled: 'text-status-active bg-status-active-bg',
+      scheduled: 'text-status-scheduled bg-status-scheduled-bg',
     };
     return map[status] ?? '';
   });
@@ -141,21 +141,21 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   readonly canMarkArrived = computed(() => {
     if (this.isTripFinished()) return false;
 
-    const status = this.rawStatus().toLowerCase();
+    const status = this.normalizeStatus(this.rawStatus());
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
 
   readonly canStartTrip = computed(() => {
     if (this.isTripFinished()) return false;
 
-    const status = this.rawStatus().toLowerCase();
+    const status = this.normalizeStatus(this.rawStatus());
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
 
   readonly canCompleteTrip = computed(() => {
     if (this.isTripFinished()) return false;
 
-    const status = this.rawStatus().toLowerCase();
+    const status = this.normalizeStatus(this.rawStatus());
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
 
@@ -169,7 +169,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   readonly canEndTrip = computed(() => {
     if (this.isTripFinished()) return false;
 
-    const status = this.rawStatus().toLowerCase();
+    const status = this.normalizeStatus(this.rawStatus());
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
 
@@ -230,7 +230,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
           this.tripLoading.set(false);
           this.tripDetailsLoaded = true;
           if (result.isSuccess && result.data) {
-            this.rawStatus.set(result.data.unifiedStatus);
+            this.rawStatus.set(result.data.unifiedStatus ?? '');
             this.trip.set(this.toTripDetail(result.data));
 
             // If hotel data is nested in trip response, use it directly
@@ -453,20 +453,21 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     return value > 1 ? value / 100 : value;
   }
 
-  private normalizeStatus(status: string): string {
-    return status.trim().toLowerCase();
+  private normalizeStatus(status: string | null | undefined): string {
+    return status?.trim().toLowerCase() ?? '';
   }
 
-  private isScheduledStatus(status: string): boolean {
+  private isScheduledStatus(status: string | null | undefined): boolean {
+    status = this.normalizeStatus(status);
     return status === 'scheduled' || status === 'schedualed';
   }
 
-  private isCancelledStatus(status: string): boolean {
-    return status.includes('cancel');
+  private isCancelledStatus(status: string | null | undefined): boolean {
+    return this.normalizeStatus(status).includes('cancel');
   }
 
-  private isCompletedStatus(status: string): boolean {
-    return status.includes('complete');
+  private isCompletedStatus(status: string | null | undefined): boolean {
+    return this.normalizeStatus(status).includes('complete');
   }
 
   private resolveEffectiveStatus(data: TripDetailsResponse): string {
