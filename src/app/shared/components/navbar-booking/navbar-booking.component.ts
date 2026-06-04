@@ -11,6 +11,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { BillingPanelComponent, BillingItem } from '../billing-panel/billing-panel.component';
@@ -25,6 +26,8 @@ import { ChatService } from '../../../features/TripDetails/services/chat.service
 import { BaseComponent } from '../../base/base.component';
 import { NotificationsService } from '../../../core/services/notifications.service';
 import { ApiService } from '../../../core/services/api.service';
+
+const NAVBAR_REFRESH_MS = 5_000;
 
 @Component({
   selector: 'app-navbar-booking',
@@ -172,6 +175,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   protected readonly messagesLoading = signal(false);
   private dataLoaded = false;
   private profileLoadRequested = false;
+  private pollingStarted = false;
 
   /** Emitted when Trips History is clicked */
   readonly tripsHistoryClick = output<void>();
@@ -195,6 +199,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
         this.dataLoaded = true;
         this.loadMessages();
         this.notificationCount();
+        this.startPolling();
       }
 
       if (!this.profileLoadRequested) {
@@ -211,6 +216,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
       this.dataLoaded = true;
       this.loadMessages();
       this.notificationCount();
+      this.startPolling();
     }
 
     if (!this.profileLoadRequested) {
@@ -218,8 +224,8 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
       this.loadHotelProfileForNavbar();
     }
   }
-  protected notificationCount(): void {
-      this.notifiactionService.UnreadNotificationsCount()
+  protected notificationCount(skipGlobalLoading = false): void {
+      this.notifiactionService.UnreadNotificationsCount(skipGlobalLoading)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next:(result)=>{
@@ -231,37 +237,51 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
         }
       })
   }
-  private loadMessages(): void {
-    this.messagesLoading.set(true);
+  private loadMessages(showLoading = true, skipGlobalLoading = false): void {
+    if (showLoading) this.messagesLoading.set(true);
     this.chatService
-      .getSideBarMessages(1, 50)
+      .getSideBarMessages(1, 50, skipGlobalLoading)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
-          this.messagesLoading.set(false);
+          if (showLoading) this.messagesLoading.set(false);
           if (result.isSuccess && result.data?.messages?.items) {
             this.messages.set(result.data.messages.items);
             this.callCount.set(result.data.messages.items.filter(m => !m.read).length);
           }
         },
         error: () => {
-          this.messagesLoading.set(false);
+          if (showLoading) this.messagesLoading.set(false);
         },
       });
 
        this.chatService
-      .getSideBarMessagesCount()
+      .getSideBarMessagesCount(skipGlobalLoading)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
-          this.messagesLoading.set(false);
+          if (showLoading) this.messagesLoading.set(false);
           if (result.isSuccess && result.data !== undefined) {
             this.callCount.set(result.data??0);
           }
         },
         error: () => {
-          this.messagesLoading.set(false);
+          if (showLoading) this.messagesLoading.set(false);
         },
+      });
+  }
+
+  private startPolling(): void {
+    if (this.pollingStarted) return;
+
+    this.pollingStarted = true;
+    timer(NAVBAR_REFRESH_MS, NAVBAR_REFRESH_MS)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (!this.isAuthenticated() && !this.coreAuth.isAuthenticated()) return;
+
+        this.loadMessages(false, true);
+        this.notificationCount(true);
       });
   }
 

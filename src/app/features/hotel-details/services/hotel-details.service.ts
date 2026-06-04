@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpParams } from '@angular/common/http';
+import { HttpContext, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { AdminApiService } from '../../../core/services/admin-api.service';
 import type { Result } from '../../../core/models/result.model';
 import { DashboardStatsResponse, HotelApiItem, HotelKpiResponse, HotelProfileResponse, HotelsListResponse, HotelTripsResponse, TripRequestStatusesResponse, UserProfileResponse, WithdrawalDetailsResponse, WithdrawalDetailsUpdate } from '../models/dto';
+import { SKIP_LOADING } from '../../../core/tokens/skip-loading.token';
 
 @Injectable({ providedIn: 'root' })
 export class HotelDetailsService extends ApiService {
@@ -35,10 +36,13 @@ export class HotelDetailsService extends ApiService {
   getHotelTrips(
     pageNumber: number,
     pageSize: number,
+    sortBy: number = 0,
     status?: string,
     search?: string,
+    skipLoading = false,
   ): Observable<Result<HotelTripsResponse>> {
     let params = new HttpParams()
+      .set('SortBy', sortBy)
       .set('pageNumber', pageNumber)
       .set('pageSize', pageSize);
 
@@ -50,7 +54,7 @@ export class HotelDetailsService extends ApiService {
       params = params.set('search', search);
     }
 
-    return this.get<HotelTripsResponse>('/hotels/trips', params);
+    return this.get<HotelTripsResponse>('/hotels/trips', params, this.loadingContext(skipLoading));
   }
 
   getAllHotels(
@@ -59,6 +63,7 @@ export class HotelDetailsService extends ApiService {
     sortBy: number = 0,
     status?: string,
     search?: string,
+    skipLoading = false,
   ): Observable<Result<HotelsListResponse>> {
     let params = new HttpParams()
       .set('SortBy', sortBy)
@@ -73,7 +78,7 @@ export class HotelDetailsService extends ApiService {
       params = params.set('search', search);
     }
 
-    return this.adminApi.get<HotelsListResponse>('/admin/hotels/financials', params);
+    return this.adminApi.get<HotelsListResponse>('/admin/hotels/financials', params, this.loadingContext(skipLoading));
   }
 
   getHotelById(hotelId: string): Observable<Result<HotelApiItem>> {
@@ -94,6 +99,7 @@ export class HotelDetailsService extends ApiService {
     pageNumber: number,
     pageSize: number,
     status?: string,
+    skipLoading = false,
   ): Observable<Result<HotelTripsResponse>> {
     let params = new HttpParams()
       .set('pageNumber', pageNumber)
@@ -104,7 +110,7 @@ export class HotelDetailsService extends ApiService {
       params = params.set('status', status);
     }
 
-    return this.get<HotelTripsResponse>('/hotels/trips', params);
+    return this.get<HotelTripsResponse>('/hotels/trips', params, this.loadingContext(skipLoading));
   }
 
   getTripRequestStatuses(): Observable<Result<TripRequestStatusesResponse>> {
@@ -118,12 +124,13 @@ export class HotelDetailsService extends ApiService {
   getDashboardStats(
     fromDate: string,
     toDate: string,
+    skipLoading = false,
   ): Observable<Result<DashboardStatsResponse>> {
     const params = new HttpParams()
       .set('fromDate', fromDate)
       .set('toDate', toDate);
 
-    return this.adminApi.get<DashboardStatsResponse>('/admin/hotels/dashboard', params);
+    return this.adminApi.get<DashboardStatsResponse>('/admin/hotels/dashboard', params, this.loadingContext(skipLoading));
   }
 
 
@@ -149,6 +156,10 @@ export class HotelDetailsService extends ApiService {
 
   settleAllPayouts(hotelId: string): Observable<Result<void>> {
     return this.adminApi.put<void>(`/admin/hotels/payouts/${hotelId}/settle-all`, {});
+  }
+
+  private loadingContext(skipLoading: boolean): HttpContext | undefined {
+    return skipLoading ? new HttpContext().set(SKIP_LOADING, true) : undefined;
   }
 
   getServicePreferences(

@@ -10,6 +10,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { timer } from 'rxjs';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { MessageComponent } from '../message/message.component';
@@ -20,6 +21,8 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import type { TranslationKey } from '../../../../core/i18n/translations';
 import { RealTimeService } from '../../../../core/services/real-time.service';
+
+const CHAT_REFRESH_MS = 5_000;
 
 @Component({
   selector: 'app-chat',
@@ -47,8 +50,8 @@ export class ChatComponent extends BaseComponent implements OnInit {
     if (explicitRole) return this.displayRole(explicitRole);
 
     const roles = this.authService.userRoles();
-    if (roles.some(role => this.normalizeRole(role) === 'hotel')) return 'Hotel';
     if (roles.some(role => this.normalizeRole(role) === 'admin')) return 'Admin';
+    if (roles.some(role => this.normalizeRole(role) === 'hotel')) return 'Hotel';
     if (roles.some(role => this.normalizeRole(role) === 'driver')) return 'Driver';
     return roles[0] ? this.displayRole(roles[0]) : '';
   });
@@ -71,6 +74,7 @@ export class ChatComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadChat();
+    this.startChatPolling();
     this.realTimeService.startConnection();
     this.realTimeService.addMessageListener();
   }
@@ -86,12 +90,28 @@ export class ChatComponent extends BaseComponent implements OnInit {
   private refreshChat(): void {
     const id = this.tripRequestId();
     if (!id) return;
-    this.fetchChat(id, false);
+    this.fetchChat(id, false, true);
   }
 
-  private fetchChat(id: string, showLoading: boolean): void {
+  private startChatPolling(): void {
+    timer(CHAT_REFRESH_MS, CHAT_REFRESH_MS)
+      .pipe(this.takeUntilDestroyed())
+      .subscribe(() => {
+        const id = this.tripRequestId();
+        if (!id) return;
+
+        if (id !== this.lastLoadedId) {
+          this.loadChat();
+          return;
+        }
+
+        this.refreshChat();
+      });
+  }
+
+  private fetchChat(id: string, showLoading: boolean, skipGlobalLoading = false): void {
     if (showLoading) this.chatLoading.set(true);
-    this.chatService.getChatHistory(id).pipe(this.takeUntilDestroyed()).subscribe({
+    this.chatService.getChatHistory(id, skipGlobalLoading).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         if (result.isSuccess && result.data) {
           this.conversation.set(result.data);
@@ -116,10 +136,12 @@ export class ChatComponent extends BaseComponent implements OnInit {
     if (!messageText || !id || this.sendLoading()) return;
 
     //this.sendLoading.set(true);
-    this.chatService.sendMessage(id, messageText).subscribe({
+    const senderRole = this.optimisticSenderRole();
+
+    this.chatService.sendMessage(id, messageText, senderRole).subscribe({
       next: () => {
         this.sendLoading.set(false);
-        this.appendSentMessage(id, messageText);
+        this.appendSentMessage(id, messageText, senderRole);
       },
       error: () => this.sendLoading.set(false),
     });
@@ -168,11 +190,11 @@ export class ChatComponent extends BaseComponent implements OnInit {
     return this.normalizeRole(currentRole) === 'passenger' ? 'Hotel' : this.displayRole(currentRole);
   }
 
-  private appendSentMessage(tripId: string, message: string): void {
+  private appendSentMessage(tripId: string, message: string, senderRole: string): void {
     const sentMessage = {
       id: `sent-${Date.now()}`,
       senderId: 'me',
-      senderRole: this.optimisticSenderRole(),
+      senderRole,
       message,
       createdAt: new Date().toISOString(),
     };

@@ -56,6 +56,7 @@ export interface TripRecord {
   room?: string;
   commission?: number;
   endDate?: string | null;
+  scheduledAt?: string | null;
   requestedAt?: string | null;
   notes?: string | null;
   placeTypeName?: string | null;

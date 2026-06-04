@@ -82,7 +82,6 @@ export class TripsHistoryTableComponent {
     { key: 'id', header: 'ID', sortable: true, headerClass: 'w-24' },
     { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-56' },
     { key: 'totalTrips', header: 'Total Trips', sortable: true, headerClass: 'w-24' },
-    { key: 'hotelComm', header: 'Hotel Comm.', sortable: true, headerClass: 'w-24' },
     { key: 'hotelProfits', header: 'Hotel Profits', sortable: true, headerClass: 'w-28' },
     { key: 'linesProfits', header: 'Lines profits', sortable: true, headerClass: 'w-28' },
     { key: 'monthlyDues', header: 'Monthly Dues', sortable: true, headerClass: 'w-28' },
@@ -180,11 +179,17 @@ export class TripsHistoryTableComponent {
   }
 
   protected statusColorClass(statusKey: string): string {
+    if (statusKey.includes('cancel')) return this.tripStatusColorMap['cancelled'];
+
     return this.tripStatusColorMap[statusKey] || 'text-status-scheduled bg-status-scheduled-bg';
   }
 
   protected formatStatus(status: string): string {
     if (!status) return '--';
+
+    if (status.toLowerCase().includes('cancel')) {
+      return 'Cancelled';
+    }
 
     return status
       .replace(/([a-z])([A-Z])/g, '$1 $2')

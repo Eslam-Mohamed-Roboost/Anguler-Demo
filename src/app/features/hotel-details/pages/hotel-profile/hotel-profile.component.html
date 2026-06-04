@@ -348,18 +348,13 @@
           ariaLabel="Hotel trips history"
           trackByKey="id"
         >
-         <ng-template cellDef="tripCode" let-row>
-            <span class="text-cell font-semibold text-body max-sm:text-xs block">{{ row.tripCode || '--' }}</span>
+          <ng-template cellDef="tripId" let-row>
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.tripCode ?? '--' }}</span>
           </ng-template>
 
-          <!-- Driver Cell -->
-          <ng-template cellDef="driver" let-row>
-            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
-          </ng-template>
-
-          <!-- Guest Cell -->
-          <ng-template cellDef="guest" let-row>
-            <div class="flex flex-col gap-0.5">
+          <!-- Guest Name Cell -->
+          <ng-template cellDef="guestName" let-row>
+            <div class="flex flex-col items-start gap-0.5 text-left">
               <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.customerName }}</span>
               @if (row.room) {
                 <span class="text-xs text-muted">{{ row.room }}</span>
@@ -367,49 +362,49 @@
             </div>
           </ng-template>
 
+          <!-- Driver Name Cell -->
+          <ng-template cellDef="driverName" let-row>
+            <div class="flex flex-col items-start gap-0.5 text-left">
+              <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
+              @if (row.driverId) {
+                <span class="text-xs text-muted">{{ row.driverId }}</span>
+              }
+            </div>
+          </ng-template>
+
           <!-- Route Cell -->
           <ng-template cellDef="route" let-row>
-            <div class="flex flex-col gap-1">
-              <div class="flex items-center gap-1.5">
+            <div class="flex flex-col items-start gap-1 text-left">
+              <div class="flex items-center justify-start gap-1.5">
                 <span class="inline-block size-2 rounded-full shrink-0 bg-status-completed" aria-hidden="true"></span>
                 <span class="text-cell text-body-soft">{{ row.pickupLocation }}</span>
               </div>
-              <div class="flex items-center gap-1.5">
+              <div class="flex items-center justify-start gap-1.5">
                 <span class="inline-block size-2 rounded-full shrink-0 bg-status-cancelled" aria-hidden="true"></span>
                 <span class="text-cell text-body-soft">{{ row.dropoffLocation }}</span>
               </div>
             </div>
           </ng-template>
 
-          <!-- Status Cell -->
-          <ng-template cellDef="status" let-row>
-            <span class="inline-block px-2.5 py-1 rounded-badge text-xs font-medium capitalize"
-              [class.bg-yellow-100]="row.status === 'scheduled'"
-              [class.text-yellow-800]="row.status === 'scheduled'"
-              [class.bg-blue-100]="row.status === 'active'"
-              [class.text-blue-800]="row.status === 'active'"
-              [class.bg-green-100]="row.status === 'completed'"
-              [class.text-green-800]="row.status === 'completed'"
-              [class.bg-red-100]="row.status === 'cancelled'"
-              [class.text-red-800]="row.status === 'cancelled'"
-              [class.bg-gray-100]="row.status === 'pending'"
-              [class.text-gray-800]="row.status === 'pending'">
-              {{ row.status }}
+          <!-- Request Status Cell -->
+          <ng-template cellDef="requestStatus" let-row>
+            <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium capitalize max-sm:px-2 max-sm:text-2xs"
+                  [class]="statusColorClass(row.requestStatusKey)">
+              {{ formatStatus(row.requestStatus) }}
             </span>
           </ng-template>
 
-          <ng-template cellDef="requestStatus" let-row>
-            <span class="text-cell font-medium text-body-soft max-sm:text-xs">{{ row.requestStatus || '--' }}</span>
-          </ng-template>
-
-          <!-- Duration Cell -->
-          <ng-template cellDef="duration" let-row>
-            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.duration }} min</span>
+          <!-- Trip Status Cell -->
+          <ng-template cellDef="tripStatus" let-row>
+            <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium capitalize max-sm:px-2 max-sm:text-2xs"
+                  [class]="statusColorClass(row.tripStatusKey)">
+              {{ formatStatus(row.tripStatus) }}
+            </span>
           </ng-template>
 
           <!-- Fare Cell -->
           <ng-template cellDef="fare" let-row>
-            <div class="flex flex-col gap-0.5">
+            <div class="flex flex-col items-start gap-0.5 text-left">
               <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price.toFixed(2) }} CHF</span>
               @if (row.commission != null) {
                 <span class="text-xs text-muted">Comm.: {{ row.commission.toFixed(2) }}</span>
@@ -417,19 +412,25 @@
             </div>
           </ng-template>
 
-          <!-- Date Cell -->
-          <ng-template cellDef="date" let-row>
-            <div class="flex flex-col gap-0.5">
+          <!-- Start/End Date Cell -->
+          <ng-template cellDef="startEndDate" let-row>
+            <div class="flex flex-col items-start gap-0.5 text-left">
               <span class="text-cell font-medium text-body max-sm:text-xs">{{ formatDate(row.date) }}</span>
-              <span class="text-xs text-muted">{{ formatDate(row.endDate) }}</span>
+              <span class="text-xs text-muted">
+                @if (row.endDate) {
+                  {{ formatDate(row.endDate) }}
+                } @else {
+                  Requested: {{ formatDate(row.requestedAt) }}
+                }
+              </span>
             </div>
           </ng-template>
 
-          <!-- Actions Cell — links to hotel-trip-detail -->
+          <!-- Actions Cell -->
           <ng-template cellDef="actions" let-row>
             <a
-              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition bg-status-completed-bg text-status-completed hover:bg-green-100"
-              [routerLink]="['/hotel-details', hotelId(), 'trip', row.id]"
+              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
+              [routerLink]="['/hotel-details', routeHotelId(), 'trip', row.id]"
               aria-label="View trip details"
             >
               <app-icon name="eye" size="sm" aria-hidden="true" />

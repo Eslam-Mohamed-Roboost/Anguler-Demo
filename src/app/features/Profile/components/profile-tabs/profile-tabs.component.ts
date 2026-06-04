@@ -16,6 +16,7 @@ import { SelectComponent } from '../../../../shared/components/select/select.com
 import { CitiesService } from '../../../booking/components/services/cities.service';
 import { Bank, BankService } from '../../../booking/components/services/bank.service';
 import { BaseComponent } from '../../../../shared/base/base.component';
+import { AuthService as CoreAuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-profile-tabs',
@@ -30,6 +31,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   private readonly notifications = inject(NotificationStore);
   private readonly citiesService = inject(CitiesService);
   private readonly bankService = inject(BankService);
+  private readonly coreAuth = inject(CoreAuthService);
 
   readonly lang = this.langService.lang;
 
@@ -216,27 +218,32 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
   submitHotelInfo(): void {
     const model = this.hotelInfoModel();
+    const currentProfile = this.currentHotelProfile();
+    const latestLogoUrl = this.getLatestLogoUrl();
+    const updatePayload: HotelProfileData = {
+      ...this.emptyHotelProfile(),
+      ...currentProfile,
+      id: currentProfile?.id ?? '',
+      hotelName: model.name,
+      address: model.address,
+      phoneNumber: model.phone,
+      email: model.email,
+      cityId: model.city,
+      logoUrl: latestLogoUrl,
+    };
+
     this.hotelInfoLoading.set(true);
 
     this.profileService
-      .updateHotelProfile({
-        ...this.emptyHotelProfile(),
-        ...this.currentHotelProfile(),
-        id: this.currentHotelProfile()?.id ?? '',
-        hotelName: model.name,
-        address: model.address,
-        phoneNumber: model.phone,
-        email: model.email,
-        cityId: model.city,
-      })
+      .updateHotelProfile(updatePayload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.hotelInfoLoading.set(false);
           if (result.isSuccess) {
-            if (result.data) {
-              this.currentHotelProfile.set(result.data);
-            }
+            const updatedProfile = { ...updatePayload, ...(result.data ?? {}), logoUrl: result.data?.logoUrl || updatePayload.logoUrl };
+            this.currentHotelProfile.set(updatedProfile);
+            this.coreAuth.setProfile(updatedProfile);
             this.notifications.showSuccess('Hotel profile updated successfully');
             this.DisableHotleInfo.set(true);
           } else {
@@ -388,6 +395,25 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
     }
 
     return error.statusText && error.statusText !== 'OK' ? error.statusText : fallback;
+  }
+
+  private getLatestLogoUrl(): string {
+    const authProfile = this.coreAuth.profile();
+    const directLogoUrl = authProfile?.['logoUrl'];
+
+    if (typeof directLogoUrl === 'string' && directLogoUrl.trim()) {
+      return directLogoUrl.trim();
+    }
+
+    const configuration = authProfile?.['configuration'];
+    if (configuration && typeof configuration === 'object' && 'logoUrl' in configuration) {
+      const logoUrl = configuration.logoUrl;
+      if (typeof logoUrl === 'string' && logoUrl.trim()) {
+        return logoUrl.trim();
+      }
+    }
+
+    return this.currentHotelProfile()?.logoUrl ?? '';
   }
 
   private emptyHotelProfile(): HotelProfileData {

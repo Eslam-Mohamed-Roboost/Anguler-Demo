@@ -1,12 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   effect,
   inject,
   input,
   output,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer } from 'rxjs';
 import { IconComponent } from '../icon/icon.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import {
@@ -14,6 +17,8 @@ import {
   NotificationsService,
 } from '../../../core/services/notifications.service';
 import { AuthService } from '../../../core/services/auth.service';
+
+const NOTIFICATION_REFRESH_MS = 5_000;
 
 export interface  BillingItem{
   id: string;
@@ -30,6 +35,7 @@ export interface  BillingItem{
 export class BillingPanelComponent {
   private readonly notificationsService = inject(NotificationsService);
   private readonly authService = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly isOpen = input<boolean>(false);
   readonly closePanel = output<void>();
@@ -48,14 +54,23 @@ export class BillingPanelComponent {
         this.UnreadNotificationsCount();
       }
     });
+
+    timer(NOTIFICATION_REFRESH_MS, NOTIFICATION_REFRESH_MS)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (!this.isOpen() || !this.authService.isAuthenticated()) return;
+
+        this.loadNotifications(false, true);
+        this.UnreadNotificationsCount(true);
+      });
   }
 
-  private loadNotifications(): void {
-    this.loading.set(true);
+  private loadNotifications(showLoading = true, skipGlobalLoading = false): void {
+    if (showLoading) this.loading.set(true);
     this.error.set(null);
-    this.notificationsService.getAll().subscribe({
+    this.notificationsService.getAll(skipGlobalLoading).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
-        this.loading.set(false);
+        if (showLoading) this.loading.set(false);
         if (result.isSuccess && result.data) {
           this.notifications.set(result.data.notifications.items);
         } else {
@@ -63,13 +78,13 @@ export class BillingPanelComponent {
         }
       },
       error: () => {
-        this.loading.set(false);
+        if (showLoading) this.loading.set(false);
         this.error.set('Failed to load notifications');
       },
     });
   }
-  private UnreadNotificationsCount(): number {
-    this.notificationsService.UnreadNotificationsCount().subscribe({
+  private UnreadNotificationsCount(skipGlobalLoading = false): number {
+    this.notificationsService.UnreadNotificationsCount(skipGlobalLoading).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         if (result.isSuccess && result.data !== undefined) {
           this.UnreadCount.set(result.data?.count??0);
@@ -98,7 +113,7 @@ export class BillingPanelComponent {
     );
     this.UnreadCount.update((count) => Math.max(0, count - 1));
 
-    this.notificationsService.markAsRead(item.id).subscribe({
+    this.notificationsService.markAsRead(item.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         if (result.isSuccess) {
           this.refreshUnreadCount();
@@ -118,7 +133,7 @@ export class BillingPanelComponent {
   }
 
   private refreshUnreadCount(): void {
-    this.notificationsService.UnreadNotificationsCount().subscribe({
+    this.notificationsService.UnreadNotificationsCount().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         if (result.isSuccess) {
           this.UnreadCount.set(result.data?.count ?? 0);

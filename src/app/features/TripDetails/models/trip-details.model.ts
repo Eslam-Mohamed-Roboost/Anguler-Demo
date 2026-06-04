@@ -32,6 +32,9 @@ export interface TripDetailsResponse {
   tripId: string | null;
   tripCode: string | null;
   unifiedStatus: string;
+  requestStatusString?: string | null;
+  tripRequestStatusString?: string | null;
+  tripStatusString?: string | null;
   startLocation: Location;
   endLocation: Location;
   guestName: string;
@@ -42,6 +45,7 @@ export interface TripDetailsResponse {
   driver: TripDriver | null;
   estimatedPrice: number;
   actualFare: number | null;
+  commission?: number | null;
   tips: number | null;
   currency: string;
   paymentMethodType: string;

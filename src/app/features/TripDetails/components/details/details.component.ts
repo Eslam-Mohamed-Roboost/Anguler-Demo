@@ -35,21 +35,46 @@ export class DetailsComponent implements OnInit {
 
   protected readonly statusLabel = computed(() => {
     const trip = this.data();
-    if (trip.isScheduled && !trip.driver && this.isScheduledStatus(trip.unifiedStatus)) {
-      return 'Pending';
+    if (trip.isScheduled && !trip.startedAt && !this.isFinishedTrip(trip) && !trip.endedAt) {
+      return 'Scheduled';
     }
+
+    const effectiveStatus = this.resolveEffectiveStatus(trip);
+    if (this.isCompletedStatus(effectiveStatus)) return 'Completed';
+    if (this.isCancelledStatus(effectiveStatus)) return 'Cancelled';
 
     return getTripStatusLabel(trip.unifiedStatus);
   });
   protected readonly statusLabelKey = computed(() => this.statusTranslationKey(this.statusLabel()));
   protected readonly statusVariant = computed(() => getTripStatusVariant(this.statusLabel()));
+  protected readonly hotelProfit = computed(() => {
+    const trip = this.data();
+    const fare = trip.actualFare ?? trip.estimatedPrice;
+    const commission = trip.commission;
+
+    if (commission == null || Number.isNaN(fare)) {
+      return undefined;
+    }
+
+    return fare * this.toCommissionMultiplier(commission);
+  });
   protected readonly canAssignDriver = computed(() =>
     this.isAdmin() &&
     !this.data().driver &&
+    !this.isFinishedTrip(this.data()) &&
     (this.isPendingStatus(this.data().unifiedStatus) || this.isScheduledStatus(this.data().unifiedStatus))
   );
   protected readonly canShowScheduledActions = computed(() =>
-    this.data().isScheduled && !this.isCancelledStatus(this.data().unifiedStatus)
+    this.data().isScheduled &&
+    !this.data().startedAt &&
+    !this.data().endedAt &&
+    !this.isFinishedTrip(this.data())
+  );
+  protected readonly canShowStatusActions = computed(() =>
+    this.isAdmin() &&
+    !this.data().endedAt &&
+    !this.isFinishedTrip(this.data()) &&
+    (this.data().unifiedStatus === 'Accepted' || this.data().unifiedStatus === 'Arrived' || this.data().unifiedStatus === 'InProgress')
   );
 
   protected readonly actionLoading = signal(false);
@@ -192,12 +217,47 @@ export class DetailsComponent implements OnInit {
     }).format(new Date(value));
   }
 
+  protected formatMoney(value: number | undefined): string {
+    if (value === undefined || Number.isNaN(value)) return '--';
+    return value.toFixed(2);
+  }
+
   private statusTranslationKey(status: string): TranslationKey {
     return `tripDetails.status.${status.replace(/\s+/g, '')}` as TranslationKey;
   }
 
   private isCancelledStatus(status: string): boolean {
     return status.toLowerCase().includes('cancel');
+  }
+
+  private toCommissionMultiplier(value: number): number {
+    return value > 1 ? value / 100 : value;
+  }
+
+  private isCompletedStatus(status: string): boolean {
+    return status.toLowerCase().includes('complete');
+  }
+
+  private isFinishedStatus(status: string): boolean {
+    const normalized = status.trim().toLowerCase();
+    return this.isCompletedStatus(normalized) || this.isCancelledStatus(normalized) || normalized === 'rejected';
+  }
+
+  private isFinishedTrip(trip: TripDetailsResponse): boolean {
+    return !!trip.endedAt || this.isFinishedStatus(this.resolveEffectiveStatus(trip));
+  }
+
+  private resolveEffectiveStatus(trip: TripDetailsResponse): string {
+    const statuses = [
+      trip.tripStatusString,
+      trip.tripRequestStatusString,
+      trip.requestStatusString,
+      trip.unifiedStatus,
+    ].map(status => status?.trim().toLowerCase() ?? '');
+
+    return statuses.find(status => this.isCompletedStatus(status) || this.isCancelledStatus(status)) ??
+      statuses.find(Boolean) ??
+      '';
   }
 
   private isPendingStatus(status: string): boolean {

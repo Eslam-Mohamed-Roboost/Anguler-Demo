@@ -71,6 +71,9 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
 
   readonly isAdmin = computed(() => this.authService.hasRole('admin'));
   readonly commissionPercentage = computed(() => this.appConfig.commissionPercentage());
+  readonly hotelProfitLabel = computed(() =>
+    `Hotel Profit (CHF) =`
+  );
 
   readonly hotelId = signal('');
   readonly tripId = signal('');
@@ -129,31 +132,43 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   });
 
   readonly canAccept = computed(() => {
+    if (this.isTripFinished()) return false;
+
     const status = this.normalizeStatus(this.rawStatus());
     return status === 'pending' || this.isScheduledStatus(status);
   });
 
   readonly canMarkArrived = computed(() => {
+    if (this.isTripFinished()) return false;
+
     const status = this.rawStatus().toLowerCase();
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
 
   readonly canStartTrip = computed(() => {
+    if (this.isTripFinished()) return false;
+
     const status = this.rawStatus().toLowerCase();
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
 
   readonly canCompleteTrip = computed(() => {
+    if (this.isTripFinished()) return false;
+
     const status = this.rawStatus().toLowerCase();
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
 
   readonly canCancelTrip = computed(() => {
+    if (this.isTripFinished()) return false;
+
     const status = this.normalizeStatus(this.rawStatus());
     return status === 'pending' || this.isScheduledStatus(status);
   });
 
   readonly canEndTrip = computed(() => {
+    if (this.isTripFinished()) return false;
+
     const status = this.rawStatus().toLowerCase();
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
@@ -250,13 +265,19 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   }
 
   private toTripDetail(data: TripDetailsResponse): TripDetail {
+    const normalizedStatus = this.normalizeStatus(data.unifiedStatus);
+    const effectiveStatus = this.resolveEffectiveStatus(data);
+    const isCompletedTrip = this.isCompletedStatus(effectiveStatus) || !!data.endedAt;
+    const isCancelledTrip = this.isCancelledStatus(effectiveStatus) || effectiveStatus === 'rejected';
+    const isScheduledTrip = data.isScheduled && !data.startedAt && !isCompletedTrip && !isCancelledTrip;
     const statusMap: Record<string, TripDetail['status']> = {
       pending: 'pending',
-      accepted: 'active',
+      accepted: isScheduledTrip ? 'scheduled' : 'active',
       arrived: 'active',
       inprogress: 'active',
       completed: 'completed',
       cancelled: 'cancelled',
+      canceled: 'cancelled',
       rejected: 'cancelled',
       scheduled: 'scheduled',
       schedualed: 'scheduled',
@@ -264,16 +285,17 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
 
     return {
       tripId: data.tripCode ?? data.tripRequestId,
+      tripCode: data.tripCode ?? data.tripRequestId,
       guestName: data.guestName,
       roomNo: String(data.roomNumber),
       destinations: data.endLocation.address,
       fare: data.actualFare ?? data.estimatedPrice,
-      hotelProfits: 0,
-      commissionRate: 0,
-      startDate: data.startedAt ?? data.requestedAt,
+      hotelProfits: this.calculateHotelProfit(data.actualFare ?? data.estimatedPrice, data.commission),
+      commissionRate: data.commission ?? this.commissionPercentage(),
+      startDate: data.scheduledAt ?? data.startedAt ?? data.requestedAt,
       endDate: data.endedAt ?? undefined,
       tripRate: undefined,
-      status: statusMap[this.normalizeStatus(data.unifiedStatus)] ?? 'pending',
+      status: isScheduledTrip ? 'scheduled' : isCompletedTrip ? 'completed' : isCancelledTrip ? 'cancelled' : statusMap[normalizedStatus] ?? 'pending',
       hotelNote: data.notes || data.specialRequests,
       carType: 'Van',
     };
@@ -418,12 +440,51 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     }).format(date);
   }
 
+  protected formatMoney(value: number | undefined): string {
+    if (value === undefined || Number.isNaN(value)) return '--';
+    return value.toFixed(2);
+  }
+
+  private calculateHotelProfit(fare: number, commission: number | null | undefined): number {
+    return fare * this.toCommissionMultiplier(commission ?? this.commissionPercentage());
+  }
+
+  private toCommissionMultiplier(value: number): number {
+    return value > 1 ? value / 100 : value;
+  }
+
   private normalizeStatus(status: string): string {
     return status.trim().toLowerCase();
   }
 
   private isScheduledStatus(status: string): boolean {
     return status === 'scheduled' || status === 'schedualed';
+  }
+
+  private isCancelledStatus(status: string): boolean {
+    return status.includes('cancel');
+  }
+
+  private isCompletedStatus(status: string): boolean {
+    return status.includes('complete');
+  }
+
+  private resolveEffectiveStatus(data: TripDetailsResponse): string {
+    const statuses = [
+      data.tripStatusString,
+      data.tripRequestStatusString,
+      data.requestStatusString,
+      data.unifiedStatus,
+    ].map(status => this.normalizeStatus(status ?? ''));
+
+    return statuses.find(status => this.isCompletedStatus(status) || this.isCancelledStatus(status)) ??
+      statuses.find(Boolean) ??
+      '';
+  }
+
+  private isTripFinished(): boolean {
+    const status = this.trip()?.status;
+    return status === 'completed' || status === 'cancelled';
   }
 
   onHotelDelete(): void {}

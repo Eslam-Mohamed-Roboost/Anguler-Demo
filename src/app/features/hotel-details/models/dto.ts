@@ -31,6 +31,7 @@ export interface HotelTripItem {
   currency: string;
   startedAt: string | null;
   endedAt: string | null;
+  scheduledAt?: string | null;
   requestedAt: string | null;
 }
 
@@ -119,7 +120,9 @@ export interface HotelFinancialsItem {
   hotelProfits: number;
   payoutId: string;
   monthlyDues: number;
-  status: string;
+  status?: string;
+  statusString?: string;
+  statusEnum?: number | null;
 }
 
 export interface HotelsListResponse {
