@@ -63,66 +63,72 @@
             </div>
           }
         } @else {
-          @for (trip of sortedTrips(); track trip.tripId; let i = $index) {
-            <div class="grid grid-cols-12 gap-4 py-3 items-center text-xs" role="row">
-              <div class="col-span-1 font-medium truncate">{{ trip.tripCode }}</div>
+          @for (item of financialItems(); track financialItemKey(item, $index); let i = $index) {
+            @if (isTripItem(item)) {
+              <div class="grid grid-cols-12 gap-4 py-3 items-center text-xs" role="row">
+                <div class="col-span-1 font-medium truncate">{{ item.tripCode }}</div>
 
-              <div class="col-span-2">
-                <div class="flex items-center gap-2">
-                  <span
-                    class="flex size-6 items-center justify-center rounded-full bg-gray-200 text-gray-500"
-                    aria-hidden="true"
-                  >
-                    <app-icon name="user" size="xs" />
+                <div class="col-span-2">
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="flex size-6 items-center justify-center rounded-full bg-gray-200 text-gray-500"
+                      aria-hidden="true"
+                    >
+                      <app-icon name="user" size="xs" />
+                    </span>
+                    <span class="text-gray-700 truncate">{{ item.driverName }}</span>
+                  </div>
+                </div>
+
+                <div class="col-span-2 truncate">{{ item.guestName }}</div>
+
+                <div class="col-span-1">{{ item.roomNumber }}</div>
+
+                <div class="col-span-2">
+                  <div class="flex flex-col gap-1">
+                    <span class="flex items-center gap-1 truncate">
+                      <span class="inline-block size-2 shrink-0 rounded-full border-2 border-green-500 bg-green-500"></span>
+                      {{ item.startLocation.address }}
+                    </span>
+                    <span class="flex items-center gap-1 truncate">
+                      <span class="inline-block size-2 shrink-0 rounded-full border-2 border-red-500 bg-red-500"></span>
+                      {{ item.endLocation.address }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-span-1">
+                  <div class="flex flex-col text-gray-600">
+                    <span class="flex items-center gap-1">
+                      <svg class="size-3 shrink-0 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      {{ item.durationMinutes }} {{ 'unit.min' | translate }}
+                    </span>
+                    <span class="text-gray-400 ps-[14px]">{{ item.distanceKm }} {{ 'unit.km' | translate }}</span>
+                  </div>
+                </div>
+
+                <div class="col-span-1 text-gray-600">{{ formatDate(item.endedAt) }}</div>
+
+                <div class="col-span-1">
+                  <span class="font-semibold text-gray-800">
+                    {{ formatCurrency(item.platformCommission, item.currency) }}
                   </span>
-                  <span class="text-gray-700 truncate">{{ trip.driverName }}</span>
+                </div>
+
+                <div class="col-span-1">
+                  <span class="font-semibold text-green-600">
+                    {{ formatCurrency(cumulativeProfits()[i], item.currency) }}
+                  </span>
                 </div>
               </div>
-
-              <div class="col-span-2 truncate">{{ trip.guestName }}</div>
-
-              <div class="col-span-1">{{ trip.roomNumber }}</div>
-
-              <div class="col-span-2">
-                <div class="flex flex-col gap-1">
-                  <span class="flex items-center gap-1 truncate">
-                    <span class="inline-block size-2 shrink-0 rounded-full border-2 border-green-500 bg-green-500"></span>
-                    {{ trip.startLocation.address }}
-                  </span>
-                  <span class="flex items-center gap-1 truncate">
-                    <span class="inline-block size-2 shrink-0 rounded-full border-2 border-red-500 bg-red-500"></span>
-                    {{ trip.endLocation.address }}
-                  </span>
-                </div>
+            } @else if (isBannerItem(item)) {
+              <div [class]="bannerClass(item.payoutStatus)" role="row">
+                <div role="cell">{{ item.displayMessage }}</div>
               </div>
-
-              <div class="col-span-1">
-                <div class="flex flex-col text-gray-600">
-                  <span class="flex items-center gap-1">
-                    <svg class="size-3 shrink-0 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    {{ trip.durationMinutes }} {{ 'unit.min' | translate }}
-                  </span>
-                  <span class="text-gray-400 ps-[14px]">{{ trip.distanceKm }} {{ 'unit.km' | translate }}</span>
-                </div>
-              </div>
-
-              <div class="col-span-1 text-gray-600">{{ formatDate(trip.endedAt) }}</div>
-
-              <div class="col-span-1">
-                <span class="font-semibold text-gray-800">
-                  {{ formatCurrency(trip.platformCommission, trip.currency) }}
-                </span>
-              </div>
-
-              <div class="col-span-1">
-                <span class="font-semibold text-green-600">
-                  {{ formatCurrency(cumulativeProfits()[i], trip.currency) }}
-                </span>
-              </div>
-            </div>
+            }
           } @empty {
             <div class="py-12 text-center text-sm text-gray-500" role="status">
               {{ 'shared.noData' | translate }}
@@ -144,55 +150,61 @@
             </div>
           }
         } @else {
-          @for (trip of sortedTrips(); track trip.tripId; let i = $index) {
-            <article class="rounded-lg border border-gray-100 bg-white p-3 shadow-sm" role="row">
-              <div class="mb-3 flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <p class="text-[11px] font-medium uppercase text-gray-400">{{ 'TripID' | translate }}</p>
-                  <p class="truncate text-sm font-semibold text-gray-900">{{ trip.tripCode }}</p>
+          @for (item of financialItems(); track financialItemKey(item, $index); let i = $index) {
+            @if (isTripItem(item)) {
+              <article class="rounded-lg border border-gray-100 bg-white p-3 shadow-sm" role="row">
+                <div class="mb-3 flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-medium uppercase text-gray-400">{{ 'TripID' | translate }}</p>
+                    <p class="truncate text-sm font-semibold text-gray-900">{{ item.tripCode }}</p>
+                  </div>
+                  <div class="shrink-0 text-right">
+                    <p class="text-[11px] font-medium uppercase text-gray-400">{{ 'Trip.Profit' | translate }}</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ formatCurrency(item.platformCommission, item.currency) }}</p>
+                  </div>
                 </div>
-                <div class="shrink-0 text-right">
-                  <p class="text-[11px] font-medium uppercase text-gray-400">{{ 'Trip.Profit' | translate }}</p>
-                  <p class="text-sm font-semibold text-gray-900">{{ formatCurrency(trip.platformCommission, trip.currency) }}</p>
-                </div>
-              </div>
 
-              <div class="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
-                <div class="min-w-0">
-                  <p class="font-medium text-gray-400">{{ 'Driver' | translate }}</p>
-                  <p class="truncate text-gray-700">{{ trip.driverName || '--' }}</p>
+                <div class="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
+                  <div class="min-w-0">
+                    <p class="font-medium text-gray-400">{{ 'Driver' | translate }}</p>
+                    <p class="truncate text-gray-700">{{ item.driverName || '--' }}</p>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-medium text-gray-400">{{ 'Guest' | translate }}</p>
+                    <p class="truncate text-gray-700">{{ item.guestName || '--' }}</p>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-400">{{ 'Room No.' | translate }}</p>
+                    <p class="text-gray-700">{{ item.roomNumber }}</p>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-400">{{ 'Duration' | translate }}</p>
+                    <p class="text-gray-700">{{ item.durationMinutes }} {{ 'unit.min' | translate }} · {{ item.distanceKm }} {{ 'unit.km' | translate }}</p>
+                  </div>
                 </div>
-                <div class="min-w-0">
-                  <p class="font-medium text-gray-400">{{ 'Guest' | translate }}</p>
-                  <p class="truncate text-gray-700">{{ trip.guestName || '--' }}</p>
-                </div>
-                <div>
-                  <p class="font-medium text-gray-400">{{ 'Room No.' | translate }}</p>
-                  <p class="text-gray-700">{{ trip.roomNumber }}</p>
-                </div>
-                <div>
-                  <p class="font-medium text-gray-400">{{ 'Duration' | translate }}</p>
-                  <p class="text-gray-700">{{ trip.durationMinutes }} {{ 'unit.min' | translate }} · {{ trip.distanceKm }} {{ 'unit.km' | translate }}</p>
-                </div>
-              </div>
 
-              <div class="mt-3 min-w-0 rounded-md bg-gray-50 p-2 text-xs">
-                <p class="mb-1 font-medium text-gray-400">{{ 'Route' | translate }}</p>
-                <p class="flex min-w-0 items-center gap-1 text-gray-700">
-                  <span class="inline-block size-2 shrink-0 rounded-full bg-green-500"></span>
-                  <span class="truncate">{{ trip.startLocation.address }}</span>
-                </p>
-                <p class="mt-1 flex min-w-0 items-center gap-1 text-gray-700">
-                  <span class="inline-block size-2 shrink-0 rounded-full bg-red-500"></span>
-                  <span class="truncate">{{ trip.endLocation.address }}</span>
-                </p>
-              </div>
+                <div class="mt-3 min-w-0 rounded-md bg-gray-50 p-2 text-xs">
+                  <p class="mb-1 font-medium text-gray-400">{{ 'Route' | translate }}</p>
+                  <p class="flex min-w-0 items-center gap-1 text-gray-700">
+                    <span class="inline-block size-2 shrink-0 rounded-full bg-green-500"></span>
+                    <span class="truncate">{{ item.startLocation.address }}</span>
+                  </p>
+                  <p class="mt-1 flex min-w-0 items-center gap-1 text-gray-700">
+                    <span class="inline-block size-2 shrink-0 rounded-full bg-red-500"></span>
+                    <span class="truncate">{{ item.endLocation.address }}</span>
+                  </p>
+                </div>
 
-              <div class="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3 text-xs">
-                <span class="text-gray-500">{{ formatDate(trip.endedAt) }}</span>
-                <span class="font-semibold text-green-600">{{ formatCurrency(cumulativeProfits()[i], trip.currency) }}</span>
+                <div class="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3 text-xs">
+                  <span class="text-gray-500">{{ formatDate(item.endedAt) }}</span>
+                  <span class="font-semibold text-green-600">{{ formatCurrency(cumulativeProfits()[i], item.currency) }}</span>
+                </div>
+              </article>
+            } @else if (isBannerItem(item)) {
+              <div [class]="bannerCardClass(item.payoutStatus)" role="status">
+                {{ item.displayMessage }}
               </div>
-            </article>
+            }
           } @empty {
             <div class="py-12 text-center text-sm text-gray-500" role="status">
               {{ 'shared.noData' | translate }}

@@ -4,7 +4,14 @@ export interface GeoLocation {
   address: string;
 }
 
-export interface FinancialHistoryItem {
+export enum HotelFinancialItemType {
+  Trip,
+  Banner,
+}
+
+export interface FinancialHistoryTripItem {
+  itemType: HotelFinancialItemType.Trip;
+  sequenceDate: string;
   tripId: string;
   tripCode: string;
   guestName: string;
@@ -24,6 +31,15 @@ export interface FinancialHistoryItem {
   driverPayout: number;
   currency: string;
 }
+
+export interface FinancialHistoryBannerItem {
+  itemType: HotelFinancialItemType.Banner;
+  sequenceDate: string;
+  payoutStatus: number;
+  displayMessage: string;
+}
+
+export type FinancialHistoryItem = FinancialHistoryTripItem | FinancialHistoryBannerItem;
 
 export interface FinancialHistoryResponse {
   items: FinancialHistoryItem[];

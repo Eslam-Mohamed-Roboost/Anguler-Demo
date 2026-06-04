@@ -11,8 +11,12 @@ import { PaginationComponent } from '../../../../shared/components/pagination/pa
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { FinancialHistoryService } from '../../services/financial-history.service';
-import type { FinancialHistoryItem } from '../../models/financialHestory-model';
-import type { SortState } from '../../../../shared/components/data-table/column-def';
+import {
+  HotelFinancialItemType,
+  type FinancialHistoryBannerItem,
+  type FinancialHistoryItem,
+  type FinancialHistoryTripItem,
+} from '../../models/financialHestory-model';
 
 @Component({
   selector: 'app-financial-history',
@@ -24,8 +28,7 @@ import type { SortState } from '../../../../shared/components/data-table/column-
 export class FinancialHistoryComponent extends BaseComponent {
   private readonly financialHistoryService = inject(FinancialHistoryService);
 
-  protected readonly sortState = signal<SortState>({ column: '', direction: null });
-  protected readonly trips = signal<FinancialHistoryItem[]>([]);
+  protected readonly items = signal<FinancialHistoryItem[]>([]);
   protected readonly currentPage = signal(1);
   protected readonly pageSize = signal(10);
   protected readonly totalItems = signal(0);
@@ -34,27 +37,14 @@ export class FinancialHistoryComponent extends BaseComponent {
   protected readonly globalCommission = signal<number | null>(null);
   protected readonly searchTerm = signal('');
 
-  protected readonly sortedTrips = computed(() => {
-    const { column, direction } = this.sortState();
-    if (!column || !direction) return this.trips();
-    return [...this.trips()].sort((a, b) => {
-      const aVal = (a as unknown as Record<string, unknown>)[column];
-      const bVal = (b as unknown as Record<string, unknown>)[column];
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-      }
-      if (typeof aVal === 'number' && typeof bVal === 'number') {
-        return direction === 'asc' ? aVal - bVal : bVal - aVal;
-      }
-      return 0;
-    });
-  });
+  protected readonly financialItems = computed(() => this.items());
 
   protected readonly cumulativeProfits = computed(() => {
     let running = 0;
-    return this.sortedTrips().map((trip) => {
-      running += trip.platformCommission;
-      return trip.cumulativeProfit ?? running;
+    return this.financialItems().map((item) => {
+      if (!this.isTripItem(item)) return null;
+      running += item.platformCommission;
+      return item.cumulativeProfit ?? running;
     });
   });
 
@@ -80,7 +70,7 @@ export class FinancialHistoryComponent extends BaseComponent {
       .subscribe({
         next: (result) => {
           if (result.isSuccess) {
-            this.trips.set(result.data?.items ?? []);
+            this.items.set(result.data?.items ?? []);
             this.totalItems.set(result.data?.totalCount ?? 0);
           }
           this.loading.set(false);
@@ -89,15 +79,6 @@ export class FinancialHistoryComponent extends BaseComponent {
           this.loading.set(false);
         },
       });
-  }
-
-  onSort(state: SortState): void {
-    this.sortState.set(state);
-    this.currentPage.set(1);
-  }
-
-  clearSort(): void {
-    this.sortState.set({ column: '', direction: null });
   }
 
   onSearchChange(searchTerm: string): void {
@@ -120,6 +101,40 @@ export class FinancialHistoryComponent extends BaseComponent {
   formatCurrency(amount: number | null | undefined, currency: string): string {
     if (amount == null) return '--';
     return currency ? `${amount.toFixed(2)} ${currency}` : `$${amount.toFixed(2)}`;
+  }
+
+  protected isTripItem(item: FinancialHistoryItem): item is FinancialHistoryTripItem {
+    return item.itemType === HotelFinancialItemType.Trip;
+  }
+
+  protected isBannerItem(item: FinancialHistoryItem): item is FinancialHistoryBannerItem {
+    return item.itemType === HotelFinancialItemType.Banner;
+  }
+
+  protected financialItemKey(item: FinancialHistoryItem, index: number): string {
+    if (this.isTripItem(item)) {
+      return `${item.itemType}-${item.tripId}-${index}`;
+    }
+
+    return `${item.itemType}-${item.sequenceDate}-${index}`;
+  }
+
+  protected bannerClass(payoutStatus: number): string {
+    const baseClass = 'border px-4 py-3 text-center text-xs font-semibold sm:text-sm';
+
+    if (payoutStatus === 2) {
+      return `${baseClass} border-blue-100 bg-blue-50 text-slate-600`;
+    }
+
+    if (payoutStatus === 3) {
+      return `${baseClass} border-red-200 bg-red-50 text-red-700`;
+    }
+
+    return `${baseClass} border-amber-200 bg-amber-50 text-orange-700`;
+  }
+
+  protected bannerCardClass(payoutStatus: number): string {
+    return `rounded-lg ${this.bannerClass(payoutStatus)}`;
   }
 
   private loadGlobalCommission(): void {
