@@ -135,10 +135,10 @@ export class ChatComponent extends BaseComponent implements OnInit {
     const messageText = text.trim();
     if (!messageText || !id || this.sendLoading()) return;
 
-    //this.sendLoading.set(true);
+    this.sendLoading.set(true);
     const senderRole = this.optimisticSenderRole();
 
-    this.chatService.sendMessage(id, messageText, senderRole).subscribe({
+    this.chatService.sendMessage(id, messageText, senderRole, true).subscribe({
       next: () => {
         this.sendLoading.set(false);
         this.appendSentMessage(id, messageText, senderRole);

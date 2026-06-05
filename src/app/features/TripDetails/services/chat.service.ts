@@ -31,8 +31,12 @@ export class ChatService extends ApiService {
     return this.get<ChatConversation>(`/trip-requests/${tripRequestId}/chat`, undefined, this.loadingContext(skipLoading));
   }
 
-  sendMessage(tripRequestId: string, message: string, senderRole: string): Observable<Result<void>> {
-    return this.post<void>(`/trip-requests/${tripRequestId}/chat/messages`, { message, senderRole });
+  sendMessage(tripRequestId: string, message: string, senderRole: string, skipLoading = false): Observable<Result<void>> {
+    return this.post<void>(
+      `/trip-requests/${tripRequestId}/chat/messages`,
+      { message, senderRole },
+      this.loadingContext(skipLoading),
+    );
   }
 
   closeConversation(tripRequestId: string): Observable<Result<void>> {

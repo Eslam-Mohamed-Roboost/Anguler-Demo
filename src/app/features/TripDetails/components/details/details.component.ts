@@ -35,18 +35,11 @@ export class DetailsComponent implements OnInit {
 
   protected readonly statusLabel = computed(() => {
     const trip = this.data();
-    if (trip.isScheduled && !trip.startedAt && !this.isFinishedTrip(trip) && !trip.endedAt) {
-      return 'Scheduled';
-    }
-
-    const effectiveStatus = this.resolveEffectiveStatus(trip);
-    if (this.isCompletedStatus(effectiveStatus)) return 'Completed';
-    if (this.isCancelledStatus(effectiveStatus)) return 'Cancelled';
-
-    return getTripStatusLabel(trip.unifiedStatus);
+    return getTripStatusLabel(this.currentDisplayStatus(trip));
   });
   protected readonly statusLabelKey = computed(() => this.statusTranslationKey(this.statusLabel()));
   protected readonly statusVariant = computed(() => getTripStatusVariant(this.statusLabel()));
+  protected readonly actionStatus = computed(() => this.currentDisplayStatus(this.data()));
   protected readonly hotelProfit = computed(() => {
     const trip = this.data();
     const fare = trip.actualFare ?? trip.estimatedPrice;
@@ -74,7 +67,7 @@ export class DetailsComponent implements OnInit {
     this.isAdmin() &&
     !this.data().endedAt &&
     !this.isFinishedTrip(this.data()) &&
-    (this.data().unifiedStatus === 'Accepted' || this.data().unifiedStatus === 'Arrived' || this.data().unifiedStatus === 'InProgress')
+    (this.actionStatus() === 'Accepted' || this.actionStatus() === 'Arrived' || this.actionStatus() === 'InProgress')
   );
 
   protected readonly actionLoading = signal(false);
@@ -129,7 +122,7 @@ export class DetailsComponent implements OnInit {
 
   protected triggerStatusAction(): void {
     const id = this.tripRequestId();
-    const status = this.data().unifiedStatus;
+    const status = this.actionStatus();
     if (!id || this.actionLoading()) return;
 
     const action =
@@ -248,17 +241,64 @@ export class DetailsComponent implements OnInit {
     return !!trip.endedAt || this.isFinishedStatus(this.resolveEffectiveStatus(trip));
   }
 
+  private currentDisplayStatus(trip: TripDetailsResponse): string {
+    if (trip.isScheduled && !trip.startedAt && !this.isFinishedTrip(trip) && !trip.endedAt) {
+      return 'Scheduled';
+    }
+
+    const effectiveStatus = this.resolveEffectiveStatus(trip);
+    if (this.isCompletedStatus(effectiveStatus)) return 'Completed';
+    if (this.isCancelledStatus(effectiveStatus)) return 'Cancelled';
+
+    return this.canonicalStatus(effectiveStatus);
+  }
+
   private resolveEffectiveStatus(trip: TripDetailsResponse): string {
     const statuses = [
       trip.tripStatusString,
       trip.tripRequestStatusString,
       trip.requestStatusString,
       trip.unifiedStatus,
-    ].map(status => status?.trim().toLowerCase() ?? '');
+    ].map(status => status?.trim() ?? '');
 
     return statuses.find(status => this.isCompletedStatus(status) || this.isCancelledStatus(status)) ??
-      statuses.find(Boolean) ??
+      statuses.find(status => !!this.normalizeStatus(status)) ??
       '';
+  }
+
+  private canonicalStatus(status: string | null | undefined): string {
+    switch (this.normalizeStatus(status)) {
+      case 'pending':
+        return 'Pending';
+      case 'accepted':
+        return 'Accepted';
+      case 'arrived':
+        return 'Arrived';
+      case 'inprogress':
+        return 'InProgress';
+      case 'completed':
+        return 'Completed';
+      case 'scheduled':
+      case 'schedualed':
+        return 'Scheduled';
+      case 'cancelled':
+      case 'canceled':
+      case 'cancelledbydriver':
+      case 'canceledbydriver':
+      case 'cancelledbypassenger':
+      case 'canceledbypassenger':
+      case 'cancelledbyhotel':
+      case 'canceledbyhotel':
+        return 'Cancelled';
+      case 'rejected':
+        return 'Rejected';
+      default:
+        return status?.trim() || 'Unknown';
+    }
+  }
+
+  private normalizeStatus(status: string | null | undefined): string {
+    return status?.trim().toLowerCase().replace(/[^a-z0-9]+/g, '') ?? '';
   }
 
   private isPendingStatus(status: string | null | undefined): boolean {

@@ -11,9 +11,6 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 export class ChatInputComponent {
   readonly loading = input(false);
   readonly send = output<string>();
-  readonly mention = output<void>();
-  readonly attach = output<void>();
-  readonly addImage = output<void>();
 
   protected onSend(input: HTMLInputElement): void {
     if (this.loading()) return;

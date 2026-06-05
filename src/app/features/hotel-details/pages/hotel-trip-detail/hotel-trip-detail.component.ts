@@ -28,7 +28,7 @@ import { AppConfigService } from '../../../../core/services/app-config.service';
 
 export interface TripDetail {
   tripId: string;
-  tripCode?: string;
+  tripCode?: string | null;
   guestName: string;
   roomNo: string;
   destinations: string;
@@ -230,7 +230,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
           this.tripLoading.set(false);
           this.tripDetailsLoaded = true;
           if (result.isSuccess && result.data) {
-            this.rawStatus.set(result.data.unifiedStatus ?? '');
+            this.rawStatus.set(this.resolveEffectiveStatus(result.data));
             this.trip.set(this.toTripDetail(result.data));
 
             // If hotel data is nested in trip response, use it directly
@@ -254,7 +254,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
               this.loadHotelById(result.data.hotelId);
             }
 
-            const status = this.normalizeStatus(result.data.unifiedStatus);
+            const status = this.normalizeStatus(this.rawStatus());
             if (this.isAdmin() && (status === 'pending' || this.isScheduledStatus(status))) {
               this.loadDrivers();
             }
@@ -265,8 +265,8 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   }
 
   private toTripDetail(data: TripDetailsResponse): TripDetail {
-    const normalizedStatus = this.normalizeStatus(data.unifiedStatus);
     const effectiveStatus = this.resolveEffectiveStatus(data);
+    const normalizedStatus = this.normalizeStatus(effectiveStatus);
     const isCompletedTrip = this.isCompletedStatus(effectiveStatus) || !!data.endedAt;
     const isCancelledTrip = this.isCancelledStatus(effectiveStatus) || effectiveStatus === 'rejected';
     const isScheduledTrip = data.isScheduled && !data.startedAt && !isCompletedTrip && !isCancelledTrip;
@@ -284,8 +284,8 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     };
 
     return {
-      tripId: data.tripCode ?? data.tripRequestId,
-      tripCode: data.tripCode ?? data.tripRequestId,
+      tripId: data.tripRequestId,
+      tripCode: data.tripCode,
       guestName: data.guestName,
       roomNo: String(data.roomNumber),
       destinations: data.endLocation.address,
