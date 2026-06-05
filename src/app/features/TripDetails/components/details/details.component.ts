@@ -41,15 +41,12 @@ export class DetailsComponent implements OnInit {
   protected readonly statusVariant = computed(() => getTripStatusVariant(this.statusLabel()));
   protected readonly actionStatus = computed(() => this.currentDisplayStatus(this.data()));
   protected readonly hotelProfit = computed(() => {
-    const trip = this.data();
-    const fare = trip.actualFare ?? trip.estimatedPrice;
-    const commission = trip.commission;
-
-    if (commission == null || Number.isNaN(fare)) {
+    const commission = this.data().commission;
+    if (commission == null || Number.isNaN(commission)) {
       return undefined;
     }
 
-    return fare * this.toCommissionMultiplier(commission);
+    return commission;
   });
   protected readonly canAssignDriver = computed(() =>
     this.isAdmin() &&
@@ -222,10 +219,6 @@ export class DetailsComponent implements OnInit {
 
   private isCancelledStatus(status: string | null | undefined): boolean {
     return status?.toLowerCase().includes('cancel') ?? false;
-  }
-
-  private toCommissionMultiplier(value: number): number {
-    return value > 1 ? value / 100 : value;
   }
 
   private isCompletedStatus(status: string | null | undefined): boolean {

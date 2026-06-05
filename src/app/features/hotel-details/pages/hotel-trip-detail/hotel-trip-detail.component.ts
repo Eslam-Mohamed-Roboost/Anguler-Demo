@@ -24,7 +24,6 @@ import { SkeletonBlockComponent } from '../../../../shared/components/skeleton/s
 import { AuthService } from '../../../../core/services/auth.service';
 import { HotelRequestsService, type DriverItem } from '../../../admin-dashboard/services/hotel-requests.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
-import { AppConfigService } from '../../../../core/services/app-config.service';
 
 export interface TripDetail {
   tripId: string;
@@ -33,8 +32,8 @@ export interface TripDetail {
   roomNo: string;
   destinations: string;
   fare: number;
-  hotelProfits: number;
-  commissionRate: number;
+  hotelProfits?: number;
+  commissionRate?: number | null;
   startDate: string;
   endDate?: string;
   tripRate?: number;
@@ -68,10 +67,8 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   private readonly hotelRequestsService = inject(HotelRequestsService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationStore);
-  private readonly appConfig = inject(AppConfigService);
 
   readonly isAdmin = computed(() => this.authService.hasRole('admin'));
-  readonly commissionPercentage = computed(() => this.appConfig.commissionPercentage());
   readonly hotelProfitLabel = computed(() =>
     `Hotel Profit (CHF) =`
   );
@@ -397,8 +394,8 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       roomNo: String(data.roomNumber),
       destinations: data.endLocation.address,
       fare: data.actualFare ?? data.estimatedPrice,
-      hotelProfits: this.calculateHotelProfit(data.actualFare ?? data.estimatedPrice, data.commission),
-      commissionRate: data.commission ?? this.commissionPercentage(),
+      hotelProfits: this.commissionValue(data.commission),
+      commissionRate: data.commission,
       startDate: data.scheduledAt ?? data.startedAt ?? data.requestedAt,
       endDate: data.endedAt ?? undefined,
       tripRate: undefined,
@@ -552,12 +549,9 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     return value.toFixed(2);
   }
 
-  private calculateHotelProfit(fare: number, commission: number | null | undefined): number {
-    return fare * this.toCommissionMultiplier(commission ?? this.commissionPercentage());
-  }
-
-  private toCommissionMultiplier(value: number): number {
-    return value > 1 ? value / 100 : value;
+  private commissionValue(commission: number | null | undefined): number | undefined {
+    if (commission == null || Number.isNaN(commission)) return undefined;
+    return commission;
   }
 
   private normalizeStatus(status: string | null | undefined): string {
