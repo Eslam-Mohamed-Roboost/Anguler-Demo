@@ -7,6 +7,8 @@ import { SKIP_LOADING } from '../tokens/skip-loading.token';
 
 export interface NotificationItem {
   id: string;
+  tripRequestId?: string | null;
+  hotelId?: string | null;
   message: string;
   createdDate: string;
   isRead: boolean;

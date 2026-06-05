@@ -42,6 +42,13 @@ export interface TripDetailsResponse {
   isHotelRequest: boolean;
   hotelId: string | null;
   hotel?: HotelInfo | null;
+  hotelName?: string | null;
+  hotelPhone?: string | null;
+  hotelPhoneNumber?: string | null;
+  hotelEmail?: string | null;
+  hotelAddress?: string | null;
+  hotelLogoUrl?: string | null;
+  hotelCode?: string | null;
   driver: TripDriver | null;
   estimatedPrice: number;
   actualFare: number | null;

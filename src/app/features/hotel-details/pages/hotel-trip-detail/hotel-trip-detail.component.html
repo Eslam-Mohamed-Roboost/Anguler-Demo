@@ -21,7 +21,7 @@
   </nav> -->
 
   <!-- Hotel Info Card skeleton -->
-  @if (hotelLoading()) {
+  @if (hotelLoading() || (tripLoading() && !hasHotelData())) {
     <div class="flex shrink-0 items-center gap-4 rounded-card border border-card-border bg-white p-4" aria-hidden="true">
       <app-skeleton-block width="64px" height="64px" />
       <div class="flex flex-col gap-2 flex-1">
@@ -30,7 +30,7 @@
         <app-skeleton-block width="35%" height="0.85rem" />
       </div>
     </div>
-  } @else {
+  } @else if (shouldShowHotelCard()) {
     <section class="shrink-0">
       <app-hotel-info-card [hotel]="hotel()" (deleteClick)="onHotelDelete()" />
     </section>

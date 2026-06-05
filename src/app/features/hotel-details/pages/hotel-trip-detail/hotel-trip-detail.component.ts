@@ -10,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ChatComponent } from '../../../TripDetails/components/chat/chat.component';
@@ -60,6 +60,7 @@ export interface TripDetail {
 })
 export class HotelTripDetailComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly renderer = inject(Renderer2);
   private readonly hotelDetailsService = inject(HotelDetailsService);
   private readonly tripDetailsService = inject(TripDetailsService);
@@ -80,6 +81,11 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   readonly hotelLoading = signal(false);
   readonly tripLoading = signal(false);
   readonly chatHasError = signal(false);
+  readonly hasHotelData = computed(() => {
+    const hotel = this.hotel();
+    return !!(hotel.id || this.hotelId() || hotel.name || hotel.email || hotel.phone || hotel.address);
+  });
+  readonly shouldShowHotelCard = computed(() => this.hasHotelData() || !!this.trip());
 
   private tripDetailsLoaded = false;
   private hotelDetailsLoaded = false;
@@ -175,16 +181,23 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.renderer.addClass(document.body, 'hotel-details-active');
-    const hotelId = this.route.snapshot.paramMap.get('id');
-    const tripId = this.route.snapshot.paramMap.get('tripId');
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        this.loadRouteData(params.get('id'), params.get('tripId'));
+      });
+  }
 
-    // Load hotel by ID from route if available
+  private loadRouteData(hotelIdValue: string | null, tripIdValue: string | null): void {
+    const hotelId = this.cleanId(hotelIdValue);
+    const tripId = this.cleanId(tripIdValue);
+
     if (hotelId && !this.hotelDetailsLoaded && !this.hotelLoading()) {
       this.hotelId.set(hotelId);
+      this.ensureHotelIdentity(hotelId);
       this.loadHotelById(hotelId);
     }
 
-    // Load trip details
     if (tripId && !this.tripDetailsLoaded && !this.tripLoading()) {
       this.tripId.set(tripId);
       this.loadTripDetails(tripId);
@@ -192,13 +205,12 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   }
 
   private loadHotelById(hotelId: string): void {
+    this.ensureHotelIdentity(hotelId);
     this.hotelLoading.set(true);
     this.hotelDetailsService.getHotelById(hotelId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
-          this.hotelLoading.set(false);
-          this.hotelDetailsLoaded = true;
           if (result.isSuccess && result.data) {
             const h = result.data;
             this.hotel.set({
@@ -211,10 +223,47 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
               imageUrl: h.logoUrl ?? '',
               isBlocked: h.isBlocked ?? false,
             });
+            this.finishHotelLoad();
+            return;
           }
+          this.loadHotelFallbackById(hotelId);
         },
-        error: () => { this.hotelLoading.set(false); this.hotelDetailsLoaded = true; },
+        error: () => this.loadHotelFallbackById(hotelId),
       });
+  }
+
+  private loadHotelFallbackById(hotelId: string): void {
+    if (!this.isAdmin()) {
+      this.finishHotelLoad();
+      return;
+    }
+
+    this.hotelDetailsService.getAllHotels(1, 100, 0, undefined, hotelId, true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          const item = result.data?.items.find((hotel) => hotel.hotelId === hotelId);
+          if (result.isSuccess && item) {
+            this.hotel.set({
+              id: item.hotelId,
+              code: '',
+              name: item.hotelName,
+              address: '',
+              phone: item.hotelPhone ?? '',
+              email: '',
+              imageUrl: '',
+              isBlocked: !item.isActive,
+            });
+          }
+          this.finishHotelLoad();
+        },
+        error: () => this.finishHotelLoad(),
+      });
+  }
+
+  private finishHotelLoad(): void {
+    this.hotelLoading.set(false);
+    this.hotelDetailsLoaded = true;
   }
 
   ngOnDestroy(): void {
@@ -232,27 +281,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
           if (result.isSuccess && result.data) {
             this.rawStatus.set(this.resolveEffectiveStatus(result.data));
             this.trip.set(this.toTripDetail(result.data));
-
-            // If hotel data is nested in trip response, use it directly
-            if (result.data.hotel && !this.hotelDetailsLoaded) {
-              const h = result.data.hotel;
-              this.hotelId.set(h.id);
-              this.hotel.set({
-                id: h.id,
-                name: h.hotelName,
-                address: h.address,
-                phone: h.phoneNumber,
-                email: h.email,
-                imageUrl: h.logoUrl ?? '',
-                isBlocked: false,
-                code: h.code ?? '',
-              });
-              this.hotelDetailsLoaded = true;
-            } else if (result.data.hotelId && !this.hotelDetailsLoaded && !this.hotelLoading()) {
-              // Otherwise, load hotel by ID
-              this.hotelId.set(result.data.hotelId);
-              this.loadHotelById(result.data.hotelId);
-            }
+            this.syncHotelFromTrip(result.data, tripRequestId);
 
             const status = this.normalizeStatus(this.rawStatus());
             if (this.isAdmin() && (status === 'pending' || this.isScheduledStatus(status))) {
@@ -262,6 +291,84 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
         },
         error: () => { this.tripLoading.set(false); this.tripDetailsLoaded = true; },
       });
+  }
+
+  private syncHotelFromTrip(data: TripDetailsResponse, tripRequestId: string): void {
+    const hotelId = this.cleanId(data.hotelId) || this.cleanId(data.hotel?.id);
+
+    if (hotelId && hotelId !== this.hotelId()) {
+      this.hotelId.set(hotelId);
+      this.ensureHotelIdentity(hotelId);
+      this.cacheAdminHotelRoute(hotelId, tripRequestId);
+    }
+
+    const hotelFromTrip = this.toHotelInfoFromTrip(data, hotelId);
+    if (hotelFromTrip) {
+      this.hotel.set(hotelFromTrip);
+      this.hotelLoading.set(false);
+      this.hotelDetailsLoaded = true;
+      return;
+    }
+
+    if (hotelId && !this.hotelDetailsLoaded && !this.hotelLoading()) {
+      this.loadHotelById(hotelId);
+    }
+  }
+
+  private toHotelInfoFromTrip(data: TripDetailsResponse, hotelId: string): HotelInfo | null {
+    if (data.hotel) {
+      return {
+        id: hotelId || data.hotel.id,
+        name: data.hotel.hotelName,
+        address: data.hotel.address,
+        phone: data.hotel.phoneNumber,
+        email: data.hotel.email,
+        imageUrl: data.hotel.logoUrl ?? '',
+        isBlocked: false,
+        code: data.hotel.code ?? '',
+      };
+    }
+
+    const name = this.cleanText(data.hotelName);
+    const address = this.cleanText(data.hotelAddress);
+    const phone = this.cleanText(data.hotelPhoneNumber) || this.cleanText(data.hotelPhone);
+    const email = this.cleanText(data.hotelEmail);
+    const imageUrl = this.cleanText(data.hotelLogoUrl);
+    const code = this.cleanText(data.hotelCode);
+
+    if (!name && !address && !phone && !email && !imageUrl && !code) {
+      return null;
+    }
+
+    return {
+      id: hotelId,
+      name,
+      address,
+      phone,
+      email,
+      imageUrl,
+      isBlocked: false,
+      code,
+    };
+  }
+
+  private ensureHotelIdentity(hotelId: string): void {
+    const id = this.cleanId(hotelId);
+    if (!id || this.hotel().id === id) return;
+
+    this.hotel.update((hotel) => ({
+      ...hotel,
+      id,
+    }));
+  }
+
+  private cacheAdminHotelRoute(hotelId: string, tripRequestId: string): void {
+    const routeHotelId = this.cleanId(this.route.snapshot.paramMap.get('id'));
+    if (routeHotelId || !this.isAdmin()) return;
+
+    void this.router.navigate(['/hotel-details', hotelId, 'trip', tripRequestId], {
+      replaceUrl: true,
+    });
   }
 
   private toTripDetail(data: TripDetailsResponse): TripDetail {
@@ -486,6 +593,14 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   private isTripFinished(): boolean {
     const status = this.trip()?.status;
     return status === 'completed' || status === 'cancelled';
+  }
+
+  private cleanId(value: string | null | undefined): string {
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
+  private cleanText(value: string | null | undefined): string {
+    return typeof value === 'string' ? value.trim() : '';
   }
 
   onHotelDelete(): void {}

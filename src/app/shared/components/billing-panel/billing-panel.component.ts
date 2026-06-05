@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { IconComponent } from '../icon/icon.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -22,6 +23,8 @@ const NOTIFICATION_REFRESH_MS = 5_000;
 
 export interface  BillingItem{
   id: string;
+  tripRequestId?: string | null;
+  hotelId?: string | null;
   message: string;
   createdDate: string;
   isRead: boolean;
@@ -36,6 +39,7 @@ export class BillingPanelComponent {
   private readonly notificationsService = inject(NotificationsService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   readonly isOpen = input<boolean>(false);
   readonly closePanel = output<void>();
@@ -104,8 +108,17 @@ export class BillingPanelComponent {
   }
 
   protected onNotificationClick(item: NotificationItem): void {
-    if (item.isRead) return;
+    const route = this.tripDetailsRoute(item);
 
+    if (!item.isRead) {
+      this.markAsRead(item, route);
+      return;
+    }
+
+    this.navigateToRoute(route);
+  }
+
+  private markAsRead(item: NotificationItem, redirectRoute: string[] | null): void {
     this.notifications.update((items) =>
       items.map((notification) =>
         notification.id === item.id ? { ...notification, isRead: true } : notification,
@@ -118,13 +131,47 @@ export class BillingPanelComponent {
         if (result.isSuccess) {
           this.refreshUnreadCount();
           this.notificationRead.emit();
+          this.navigateToRoute(redirectRoute);
           return;
         }
 
         this.restoreUnreadNotification(item.id);
+        this.navigateToRoute(redirectRoute);
       },
-      error: () => this.restoreUnreadNotification(item.id),
+      error: () => {
+        this.restoreUnreadNotification(item.id);
+        this.navigateToRoute(redirectRoute);
+      },
     });
+  }
+
+  private tripDetailsRoute(item: NotificationItem): string[] | null {
+    const tripRequestId = this.cleanId(item.tripRequestId);
+    if (!tripRequestId) return null;
+
+    if (this.authService.hasRole('hotel')) {
+      return ['/hotel-details', 'trip', tripRequestId];
+    }
+
+    if (this.authService.hasRole('admin') || this.authService.hasRole('super admin')) {
+      const hotelId = this.cleanId(item.hotelId);
+      return hotelId
+        ? ['/hotel-details', hotelId, 'trip', tripRequestId]
+        : ['/hotel-details', 'trip', tripRequestId];
+    }
+
+    return ['/TripDetails', tripRequestId];
+  }
+
+  private cleanId(value: string | null | undefined): string {
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
+  private navigateToRoute(route: string[] | null): void {
+    if (!route) return;
+
+    this.closePanel.emit();
+    void this.router.navigate(route);
   }
 
   protected formatDate(dateStr: string): string {
