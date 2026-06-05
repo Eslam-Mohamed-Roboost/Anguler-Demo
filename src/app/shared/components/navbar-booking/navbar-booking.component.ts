@@ -26,6 +26,7 @@ import { ChatService } from '../../../features/TripDetails/services/chat.service
 import { BaseComponent } from '../../base/base.component';
 import { NotificationsService } from '../../../core/services/notifications.service';
 import { ApiService } from '../../../core/services/api.service';
+import { NotificationSoundService } from '../../../core/services/notification-sound.service';
 
 const NAVBAR_REFRESH_MS = 5_000;
 
@@ -44,6 +45,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   private readonly chatService = inject(ChatService);
   private readonly notifiactionService = inject(NotificationsService);
   private readonly api = inject(ApiService);
+  private readonly notificationSound = inject(NotificationSoundService);
   /** Logo image source */
   readonly logoSrc = input('assets/booking/logo-lines.png');
 
@@ -176,6 +178,8 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   private dataLoaded = false;
   private profileLoadRequested = false;
   private pollingStarted = false;
+  private previousMessageCount: number | null = null;
+  private previousBellCount: number | null = null;
 
   /** Emitted when Trips History is clicked */
   readonly tripsHistoryClick = output<void>();
@@ -230,9 +234,9 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
       .subscribe({
         next:(result)=>{
           if(result.isSuccess){
-              this.bellCount.set(result.data?.count ?? 0)
+              this.setBellCount(result.data?.count ?? 0, skipGlobalLoading);
           }else{
-              this.bellCount.set(0)
+              this.bellCount.set(0);
           }
         }
       })
@@ -247,7 +251,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
           if (showLoading) this.messagesLoading.set(false);
           if (result.isSuccess && result.data?.messages?.items) {
             this.messages.set(result.data.messages.items);
-            this.callCount.set(result.data.messages.items.filter(m => !m.read).length);
+            this.setMessageCount(result.data.messages.items.filter(m => !m.read).length, !showLoading);
           }
         },
         error: () => {
@@ -262,7 +266,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
         next: (result) => {
           if (showLoading) this.messagesLoading.set(false);
           if (result.isSuccess && result.data !== undefined) {
-            this.callCount.set(result.data??0);
+            this.setMessageCount(result.data ?? 0, !showLoading);
           }
         },
         error: () => {
@@ -301,12 +305,14 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
 
   /** Handle message panel toggle */
   protected onMessageClick(): void {
+    this.notificationSound.unlock();
     this.messagePanelOpen.set(!this.messagePanelOpen());
     this.billingPanelOpen.set(false); // Close billing panel when opening message panel
   }
 
   /** Handle billing panel toggle */
   protected onBillingClick(): void {
+    this.notificationSound.unlock();
     this.billingPanelOpen.set(!this.billingPanelOpen());
     this.messagePanelOpen.set(false); // Close message panel when opening billing panel
   }
@@ -339,7 +345,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
       msg.id === message.id ? { ...msg, read: true } : msg
     );
     this.messages.set(updatedMessages);
-    this.callCount.set(Math.max(0, this.callCount() - 1));
+    this.setMessageCount(Math.max(0, this.callCount() - 1), false);
   }
 
   /** Handle billing panel close */
@@ -415,5 +421,29 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
           }
         },
       });
+  }
+
+  private setMessageCount(count: number, playSound = true): void {
+    const unreadCount = Math.max(0, count);
+    const previousCount = this.previousMessageCount;
+    this.callCount.set(unreadCount);
+
+    if (playSound && previousCount !== null && unreadCount > previousCount) {
+      this.notificationSound.play('message');
+    }
+
+    this.previousMessageCount = unreadCount;
+  }
+
+  private setBellCount(count: number, playSound = true): void {
+    const unreadCount = Math.max(0, count);
+    const previousCount = this.previousBellCount;
+    this.bellCount.set(unreadCount);
+
+    if (playSound && previousCount !== null && unreadCount > previousCount) {
+      this.notificationSound.play('notification');
+    }
+
+    this.previousBellCount = unreadCount;
   }
 }

@@ -14,13 +14,14 @@ import { timer } from 'rxjs';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { MessageComponent } from '../message/message.component';
-import type { ChatConversation } from '../../models/chat-message.model';
+import type { ChatConversation, ChatMessageItem } from '../../models/chat-message.model';
 import { ChatService } from '../../services/chat.service';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import type { TranslationKey } from '../../../../core/i18n/translations';
 import { RealTimeService } from '../../../../core/services/real-time.service';
+import { NotificationSoundService } from '../../../../core/services/notification-sound.service';
 
 const CHAT_REFRESH_MS = 5_000;
 
@@ -36,6 +37,7 @@ export class ChatComponent extends BaseComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly messagesContainer = viewChild<ElementRef<HTMLElement>>('messagesContainer');
   private readonly realTimeService = inject(RealTimeService);
+  private readonly notificationSound = inject(NotificationSoundService);
   readonly tripRequestId = input.required<string>();
   readonly senderRole = input<string | null>(null);
   readonly chatError = output<boolean>();
@@ -71,6 +73,8 @@ export class ChatComponent extends BaseComponent implements OnInit {
     this.statusTranslationKey(this.conversation()?.status ?? '')
   );
   private lastLoadedId = '';
+  private readonly seenMessageIds = new Set<string>();
+  private chatHistoryInitialized = false;
 
   ngOnInit(): void {
     this.loadChat();
@@ -83,6 +87,8 @@ export class ChatComponent extends BaseComponent implements OnInit {
     const id = this.tripRequestId();
     if (!id || id === this.lastLoadedId) return;
 
+    this.seenMessageIds.clear();
+    this.chatHistoryInitialized = false;
     this.lastLoadedId = id;
     this.fetchChat(id, true);
   }
@@ -114,6 +120,7 @@ export class ChatComponent extends BaseComponent implements OnInit {
     this.chatService.getChatHistory(id, skipGlobalLoading).pipe(this.takeUntilDestroyed()).subscribe({
       next: (result) => {
         if (result.isSuccess && result.data) {
+          this.notifyForIncomingMessages(result.data.messages);
           this.conversation.set(result.data);
           this.scrollMessagesToBottom();
         } else if (showLoading) {
@@ -131,6 +138,7 @@ export class ChatComponent extends BaseComponent implements OnInit {
   }
 
   protected onSend(text: string): void {
+    this.notificationSound.unlock();
     const id = this.tripRequestId();
     const messageText = text.trim();
     if (!messageText || !id || this.sendLoading()) return;
@@ -214,7 +222,47 @@ export class ChatComponent extends BaseComponent implements OnInit {
 
       return { ...conv, messages: [...conv.messages, sentMessage] };
     });
+    this.seenMessageIds.add(sentMessage.id);
     this.scrollMessagesToBottom();
+  }
+
+  private notifyForIncomingMessages(messages: ChatMessageItem[]): void {
+    const hasNewIncomingMessage = messages.some(message => {
+      const messageId = this.messageKey(message);
+      return !this.seenMessageIds.has(messageId) && !this.isCurrentUserMessage(message);
+    });
+
+    this.seenMessageIds.clear();
+    for (const message of messages) {
+      this.seenMessageIds.add(this.messageKey(message));
+    }
+
+    if (!this.chatHistoryInitialized) {
+      this.chatHistoryInitialized = true;
+      return;
+    }
+
+    if (hasNewIncomingMessage) {
+      this.notificationSound.play('message');
+    }
+  }
+
+  private isCurrentUserMessage(message: ChatMessageItem): boolean {
+    const senderId = message.senderId?.trim();
+    if (senderId === 'me') return true;
+
+    const currentUserId = this.currentUserId().trim();
+    if (currentUserId && senderId) {
+      return senderId === currentUserId;
+    }
+
+    const currentRole = this.normalizeRole(this.currentUserRole());
+    const senderRole = this.normalizeRole(message.senderRole);
+    return !!currentRole && currentRole === senderRole;
+  }
+
+  private messageKey(message: ChatMessageItem): string {
+    return message.id || `${message.senderId}|${message.senderRole}|${message.createdAt}|${message.message}`;
   }
 
   private profileString(profile: Record<string, unknown> | null, key: string): string {
