@@ -15,6 +15,7 @@ export interface HotelRequestItem {
   guestName: any
   roomNumber: any
   driverName: string
+  driverPhoneNumber?: string | null
   driverAvatarUrl: any
   startLocation: StartLocation
   endLocation: EndLocation

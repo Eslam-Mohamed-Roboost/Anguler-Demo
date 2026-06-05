@@ -331,6 +331,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       duration: item.durationMinutes,
       paymentStatus: 'Paid',
       driverName,
+      driverPhoneNumber: item.driverPhoneNumber?.trim() || undefined,
       room: item.roomNumber != null ? String(item.roomNumber) : undefined,
       commission: item.commission ?? undefined,
       scheduledAt: item.scheduledAt,

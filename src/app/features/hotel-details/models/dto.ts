@@ -13,6 +13,7 @@ export interface HotelTripItem {
   placeTypeName: string | null;
   otherPlaceText: string | null;
   driverName: string | null;
+  driverPhoneNumber?: string | null;
   driverAvatarUrl: string | null;
   startLocation: { latitude?: number; longitude?: number; address: string };
   endLocation: { latitude?: number; longitude?: number; address: string };

@@ -94,17 +94,20 @@
       ariaLabel="Hotel requests history table"
       (sortChange)="onSort($event)"
     >
-      <!-- Custom cell: Driver with avatar -->
+      <!-- Custom cell: Driver -->
       <ng-template cellDef="driverName" let-row>
-        <div class="flex items-center gap-2">
-          @if (row.driverAvatarUrl) {
-            <img [src]="row.driverAvatarUrl" [alt]="row.driverName" class="size-7 rounded-full object-cover" />
-          } @else {
-            <span class="flex size-7 items-center justify-center rounded-full bg-gray-200 text-gray-500">
-              <app-icon name="user" size="xs" />
-            </span>
-          }
-          <span class="text-sm text-gray-700">{{ row.driverName }}</span>
+        <div class="flex items-center">
+          <div class="flex min-w-0 flex-col">
+            <span class="text-sm text-gray-700">{{ row.driverName || '--' }}</span>
+            @if (row.driverPhoneNumber) {
+              <span class="inline-flex items-center gap-1 text-xs text-[#5B738B]" dir="ltr">
+                <svg class="size-3 shrink-0" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="#5B738B" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {{ row.driverPhoneNumber }}
+              </span>
+            }
+          </div>
         </div>
       </ng-template>
 

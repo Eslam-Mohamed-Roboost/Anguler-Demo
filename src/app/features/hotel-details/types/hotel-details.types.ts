@@ -52,6 +52,7 @@ export interface TripRecord {
   hotelName?: string;
   hotelPhone?: string;
   driverName?: string;
+  driverPhoneNumber?: string;
   driverId?: string;
   room?: string;
   commission?: number;
