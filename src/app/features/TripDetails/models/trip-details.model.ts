@@ -91,7 +91,7 @@ export function getTripStatusLabel(status: string | null | undefined): string {
   }
 }
 
-export function getTripStatusVariant(status: string | null | undefined): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {
+export function getTripStatusVariant(status: string | null | undefined): 'success' | 'danger' | 'warning' | 'info' | 'neutral' | 'scheduled' {
   switch (status) {
     case 'Completed': return 'success';
     case 'Canceled':
@@ -104,8 +104,8 @@ export function getTripStatusVariant(status: string | null | undefined): 'succes
     case 'CancelledByHotel':
     case 'Rejected': return 'danger';
     case 'InProgress': return 'info';
-    case 'Scheduled': return 'info';
-    case 'Schedualed': return 'info';
+    case 'Scheduled': return 'scheduled';
+    case 'Schedualed': return 'scheduled';
     case 'Pending':
     case 'Accepted':
     case 'Arrived': return 'warning';

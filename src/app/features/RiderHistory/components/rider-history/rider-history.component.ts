@@ -176,11 +176,11 @@ export class RiderHistoryComponent extends BaseComponent {
       });
   }
 
-  getStatusVariant(status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {
+  getStatusVariant(status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' | 'scheduled' {
     const normalized = status.toLowerCase();
     if (normalized === 'completed') return 'success';
     if (normalized === 'cancelled') return 'danger';
-    if (normalized === 'scheduled' || normalized === 'schedualed') return 'info';
+    if (normalized === 'scheduled' || normalized === 'schedualed') return 'scheduled';
     if (normalized === 'waiting driver' || normalized === 'pending') return 'warning';
     if (normalized === 'active' || normalized === 'in progress' || normalized === 'accepted') return 'success';
     return 'neutral';

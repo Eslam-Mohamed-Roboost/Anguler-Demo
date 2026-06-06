@@ -251,7 +251,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
           if (showLoading) this.messagesLoading.set(false);
           if (result.isSuccess && result.data?.messages?.items) {
             this.messages.set(result.data.messages.items);
-            this.setMessageCount(result.data.messages.items.filter(m => !m.read).length, !showLoading);
+            this.setMessageCount(result.data.unReadCount, !showLoading);
           }
         },
         error: () => {
@@ -339,13 +339,37 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   }
 
   /** Handle message click */
-  protected onMessageItemClick(message: any): void {
-    // Mark as read
+  protected onMessageItemClick(message: Message): void {
     const updatedMessages = this.messages().map(msg =>
       msg.id === message.id ? { ...msg, read: true } : msg
     );
     this.messages.set(updatedMessages);
     this.setMessageCount(Math.max(0, this.callCount() - 1), false);
+
+    const route = this.messageTripDetailsRoute(message);
+    if (!route) return;
+
+    this.closeAllPanels();
+    void this.router.navigate(route);
+  }
+
+  private messageTripDetailsRoute(message: Message): string[] | null {
+    const tripRequestId = this.cleanId(message.tripRequestId);
+    if (!tripRequestId) return null;
+
+    if (this.coreAuth.hasRole('hotel')) {
+      return ['/hotel-details', 'trip', tripRequestId];
+    }
+
+    if (this.coreAuth.hasRole('admin') || this.coreAuth.hasRole('super admin')) {
+      return ['/hotel-details', 'trip', tripRequestId];
+    }
+
+    return ['/TripDetails', tripRequestId];
+  }
+
+  private cleanId(value: string | null | undefined): string {
+    return typeof value === 'string' ? value.trim() : '';
   }
 
   /** Handle billing panel close */
