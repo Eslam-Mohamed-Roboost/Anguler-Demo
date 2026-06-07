@@ -36,6 +36,12 @@ export interface HotelTripItem {
   requestedAt: string | null;
 }
 
+export enum HotelTripSortBy {
+  RequestedAt = 0,
+  FareDesc = 1,
+  FareAsc = 2,
+}
+
 export interface HotelProfileResponse {
   hotelId: string;
   hotelName: string;

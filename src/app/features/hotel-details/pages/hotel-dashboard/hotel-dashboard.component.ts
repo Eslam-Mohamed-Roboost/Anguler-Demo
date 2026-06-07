@@ -16,7 +16,7 @@ import type { HotelRecord, TripRecord } from '../../types/hotel-details.types';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
 import { TripsHistoryTableComponent } from '../../components/trips-history-table/trips-history-table.component';
 import { HotelDetailsService } from '../../services/hotel-details.service';
-import { HotelFinancialsItem, HotelTripItem, DashboardStatsResponse } from '../../models/dto';
+import { HotelFinancialsItem, HotelTripItem, DashboardStatsResponse, HotelTripSortBy } from '../../models/dto';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { NotificationStore } from '../../../../core/stores/notification.store';
@@ -59,7 +59,8 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   readonly searchQuery = signal('');
   readonly currentPage = signal(1);
   readonly pageSize = signal(10);
-  readonly sortBy = signal(0);
+  readonly tripSortBy = signal<HotelTripSortBy>(HotelTripSortBy.RequestedAt);
+  readonly hotelSortBy = signal(0);
   readonly statusFilter = signal('');
   readonly activeTab = signal<'trips' | 'hotels'>('trips');
   readonly statusOptions = signal<string[]>([]);
@@ -90,7 +91,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
         if (this.activeTab() === 'trips') {
           this.loadTrips(query || undefined, true, true);
         } else {
-          this.loadHotels(this.sortBy(), query || undefined, true, true);
+          this.loadHotels(query || undefined, true, true);
         }
       });
   }
@@ -102,7 +103,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
         if (this.activeTab() === 'trips') {
           this.loadTrips(this.searchQuery() || undefined, false, true);
         } else {
-          this.loadHotels(this.sortBy(), this.searchQuery() || undefined, false, true);
+          this.loadHotels(this.searchQuery() || undefined, false, true);
         }
       });
   }
@@ -197,7 +198,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       .getHotelTrips(
         this.currentPage(),
         this.pageSize(),
-        this.sortBy(),
+        this.tripSortBy(),
         this.statusFilter() || undefined,
         search,
         skipGlobalLoading,
@@ -220,11 +221,11 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadHotels(sortBy: number = 0, search?: string, showLoading = true, skipGlobalLoading = false): void {
+  private loadHotels(search?: string, showLoading = true, skipGlobalLoading = false): void {
     if (showLoading) this.loading.set(true);
 
     this.hotelDetailsService
-      .getAllHotels(this.currentPage(), this.pageSize(), sortBy, this.statusFilter() || undefined, search, skipGlobalLoading)
+      .getAllHotels(this.currentPage(), this.pageSize(), this.hotelSortBy(), this.statusFilter() || undefined, search, skipGlobalLoading)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
@@ -385,17 +386,23 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     if (this.activeTab() === 'trips') {
       this.loadTrips(this.searchQuery() || undefined, true, true);
     } else {
-      this.loadHotels(this.sortBy(), this.searchQuery() || undefined, true, true);
+      this.loadHotels(this.searchQuery() || undefined, true, true);
     }
   }
 
-  onSortChange(sortOrder: 'asc' | 'desc'): void {
-    this.sortBy.set(sortOrder === 'asc' ? 0 : 1);
+  onSortChange(sortBy: HotelTripSortBy): void {
+    this.tripSortBy.set(sortBy);
     this.currentPage.set(1);
     if (this.activeTab() === 'trips') {
       this.loadTrips(this.searchQuery() || undefined, true, true);
-    } else {
-      this.loadHotels(this.sortBy(), this.searchQuery() || undefined, true, true);
+    }
+  }
+
+  onHotelSortChange(sortOrder: 'asc' | 'desc'): void {
+    this.hotelSortBy.set(sortOrder === 'asc' ? 0 : 1);
+    this.currentPage.set(1);
+    if (this.activeTab() === 'hotels') {
+      this.loadHotels(this.searchQuery() || undefined, true, true);
     }
   }
 
@@ -405,7 +412,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     if (this.activeTab() === 'trips') {
       this.loadTrips(this.searchQuery() || undefined, true, true);
     } else {
-      this.loadHotels(this.sortBy(), this.searchQuery() || undefined, true, true);
+      this.loadHotels(this.searchQuery() || undefined, true, true);
     }
   }
 
@@ -417,7 +424,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     if (tab === 'trips') {
       this.loadTrips(this.searchQuery() || undefined, true, true);
     } else {
-      this.loadHotels(this.sortBy(), this.searchQuery() || undefined, true, true);
+      this.loadHotels(this.searchQuery() || undefined, true, true);
     }
   }
 
@@ -444,7 +451,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
           next: (result) => {
             if (result.isSuccess) {
               this.notifications.showSuccess('Payouts settled successfully.');
-              this.loadHotels(this.sortBy(), this.searchQuery() || undefined);
+              this.loadHotels(this.searchQuery() || undefined);
             } else {
               this.notifications.showError(result.error?.description ?? 'Failed to settle payouts.');
             }
@@ -464,7 +471,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
               ? 'Hotel blocked successfully.'
               : 'Hotel unblocked successfully.';
             this.notifications.showSuccess(message);
-            this.loadHotels(this.sortBy(), this.searchQuery() || undefined);
+            this.loadHotels(this.searchQuery() || undefined);
           } else {
             this.notifications.showError(result.error?.description ?? 'Failed to toggle hotel status.');
           }

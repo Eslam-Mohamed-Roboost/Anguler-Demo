@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { AdminApiService } from '../../../core/services/admin-api.service';
 import type { Result } from '../../../core/models/result.model';
-import { DashboardStatsResponse, HotelApiItem, HotelKpiResponse, HotelProfileResponse, HotelsListResponse, HotelTripsResponse, TripRequestStatusesResponse, UserProfileResponse, WithdrawalDetailsResponse, WithdrawalDetailsUpdate } from '../models/dto';
+import { DashboardStatsResponse, HotelApiItem, HotelKpiResponse, HotelProfileResponse, HotelsListResponse, HotelTripSortBy, HotelTripsResponse, TripRequestStatusesResponse, UserProfileResponse, WithdrawalDetailsResponse, WithdrawalDetailsUpdate } from '../models/dto';
 import { SKIP_LOADING } from '../../../core/tokens/skip-loading.token';
 
 @Injectable({ providedIn: 'root' })
@@ -36,7 +36,7 @@ export class HotelDetailsService extends ApiService {
   getHotelTrips(
     pageNumber: number,
     pageSize: number,
-    sortBy: number = 0,
+    sortBy: HotelTripSortBy = HotelTripSortBy.RequestedAt,
     status?: string,
     search?: string,
     skipLoading = false,
