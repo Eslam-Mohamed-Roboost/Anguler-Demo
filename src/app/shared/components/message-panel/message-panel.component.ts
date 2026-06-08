@@ -156,11 +156,11 @@ export class MessagePanelComponent extends BaseComponent implements OnInit {
 
   /** Get messages (use API data, input data, or default mock data) */
   protected getMessages(): Message[] {
-    const apiMsgs = this.apiMessages();
-    if (apiMsgs.length > 0) return apiMsgs;
-
     const inputMsgs = this.messages();
     if (inputMsgs.length > 0) return inputMsgs;
+
+    const apiMsgs = this.apiMessages();
+    if (apiMsgs.length > 0) return apiMsgs;
 
     return this.defaultMessages();
   }

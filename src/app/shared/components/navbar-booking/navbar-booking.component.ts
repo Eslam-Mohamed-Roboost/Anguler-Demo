@@ -306,8 +306,13 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   /** Handle message panel toggle */
   protected onMessageClick(): void {
     this.notificationSound.unlock();
-    this.messagePanelOpen.set(!this.messagePanelOpen());
+    const shouldOpen = !this.messagePanelOpen();
+    this.messagePanelOpen.set(shouldOpen);
     this.billingPanelOpen.set(false); // Close billing panel when opening message panel
+
+    if (shouldOpen) {
+      this.loadMessages(true, true);
+    }
   }
 
   /** Handle billing panel toggle */

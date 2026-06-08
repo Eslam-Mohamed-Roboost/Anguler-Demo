@@ -8,9 +8,9 @@
           <span>
             {{ 'messages.title' | translate }}
           </span>
-          @if (unreadCount() > 0) {
+          @if (getUnreadCount() > 0) {
             <span class="rounded-full bg-[#e76500] px-3 py-1 text-xs font-medium text-white">
-              {{ unreadCount() }}
+              {{ getUnreadCount() }}
             </span>
           }
         </h3>

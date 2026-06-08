@@ -78,7 +78,7 @@
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.fareChf' | translate }}</label>
         <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
-          {{ data().actualFare ?? data().estimatedPrice }}
+          {{ formatMoney(data().estimatedPrice) }}
         </div>
       </div>
       <div>

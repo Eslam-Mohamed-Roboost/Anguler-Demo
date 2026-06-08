@@ -41,12 +41,12 @@ export class DetailsComponent implements OnInit {
   protected readonly statusVariant = computed(() => getTripStatusVariant(this.statusLabel()));
   protected readonly actionStatus = computed(() => this.currentDisplayStatus(this.data()));
   protected readonly hotelProfit = computed(() => {
-    const commission = this.data().commission;
-    if (commission == null || Number.isNaN(commission)) {
+    const actualFare = this.data().actualFare;
+    if (actualFare == null || Number.isNaN(actualFare)) {
       return undefined;
     }
 
-    return commission;
+    return actualFare;
   });
   protected readonly canAssignDriver = computed(() =>
     this.isAdmin() &&
