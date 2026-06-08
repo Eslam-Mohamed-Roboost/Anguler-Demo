@@ -28,11 +28,11 @@
         <input
           id="trips-search"
           type="text"
-          [placeholder]="'hotelDetails.searchTrips' | translate"
+          [placeholder]="searchPlaceholderKey() | translate"
           [value]="searchQuery()"
           (input)="onSearchChange($event)"
           class="py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-white outline-none w-[180px] focus:border-warning focus:ring-2 focus:ring-warning/10 max-lg:flex-1 max-lg:w-full"
-          [attr.aria-label]="'hotelDetails.searchTrips' | translate"
+          [attr.aria-label]="searchPlaceholderKey() | translate"
         />
       </div>
 
@@ -67,15 +67,34 @@
             }
           </div>
         } @else {
-          <button
-            type="button"
-            (click)="toggleHotelSort()"
-            class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
-            [attr.aria-label]="'hotelDetails.sort' | translate"
-          >
-            <app-icon [name]="sortOrder() === 'asc' ? 'chevron-up' : 'chevron-down'" size="sm" aria-hidden="true" />
-            <span>{{ 'hotelDetails.sort' | translate }}</span>
-          </button>
+          <div class="relative">
+            <button
+              type="button"
+              (click)="toggleSortDropdown()"
+              class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
+              [attr.aria-label]="'hotelDetails.sort' | translate"
+              [attr.aria-expanded]="showSortDropdown()"
+            >
+              <app-icon name="chevron-down" size="sm" aria-hidden="true" />
+              <span>{{ selectedHotelSortLabel() | translate }}</span>
+            </button>
+            @if (showSortDropdown()) {
+              <div class="absolute top-full left-0 mt-1 bg-white border border-card-border rounded-lg shadow-lg z-10 min-w-max">
+                @for (option of hotelSortOptions; track option.label) {
+                  <button
+                    type="button"
+                    (click)="onHotelSortOption(option)"
+                    class="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition"
+                    [class.bg-primary/10]="selectedHotelSortBy() === option.sortBy && selectedHotelSortDirection() === option.sortDirection"
+                    [class.border-b]="!$last"
+                    [class.border-gray-100]="!$last"
+                  >
+                    {{ option.label | translate }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
         }
         <div class="relative">
           <button
@@ -275,8 +294,8 @@
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
           <div class="flex min-w-[170px] max-w-[240px] flex-col items-start gap-0.5 text-left">
-            <span class="block max-w-full whitespace-normal break-all text-cell font-medium leading-snug text-body max-sm:text-xs">
-              {{ row.hotelName }}
+            <span class="block max-w-full whitespace-normal break-words text-cell font-medium leading-snug text-body max-sm:text-xs">
+              {{ row.hotelName || '--' }}
             </span>
             <span
               class="inline-flex items-center justify-start gap-1 text-xs font-medium leading-none"

@@ -13,6 +13,7 @@ export interface HotelTripItem {
   placeTypeName: string | null;
   otherPlaceText: string | null;
   driverName: string | null;
+  driverPhone?: string | null;
   driverPhoneNumber?: string | null;
   driverAvatarUrl: string | null;
   startLocation: { latitude?: number; longitude?: number; address: string };
@@ -40,6 +41,16 @@ export enum HotelTripSortBy {
   RequestedAt = 0,
   FareDesc = 1,
   FareAsc = 2,
+}
+
+export enum HotelFinancialSortBy {
+  CreatedDate = 0,
+  MonthlyDues = 1,
+}
+
+export enum SortDirection {
+  Ascending = 0,
+  Descending = 1,
 }
 
 export interface HotelProfileResponse {
@@ -114,6 +125,7 @@ export interface UserProfileResponse {
 
 export interface HotelFinancialsItem {
   hotelId: string;
+  hotelCode?: string | null;
   code?: string | null;
   hotelName: string;
   hotelPhone: string;

@@ -24,6 +24,7 @@ import { SkeletonBlockComponent } from '../../../../shared/components/skeleton/s
 import { AuthService } from '../../../../core/services/auth.service';
 import { HotelRequestsService, type DriverItem } from '../../../admin-dashboard/services/hotel-requests.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { HotelFinancialSortBy, SortDirection } from '../../models/dto';
 
 export interface TripDetail {
   tripId: string;
@@ -235,7 +236,15 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.hotelDetailsService.getAllHotels(1, 100, 0, undefined, hotelId, true)
+    this.hotelDetailsService.getAllHotels(
+      1,
+      100,
+      HotelFinancialSortBy.CreatedDate,
+      SortDirection.Descending,
+      undefined,
+      hotelId,
+      true,
+    )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {

@@ -16,7 +16,7 @@ import type { HotelRecord, TripRecord } from '../../types/hotel-details.types';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
 import { TripsHistoryTableComponent } from '../../components/trips-history-table/trips-history-table.component';
 import { HotelDetailsService } from '../../services/hotel-details.service';
-import { HotelFinancialsItem, HotelTripItem, DashboardStatsResponse, HotelTripSortBy } from '../../models/dto';
+import { HotelFinancialsItem, HotelTripItem, DashboardStatsResponse, HotelFinancialSortBy, HotelTripSortBy, SortDirection } from '../../models/dto';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { NotificationStore } from '../../../../core/stores/notification.store';
@@ -60,7 +60,8 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   readonly currentPage = signal(1);
   readonly pageSize = signal(10);
   readonly tripSortBy = signal<HotelTripSortBy>(HotelTripSortBy.RequestedAt);
-  readonly hotelSortBy = signal(0);
+  readonly hotelSortBy = signal<HotelFinancialSortBy>(HotelFinancialSortBy.CreatedDate);
+  readonly hotelSortDirection = signal<SortDirection>(SortDirection.Descending);
   readonly statusFilter = signal('');
   readonly activeTab = signal<'trips' | 'hotels'>('trips');
   readonly statusOptions = signal<string[]>([]);
@@ -225,13 +226,21 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     if (showLoading) this.loading.set(true);
 
     this.hotelDetailsService
-      .getAllHotels(this.currentPage(), this.pageSize(), this.hotelSortBy(), this.statusFilter() || undefined, search, skipGlobalLoading)
+      .getAllHotels(
+        this.currentPage(),
+        this.pageSize(),
+        this.hotelSortBy(),
+        this.hotelSortDirection(),
+        this.statusFilter() || undefined,
+        search,
+        skipGlobalLoading,
+      )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           if (showLoading) this.loading.set(false);
           if (result.isSuccess && result.data) {
-            this.hotels.set(result.data.items.map((item, index) => this.toHotelRecord(item, index)));
+            this.hotels.set(result.data.items.map(item => this.toHotelRecord(item)));
             this.totalHotels.set(result.data.totalCount);
           }
         },
@@ -260,8 +269,8 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private toHotelRecord(item: HotelFinancialsItem, index: number): HotelRecord {
-    const code = item.code?.trim() || this.buildFallbackHotelCode(index);
+  private toHotelRecord(item: HotelFinancialsItem): HotelRecord {
+    const code = item.hotelCode?.trim() || item.code?.trim() || '--';
     const settlementStatus = this.toSettlementStatus(item);
 
     return {
@@ -293,11 +302,6 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     }
 
     return 'in-progress';
-  }
-
-  private buildFallbackHotelCode(index: number): string {
-    const itemNumber = ((this.currentPage() - 1) * this.pageSize()) + index + 1;
-    return `P${String(itemNumber).padStart(4, '0')}`;
   }
 
   private toTripRecord(item: HotelTripItem, hotelId?: string): TripRecord {
@@ -332,7 +336,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       duration: item.durationMinutes,
       paymentStatus: 'Paid',
       driverName,
-      driverPhoneNumber: item.driverPhoneNumber?.trim() || undefined,
+      driverPhoneNumber: item.driverPhoneNumber?.trim() || item.driverPhone?.trim() || undefined,
       room: item.roomNumber != null ? String(item.roomNumber) : undefined,
       commission: item.commission ?? undefined,
       scheduledAt: item.scheduledAt,
@@ -398,8 +402,9 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  onHotelSortChange(sortOrder: 'asc' | 'desc'): void {
-    this.hotelSortBy.set(sortOrder === 'asc' ? 0 : 1);
+  onHotelSortChange(sort: { sortBy: HotelFinancialSortBy; sortDirection: SortDirection }): void {
+    this.hotelSortBy.set(sort.sortBy);
+    this.hotelSortDirection.set(sort.sortDirection);
     this.currentPage.set(1);
     if (this.activeTab() === 'hotels') {
       this.loadHotels(this.searchQuery() || undefined, true, true);

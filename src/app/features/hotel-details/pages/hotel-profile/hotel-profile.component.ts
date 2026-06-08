@@ -374,7 +374,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       duration: item.durationMinutes,
       paymentStatus: 'Paid',
       driverName,
-      driverPhoneNumber: item.driverPhoneNumber?.trim() || undefined,
+      driverPhoneNumber: item.driverPhoneNumber?.trim() || item.driverPhone?.trim() || undefined,
       room: item.roomNumber != null ? String(item.roomNumber) : undefined,
       commission: item.commission ?? undefined,
       scheduledAt: item.scheduledAt,

@@ -18,7 +18,13 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ModalComponent } from "../../../../shared/components/modal/modal.component";
 import { HotelDetailsService } from '../../services/hotel-details.service';
 import { AppConfigService } from '../../../../core/services/app-config.service';
-import { HotelTripSortBy } from '../../models/dto';
+import { HotelFinancialSortBy, HotelTripSortBy, SortDirection } from '../../models/dto';
+
+interface HotelFinancialSortOption {
+  sortBy: HotelFinancialSortBy;
+  sortDirection: SortDirection;
+  label: string;
+}
 
 @Component({
   selector: 'app-trips-history-table',
@@ -58,14 +64,18 @@ export class TripsHistoryTableComponent {
   readonly commissionSettings = output<void>();
   readonly pageChange = output<number>();
   readonly sortChange = output<HotelTripSortBy>();
-  readonly hotelSortChange = output<'asc' | 'desc'>();
+  readonly hotelSortChange = output<{ sortBy: HotelFinancialSortBy; sortDirection: SortDirection }>();
 
   readonly selectedSort = signal<HotelTripSortBy>(HotelTripSortBy.RequestedAt);
-  readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly selectedHotelSortBy = signal<HotelFinancialSortBy>(HotelFinancialSortBy.CreatedDate);
+  readonly selectedHotelSortDirection = signal<SortDirection>(SortDirection.Descending);
   readonly showSortDropdown = signal(false);
   readonly showFilterDropdown = signal(false);
   readonly statusFilter = signal('');
   readonly openHotelActionId = signal<string | null>(null);
+  protected readonly searchPlaceholderKey = computed(() =>
+    this.activeTab() === 'trips' ? 'hotelDetails.searchTrips' : 'hotelDetails.searchHotels'
+  );
 
   private readonly hotelCommissionInfo = inject(HotelDetailsService);
   private readonly appConfig = inject(AppConfigService);
@@ -73,6 +83,28 @@ export class TripsHistoryTableComponent {
     { value: HotelTripSortBy.RequestedAt, label: 'hotelDetails.sortRequestedAt' },
     { value: HotelTripSortBy.FareDesc, label: 'hotelDetails.sortFareDesc' },
     { value: HotelTripSortBy.FareAsc, label: 'hotelDetails.sortFareAsc' },
+  ];
+  protected readonly hotelSortOptions: HotelFinancialSortOption[] = [
+    {
+      sortBy: HotelFinancialSortBy.CreatedDate,
+      sortDirection: SortDirection.Descending,
+      label: 'hotelDetails.sortCreatedDateDesc',
+    },
+    {
+      sortBy: HotelFinancialSortBy.CreatedDate,
+      sortDirection: SortDirection.Ascending,
+      label: 'hotelDetails.sortCreatedDateAsc',
+    },
+    {
+      sortBy: HotelFinancialSortBy.MonthlyDues,
+      sortDirection: SortDirection.Ascending,
+      label: 'hotelDetails.sortMonthlyDuesAsc',
+    },
+    {
+      sortBy: HotelFinancialSortBy.MonthlyDues,
+      sortDirection: SortDirection.Descending,
+      label: 'hotelDetails.sortMonthlyDuesDesc',
+    },
   ];
 
   protected readonly tripColumns = computed<ColumnDef[]>(() => [
@@ -141,8 +173,6 @@ export class TripsHistoryTableComponent {
   }
 
   protected toggleSortDropdown(): void {
-    if (this.activeTab() !== 'trips') return;
-
     this.showFilterDropdown.set(false);
     this.showSortDropdown.update(show => !show);
   }
@@ -153,16 +183,25 @@ export class TripsHistoryTableComponent {
     this.sortChange.emit(sortBy);
   }
 
-  protected toggleHotelSort(): void {
-    if (this.activeTab() !== 'hotels') return;
-
-    this.showFilterDropdown.set(false);
-    this.sortOrder.update(order => order === 'asc' ? 'desc' : 'asc');
-    this.hotelSortChange.emit(this.sortOrder());
-  }
-
   protected selectedSortLabel(): string {
     return this.sortOptions.find(option => option.value === this.selectedSort())?.label ?? 'hotelDetails.sort';
+  }
+
+  protected onHotelSortOption(option: HotelFinancialSortOption): void {
+    this.selectedHotelSortBy.set(option.sortBy);
+    this.selectedHotelSortDirection.set(option.sortDirection);
+    this.showSortDropdown.set(false);
+    this.hotelSortChange.emit({
+      sortBy: option.sortBy,
+      sortDirection: option.sortDirection,
+    });
+  }
+
+  protected selectedHotelSortLabel(): string {
+    return this.hotelSortOptions.find(option =>
+      option.sortBy === this.selectedHotelSortBy() &&
+      option.sortDirection === this.selectedHotelSortDirection()
+    )?.label ?? 'hotelDetails.sort';
   }
 
   protected toggleFilterDropdown(): void {
