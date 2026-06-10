@@ -31,6 +31,7 @@ import { CitiesService } from '../services/cities.service';
 import { LoginService } from '../services/login.service';
 import { OtpService } from '../services/otp.service';
 import { VehicleTypeService } from '../services/vehicle-type.service';
+import { DistanceInfo, MapsService } from '../services/maps.service';
 import { TripRequestService, type CreateTripRequest } from '../services/trip-request.service';
 import { LocationItem, PlaceTypeService, type PlaceType } from '../services/place-type.service';
 import { Bank, BankService } from '../services/bank.service';
@@ -82,6 +83,7 @@ export class BookingComponent extends BaseComponent {
   private readonly loginService = inject(LoginService);
   private readonly otpService = inject(OtpService);
   private readonly vehicleTypeService = inject(VehicleTypeService);
+  private readonly mapsService = inject(MapsService);
   private readonly tripRequestService = inject(TripRequestService);
   private readonly placeTypeService = inject(PlaceTypeService);
   private readonly bankService = inject(BankService);
@@ -127,7 +129,10 @@ export class BookingComponent extends BaseComponent {
   });
   readonly showJoinLocationMap = signal(false);
   readonly joinSelectedLocation = signal<LocationSelection | null>(null);
+  readonly distanceInfo = signal<DistanceInfo | null>(null);
+  readonly distanceInfoLoading = signal(false);
   private vehicleTypesRequestKey = '';
+  private distanceInfoRequestKey = '';
   private dropOffSearchTimer: ReturnType<typeof setTimeout> | null = null;
   private dropOffSearchRequestId = 0;
   private googleSearchLoadFailed = false;
@@ -220,6 +225,17 @@ export class BookingComponent extends BaseComponent {
       this.loadVehicleTypes(50, destination.latitude, destination.longitude);
     });
 
+    // Fetch distance/duration/cost from the maps API while the booking confirmation modal is open
+    effect(() => {
+      if (!this.ShowComfirmBookingModel()) return;
+
+      const destination = this.selectedDestinationLocation();
+      const vehicleId = this.selectedCar();
+      if (!destination || !vehicleId) return;
+
+      this.loadDistanceInfo(destination, vehicleId);
+    });
+
     effect(() => {
       if (this.coreAuth.isAuthenticated() && this.destinationsData() === null) {
         this.loadDestinations();
@@ -301,10 +317,22 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     this.carTypes().find(c => c.id === this.selectedCar()) ?? null,
   );
   readonly tripDurationLabel = computed(() => {
-    const mins = this.selectedCarOption()?.estimatedMinutes ?? 0;
-    const h = Math.floor(mins / 60).toString().padStart(2, '0');
-    const m = (mins % 60).toString().padStart(2, '0');
-    return `${h}hr : ${m}min : 00sec`;
+    const info = this.distanceInfo();
+    const totalSeconds = info ? info.durationInSeconds : (this.selectedCarOption()?.estimatedMinutes ?? 0) * 60;
+    const h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+    const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+    const s = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+    return `${h}hr : ${m}min : ${s}sec`;
+  });
+  readonly tripDistanceLabel = computed(() => {
+    const info = this.distanceInfo();
+    if (!info) return '—';
+    return `${(info.distanceInMeters / 1000).toFixed(1)} km`;
+  });
+  readonly tripCostLabel = computed(() => {
+    const info = this.distanceInfo();
+    const cost = info ? info.estimatedCost : this.selectedCarOption()?.price;
+    return cost != null ? cost : '—';
   });
   readonly isCarSelectorDisabled = computed(() => this.formModel().manyBags);
   readonly shouldShowManyBagsNotice = computed(() =>
@@ -541,6 +569,46 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     if (!destinationId) return null;
 
     return this.destinationOptions().find((destination) => destination.id === destinationId) ?? null;
+  }
+
+  private getOriginCoordinates(): { lat: number; lng: number } {
+    const configuration = this.coreAuth.profile()?.['configuration'] as
+      | { latitude?: number | null; longitude?: number | null }
+      | undefined;
+    const [currentLat, currentLng] = this.mapCenter();
+
+    return {
+      lat: configuration?.latitude ?? currentLat,
+      lng: configuration?.longitude ?? currentLng,
+    };
+  }
+
+  private loadDistanceInfo(destination: LocationItem, vehicleId: string): void {
+    const origin = this.getOriginCoordinates();
+    const requestKey = `${origin.lat}:${origin.lng}:${destination.latitude}:${destination.longitude}:${vehicleId}`;
+    if (this.distanceInfoRequestKey === requestKey) return;
+    this.distanceInfoRequestKey = requestKey;
+
+    this.distanceInfoLoading.set(true);
+    this.distanceInfo.set(null);
+    this.mapsService.getDistanceInfo({
+      originLatitude: origin.lat,
+      originLongitude: origin.lng,
+      destinationLatitude: destination.latitude,
+      destinationLongitude: destination.longitude,
+      vehicleId,
+    }).pipe(this.takeUntilDestroyed()).subscribe({
+      next: (result) => {
+        this.distanceInfoLoading.set(false);
+        if (result.isSuccess && result.data) {
+          this.distanceInfo.set(result.data);
+        }
+      },
+      error: () => {
+        this.distanceInfoLoading.set(false);
+        this.distanceInfoRequestKey = '';
+      },
+    });
   }
 
   private googleMapsUrl(location: LocationSelection): string {

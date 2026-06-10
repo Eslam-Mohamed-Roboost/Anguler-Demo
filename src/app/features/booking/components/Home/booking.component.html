@@ -72,19 +72,6 @@
               }
             </div>
 
-            <app-select
-              [label]="'form.dropOff' | translate"
-              inputId="id"
-              [field]="f.destination"
-              [options]="destinationOptions()"
-              optionValue="id"
-              optionLabel="name"
-              [placeholder]="'form.chooseDest' | translate"
-              dropdownArrow="custom"
-              selectClass="rounded-full focus-visible:outline-hidden border border-input-border bg-input-bg text-gray-900 placeholder:text-primary-text "
-            >
-              <span class="text-danger" label-hint> *</span>
-            </app-select>
           </div>
 
           <!-- Client Name + Room No -->
@@ -1001,17 +988,31 @@
     />
   </div>
 
-  <!-- Trip cost / duration -->
-  <div class="mt-3 grid grid-cols-2 gap-3">
+  <!-- Trip cost / duration / distance -->
+  <div class="mt-3 grid grid-cols-3 gap-3">
     <div class="rounded-xl border border-gray-200 p-4">
       <p class="text-xs text-[#5B738B]">{{ 'confirm.tripCost' | translate }}</p>
-      <p class="mt-1 text-base font-bold text-primary-text">
-        {{ selectedCarOption()?.price ?? '—' }} CHF
-      </p>
+      @if (distanceInfoLoading()) {
+        <app-icon name="spinner" size="sm" class="mt-1 inline-block" />
+      } @else {
+        <p class="mt-1 text-base font-bold text-primary-text">{{ tripCostLabel() }} CHF</p>
+      }
     </div>
     <div class="rounded-xl border border-gray-200 p-4">
       <p class="text-xs text-[#5B738B]">{{ 'confirm.tripDuration' | translate }}</p>
-      <p class="mt-1 text-base font-bold text-primary-text">{{ tripDurationLabel() }}</p>
+      @if (distanceInfoLoading()) {
+        <app-icon name="spinner" size="sm" class="mt-1 inline-block" />
+      } @else {
+        <p class="mt-1 text-base font-bold text-primary-text">{{ tripDurationLabel() }}</p>
+      }
+    </div>
+    <div class="rounded-xl border border-gray-200 p-4">
+      <p class="text-xs text-[#5B738B]">{{ 'confirm.tripDistance' | translate }}</p>
+      @if (distanceInfoLoading()) {
+        <app-icon name="spinner" size="sm" class="mt-1 inline-block" />
+      } @else {
+        <p class="mt-1 text-base font-bold text-primary-text">{{ tripDistanceLabel() }}</p>
+      }
     </div>
   </div>
 
