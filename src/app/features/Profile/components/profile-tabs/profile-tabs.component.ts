@@ -253,25 +253,8 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
   submitHotelInfo(): void {
     const model = this.hotelInfoModel();
-    const { latitude, longitude } = this.getHotelCoordinates();
-    this.hotelInfoLoading.set(true);
-
-    this.profileService
-      .updateHotelProfile({
-        ...this.emptyHotelProfile(),
-        ...this.currentHotelProfile(),
-        id: this.currentHotelProfile()?.id ?? '',
-        hotelName: model.name,
-        address: model.address,
-        phoneNumber: model.phone,
-        email: model.email,
-        cityId: model.city,
-        locationUrl: this.getHotelLocationUrl(),
-        latitude,
-        longitude,
-      })
     const currentProfile = this.currentHotelProfile();
-    const latestLogoUrl = this.getLatestLogoUrl();
+    const { latitude, longitude } = this.getHotelCoordinates();
     const updatePayload: HotelProfileData = {
       ...this.emptyHotelProfile(),
       ...currentProfile,
@@ -281,7 +264,10 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
       phoneNumber: model.phone,
       email: model.email,
       cityId: model.city,
-      logoUrl: latestLogoUrl,
+      locationUrl: this.getHotelLocationUrl(),
+      latitude,
+      longitude,
+      logoUrl: this.getLatestLogoUrl(),
     };
 
     this.hotelInfoLoading.set(true);
@@ -293,13 +279,10 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
         next: (result) => {
           this.hotelInfoLoading.set(false);
           if (result.isSuccess) {
-            if (result.data) {
-              this.currentHotelProfile.set(result.data);
-            }
-            this.selectedHotelLocation.set(null);
             const updatedProfile = { ...updatePayload, ...(result.data ?? {}), logoUrl: result.data?.logoUrl || updatePayload.logoUrl };
             this.currentHotelProfile.set(updatedProfile);
             this.coreAuth.setProfile(updatedProfile);
+            this.selectedHotelLocation.set(null);
             this.notifications.showSuccess('Hotel profile updated successfully');
             this.DisableHotleInfo.set(true);
           } else {
@@ -312,12 +295,12 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
       });
   }
 
-  private getHotelCoordinates(): { latitude: number; longitude: number } {
+  private getHotelCoordinates(): { latitude: number | null; longitude: number | null } {
     const selectedLocation = this.selectedHotelLocation();
 
     return {
-      latitude: selectedLocation?.lat ?? this.currentHotelProfile()?.latitude ?? 0,
-      longitude: selectedLocation?.lng ?? this.currentHotelProfile()?.longitude ?? 0,
+      latitude: selectedLocation?.lat ?? this.currentHotelProfile()?.latitude ?? null,
+      longitude: selectedLocation?.lng ?? this.currentHotelProfile()?.longitude ?? null,
     };
   }
 
