@@ -20,6 +20,8 @@ export interface HotelProfileData {
   cityId: string;
   cityName?: string;
   locationUrl: string;
+  latitude?: number | null;
+  longitude?: number | null;
   logoUrl: string;
   commissionRate: number;
   isActive: boolean;
@@ -32,6 +34,8 @@ export interface UserProfileConfiguration {
   cityName: string;
   address: string;
   locationUrl: string;
+  latitude?: number | null;
+  longitude?: number | null;
   logoUrl: string;
   commissionRate: number;
   isVerified: boolean;
@@ -130,6 +134,8 @@ export class ProfileService {
       cityId: configuration?.cityId ?? '',
       cityName: configuration?.cityName ?? '',
       locationUrl: configuration?.locationUrl ?? '',
+      latitude: configuration?.latitude ?? null,
+      longitude: configuration?.longitude ?? null,
       logoUrl: configuration?.logoUrl ?? '',
       commissionRate: configuration?.commissionRate ?? 0,
       isActive: profile.isActive,

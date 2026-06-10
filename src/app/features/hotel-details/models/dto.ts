@@ -67,6 +67,8 @@ export interface HotelApiItem {
   cityId: string;
   address: string;
   locationUrl: string;
+  latitude?: number | null;
+  longitude?: number | null;
   phoneNumber: string;
   email: string;
   logoUrl: string;
@@ -82,6 +84,8 @@ export interface UserProfileConfiguration {
   cityName: string;
   address: string;
   locationUrl: string;
+  latitude?: number | null;
+  longitude?: number | null;
   logoUrl: string;
   commissionRate: number;
   isVerified: boolean;

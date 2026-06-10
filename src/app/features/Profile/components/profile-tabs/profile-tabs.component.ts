@@ -16,11 +16,15 @@ import { SelectComponent } from '../../../../shared/components/select/select.com
 import { CitiesService } from '../../../booking/components/services/cities.service';
 import { Bank, BankService } from '../../../booking/components/services/bank.service';
 import { BaseComponent } from '../../../../shared/base/base.component';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { ModalComponent } from '../../../../shared/components/modal/modal.component';
+import { LocationPickerComponent } from '../../../booking/components/location-picker/location-picker.component';
+import { LocationSelection } from '../../../booking/components/services/google-maps-loader.service';
 
 @Component({
   selector: 'app-profile-tabs',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [InputComponent, PasswordInputComponent, TranslatePipe, SelectComponent],
+  imports: [InputComponent, PasswordInputComponent, TranslatePipe, SelectComponent, IconComponent, ModalComponent, LocationPickerComponent],
   templateUrl: './profile-tabs.component.html',
   styleUrl: './profile-tabs.component.css',
 })
@@ -47,6 +51,8 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   protected readonly passwordSuccess = signal(false);
   protected readonly hotelInfoLoading = signal(false);
   protected readonly withdrawalLoading = signal(false);
+  protected readonly showHotelLocationMap = signal(false);
+  protected readonly selectedHotelLocation = signal<LocationSelection | null>(null);
   private readonly currentHotelProfile = signal<HotelProfileData | null>(null);
   readonly cities = signal<{ id: string; name: string }[]>([]);
   protected readonly banks = signal<Bank[]>([]);
@@ -70,6 +76,16 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
     const city = this.cities().find((item) => item.id === cityId);
 
     return city?.name ?? this.currentHotelProfile()?.cityName ?? cityId;
+  });
+
+  protected readonly hotelLocationForPicker = computed<LocationSelection | null>(() => {
+    const selected = this.selectedHotelLocation();
+    if (selected) return selected;
+
+    const profile = this.currentHotelProfile();
+    if (profile?.latitude == null || profile?.longitude == null) return null;
+
+    return { lat: profile.latitude, lng: profile.longitude, address: profile.address };
   });
 
   protected readonly hotelInfoModel = signal<HotelInfoModel>({
@@ -158,7 +174,26 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   }
 
   ChangeDiableForHotelInfo(): void {
-    this.DisableHotleInfo.set(!this.DisableHotleInfo());
+    const next = !this.DisableHotleInfo();
+    if (next) {
+      // Cancelling the edit: discard any unsaved location pick.
+      this.selectedHotelLocation.set(null);
+    }
+    this.DisableHotleInfo.set(next);
+  }
+
+  protected openHotelLocationMap(): void {
+    this.showHotelLocationMap.set(true);
+  }
+
+  protected closeHotelLocationMap(): void {
+    this.showHotelLocationMap.set(false);
+  }
+
+  protected onHotelLocationSelected(location: LocationSelection): void {
+    this.selectedHotelLocation.set(location);
+    this.hotelInfoModel.update((model) => ({ ...model, address: location.address }));
+    this.closeHotelLocationMap();
   }
 
   ChangeDiableForwithdrawal(): void {
@@ -216,6 +251,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
   submitHotelInfo(): void {
     const model = this.hotelInfoModel();
+    const { latitude, longitude } = this.getHotelCoordinates();
     this.hotelInfoLoading.set(true);
 
     this.profileService
@@ -228,6 +264,9 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
         phoneNumber: model.phone,
         email: model.email,
         cityId: model.city,
+        locationUrl: this.getHotelLocationUrl(),
+        latitude,
+        longitude,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -237,6 +276,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
             if (result.data) {
               this.currentHotelProfile.set(result.data);
             }
+            this.selectedHotelLocation.set(null);
             this.notifications.showSuccess('Hotel profile updated successfully');
             this.DisableHotleInfo.set(true);
           } else {
@@ -247,6 +287,23 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
           this.hotelInfoLoading.set(false);
         },
       });
+  }
+
+  private getHotelCoordinates(): { latitude: number; longitude: number } {
+    const selectedLocation = this.selectedHotelLocation();
+
+    return {
+      latitude: selectedLocation?.lat ?? this.currentHotelProfile()?.latitude ?? 0,
+      longitude: selectedLocation?.lng ?? this.currentHotelProfile()?.longitude ?? 0,
+    };
+  }
+
+  private getHotelLocationUrl(): string {
+    const selectedLocation = this.selectedHotelLocation();
+
+    return selectedLocation
+      ? `https://www.google.com/maps?q=${selectedLocation.lat},${selectedLocation.lng}`
+      : this.currentHotelProfile()?.locationUrl ?? '';
   }
 
   submitWithdrawalDetails(): void {
@@ -400,6 +457,8 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
       cityId: '',
       cityName: '',
       locationUrl: '',
+      latitude: 0,
+      longitude: 0,
       logoUrl: '',
       commissionRate: 0,
       isActive: true,

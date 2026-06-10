@@ -547,6 +547,26 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     return `https://www.google.com/maps?q=${location.lat},${location.lng}`;
   }
 
+  private getJoinCoordinates(form: JoinUsFormModel): { latitude: number; longitude: number } {
+    const selectedLocation = this.joinSelectedLocation();
+
+    return {
+      latitude: this.toCoordinate(selectedLocation?.lat ?? form.latitude),
+      longitude: this.toCoordinate(selectedLocation?.lng ?? form.longitude),
+    };
+  }
+
+  private getJoinLocationUrl(form: JoinUsFormModel): string {
+    const locationUrl = form.locationUrl?.trim();
+    const selectedLocation = this.joinSelectedLocation();
+
+    return locationUrl || (selectedLocation ? this.googleMapsUrl(selectedLocation) : '');
+  }
+
+  private toCoordinate(value: number | undefined): number {
+    return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+  }
+
   /* ── Join Us Modal ──────────────────────────────────── */
   readonly showJoinModal = signal(false);
   readonly showSiginInModal = signal(false);
@@ -1256,9 +1276,13 @@ readonly activeTab = signal<'login' | 'register'>('register');
     this.isRegistering.set(true);
     const preferences = this.servicePreferencesModel();
     const allServices = this.allServicePreferences();
+    const { latitude, longitude } = this.getJoinCoordinates(form);
 
     const payload: JoinUsFormModel = {
       ...form,
+      locationUrl: this.getJoinLocationUrl(form),
+      latitude,
+      longitude,
       bankRoutingNumber: form.bankRoutingNumber?.trim() ?? '',
       bankName: this.isOtherBankValue(form.bankName)
         ? this.savedOtherBankName().trim() || this.otherBankName().trim()

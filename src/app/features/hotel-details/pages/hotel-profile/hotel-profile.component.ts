@@ -417,6 +417,8 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       phoneNumber: data.phone,
       email: data.email,
       locationUrl: currentHotel.locationUrl,
+      latitude: currentHotel.latitude ?? 0,
+      longitude: currentHotel.longitude ?? 0,
       logoUrl: currentHotel.logoUrl,
       commissionRate: currentHotel.commissionRate,
       isActive: currentHotel.isActive,

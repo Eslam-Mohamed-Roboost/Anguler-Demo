@@ -170,6 +170,8 @@ export class HotelDetailsService extends ApiService {
       cityId: configuration?.cityId ?? '',
       address: configuration?.address ?? '',
       locationUrl: configuration?.locationUrl ?? '',
+      latitude: configuration?.latitude ?? null,
+      longitude: configuration?.longitude ?? null,
       phoneNumber: profile.phoneNumber,
       email: profile.email,
       logoUrl: configuration?.logoUrl ?? '',
