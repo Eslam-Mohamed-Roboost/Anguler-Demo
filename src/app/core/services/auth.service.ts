@@ -151,7 +151,8 @@ export class AuthService {
   }
 
   hasRole(role: string): boolean {
-    return this._user()?.roles.includes(role) ?? false;
+    const targetRole = this.normalizeRole(role);
+    return this._user()?.roles.some((userRole) => this.normalizeRole(userRole) === targetRole) ?? false;
   }
 
   hasAnyRole(roles: string[]): boolean {
@@ -164,5 +165,9 @@ export class AuthService {
     } catch {
       localStorage.removeItem('auth_profile');
     }
+  }
+
+  private normalizeRole(role: string): string {
+    return role.trim().toLowerCase().replace(/[^a-z]/g, '');
   }
 }

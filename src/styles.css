@@ -29,10 +29,10 @@
   /* ── Trip / Hotel Status ────────────────────────── */
   --color-status-completed: #16a34a;
   --color-status-completed-bg: #f0fdf4;
-  --color-status-active: #2563eb;
-  --color-status-active-bg: #eff6ff;
-  --color-status-scheduled: #d97706;
-  --color-status-scheduled-bg: #fffbeb;
+  --color-status-active: #00a63e;
+  --color-status-active-bg: #eafbf1;
+  --color-status-scheduled: #f26500;
+  --color-status-scheduled-bg: #fff6d8;
   --color-status-cancelled: #dc2626;
   --color-status-cancelled-bg: #fef2f2;
 

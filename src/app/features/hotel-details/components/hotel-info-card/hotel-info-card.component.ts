@@ -44,9 +44,9 @@ export class HotelInfoCardComponent {
   protected readonly contactInfo = computed(() => {
     const hotel = this.hotel();
     return [
-      { icon: 'map-pin' as const, text: hotel.address },
-      { icon: 'phone' as const, text: hotel.phone },
-      { icon: 'mail' as const, text: hotel.email },
+      { icon: 'map-pin' as const, text: hotel.address || '--' },
+      { icon: 'phone' as const, text: hotel.phone || '--' },
+      { icon: 'mail' as const, text: hotel.email || '--' },
     ];
   });
 

@@ -13,6 +13,8 @@ export interface HotelTripItem {
   placeTypeName: string | null;
   otherPlaceText: string | null;
   driverName: string | null;
+  driverPhone?: string | null;
+  driverPhoneNumber?: string | null;
   driverAvatarUrl: string | null;
   startLocation: { latitude?: number; longitude?: number; address: string };
   endLocation: { latitude?: number; longitude?: number; address: string };
@@ -31,7 +33,24 @@ export interface HotelTripItem {
   currency: string;
   startedAt: string | null;
   endedAt: string | null;
+  scheduledAt?: string | null;
   requestedAt: string | null;
+}
+
+export enum HotelTripSortBy {
+  RequestedAt = 0,
+  FareDesc = 1,
+  FareAsc = 2,
+}
+
+export enum HotelFinancialSortBy {
+  CreatedDate = 0,
+  MonthlyDues = 1,
+}
+
+export enum SortDirection {
+  Ascending = 0,
+  Descending = 1,
 }
 
 export interface HotelProfileResponse {
@@ -110,6 +129,7 @@ export interface UserProfileResponse {
 
 export interface HotelFinancialsItem {
   hotelId: string;
+  hotelCode?: string | null;
   code?: string | null;
   hotelName: string;
   hotelPhone: string;
@@ -123,7 +143,9 @@ export interface HotelFinancialsItem {
   hotelProfits: number;
   payoutId: string;
   monthlyDues: number;
-  status: string;
+  status?: string;
+  statusString?: string;
+  statusEnum?: number | null;
 }
 
 export interface HotelsListResponse {

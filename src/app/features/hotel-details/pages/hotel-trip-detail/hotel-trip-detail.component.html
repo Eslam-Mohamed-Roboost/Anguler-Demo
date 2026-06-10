@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-page-bg overflow-y-auto h-screen px-8 py-6 max-w-[1400px] mx-auto max-lg:px-5 max-md:px-4 max-md:py-3">
+<div class="hotel-trip-page mx-auto flex h-full min-h-0 w-full max-w-[1400px] flex-col gap-4 overflow-y-auto bg-page-bg px-8 py-6 max-lg:px-5 max-md:px-4 max-md:py-3">
 
   <!-- Breadcrumb -->
   <!-- <nav class="flex items-center gap-1.5 text-cell mb-4" aria-label="Breadcrumb">
@@ -21,8 +21,8 @@
   </nav> -->
 
   <!-- Hotel Info Card skeleton -->
-  @if (hotelLoading()) {
-    <div class="mb-4 rounded-card border border-card-border bg-white p-4 flex items-center gap-4" aria-hidden="true">
+  @if (hotelLoading() || (tripLoading() && !hasHotelData())) {
+    <div class="flex shrink-0 items-center gap-4 rounded-card border border-card-border bg-white p-4" aria-hidden="true">
       <app-skeleton-block width="64px" height="64px" />
       <div class="flex flex-col gap-2 flex-1">
         <app-skeleton-block width="40%" height="1.1rem" />
@@ -30,15 +30,15 @@
         <app-skeleton-block width="35%" height="0.85rem" />
       </div>
     </div>
-  } @else {
-    <section class="mb-4">
+  } @else if (shouldShowHotelCard()) {
+    <section class="shrink-0">
       <app-hotel-info-card [hotel]="hotel()" (deleteClick)="onHotelDelete()" />
     </section>
   }
 
   <!-- Hotel Note Section -->
   @if (trip()?.hotelNote) {
-    <section class="mb-4">
+    <section class="shrink-0">
       <div class="rounded-card border border-card-border bg-white overflow-hidden">
         <!-- Header with divider -->
         <div class="px-4 py-4 border-b border-card-border">
@@ -59,7 +59,7 @@
   }
 
   <!-- Trip Details Card -->
-  <section class="mb-4">
+  <section class="shrink-0">
     <app-card variant="elevated">
 
       <!-- Card Header -->
@@ -162,8 +162,8 @@
               <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.fare }}</span>
             </div>
             <div class="flex flex-col gap-1">
-              <span class="text-xs text-muted font-medium">{{ 'hotelTrip.hotelProfit' | translate }}</span>
-              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.hotelProfits || '--' }}</span>
+              <span class="text-xs text-muted font-medium">{{ hotelProfitLabel() }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ formatMoney(t.hotelProfits) }}</span>
             </div>
 
             <div class="flex flex-col gap-1">
@@ -190,8 +190,12 @@
 
   <!-- Trip Conversation -->
   @if (!chatHasError()) {
-    <section class="mb-4">
-      <app-chat [tripRequestId]="tripId()" senderRole="Hotel" (chatError)="chatHasError.set($event)" />
+    <section class="flex h-[430px] min-h-0 min-w-0 shrink-0 flex-col max-md:h-[380px]">
+      <app-chat
+        [tripRequestId]="tripId()"
+        [senderRole]="isAdmin() ? 'Admin' : 'Hotel'"
+        (chatError)="chatHasError.set($event)"
+      />
     </section>
   }
 

@@ -15,6 +15,7 @@ export interface HotelRequestItem {
   guestName: any
   roomNumber: any
   driverName: string
+  driverPhoneNumber?: string | null
   driverAvatarUrl: any
   startLocation: StartLocation
   endLocation: EndLocation
@@ -33,6 +34,7 @@ export interface HotelRequestItem {
   currency: string
   startedAt: any
   endedAt: any
+  scheduledAt?: string | null
   requestedAt: string
 }
 

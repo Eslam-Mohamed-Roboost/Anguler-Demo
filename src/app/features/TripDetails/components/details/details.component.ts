@@ -35,21 +35,36 @@ export class DetailsComponent implements OnInit {
 
   protected readonly statusLabel = computed(() => {
     const trip = this.data();
-    if (trip.isScheduled && !trip.driver && this.isScheduledStatus(trip.unifiedStatus)) {
-      return 'Pending';
-    }
-
-    return getTripStatusLabel(trip.unifiedStatus);
+    return getTripStatusLabel(this.currentDisplayStatus(trip));
   });
   protected readonly statusLabelKey = computed(() => this.statusTranslationKey(this.statusLabel()));
   protected readonly statusVariant = computed(() => getTripStatusVariant(this.statusLabel()));
+  protected readonly actionStatus = computed(() => this.currentDisplayStatus(this.data()));
+  protected readonly hotelProfit = computed(() => {
+    const actualFare = this.data().actualFare;
+    if (actualFare == null || Number.isNaN(actualFare)) {
+      return undefined;
+    }
+
+    return actualFare;
+  });
   protected readonly canAssignDriver = computed(() =>
     this.isAdmin() &&
     !this.data().driver &&
+    !this.isFinishedTrip(this.data()) &&
     (this.isPendingStatus(this.data().unifiedStatus) || this.isScheduledStatus(this.data().unifiedStatus))
   );
   protected readonly canShowScheduledActions = computed(() =>
-    this.data().isScheduled && !this.isCancelledStatus(this.data().unifiedStatus)
+    this.data().isScheduled &&
+    !this.data().startedAt &&
+    !this.data().endedAt &&
+    !this.isFinishedTrip(this.data())
+  );
+  protected readonly canShowStatusActions = computed(() =>
+    this.isAdmin() &&
+    !this.data().endedAt &&
+    !this.isFinishedTrip(this.data()) &&
+    (this.actionStatus() === 'Accepted' || this.actionStatus() === 'Arrived' || this.actionStatus() === 'InProgress')
   );
 
   protected readonly actionLoading = signal(false);
@@ -104,7 +119,7 @@ export class DetailsComponent implements OnInit {
 
   protected triggerStatusAction(): void {
     const id = this.tripRequestId();
-    const status = this.data().unifiedStatus;
+    const status = this.actionStatus();
     if (!id || this.actionLoading()) return;
 
     const action =
@@ -192,20 +207,99 @@ export class DetailsComponent implements OnInit {
     }).format(new Date(value));
   }
 
-  private statusTranslationKey(status: string): TranslationKey {
-    return `tripDetails.status.${status.replace(/\s+/g, '')}` as TranslationKey;
+  protected formatMoney(value: number | undefined): string {
+    if (value === undefined || Number.isNaN(value)) return '--';
+    return value.toFixed(2);
   }
 
-  private isCancelledStatus(status: string): boolean {
-    return status.toLowerCase().includes('cancel');
+  private statusTranslationKey(status: string | null | undefined): TranslationKey {
+    const normalized = status?.trim().replace(/\s+/g, '') || 'Unknown';
+    return `tripDetails.status.${normalized}` as TranslationKey;
   }
 
-  private isPendingStatus(status: string): boolean {
-    return status.trim().toLowerCase() === 'pending';
+  private isCancelledStatus(status: string | null | undefined): boolean {
+    return status?.toLowerCase().includes('cancel') ?? false;
   }
 
-  private isScheduledStatus(status: string): boolean {
-    const normalized = status.trim().toLowerCase();
+  private isCompletedStatus(status: string | null | undefined): boolean {
+    return status?.toLowerCase().includes('complete') ?? false;
+  }
+
+  private isFinishedStatus(status: string | null | undefined): boolean {
+    const normalized = status?.trim().toLowerCase() ?? '';
+    return this.isCompletedStatus(normalized) || this.isCancelledStatus(normalized) || normalized === 'rejected';
+  }
+
+  private isFinishedTrip(trip: TripDetailsResponse): boolean {
+    return !!trip.endedAt || this.isFinishedStatus(this.resolveEffectiveStatus(trip));
+  }
+
+  private currentDisplayStatus(trip: TripDetailsResponse): string {
+    if (trip.isScheduled && !trip.startedAt && !this.isFinishedTrip(trip) && !trip.endedAt) {
+      return 'Scheduled';
+    }
+
+    const effectiveStatus = this.resolveEffectiveStatus(trip);
+    if (this.isCompletedStatus(effectiveStatus)) return 'Completed';
+    if (this.isCancelledStatus(effectiveStatus)) return 'Cancelled';
+
+    return this.canonicalStatus(effectiveStatus);
+  }
+
+  private resolveEffectiveStatus(trip: TripDetailsResponse): string {
+    const statuses = [
+      trip.tripStatusString,
+      trip.tripRequestStatusString,
+      trip.requestStatusString,
+      trip.unifiedStatus,
+    ].map(status => status?.trim() ?? '');
+
+    return statuses.find(status => this.isCompletedStatus(status) || this.isCancelledStatus(status)) ??
+      statuses.find(status => !!this.normalizeStatus(status)) ??
+      '';
+  }
+
+  private canonicalStatus(status: string | null | undefined): string {
+    switch (this.normalizeStatus(status)) {
+      case 'pending':
+        return 'Pending';
+      case 'accepted':
+        return 'Accepted';
+      case 'arrived':
+        return 'Arrived';
+      case 'inprogress':
+        return 'InProgress';
+      case 'completed':
+        return 'Completed';
+      case 'scheduled':
+      case 'schedualed':
+        return 'Scheduled';
+      case 'cancelled':
+      case 'canceled':
+      case 'cancelledbydriver':
+      case 'canceledbydriver':
+      case 'cancelledbypassenger':
+      case 'canceledbypassenger':
+      case 'cancelledbyhotel':
+      case 'canceledbyhotel':
+        return 'Cancelled';
+      case 'rejected':
+        return 'Rejected';
+      default:
+        return status?.trim() || 'Unknown';
+    }
+  }
+
+  private normalizeStatus(status: string | null | undefined): string {
+    return status?.trim().toLowerCase().replace(/[^a-z0-9]+/g, '') ?? '';
+  }
+
+  private isPendingStatus(status: string | null | undefined): boolean {
+    return status?.trim().toLowerCase() === 'pending';
+  }
+
+  private isScheduledStatus(status: string | null | undefined): boolean {
+    const normalized = status?.trim().toLowerCase() ?? '';
     return normalized === 'scheduled' || normalized === 'schedualed';
   }
 }

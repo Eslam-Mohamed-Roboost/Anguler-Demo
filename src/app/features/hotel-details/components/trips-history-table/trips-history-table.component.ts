@@ -18,6 +18,13 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ModalComponent } from "../../../../shared/components/modal/modal.component";
 import { HotelDetailsService } from '../../services/hotel-details.service';
 import { AppConfigService } from '../../../../core/services/app-config.service';
+import { HotelFinancialSortBy, HotelTripSortBy, SortDirection } from '../../models/dto';
+
+interface HotelFinancialSortOption {
+  sortBy: HotelFinancialSortBy;
+  sortDirection: SortDirection;
+  label: string;
+}
 
 @Component({
   selector: 'app-trips-history-table',
@@ -56,37 +63,71 @@ export class TripsHistoryTableComponent {
   readonly hotelAction = output<{ type: 'view' | 'settle' | 'block'; hotel: HotelRecord }>();
   readonly commissionSettings = output<void>();
   readonly pageChange = output<number>();
-  readonly sortChange = output<'asc' | 'desc'>();
+  readonly sortChange = output<HotelTripSortBy>();
+  readonly hotelSortChange = output<{ sortBy: HotelFinancialSortBy; sortDirection: SortDirection }>();
 
-  readonly sortOrder = signal<'asc' | 'desc'>('asc');
+  readonly selectedSort = signal<HotelTripSortBy>(HotelTripSortBy.RequestedAt);
+  readonly selectedHotelSortBy = signal<HotelFinancialSortBy>(HotelFinancialSortBy.CreatedDate);
+  readonly selectedHotelSortDirection = signal<SortDirection>(SortDirection.Descending);
+  readonly showSortDropdown = signal(false);
   readonly showFilterDropdown = signal(false);
   readonly statusFilter = signal('');
   readonly openHotelActionId = signal<string | null>(null);
+  protected readonly searchPlaceholderKey = computed(() =>
+    this.activeTab() === 'trips' ? 'hotelDetails.searchTrips' : 'hotelDetails.searchHotels'
+  );
 
   private readonly hotelCommissionInfo = inject(HotelDetailsService);
   private readonly appConfig = inject(AppConfigService);
+  protected readonly sortOptions = [
+    { value: HotelTripSortBy.RequestedAt, label: 'hotelDetails.sortRequestedAt' },
+    { value: HotelTripSortBy.FareDesc, label: 'hotelDetails.sortFareDesc' },
+    { value: HotelTripSortBy.FareAsc, label: 'hotelDetails.sortFareAsc' },
+  ];
+  protected readonly hotelSortOptions: HotelFinancialSortOption[] = [
+    {
+      sortBy: HotelFinancialSortBy.CreatedDate,
+      sortDirection: SortDirection.Descending,
+      label: 'hotelDetails.sortCreatedDateDesc',
+    },
+    {
+      sortBy: HotelFinancialSortBy.CreatedDate,
+      sortDirection: SortDirection.Ascending,
+      label: 'hotelDetails.sortCreatedDateAsc',
+    },
+    {
+      sortBy: HotelFinancialSortBy.MonthlyDues,
+      sortDirection: SortDirection.Ascending,
+      label: 'hotelDetails.sortMonthlyDuesAsc',
+    },
+    {
+      sortBy: HotelFinancialSortBy.MonthlyDues,
+      sortDirection: SortDirection.Descending,
+      label: 'hotelDetails.sortMonthlyDuesDesc',
+    },
+  ];
+
   protected readonly tripColumns = computed<ColumnDef[]>(() => [
-    { key: 'tripId', header: 'Trip Code', sortable: true, headerClass: 'w-28' },
-    { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-36' },
-    { key: 'guestName', header: 'Guest Name', sortable: true, headerClass: 'w-32' },
-    { key: 'driverName', header: 'Driver Name', sortable: true, headerClass: 'w-32' },
+    { key: 'tripId', header: 'Trip Code', sortable: false, headerClass: 'w-28' },
+    { key: 'hotelName', header: 'Hotel Name', sortable: false, headerClass: 'w-36' },
+    { key: 'guestName', header: 'Guest Name', sortable: false, headerClass: 'w-32' },
+    { key: 'driverName', header: 'Driver Name', sortable: false, headerClass: 'w-32' },
     { key: 'route', header: 'Route', sortable: false, headerClass: 'w-40' },
-    { key: 'requestStatus', header: 'Request Status', sortable: true, headerClass: 'w-36' },
-    { key: 'tripStatus', header: 'Trip Status', sortable: true, headerClass: 'w-32' },
-    { key: 'fare', header: 'Fare (CHF)', sortable: true, headerClass: 'w-28' },
-    { key: 'startEndDate', header: 'Start.End.Date', sortable: true, headerClass: 'w-36' },
+    { key: 'requestStatus', header: 'Request Status', sortable: false, headerClass: 'w-36' },
+    { key: 'tripStatus', header: 'Trip Status', sortable: false, headerClass: 'w-32' },
+    { key: 'fare', header: 'Fare (CHF)', sortable: false, headerClass: 'w-28' },
+    { key: 'startEndDate', header: 'Start.End.Date', sortable: false, headerClass: 'w-36' },
     { key: 'actions', header: 'Actions', sortable: false, headerClass: 'w-20' },
   ]);
 
   protected readonly hotelColumns = computed<ColumnDef[]>(() => [
-    { key: 'id', header: 'ID', sortable: true, headerClass: 'w-24' },
-    { key: 'hotelName', header: 'Hotel Name', sortable: true, headerClass: 'w-56' },
-    { key: 'totalTrips', header: 'Total Trips', sortable: true, headerClass: 'w-24' },
-    { key: 'hotelComm', header: 'Hotel Comm.', sortable: true, headerClass: 'w-24' },
-    { key: 'hotelProfits', header: 'Hotel Profits', sortable: true, headerClass: 'w-28' },
-    { key: 'linesProfits', header: 'Lines profits', sortable: true, headerClass: 'w-28' },
-    { key: 'monthlyDues', header: 'Monthly Dues', sortable: true, headerClass: 'w-28' },
-    { key: 'status', header: 'Status', sortable: true, headerClass: 'w-36' },
+    { key: 'id', header: 'ID', sortable: false, headerClass: 'w-24' },
+    { key: 'hotelName', header: 'Hotel Name', sortable: false, headerClass: 'w-56' },
+    { key: 'totalTrips', header: 'Total Trips', sortable: false, headerClass: 'w-24' },
+    { key: 'hotelProfits', header: 'Hotel Profits', sortable: false, headerClass: 'w-28' },
+    { key: 'linesProfits', header: 'Lines profits', sortable: false, headerClass: 'w-28' },
+    { key: 'monthlyDues', header: 'Monthly Dues', sortable: false, headerClass: 'w-28' },
+    { key: 'status', header: 'Status', sortable: false, headerClass: 'w-36' },
     { key: 'actions', header: 'Actions', sortable: false, headerClass: 'w-20' },
   ]);
 
@@ -127,15 +168,44 @@ export class TripsHistoryTableComponent {
     this.activeTab.set(tab);
     this.statusFilter.set('');
     this.showFilterDropdown.set(false);
+    this.showSortDropdown.set(false);
     this.tabChange.emit(tab);
   }
 
-  protected toggleSort(): void {
-    this.sortOrder.update(order => order === 'asc' ? 'desc' : 'asc');
-    this.sortChange.emit(this.sortOrder());
+  protected toggleSortDropdown(): void {
+    this.showFilterDropdown.set(false);
+    this.showSortDropdown.update(show => !show);
+  }
+
+  protected onSortOption(sortBy: HotelTripSortBy): void {
+    this.selectedSort.set(sortBy);
+    this.showSortDropdown.set(false);
+    this.sortChange.emit(sortBy);
+  }
+
+  protected selectedSortLabel(): string {
+    return this.sortOptions.find(option => option.value === this.selectedSort())?.label ?? 'hotelDetails.sort';
+  }
+
+  protected onHotelSortOption(option: HotelFinancialSortOption): void {
+    this.selectedHotelSortBy.set(option.sortBy);
+    this.selectedHotelSortDirection.set(option.sortDirection);
+    this.showSortDropdown.set(false);
+    this.hotelSortChange.emit({
+      sortBy: option.sortBy,
+      sortDirection: option.sortDirection,
+    });
+  }
+
+  protected selectedHotelSortLabel(): string {
+    return this.hotelSortOptions.find(option =>
+      option.sortBy === this.selectedHotelSortBy() &&
+      option.sortDirection === this.selectedHotelSortDirection()
+    )?.label ?? 'hotelDetails.sort';
   }
 
   protected toggleFilterDropdown(): void {
+    this.showSortDropdown.set(false);
     this.showFilterDropdown.update(show => !show);
   }
 
@@ -180,11 +250,17 @@ export class TripsHistoryTableComponent {
   }
 
   protected statusColorClass(statusKey: string): string {
+    if (statusKey.includes('cancel')) return this.tripStatusColorMap['cancelled'];
+
     return this.tripStatusColorMap[statusKey] || 'text-status-scheduled bg-status-scheduled-bg';
   }
 
   protected formatStatus(status: string): string {
     if (!status) return '--';
+
+    if (status.toLowerCase().includes('cancel')) {
+      return 'Cancelled';
+    }
 
     return status
       .replace(/([a-z])([A-Z])/g, '$1 $2')

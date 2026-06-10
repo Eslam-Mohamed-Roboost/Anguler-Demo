@@ -11,6 +11,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { BillingPanelComponent, BillingItem } from '../billing-panel/billing-panel.component';
@@ -25,6 +26,9 @@ import { ChatService } from '../../../features/TripDetails/services/chat.service
 import { BaseComponent } from '../../base/base.component';
 import { NotificationsService } from '../../../core/services/notifications.service';
 import { ApiService } from '../../../core/services/api.service';
+import { NotificationSoundService } from '../../../core/services/notification-sound.service';
+
+const NAVBAR_REFRESH_MS = 5_000;
 
 @Component({
   selector: 'app-navbar-booking',
@@ -41,6 +45,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   private readonly chatService = inject(ChatService);
   private readonly notifiactionService = inject(NotificationsService);
   private readonly api = inject(ApiService);
+  private readonly notificationSound = inject(NotificationSoundService);
   /** Logo image source */
   readonly logoSrc = input('assets/booking/logo-lines.png');
 
@@ -172,6 +177,9 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   protected readonly messagesLoading = signal(false);
   private dataLoaded = false;
   private profileLoadRequested = false;
+  private pollingStarted = false;
+  private previousMessageCount: number | null = null;
+  private previousBellCount: number | null = null;
 
   /** Emitted when Trips History is clicked */
   readonly tripsHistoryClick = output<void>();
@@ -195,6 +203,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
         this.dataLoaded = true;
         this.loadMessages();
         this.notificationCount();
+        this.startPolling();
       }
 
       if (!this.profileLoadRequested) {
@@ -211,6 +220,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
       this.dataLoaded = true;
       this.loadMessages();
       this.notificationCount();
+      this.startPolling();
     }
 
     if (!this.profileLoadRequested) {
@@ -218,50 +228,64 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
       this.loadHotelProfileForNavbar();
     }
   }
-  protected notificationCount(): void {
-      this.notifiactionService.UnreadNotificationsCount()
+  protected notificationCount(skipGlobalLoading = false): void {
+      this.notifiactionService.UnreadNotificationsCount(skipGlobalLoading)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next:(result)=>{
           if(result.isSuccess){
-              this.bellCount.set(result.data?.count ?? 0)
+              this.setBellCount(result.data?.count ?? 0, skipGlobalLoading);
           }else{
-              this.bellCount.set(0)
+              this.bellCount.set(0);
           }
         }
       })
   }
-  private loadMessages(): void {
-    this.messagesLoading.set(true);
+  private loadMessages(showLoading = true, skipGlobalLoading = false): void {
+    if (showLoading) this.messagesLoading.set(true);
     this.chatService
-      .getSideBarMessages(1, 50)
+      .getSideBarMessages(1, 50, skipGlobalLoading)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
-          this.messagesLoading.set(false);
+          if (showLoading) this.messagesLoading.set(false);
           if (result.isSuccess && result.data?.messages?.items) {
             this.messages.set(result.data.messages.items);
-            this.callCount.set(result.data.messages.items.filter(m => !m.read).length);
+            this.setMessageCount(result.data.unReadCount, !showLoading);
           }
         },
         error: () => {
-          this.messagesLoading.set(false);
+          if (showLoading) this.messagesLoading.set(false);
         },
       });
 
        this.chatService
-      .getSideBarMessagesCount()
+      .getSideBarMessagesCount(skipGlobalLoading)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
-          this.messagesLoading.set(false);
+          if (showLoading) this.messagesLoading.set(false);
           if (result.isSuccess && result.data !== undefined) {
-            this.callCount.set(result.data??0);
+            this.setMessageCount(result.data ?? 0, !showLoading);
           }
         },
         error: () => {
-          this.messagesLoading.set(false);
+          if (showLoading) this.messagesLoading.set(false);
         },
+      });
+  }
+
+  private startPolling(): void {
+    if (this.pollingStarted) return;
+
+    this.pollingStarted = true;
+    timer(NAVBAR_REFRESH_MS, NAVBAR_REFRESH_MS)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (!this.isAuthenticated() && !this.coreAuth.isAuthenticated()) return;
+
+        this.loadMessages(false, true);
+        this.notificationCount(true);
       });
   }
 
@@ -281,12 +305,19 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
 
   /** Handle message panel toggle */
   protected onMessageClick(): void {
-    this.messagePanelOpen.set(!this.messagePanelOpen());
+    this.notificationSound.unlock();
+    const shouldOpen = !this.messagePanelOpen();
+    this.messagePanelOpen.set(shouldOpen);
     this.billingPanelOpen.set(false); // Close billing panel when opening message panel
+
+    if (shouldOpen) {
+      this.loadMessages(true, true);
+    }
   }
 
   /** Handle billing panel toggle */
   protected onBillingClick(): void {
+    this.notificationSound.unlock();
     this.billingPanelOpen.set(!this.billingPanelOpen());
     this.messagePanelOpen.set(false); // Close message panel when opening billing panel
   }
@@ -313,13 +344,37 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   }
 
   /** Handle message click */
-  protected onMessageItemClick(message: any): void {
-    // Mark as read
+  protected onMessageItemClick(message: Message): void {
     const updatedMessages = this.messages().map(msg =>
       msg.id === message.id ? { ...msg, read: true } : msg
     );
     this.messages.set(updatedMessages);
-    this.callCount.set(Math.max(0, this.callCount() - 1));
+    this.setMessageCount(Math.max(0, this.callCount() - 1), false);
+
+    const route = this.messageTripDetailsRoute(message);
+    if (!route) return;
+
+    this.closeAllPanels();
+    void this.router.navigate(route);
+  }
+
+  private messageTripDetailsRoute(message: Message): string[] | null {
+    const tripRequestId = this.cleanId(message.tripRequestId);
+    if (!tripRequestId) return null;
+
+    if (this.coreAuth.hasRole('hotel')) {
+      return ['/hotel-details', 'trip', tripRequestId];
+    }
+
+    if (this.coreAuth.hasRole('admin') || this.coreAuth.hasRole('super admin')) {
+      return ['/hotel-details', 'trip', tripRequestId];
+    }
+
+    return ['/TripDetails', tripRequestId];
+  }
+
+  private cleanId(value: string | null | undefined): string {
+    return typeof value === 'string' ? value.trim() : '';
   }
 
   /** Handle billing panel close */
@@ -395,5 +450,29 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
           }
         },
       });
+  }
+
+  private setMessageCount(count: number, playSound = true): void {
+    const unreadCount = Math.max(0, count);
+    const previousCount = this.previousMessageCount;
+    this.callCount.set(unreadCount);
+
+    if (playSound && previousCount !== null && unreadCount > previousCount) {
+      this.notificationSound.play('message');
+    }
+
+    this.previousMessageCount = unreadCount;
+  }
+
+  private setBellCount(count: number, playSound = true): void {
+    const unreadCount = Math.max(0, count);
+    const previousCount = this.previousBellCount;
+    this.bellCount.set(unreadCount);
+
+    if (playSound && previousCount !== null && unreadCount > previousCount) {
+      this.notificationSound.play('notification');
+    }
+
+    this.previousBellCount = unreadCount;
   }
 }

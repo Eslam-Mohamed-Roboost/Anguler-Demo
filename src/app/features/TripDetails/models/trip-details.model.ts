@@ -32,6 +32,9 @@ export interface TripDetailsResponse {
   tripId: string | null;
   tripCode: string | null;
   unifiedStatus: string;
+  requestStatusString?: string | null;
+  tripRequestStatusString?: string | null;
+  tripStatusString?: string | null;
   startLocation: Location;
   endLocation: Location;
   guestName: string;
@@ -39,9 +42,17 @@ export interface TripDetailsResponse {
   isHotelRequest: boolean;
   hotelId: string | null;
   hotel?: HotelInfo | null;
+  hotelName?: string | null;
+  hotelPhone?: string | null;
+  hotelPhoneNumber?: string | null;
+  hotelEmail?: string | null;
+  hotelAddress?: string | null;
+  hotelLogoUrl?: string | null;
+  hotelCode?: string | null;
   driver: TripDriver | null;
   estimatedPrice: number;
   actualFare: number | null;
+  commission?: number | null;
   tips: number | null;
   currency: string;
   paymentMethodType: string;
@@ -57,7 +68,7 @@ export interface TripDetailsResponse {
   specialRequests?: string;
 }
 
-export function getTripStatusLabel(status: string): string {
+export function getTripStatusLabel(status: string | null | undefined): string {
   switch (status) {
     case 'Pending': return 'Pending';
     case 'Accepted': return 'Accepted';
@@ -76,11 +87,11 @@ export function getTripStatusLabel(status: string): string {
     case 'CancelledByHotel':
       return 'Cancelled';
     case 'Rejected': return 'Rejected';
-    default: return status;
+    default: return status?.trim() || 'Unknown';
   }
 }
 
-export function getTripStatusVariant(status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' {
+export function getTripStatusVariant(status: string | null | undefined): 'success' | 'danger' | 'warning' | 'info' | 'neutral' | 'scheduled' {
   switch (status) {
     case 'Completed': return 'success';
     case 'Canceled':
@@ -93,8 +104,8 @@ export function getTripStatusVariant(status: string): 'success' | 'danger' | 'wa
     case 'CancelledByHotel':
     case 'Rejected': return 'danger';
     case 'InProgress': return 'info';
-    case 'Scheduled': return 'info';
-    case 'Schedualed': return 'info';
+    case 'Scheduled': return 'scheduled';
+    case 'Schedualed': return 'scheduled';
     case 'Pending':
     case 'Accepted':
     case 'Arrived': return 'warning';

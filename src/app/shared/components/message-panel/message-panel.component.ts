@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IconComponent } from '../icon/icon.component';
-import { AvatarComponent } from '../avatar/avatar.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ChatService } from '../../../features/TripDetails/services/chat.service';
 import { BaseComponent } from '../../base/base.component';
@@ -18,7 +17,9 @@ import { AuthService } from '../../../core/services/auth.service';
 
 export interface Message {
   id: string;
+  tripRequestId?: string;
   tripID:string;
+  tripRequestStatus?: number;
   sender: string;
   content: string;
   time: string;
@@ -28,7 +29,7 @@ export interface Message {
 @Component({
   selector: 'app-message-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent, AvatarComponent, TranslatePipe],
+  imports: [IconComponent, TranslatePipe],
   templateUrl: './message-panel.component.html',
 })
 export class MessagePanelComponent extends BaseComponent implements OnInit {
@@ -131,6 +132,7 @@ export class MessagePanelComponent extends BaseComponent implements OnInit {
           this.loading.set(false);
           if (result.isSuccess && result.data?.messages?.items) {
             this.apiMessages.set(result.data.messages.items);
+            this.unreadCount.set(result.data.unReadCount);
           }
         },
         error: () => {
@@ -154,11 +156,11 @@ export class MessagePanelComponent extends BaseComponent implements OnInit {
 
   /** Get messages (use API data, input data, or default mock data) */
   protected getMessages(): Message[] {
-    const apiMsgs = this.apiMessages();
-    if (apiMsgs.length > 0) return apiMsgs;
-
     const inputMsgs = this.messages();
     if (inputMsgs.length > 0) return inputMsgs;
+
+    const apiMsgs = this.apiMessages();
+    if (apiMsgs.length > 0) return apiMsgs;
 
     return this.defaultMessages();
   }
@@ -175,10 +177,13 @@ export class MessagePanelComponent extends BaseComponent implements OnInit {
     const updatedMessages = this.getMessages().map(msg => 
       msg.id === message.id ? { ...msg, read: true } : msg
     );
-    // Update the signal if using default data
-    if (this.messages().length === 0) {
+
+    if (this.apiMessages().length > 0) {
+      this.apiMessages.set(updatedMessages);
+    } else if (this.messages().length === 0) {
       this.defaultMessages.set(updatedMessages);
     }
+
     this.messageClick.emit(message);
   }
 
@@ -211,5 +216,51 @@ export class MessagePanelComponent extends BaseComponent implements OnInit {
   /** Check if message is expanded */
   protected isMessageExpanded(message: Message): boolean {
     return this.expandedMessages().has(message.id);
+  }
+
+  protected statusLabel(message: Message): string {
+    switch (message.tripRequestStatus) {
+      case 0:
+        return 'Waiting Driver';
+      case 1:
+      case 2:
+      case 3:
+        return 'Active';
+      case 4:
+        return 'Completed';
+      case 5:
+      case 6:
+        return 'Cancelled';
+      default:
+        return message.read ? 'Completed' : 'Active';
+    }
+  }
+
+  protected statusClass(message: Message): string {
+    switch (this.statusLabel(message)) {
+      case 'Active':
+        return 'bg-status-active-bg text-status-active';
+      case 'Waiting Driver':
+        return 'bg-status-scheduled-bg text-status-scheduled';
+      case 'Completed':
+        return 'bg-[#F1F4F8] text-[#6B7C93]';
+      case 'Cancelled':
+        return 'bg-status-cancelled-bg text-status-cancelled';
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
+  }
+
+  protected relativeTime(value: string): string {
+    const time = new Date(value).getTime();
+    if (!value || Number.isNaN(time)) return '0 min';
+
+    const diffMinutes = Math.max(0, Math.floor((Date.now() - time) / 60000));
+    if (diffMinutes < 60) return `${diffMinutes} min`;
+
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours} h`;
+
+    return `${Math.floor(diffHours / 24)} d`;
   }
 }

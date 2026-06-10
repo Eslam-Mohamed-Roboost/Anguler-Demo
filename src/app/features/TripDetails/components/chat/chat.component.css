@@ -9,49 +9,37 @@
   overflow: hidden;
 }
 
-/* Visible scrollbar - always show scroll control on all screen sizes */
 .chat-messages {
-  overflow-y: scroll !important;
+  overflow-y: auto !important;
   scrollbar-gutter: stable;
-  /* Force classic scrollbar on WebKit (visible on large screens) */
   -webkit-overflow-scrolling: touch;
 }
 
-/* Wider scrollbar on large screens for visibility */
 .chat-messages::-webkit-scrollbar {
-  width: 12px;
-}
-
-@media (min-width: 1024px) {
-  .chat-messages::-webkit-scrollbar {
-    width: 14px;
-  }
+  width: 8px;
 }
 
 .chat-messages::-webkit-scrollbar-track {
-  background: #fbf6e8;
-  border-radius: 6px;
-  margin: 4px 0;
+  background: transparent;
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background: #f97316;
+  background: #f3b26d;
   border-radius: 6px;
-  border: 3px solid #fbf6e8;
+  border: 2px solid #fff;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #ea580c;
+  background: #e9a257;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:active {
-  background: #c2410c;
+  background: #d8893d;
 }
 
-/* Firefox - always show scrollbar */
 .chat-messages {
-  scrollbar-width: auto;
-  scrollbar-color: #f97316 #fbf6e8;
+  scrollbar-width: thin;
+  scrollbar-color: #f3b26d transparent;
 }
 
 /* Input area - always visible at bottom of chat section */

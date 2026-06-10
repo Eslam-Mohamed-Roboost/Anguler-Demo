@@ -10,6 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer } from 'rxjs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CellDefDirective } from '../../../../shared/components/data-table/cell-def.directive';
 import type { ColumnDef } from '../../../../shared/components/data-table/column-def';
@@ -26,6 +27,8 @@ import { HotelApiItem, HotelTripItem, TripRequestStatusItem } from '../../models
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { TranslatePipe } from "../../../../shared/pipes/translate.pipe";
+
+const TABLE_REFRESH_MS = 30_000;
  
 @Component({
   selector: 'app-hotel-profile',
@@ -51,6 +54,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   private readonly notifications = inject(NotificationStore);
 
   readonly hotelId = signal('');
+  readonly routeHotelId = signal('');
   readonly searchQuery = signal('');
   readonly selectedStatus = signal('');
   readonly statusOptions = signal<TripRequestStatusItem[]>([]);
@@ -135,31 +139,47 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   });
   readonly canSettlePayout = computed(() => {
     const status = this.currentSettlementStatus();
+    const hasAwaitingAmount = this.awaitingAmount() > 0;
 
-    return status === SettlementStatus.AwaitingPayout;
+    return hasAwaitingAmount && (
+      status === SettlementStatus.Pending ||
+      status === SettlementStatus.AwaitingPayout
+    );
   });
 
   protected readonly columns = computed<ColumnDef[]>(() => [
-    { key: 'tripCode', header: 'hotelTrip.tripId', sortable: false, headerClass: 'w-28' },
-    { key: 'driver', header: 'hotelTrip.driver', sortable: false, headerClass: 'w-32' },
-    { key: 'guest', header: 'hotelTrip.guest', sortable: false, headerClass: 'w-32' },
-    { key: 'route', header: 'hotelTrip.route', sortable: false, headerClass: 'w-40' },
-    { key: 'status', header: 'hotelTrip.status', sortable: false, headerClass: 'w-24' },
-    { key: 'requestStatus', header: 'hotelTrip.requestStatus', sortable: false, headerClass: 'w-32' },
-    { key: 'duration', header: 'hotelTrip.duration', sortable: false, headerClass: 'w-24' },
-    { key: 'fare', header: 'hotelTrip.fare', sortable: false, headerClass: 'w-24' },
-    { key: 'date', header: 'hotelTrip.startDate', sortable: false, headerClass: 'w-32' },
-    { key: 'actions', header: 'hotelTrip.actions', sortable: false, headerClass: 'w-16' },
+    { key: 'tripId', header: 'Trip Code', sortable: true, headerClass: 'w-28' },
+    { key: 'guestName', header: 'Guest Name', sortable: true, headerClass: 'w-32' },
+    { key: 'driverName', header: 'Driver Name', sortable: true, headerClass: 'w-32' },
+    { key: 'route', header: 'Route', sortable: false, headerClass: 'w-40' },
+    { key: 'requestStatus', header: 'Request Status', sortable: true, headerClass: 'w-36' },
+    { key: 'tripStatus', header: 'Trip Status', sortable: true, headerClass: 'w-32' },
+    { key: 'fare', header: 'Fare (CHF)', sortable: true, headerClass: 'w-28' },
+    { key: 'startEndDate', header: 'Start.End.Date', sortable: true, headerClass: 'w-36' },
+    { key: 'actions', header: 'Actions', sortable: false, headerClass: 'w-20' },
   ]);
+
+  protected readonly tripStatusColorMap: Record<string, string> = {
+    completed: 'text-status-completed bg-status-completed-bg',
+    active: 'text-status-active bg-status-active-bg',
+    pending: 'text-status-scheduled bg-status-scheduled-bg',
+    scheduled: 'text-status-scheduled bg-status-scheduled-bg',
+    cancelled: 'text-status-cancelled bg-status-cancelled-bg',
+    'cancelled-by-driver': 'text-status-cancelled bg-status-cancelled-bg',
+    'cancelled-by-passenger': 'text-status-cancelled bg-status-cancelled-bg',
+    'not-started': 'text-muted bg-gray-100',
+  };
 
   ngOnInit(): void {
     this.renderer.addClass(document.body, 'hotel-details-active');
     const id = this.route.snapshot.paramMap.get('id') ?? '';
     if (id && !this.dataLoaded) {
       this.dataLoaded = true;
+      this.routeHotelId.set(id);
       this.loadTripStatuses();
       this.loadHotel(id);
       this.loadTrips(id);
+      this.startTripsRefresh(id);
       this.loadWithdrawalDetails(id);
       this.loadUnsettledPayouts(id);
       this.hotelKpi(id);
@@ -271,28 +291,43 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       });
   }
 
-  private loadTrips(id: string): void {
-    this.tripsLoading.set(true);
+  private startTripsRefresh(id: string): void {
+    timer(TABLE_REFRESH_MS, TABLE_REFRESH_MS)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadTrips(id, false, true));
+  }
+
+  private loadTrips(id: string, showLoading = true, skipGlobalLoading = false): void {
+    if (showLoading) this.tripsLoading.set(true);
     this.service
-      .getHotelTripsById(id, this.currentPage(), this.pageSize(), this.selectedStatus())
+      .getHotelTripsById(id, this.currentPage(), this.pageSize(), this.selectedStatus(), skipGlobalLoading)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
-          this.tripsLoading.set(false);
+          if (showLoading) this.tripsLoading.set(false);
           if (result.isSuccess && result.data) {
             this.trips.set(result.data.items.map(i => this.toTripRecord(i)));
             this.totalTrips.set(result.data.totalCount);
             this.updateTripStats(result.data.items);
           }
         },
-        error: () => this.tripsLoading.set(false),
+        error: () => {
+          if (showLoading) this.tripsLoading.set(false);
+        },
       });
   }
 
   private updateTripStats(items: HotelTripItem[]): void {
     const counts = { active: 0, scheduled: 0, completed: 0, cancelled: 0 };
     for (const t of items) {
-      const s = this.toUiTripStatus(t.tripStatusString || t.tripRequestStatusString || t.requestStatusString);
+      const isScheduledTrip = this.isScheduledBeforeStart(t);
+      const s = this.toUiTripStatus(
+        this.resolveTripStatusText(
+          isScheduledTrip ? 'Scheduled' : t.tripStatusString || '',
+          t.tripRequestStatusString || t.requestStatusString || 'Pending',
+        ),
+        isScheduledTrip,
+      );
       if (s === 'active') counts.active++;
       else if (s === 'scheduled') counts.scheduled++;
       else if (s === 'completed') counts.completed++;
@@ -313,8 +348,10 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     const rawDriver = item.driverName;
     const driverName = rawDriver && rawDriver !== 'null' ? rawDriver : undefined;
     const requestStatus = item.tripRequestStatusString || item.requestStatusString || 'Pending';
-    const tripStatus = item.tripStatusString || '';
-    const status = this.toUiTripStatus(tripStatus || requestStatus);
+    const isScheduledTrip = this.isScheduledBeforeStart(item);
+    const tripStatus = isScheduledTrip ? 'Scheduled' : item.tripStatusString || '';
+    const effectiveTripStatus = this.resolveTripStatusText(tripStatus, requestStatus);
+    const status = this.toUiTripStatus(effectiveTripStatus, isScheduledTrip);
     return {
       id: item.tripRequestId,
       tripId: item.tripId ?? undefined,
@@ -324,11 +361,11 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       customerName: item.guestName,
       pickupLocation: item.startLocation?.address ?? '--',
       dropoffLocation: item.endLocation?.address ?? '--',
-      date: item.startedAt ?? item.requestedAt ?? undefined,
+      date: item.scheduledAt ?? item.startedAt ?? item.requestedAt ?? undefined,
       endDate: item.endedAt,
       status,
-      tripStatus: tripStatus || 'Not Started',
-      tripStatusKey: this.normalizeStatus(tripStatus || 'not-started'),
+      tripStatus: effectiveTripStatus || 'Not Started',
+      tripStatusKey: this.normalizeStatus(effectiveTripStatus || 'not-started'),
       requestStatus,
       requestStatusKey: this.normalizeStatus(requestStatus),
       price: item.fare ?? 0,
@@ -337,8 +374,10 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       duration: item.durationMinutes,
       paymentStatus: 'Paid',
       driverName,
+      driverPhoneNumber: item.driverPhoneNumber?.trim() || item.driverPhone?.trim() || undefined,
       room: item.roomNumber != null ? String(item.roomNumber) : undefined,
       commission: item.commission ?? undefined,
+      scheduledAt: item.scheduledAt,
       requestedAt: item.requestedAt,
       notes: item.notes,
       placeTypeName: item.placeTypeName,
@@ -346,15 +385,32 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     };
   }
 
-  private toUiTripStatus(status: string): TripRecord['status'] {
+  private toUiTripStatus(status: string, isScheduled = false): TripRecord['status'] {
     const normalized = this.normalizeStatus(status);
 
     if (normalized.includes('complete')) return 'completed';
+    if (normalized.includes('cancel')) return 'cancelled';
+    if (isScheduled) return 'scheduled';
     if (normalized.includes('active') || normalized.includes('progress')) return 'active';
     if (normalized.includes('schedule') || normalized.includes('schedual')) return 'scheduled';
-    if (normalized.includes('cancel')) return 'cancelled';
 
     return 'pending';
+  }
+
+  private isScheduledBeforeStart(item: HotelTripItem): boolean {
+    if (!item.isScheduled || item.startedAt) return false;
+
+    const status = this.normalizeStatus(this.resolveTripStatusText(item.tripStatusString || '', item.tripRequestStatusString || item.requestStatusString || ''));
+    return !status.includes('complete') && !status.includes('cancel') && status !== 'rejected';
+  }
+
+  private resolveTripStatusText(tripStatus: string, requestStatus: string): string {
+    const requestStatusKey = this.normalizeStatus(requestStatus);
+    if (requestStatusKey.includes('cancel') || requestStatusKey.includes('complete')) {
+      return requestStatus;
+    }
+
+    return tripStatus || requestStatus;
   }
 
   private normalizeStatus(status: string): string {
@@ -363,7 +419,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
 
   onPageChange(page: number): void {
     this.currentPage.set(page);
-    this.loadTrips(this.getCurrentHotelRouteId());
+    this.loadTrips(this.getCurrentHotelRouteId(), true, true);
   }
 
   protected onSearchChange(event: Event): void {
@@ -373,7 +429,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   protected onStatusChange(event: Event): void {
     this.selectedStatus.set((event.target as HTMLSelectElement).value);
     this.currentPage.set(1);
-    this.loadTrips(this.getCurrentHotelRouteId());
+    this.loadTrips(this.getCurrentHotelRouteId(), true, true);
   }
 
   protected formatDate(dateStr: string | undefined): string {
@@ -382,6 +438,25 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       year: 'numeric', month: '2-digit', day: '2-digit',
       hour: '2-digit', minute: '2-digit', hour12: false,
     }).format(new Date(dateStr));
+  }
+
+  protected statusColorClass(statusKey: string): string {
+    if (statusKey.includes('cancel')) return this.tripStatusColorMap['cancelled'];
+
+    return this.tripStatusColorMap[statusKey] || 'text-status-scheduled bg-status-scheduled-bg';
+  }
+
+  protected formatStatus(status: string): string {
+    if (!status) return '--';
+
+    if (status.toLowerCase().includes('cancel')) {
+      return 'Cancelled';
+    }
+
+    return status
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/[-_]+/g, ' ')
+      .trim();
   }
 
   private loadWithdrawalDetails(hotelId: string): void {
@@ -556,7 +631,12 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     const info = this.settlementInfo();
 
     return this.normalizeSettlementStatus(
-      info?.settelStatue ?? info?.settleStatus ?? info?.status ?? info?.statusEnum ?? info?.statusString,
+      info?.settelStatue ??
+      info?.settleStatue ??
+      info?.settleStatus ??
+      info?.status ??
+      info?.statusEnum ??
+      info?.statusString,
     );
   }
 
@@ -572,12 +652,18 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     }
 
     const normalized = status.trim().toLowerCase();
+    const numericStatus = Number(normalized);
 
-    switch (normalized) {
+    if (Number.isInteger(numericStatus) && numericStatus in SettlementStatus) {
+      return numericStatus as SettlementStatus;
+    }
+
+    const normalizedKey = normalized.replace(/[^a-z0-9]+/g, '');
+
+    switch (normalizedKey) {
       case 'pending':
         return SettlementStatus.Pending;
       case 'awaitingpayout':
-      case 'awaiting payout':
         return SettlementStatus.AwaitingPayout;
       case 'settled':
         return SettlementStatus.Settled;

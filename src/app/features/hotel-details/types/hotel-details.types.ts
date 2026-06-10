@@ -52,10 +52,12 @@ export interface TripRecord {
   hotelName?: string;
   hotelPhone?: string;
   driverName?: string;
+  driverPhoneNumber?: string;
   driverId?: string;
   room?: string;
   commission?: number;
   endDate?: string | null;
+  scheduledAt?: string | null;
   requestedAt?: string | null;
   notes?: string | null;
   placeTypeName?: string | null;
