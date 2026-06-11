@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService as CoreAuthService } from '../../../../core/services/auth.service';
 import { ImageUploadService } from '../../../../core/services/image-upload.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
-import { HotelProfileData, ProfileService } from '../../services/profile.service';
+import { HotelProfileData, ProfileService, toAuthProfileUpdate } from '../../services/profile.service';
  
 const DEFAULT_PROFILE_IMAGE = 'assets/booking/logo-lines.png';
 
@@ -95,7 +95,7 @@ export class ProfileImageComponent {
             const updatedProfile = { ...profile, ...result.data, logoUrl: result.data.logoUrl || logoUrl };
             this.profile.set(updatedProfile);
             this.imageSrc.set(updatedProfile.logoUrl || DEFAULT_PROFILE_IMAGE);
-            this.coreAuth.setProfile(updatedProfile);
+            this.coreAuth.setProfile(toAuthProfileUpdate(updatedProfile, this.coreAuth.profile()?.configuration));
             this.notifications.showSuccess('Profile image updated successfully');
           } else {
             this.notifications.showError(result.error?.description ?? 'Failed to update profile image');

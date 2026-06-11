@@ -116,17 +116,7 @@ export class BookingComponent extends BaseComponent {
   readonly dropOffSuggestionsOpen = signal(false);
   readonly dropOffSuggestionsLoading = signal(false);
   readonly googleDropOffLocation = signal<LocationSelection | null>(null);
-  readonly googleDestinationOption = signal<LocationItem | null>(null);
-  readonly destinationOptions = computed<LocationItem[]>(() => {
-    const apiDestinations = this.destinationsData() ?? [];
-    const googleDestination = this.googleDestinationOption();
-    if (!googleDestination) return apiDestinations;
-
-    return [
-      googleDestination,
-      ...apiDestinations.filter((destination) => destination.id !== googleDestination.id),
-    ];
-  });
+  readonly selectedDestination = signal<LocationItem | null>(null);
   readonly showJoinLocationMap = signal(false);
   readonly joinSelectedLocation = signal<LocationSelection | null>(null);
   readonly distanceInfo = signal<DistanceInfo | null>(null);
@@ -214,11 +204,12 @@ export class BookingComponent extends BaseComponent {
       if (destinations && destinations.length > 0 && !this.formModel().destination) {
         this.formModel.update(m => ({ ...m, destination: destinations[0].id }));
         this.distnationName.set(destinations[0].name);
+        this.selectedDestination.set(destinations[0]);
       }
     });
 
     effect(() => {
-      const destination = this.selectedDestinationLocation();
+      const destination = this.selectedDestination();
       if (!destination) return;
 
       this.distnationName.set(destination.name);
@@ -229,7 +220,7 @@ export class BookingComponent extends BaseComponent {
     effect(() => {
       if (!this.ShowComfirmBookingModel()) return;
 
-      const destination = this.selectedDestinationLocation();
+      const destination = this.selectedDestination();
       const vehicleId = this.selectedCar();
       if (!destination || !vehicleId) return;
 
@@ -557,29 +548,21 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     };
 
     this.googleDropOffLocation.set(location);
-    this.googleDestinationOption.set(destination);
     this.dropOffSearchText.set(destination.name);
     this.formModel.update((model) => ({ ...model, destination: id }));
     this.distnationName.set(destination.name);
+    this.selectedDestination.set(destination);
     this.loadVehicleTypes(50, destination.latitude, destination.longitude);
   }
 
-  private selectedDestinationLocation(): LocationItem | null {
-    const destinationId = this.formModel().destination;
-    if (!destinationId) return null;
-
-    return this.destinationOptions().find((destination) => destination.id === destinationId) ?? null;
-  }
-
   private getOriginCoordinates(): { lat: number; lng: number } {
-    const configuration = this.coreAuth.profile()?.['configuration'] as
-      | { latitude?: number | null; longitude?: number | null }
-      | undefined;
+    const lat = this.coreAuth.profile() ?.configuration.latitude;
+    const lng = this.coreAuth.profile() ?.configuration.longitude;
     const [currentLat, currentLng] = this.mapCenter();
 
     return {
-      lat: configuration?.latitude ?? currentLat,
-      lng: configuration?.longitude ?? currentLng,
+      lat: lat ?? currentLat,
+      lng: lng ?? currentLng,
     };
   }
 
@@ -591,6 +574,12 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
 
     this.distanceInfoLoading.set(true);
     this.distanceInfo.set(null);
+    console.log('Requesting distance info with payload:', {
+      originLatitude: origin.lat,
+      originLongitude: origin.lng,
+      destinationLatitude: destination.latitude,
+      destinationLongitude: destination.longitude,
+    });
     this.mapsService.getDistanceInfo({
       originLatitude: origin.lat,
       originLongitude: origin.lng,
@@ -1088,7 +1077,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.signInModalOpen();
       return;
     }
-    const destination = this.selectedDestinationLocation();
+    const destination = this.selectedDestination();
     if (!destination) {
       this.showError('Please select a destination.');
       return;
@@ -1136,7 +1125,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.signInModalOpen();
       return;
     }
-    if (!this.selectedDestinationLocation()) {
+    if (!this.selectedDestination()) {
       this.showError('Please select a destination.');
       return;
     }
@@ -1157,7 +1146,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       return;
     }
 
-    const destination = this.selectedDestinationLocation();
+    const destination = this.selectedDestination();
     if (!destination) {
       this.showError('Please select a destination.');
       return;
@@ -1182,7 +1171,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
     const { clientName, roomNo, addDriverNote, driverNote } = this.formModel();
     const [lat, lng] = this.mapCenter();
     const car = this.selectedCarOption();
-    const destination = this.selectedDestinationLocation();
+    const destination = this.selectedDestination();
     if (!destination) {
       this.showError('Please select a destination.');
       return;

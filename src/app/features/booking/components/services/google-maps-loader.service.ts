@@ -350,9 +350,16 @@ export class GoogleMapsLoaderService {
   async resolvePlaceSuggestion(suggestion: GooglePlaceSuggestion): Promise<LocationSelection> {
     const place = suggestion.prediction.toPlace();
     await place.fetchFields({ fields: ['id', 'displayName', 'formattedAddress', 'location'] });
+
+    let location = this.getCoordinates(place.location);
+    if (!location) {
+      // Some responses omit `location` when batched with text fields; fetch it on its own.
+      await place.fetchFields({ fields: ['location'] });
+      location = this.getCoordinates(place.location);
+    }
+
     this.autocompleteSessionToken = null;
 
-    const location = this.getCoordinates(place.location);
     if (!location) {
       throw new Error('Selected place does not include coordinates.');
     }

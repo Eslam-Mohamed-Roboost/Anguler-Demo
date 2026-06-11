@@ -265,8 +265,10 @@ export class ChatComponent extends BaseComponent implements OnInit {
     return message.id || `${message.senderId}|${message.senderRole}|${message.createdAt}|${message.message}`;
   }
 
-  private profileString(profile: Record<string, unknown> | null, key: string): string {
-    const value = profile?.[key];
+  private profileString(profile: unknown, key: string): string {
+    if (!profile || typeof profile !== 'object') return '';
+
+    const value = (profile as Record<string, unknown>)[key];
     return typeof value === 'string' && value.trim() ? value.trim() : '';
   }
 

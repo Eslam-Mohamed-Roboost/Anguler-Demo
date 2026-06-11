@@ -10,7 +10,7 @@ import { TabDef } from '../../models/TabDef-mode';
 import { HotelInfoModel } from '../../models/HotelInfo-model';
 import { PasswordModel } from '../../models/Password-model';
 import { WithdrawalModel } from '../../models/Withdrawal-model';
-import { HotelProfileData, ProfileService } from '../../services/profile.service';
+import { HotelProfileData, ProfileService, toAuthProfileUpdate } from '../../services/profile.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { SelectComponent } from '../../../../shared/components/select/select.component';
 import { CitiesService } from '../../../booking/components/services/cities.service';
@@ -281,7 +281,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
           if (result.isSuccess) {
             const updatedProfile = { ...updatePayload, ...(result.data ?? {}), logoUrl: result.data?.logoUrl || updatePayload.logoUrl };
             this.currentHotelProfile.set(updatedProfile);
-            this.coreAuth.setProfile(updatedProfile);
+            this.coreAuth.setProfile(toAuthProfileUpdate(updatedProfile, this.coreAuth.profile()?.configuration));
             this.selectedHotelLocation.set(null);
             this.notifications.showSuccess('Hotel profile updated successfully');
             this.DisableHotleInfo.set(true);
@@ -454,19 +454,10 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   }
 
   private getLatestLogoUrl(): string {
-    const authProfile = this.coreAuth.profile();
-    const directLogoUrl = authProfile?.['logoUrl'];
+    const logoUrl = this.coreAuth.profile()?.configuration.logoUrl;
 
-    if (typeof directLogoUrl === 'string' && directLogoUrl.trim()) {
-      return directLogoUrl.trim();
-    }
-
-    const configuration = authProfile?.['configuration'];
-    if (configuration && typeof configuration === 'object' && 'logoUrl' in configuration) {
-      const logoUrl = configuration.logoUrl;
-      if (typeof logoUrl === 'string' && logoUrl.trim()) {
-        return logoUrl.trim();
-      }
+    if (typeof logoUrl === 'string' && logoUrl.trim()) {
+      return logoUrl.trim();
     }
 
     return this.currentHotelProfile()?.logoUrl ?? '';

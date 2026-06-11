@@ -412,32 +412,10 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   private getProfileImageUrl(profile: AuthProfile | null): string {
     if (!profile) return '';
 
-    const imageKeys = [
-      'logoUrl',
-      'imageUrl',
-      'avatarUrl',
-      'profileImageUrl',
-      'profileImage',
-      'photoUrl',
-      'userImageUrl',
-    ];
+     return  profile.configuration.logoUrl?.trim() || '';
+   
 
-    for (const key of imageKeys) {
-      const value = profile[key];
-      if (typeof value === 'string' && value.trim()) {
-        return value.trim();
-      }
-    }
-
-    const configuration = profile['configuration'];
-    if (configuration && typeof configuration === 'object' && 'logoUrl' in configuration) {
-      const logoUrl = configuration.logoUrl;
-      if (typeof logoUrl === 'string' && logoUrl.trim()) {
-        return logoUrl.trim();
-      }
-    }
-
-    return '';
+ 
   }
 
   private loadHotelProfileForNavbar(): void {

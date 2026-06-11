@@ -4,6 +4,7 @@ import { Observable, catchError, map, of } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import type { Result } from '../../../core/models/result.model';
 import { SKIP_ERROR_NOTIFICATION } from '../../../core/tokens/skip-error-notification.token';
+import type { AuthProfile, Configuration } from '../../../core/services/auth.service';
 
 export interface ChangePasswordRequest {
   currentPassword: string;
@@ -75,6 +76,30 @@ export interface WithdrawalDetailsUpdate {
   bankName: string;
   bankAccountNumber: string;
   bankRoutingNumber?: string;
+}
+
+/** Maps a hotel profile update response into the shape `AuthService.setProfile` expects. */
+export function toAuthProfileUpdate(profile: HotelProfileData, existingConfiguration?: Configuration): AuthProfile {
+  return {
+    hotelName: profile.hotelName,
+    configuration: {
+      cityId: profile.cityId,
+      cityName: profile.cityName ?? existingConfiguration?.cityName ?? '',
+      address: profile.address,
+      locationUrl: profile.locationUrl,
+      logoUrl: profile.logoUrl,
+      commissionRate: profile.commissionRate,
+      isVerified: profile.isVerified,
+      isBlocked: existingConfiguration?.isBlocked ?? false,
+      placeTypeId: existingConfiguration?.placeTypeId ?? '',
+      placeTypeName: existingConfiguration?.placeTypeName ?? '',
+      otherPlaceText: existingConfiguration?.otherPlaceText ?? '',
+      code: profile.code,
+      createdDate: existingConfiguration?.createdDate ?? '',
+      latitude: profile.latitude ?? existingConfiguration?.latitude ?? 0,
+      longitude: profile.longitude ?? existingConfiguration?.longitude ?? 0,
+    },
+  };
 }
 
 @Injectable({ providedIn: 'root' })

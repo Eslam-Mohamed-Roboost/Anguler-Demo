@@ -18,9 +18,25 @@ export interface AuthProfile {
   name?: string;
   userName?: string;
   email?: string;
-  [key: string]: unknown;
+  configuration: Configuration;
 }
-
+export interface Configuration {
+  cityId: string
+  cityName: string
+  address: string
+  locationUrl: string
+  logoUrl: string
+  commissionRate: number
+  isVerified: boolean
+  isBlocked: boolean
+  placeTypeId: string
+  placeTypeName: string
+  otherPlaceText: string
+  code: string
+  createdDate: string
+  latitude: number
+  longitude: number
+}
 interface LoginResponse {
   token: string;
   user: AuthUser;
