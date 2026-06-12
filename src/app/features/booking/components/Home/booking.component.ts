@@ -556,8 +556,8 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   }
 
   private getOriginCoordinates(): { lat: number; lng: number } {
-    const lat = this.coreAuth.profile() ?.configuration.latitude;
-    const lng = this.coreAuth.profile() ?.configuration.longitude;
+    const lat = this.coreAuth.profile()?.configuration?.latitude;
+    const lng = this.coreAuth.profile()?.configuration?.longitude;
     const [currentLat, currentLng] = this.mapCenter();
 
     return {

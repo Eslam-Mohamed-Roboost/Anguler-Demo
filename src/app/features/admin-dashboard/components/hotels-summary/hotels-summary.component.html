@@ -1,10 +1,10 @@
-<div class="rounded-[12px] border border-[#e1e7ef] bg-white shadow-[0px_1px_1px_rgba(0,0,0,0.05)] flex flex-col gap-6 pt-6 pb-px px-px">
+<div class="flex min-w-0 flex-col gap-6 rounded-[12px] border border-[#e1e7ef] bg-white px-px pb-px pt-4 shadow-[0px_1px_1px_rgba(0,0,0,0.05)] sm:pt-6">
 
   <!-- ═══════ Top bar ═══════ -->
-  <div class="flex items-center justify-between px-7">
+  <div class="flex flex-col gap-4 px-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-7">
 
     <!-- Tab switcher -->
-    <div class="rounded-[8px] border border-[#e76500] p-1 flex items-center gap-[5px]">
+    <div class="flex w-full min-w-0 items-center gap-[5px] overflow-x-auto rounded-[8px] border border-[#e76500] p-1 sm:w-auto">
       <button
         type="button"
         class="px-4 py-2.5 text-[16px] text-[#223548] opacity-85 rounded-[6px] transition hover:bg-gray-50"
@@ -18,9 +18,9 @@
     </div>
 
     <!-- Actions -->
-    <div class="flex items-center gap-7">
+    <div class="flex w-full flex-col gap-3 md:flex-row md:flex-wrap md:items-center lg:w-auto lg:gap-7">
       <!-- Search -->
-      <div class="flex items-center gap-1 rounded-[8px] border-[0.5px] border-[#a9b4be] bg-[rgba(249,250,250,0.7)] px-2.5 py-2.5 w-52">
+      <div class="flex w-full min-w-0 items-center gap-1 rounded-[8px] border-[0.5px] border-[#a9b4be] bg-[rgba(249,250,250,0.7)] px-2.5 py-2.5 md:w-52">
         <app-icon name="search" size="sm" class="text-[#223548]" />
         <input
           #searchInput
@@ -32,7 +32,7 @@
         />
       </div>
 
-      <div class="flex items-center gap-4">
+      <div class="flex flex-wrap items-center gap-2 sm:gap-4">
         <!-- Sort -->
         <button
           type="button"
@@ -57,7 +57,7 @@
       <!-- Commission Settings -->
       <button
         type="button"
-        class="flex items-center gap-1 h-10 rounded-[8px] border-[0.5px] border-[#5b738b] px-2 py-[9px] text-[14px] text-[#223548] tracking-[0.25px]"
+        class="flex h-10 w-full items-center justify-center gap-1 rounded-[8px] border-[0.5px] border-[#5b738b] px-2 py-[9px] text-[14px] tracking-[0.25px] text-[#223548] sm:w-auto"
       >
         <svg class="size-4 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
           <circle cx="8" cy="8" r="2.5"/><path d="M8 1v1.5m0 9V13m4.95-9.95-1.06 1.06M4.11 11.89l-1.06 1.06M15 8h-1.5m-9 0H3m9.95 4.95-1.06-1.06M4.11 4.11 3.05 3.05"/>
@@ -68,7 +68,7 @@
   </div>
 
   <!-- ═══════ Table container ═══════ -->
-  <div class="px-6 pb-6 flex flex-col gap-8">
+  <div class="flex min-w-0 flex-col gap-8 px-3 pb-4 sm:px-5 sm:pb-6 lg:px-6">
     <div class="rounded-[12px] border border-[#e1e7ef] overflow-auto" dir="ltr">
       <table class="w-full min-w-[960px] text-left text-sm" role="table" aria-label="Hotels summary" dir="ltr">
 

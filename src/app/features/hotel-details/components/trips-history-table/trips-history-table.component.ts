@@ -26,6 +26,12 @@ interface HotelFinancialSortOption {
   label: string;
 }
 
+interface HotelActionMenuState {
+  hotel: HotelRecord;
+  left: number;
+  top: number;
+}
+
 @Component({
   selector: 'app-trips-history-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,7 +78,7 @@ export class TripsHistoryTableComponent {
   readonly showSortDropdown = signal(false);
   readonly showFilterDropdown = signal(false);
   readonly statusFilter = signal('');
-  readonly openHotelActionId = signal<string | null>(null);
+  readonly hotelActionMenu = signal<HotelActionMenuState | null>(null);
   protected readonly searchPlaceholderKey = computed(() =>
     this.activeTab() === 'trips' ? 'hotelDetails.searchTrips' : 'hotelDetails.searchHotels'
   );
@@ -169,11 +175,13 @@ export class TripsHistoryTableComponent {
     this.statusFilter.set('');
     this.showFilterDropdown.set(false);
     this.showSortDropdown.set(false);
+    this.hotelActionMenu.set(null);
     this.tabChange.emit(tab);
   }
 
   protected toggleSortDropdown(): void {
     this.showFilterDropdown.set(false);
+    this.hotelActionMenu.set(null);
     this.showSortDropdown.update(show => !show);
   }
 
@@ -206,6 +214,7 @@ export class TripsHistoryTableComponent {
 
   protected toggleFilterDropdown(): void {
     this.showSortDropdown.set(false);
+    this.hotelActionMenu.set(null);
     this.showFilterDropdown.update(show => !show);
   }
 
@@ -217,6 +226,7 @@ export class TripsHistoryTableComponent {
 
   protected onSearchChange(event: Event): void {
     const target = event.target as HTMLInputElement;
+    this.hotelActionMenu.set(null);
     this.searchChange.emit(target.value);
   }
 
@@ -224,16 +234,43 @@ export class TripsHistoryTableComponent {
     this.tripAction.emit({ type: action, tripId: trip.id,hotelId:trip.hotelId });
   }
 
-  protected toggleHotelActionMenu(hotelId: string): void {
-    this.openHotelActionId.update(openId => openId === hotelId ? null : hotelId);
+  protected toggleHotelActionMenu(event: MouseEvent, hotel: HotelRecord): void {
+    event.stopPropagation();
+
+    const currentMenu = this.hotelActionMenu();
+    if (currentMenu?.hotel.id === hotel.id) {
+      this.hotelActionMenu.set(null);
+      return;
+    }
+
+    const trigger = event.currentTarget;
+    if (!(trigger instanceof HTMLElement)) {
+      return;
+    }
+
+    const menuWidth = 194;
+    const menuHeight = hotel.settlementStatus === 'in-progress' ? 132 : 92;
+    const viewportPadding = 12;
+    const rect = trigger.getBoundingClientRect();
+    const left = Math.max(
+      viewportPadding,
+      Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - viewportPadding),
+    );
+    const preferredTop = rect.bottom + 8;
+    const top = preferredTop + menuHeight > window.innerHeight - viewportPadding
+      ? Math.max(viewportPadding, rect.top - menuHeight - 8)
+      : preferredTop;
+
+    this.hotelActionMenu.set({ hotel, left, top });
   }
 
   protected onHotelAction(type: 'view' | 'settle' | 'block', hotel: HotelRecord): void {
-    this.openHotelActionId.set(null);
+    this.hotelActionMenu.set(null);
     this.hotelAction.emit({ type, hotel });
   }
 
   protected onHotelPageChange(page: number): void {
+    this.hotelActionMenu.set(null);
     this.pageChange.emit(page);
   }
 

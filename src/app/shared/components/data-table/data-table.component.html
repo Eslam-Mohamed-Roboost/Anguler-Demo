@@ -1,9 +1,9 @@
 @if (loading()) {
   <app-skeleton-table [rows]="skeletonRows()" [columns]="columns().length" />
 } @else {
-  <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700" dir="ltr">
+  <div class="w-full overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700" dir="ltr">
     <table
-      class="w-full text-left text-sm text-gray-700 dark:text-gray-200"
+      class="w-full min-w-max text-left text-sm text-gray-700 dark:text-gray-200"
       dir="ltr"
       [attr.aria-label]="ariaLabel() || null"
     >

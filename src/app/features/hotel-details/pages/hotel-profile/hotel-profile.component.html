@@ -1,7 +1,7 @@
-<div class="min-h-screen bg-page-bg overflow-y-auto h-screen px-8 py-6 max-w-[1400px] mx-auto max-lg:px-5 max-lg:py-5 max-md:px-4 max-md:py-3">
+<div class="mx-auto h-full min-h-0 max-w-[1400px] overflow-y-auto overflow-x-hidden bg-page-bg px-4 py-4 sm:px-5 sm:py-5 lg:px-8 lg:py-6">
 
   <!-- Breadcrumb -->
-  <nav class="flex items-center gap-1.5 text-cell mb-4" aria-label="Breadcrumb">
+  <nav class="mb-4 flex flex-wrap items-center gap-1.5 text-cell" aria-label="Breadcrumb">
     <a class="text-muted no-underline hover:text-body-soft hover:underline transition-colors" routerLink="/hotel-details">{{ 'hotelDetails.title' | translate }}</a>
     <span class="text-muted-light" aria-hidden="true">/</span>
     <span class="text-body font-medium">{{ 'hotelDetails.titlemain' | translate }} #{{ hotelId() }}</span>
@@ -288,7 +288,7 @@
   <section class="mb-4">
     <app-card variant="elevated">
       <!-- Section Header -->
-      <div class="flex items-center justify-between px-4 pt-4 gap-4 flex-wrap max-lg:flex-col max-lg:items-start">
+      <div class="flex flex-wrap items-center justify-between gap-4 px-4 pt-4 max-xl:flex-col max-xl:items-start">
         <div class="flex items-center gap-2.5">
           <div class="flex items-center justify-center size-8 rounded-full bg-icon-circle-bg text-icon-circle shrink-0">
             <app-icon name="calendar" size="sm" aria-hidden="true" />
@@ -296,11 +296,11 @@
           <h3 class="text-[15px] font-semibold text-body m-0"> {{ 'riderHistory.title' | translate }}</h3>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap max-lg:w-full">
-          <div class="relative flex items-center">
+        <div class="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center xl:w-auto">
+          <div class="relative flex min-w-0 flex-1 items-center sm:min-w-[220px]">
             <app-icon name="search" class="absolute start-3 text-muted-light z-[1] pointer-events-none" size="sm" aria-hidden="true" />
             <input
-              class="py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-white outline-none w-[180px] focus:border-warning focus:ring-2 focus:ring-warning/10 max-lg:flex-1"
+              class="w-full py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-white outline-none focus:border-warning focus:ring-2 focus:ring-warning/10"
               type="text"
               placeholder="{{ 'Search' | translate }}"
               [value]="searchQuery()"

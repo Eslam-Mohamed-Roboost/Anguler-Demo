@@ -79,7 +79,7 @@ export interface WithdrawalDetailsUpdate {
 }
 
 /** Maps a hotel profile update response into the shape `AuthService.setProfile` expects. */
-export function toAuthProfileUpdate(profile: HotelProfileData, existingConfiguration?: Configuration): AuthProfile {
+export function toAuthProfileUpdate(profile: HotelProfileData, existingConfiguration?: Configuration | null): AuthProfile {
   return {
     hotelName: profile.hotelName,
     configuration: {

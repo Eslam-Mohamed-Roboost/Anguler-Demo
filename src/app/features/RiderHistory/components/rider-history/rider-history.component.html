@@ -1,6 +1,6 @@
-<div class="bg-white rounded-[12px] h-[calc(100vh-4rem)] flex flex-col p-4">
+<div class="flex h-full min-h-0 flex-col overflow-hidden rounded-[12px] bg-white p-3 sm:p-4">
   <!-- ═══════ Info Banner ═══════ -->
-  <div class="flex items-center gap-2 rounded-full border border-blue-200 bg-[#F9FAFAB2] px-4 py-3 text-sm text-[#5B738B] mx-4 mt-4 md:mx-6 md:mt-6">
+  <div class="mx-0 mt-2 flex items-start gap-2 rounded-full border border-blue-200 bg-[#F9FAFAB2] px-4 py-3 text-sm text-[#5B738B] sm:mx-4 sm:mt-4 sm:items-center md:mx-6 md:mt-6">
     <app-icon name="info" size="sm" />
     <span>
       {{'financial.Payouts' | translate}}
@@ -11,7 +11,7 @@
   <header class="flex flex-col gap-3 px-4 pt-6 pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4 md:px-6">
     <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">{{'riderHistory.title' | translate}}</h1>
 
-    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+    <div class="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 lg:w-auto">
       <!-- Search -->
       <div class="w-full sm:w-64">
         <app-search-input
@@ -85,7 +85,7 @@
   </header>
 
   <!-- ═══════ Data Table ═══════ -->
-  <div class="px-4 md:px-6 flex-1 overflow-auto">
+  <div class="min-h-0 flex-1 overflow-auto px-0 sm:px-4 md:px-6">
     <app-data-table
       [data]="filteredTrips()"
       [columns]="columns"

@@ -1,6 +1,6 @@
 <app-card variant="elevated" class="mb-6">
   <!-- Tabs + Toolbar -->
-  <div class="flex justify-between items-center px-4 pt-4 gap-4 flex-wrap max-lg:flex-col max-lg:items-start">
+  <div class="flex flex-wrap items-center justify-between gap-4 px-4 pt-4 max-xl:flex-col max-xl:items-start">
     <!-- Tabs -->
     <div class="flex gap-1">
       <button
@@ -22,8 +22,8 @@
     </div>
 
     <!-- Toolbar -->
-    <div class="flex items-center gap-3 flex-wrap max-lg:w-full">
-      <div class="relative flex items-center max-lg:flex-1">
+    <div class="flex flex-wrap items-center gap-3 max-xl:w-full">
+      <div class="relative flex min-w-0 items-center max-xl:flex-1">
         <app-icon name="search" class="absolute start-3 text-muted-light z-[1] pointer-events-none" size="sm" aria-hidden="true" />
         <input
           id="trips-search"
@@ -31,12 +31,12 @@
           [placeholder]="searchPlaceholderKey() | translate"
           [value]="searchQuery()"
           (input)="onSearchChange($event)"
-          class="py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-white outline-none w-[180px] focus:border-warning focus:ring-2 focus:ring-warning/10 max-lg:flex-1 max-lg:w-full"
+          class="w-full py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-white outline-none focus:border-warning focus:ring-2 focus:ring-warning/10 lg:w-[180px]"
           [attr.aria-label]="searchPlaceholderKey() | translate"
         />
       </div>
 
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         @if (activeTab() === 'trips') {
           <div class="relative">
             <button
@@ -146,7 +146,7 @@
 
   <!-- Hotels Trips Table -->
   @if (activeTab() === 'trips') {
-    <div class="px-4 py-3 overflow-x-auto max-md:px-3 max-md:py-2 flex flex-col gap-3">
+    <div class="flex min-w-0 flex-col gap-3 overflow-x-auto px-3 py-2 sm:px-4 sm:py-3">
       <app-data-table
         [data]="trips()"
         [columns]="tripColumns()"
@@ -279,7 +279,7 @@
 
   <!-- All Hotels Table -->
   @if (activeTab() === 'hotels') {
-    <div class="px-4 py-3 overflow-x-auto max-md:px-3 max-md:py-2">
+    <div class="min-w-0 overflow-x-auto px-3 py-2 sm:px-4 sm:py-3">
       <app-data-table
         [data]="hotels()"
         [columns]="hotelColumns()"
@@ -349,9 +349,9 @@
             <button
               class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-gray-50 text-muted hover:bg-gray-100"
               type="button"
-              (click)="toggleHotelActionMenu(row.id)"
+              (click)="toggleHotelActionMenu($event, row)"
               aria-label="Open hotel actions"
-              [attr.aria-expanded]="openHotelActionId() === row.id"
+              aria-haspopup="menu"
             >
               <span class="flex flex-col items-center gap-0.5" aria-hidden="true">
                 <span class="size-1 rounded-full bg-current"></span>
@@ -360,47 +360,55 @@
               </span>
             </button>
 
-            @if (openHotelActionId() === row.id) {
-              <div class="absolute end-0 top-full z-30 mt-2 min-w-[194px] rounded-xl bg-white p-3 text-start shadow-[0_12px_30px_rgba(15,23,42,0.16)] ring-1 ring-black/5">
-                <button
-                  type="button"
-                  class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
-                  (click)="onHotelAction('view', row)"
-                >
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M1.25 7.5S3.4375 3.125 7.5 3.125 13.75 7.5 13.75 7.5 11.5625 11.875 7.5 11.875 1.25 7.5 1.25 7.5Z" stroke="#FF7A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7.5 9.375C8.53553 9.375 9.375 8.53553 9.375 7.5C9.375 6.46447 8.53553 5.625 7.5 5.625C6.46447 5.625 5.625 6.46447 5.625 7.5C5.625 8.53553 6.46447 9.375 7.5 9.375Z" stroke="#FF7A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span>View Hotel Info</span>
-                </button>
-
-                @if (row.settlementStatus === 'in-progress') {
-                  <button
-                    type="button"
-                    class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
-                    (click)="onHotelAction('settle', row)"
-                  >
-                    <span class="w-[15px] text-center text-xl leading-none text-[#6D28D9]" aria-hidden="true">$</span>
-                    <span>Settle Balance</span>
-                  </button>
-                }
-
-                <button
-                  type="button"
-                  class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
-                  (click)="onHotelAction('block', row)"
-                >
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M7.5 13.75C10.9518 13.75 13.75 10.9518 13.75 7.5C13.75 4.04822 10.9518 1.25 7.5 1.25C4.04822 1.25 1.25 4.04822 1.25 7.5C1.25 10.9518 4.04822 13.75 7.5 13.75Z" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M3.0625 3.0625L11.9375 11.9375" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span>{{ row.hotelStatus === 'active' ? 'Block Hotel' : 'Unblock Hotel' }}</span>
-                </button>
-              </div>
-            }
           </div>
         </ng-template>
       </app-data-table>
+      @if (hotelActionMenu(); as menu) {
+        <div
+          class="fixed z-[80] min-w-[194px] rounded-xl bg-white p-3 text-start shadow-[0_12px_30px_rgba(15,23,42,0.16)] ring-1 ring-black/5"
+          [style.left.px]="menu.left"
+          [style.top.px]="menu.top"
+          role="menu"
+        >
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
+            (click)="onHotelAction('view', menu.hotel)"
+            role="menuitem"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M1.25 7.5S3.4375 3.125 7.5 3.125 13.75 7.5 13.75 7.5 11.5625 11.875 7.5 11.875 1.25 7.5 1.25 7.5Z" stroke="#FF7A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7.5 9.375C8.53553 9.375 9.375 8.53553 9.375 7.5C9.375 6.46447 8.53553 5.625 7.5 5.625C6.46447 5.625 5.625 6.46447 5.625 7.5C5.625 8.53553 6.46447 9.375 7.5 9.375Z" stroke="#FF7A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>View Hotel Info</span>
+          </button>
+
+          @if (menu.hotel.settlementStatus === 'in-progress') {
+            <button
+              type="button"
+              class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
+              (click)="onHotelAction('settle', menu.hotel)"
+              role="menuitem"
+            >
+              <span class="w-[15px] text-center text-xl leading-none text-[#6D28D9]" aria-hidden="true">$</span>
+              <span>Settle Balance</span>
+            </button>
+          }
+
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
+            (click)="onHotelAction('block', menu.hotel)"
+            role="menuitem"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7.5 13.75C10.9518 13.75 13.75 10.9518 13.75 7.5C13.75 4.04822 10.9518 1.25 7.5 1.25C4.04822 1.25 1.25 4.04822 1.25 7.5C1.25 10.9518 4.04822 13.75 7.5 13.75Z" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3.0625 3.0625L11.9375 11.9375" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ menu.hotel.hotelStatus === 'active' ? 'Block Hotel' : 'Unblock Hotel' }}</span>
+          </button>
+        </div>
+      }
       <app-pagination
         [currentPage]="currentPage()"
         [totalItems]="totalHotels()"
@@ -415,7 +423,7 @@
 
  <app-modal [open]="showCommissionsModal()" (closed)="closeCommissionModal()">
   <!-- Custom header -->
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between gap-3">
     <div class="flex items-center gap-2">
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
        <path d="M-6.63996e-05 2.26777C-6.63996e-05 1.55844 0.205267 1.00311 0.615934 0.601773C1.03593 0.20044 1.5726 -0.000226736 2.22593 -0.000226736C2.87927 -0.000226736 3.41127 0.20044 3.82193 0.601773C4.24193 1.00311 4.45193 1.55844 4.45193 2.26777C4.45193 2.98644 4.24193 3.54644 3.82193 3.94777C3.41127 4.34911 2.87927 4.54977 2.22593 4.54977C1.5726 4.54977 1.03593 4.34911 0.615934 3.94777C0.205267 3.54644 -6.63996e-05 2.98644 -6.63996e-05 2.26777ZM8.98793 0.167773L3.48593 9.96777H1.58193L7.06993 0.167773H8.98793ZM2.21193 1.17577C1.6986 1.17577 1.44193 1.53977 1.44193 2.26777C1.44193 3.00511 1.6986 3.37377 2.21193 3.37377C2.46393 3.37377 2.65993 3.28511 2.79993 3.10777C2.93993 2.92111 3.00993 2.64111 3.00993 2.26777C3.00993 1.53977 2.74393 1.17577 2.21193 1.17577ZM6.14593 7.85377C6.14593 7.13511 6.35127 6.57977 6.76193 6.18777C7.18193 5.78644 7.7186 5.58577 8.37193 5.58577C9.02527 5.58577 9.5526 5.78644 9.95393 6.18777C10.3646 6.57977 10.5699 7.13511 10.5699 7.85377C10.5699 8.57244 10.3646 9.13244 9.95393 9.53377C9.5526 9.93511 9.02527 10.1358 8.37193 10.1358C7.70927 10.1358 7.1726 9.93511 6.76193 9.53377C6.35127 9.13244 6.14593 8.57244 6.14593 7.85377ZM8.35793 6.76177C7.82593 6.76177 7.55993 7.12577 7.55993 7.85377C7.55993 8.59111 7.82593 8.95977 8.35793 8.95977C8.8806 8.95977 9.14193 8.59111 9.14193 7.85377C9.14193 7.12577 8.8806 6.76177 8.35793 6.76177Z" fill="#00C950"/>

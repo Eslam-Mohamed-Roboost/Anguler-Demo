@@ -18,7 +18,7 @@ export interface AuthProfile {
   name?: string;
   userName?: string;
   email?: string;
-  configuration: Configuration;
+  configuration?: Configuration | null;
 }
 export interface Configuration {
   cityId: string
@@ -123,7 +123,12 @@ export class AuthService {
   }
 
   setProfile(profile: AuthProfile): void {
-    const mergedProfile = { ...(this._profile() ?? {}), ...profile };
+    const currentProfile = this._profile();
+    const mergedProfile: AuthProfile = {
+      ...(currentProfile ?? {}),
+      ...profile,
+      configuration: profile.configuration ?? currentProfile?.configuration ?? null,
+    };
     this._profile.set(mergedProfile);
     this._user.update((user) => {
       if (!user) return user;

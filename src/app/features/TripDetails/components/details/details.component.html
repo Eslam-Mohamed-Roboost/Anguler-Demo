@@ -50,58 +50,58 @@
 
   <!-- Trip Information Grid -->
   <div class="px-4 py-4 sm:px-5">
-    <div class="grid grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-3">
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.tripId' | translate }}</label>
-        <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
           {{ data().tripCode || '--' }}
         </div>
       </div>
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.passenger' | translate }}</label>
-        <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
           {{ data().guestName || '--' }}
         </div>
       </div>
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'form.roomNo' | translate }}</label>
-        <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
           {{ data().roomNumber }}
         </div>
       </div>
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.destinations' | translate }}</label>
-        <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
           {{ data().endLocation.address || '--' }}
         </div>
       </div>
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.fareChf' | translate }}</label>
-        <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
           {{ formatMoney(data().estimatedPrice) }}
         </div>
       </div>
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.hotelProfitWithRate' | translate }}</label>
-        <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
           {{ formatMoney(hotelProfit()) }}
         </div>
       </div>
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.startDate' | translate }}</label>
-        <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
           {{ formatDateTime(data().scheduledAt || data().startedAt || data().requestedAt) }}
         </div>
       </div>
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.endDate' | translate }}</label>
-        <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
           {{ formatDateTime(data().endedAt) }}
         </div>
       </div>
       <div>
         <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.tripRate' | translate }}</label>
-        <div class="min-h-10 rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
           {{ data().driver?.rating ?? '--' }}
         </div>
       </div>

@@ -412,10 +412,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   private getProfileImageUrl(profile: AuthProfile | null): string {
     if (!profile) return '';
 
-     return  profile.configuration.logoUrl?.trim() || '';
-   
-
- 
+    return profile.configuration?.logoUrl?.trim() || '';
   }
 
   private loadHotelProfileForNavbar(): void {

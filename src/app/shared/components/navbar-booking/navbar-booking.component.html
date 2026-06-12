@@ -1,6 +1,6 @@
-<nav class="flex items-center justify-between px-3 py-2 sm:px-5 sm:py-3 lg:px-8 xl:px-10" [attr.aria-label]="'nav.mainNavAriaLabel' | translate">
+<nav class="flex min-w-0 items-center justify-between gap-2 px-3 py-2 sm:px-5 sm:py-3 lg:px-8 xl:px-10" [attr.aria-label]="'nav.mainNavAriaLabel' | translate">
   <!-- Left: Logo + Language toggle -->
-  <div class="flex items-center gap-2 sm:gap-4">
+  <div class="flex min-w-0 items-center gap-2 sm:gap-4">
     <a [routerLink]="logoLink()" class="shrink-0">
       <img [src]="logoSrc()" [alt]="logoAlt()" class="h-7 w-auto sm:h-8" />
     </a>
@@ -47,7 +47,7 @@
 
   <!-- Right: Guest buttons (unauthenticated) -->
   @if (!isAuthenticated()) {
-    <div class="flex items-center gap-2 sm:gap-3">
+    <div class="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
       <button
         type="button"
         (click)="signInClick.emit()"
@@ -70,7 +70,7 @@
 
   <!-- Right: Authenticated state -->
   @if (isAuthenticated()) {
-    <div class="flex items-center gap-2 sm:gap-3">
+    <div class="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
       <!-- Phone notification -->
       <button
         type="button"

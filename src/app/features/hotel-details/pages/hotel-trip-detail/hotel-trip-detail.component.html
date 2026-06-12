@@ -1,4 +1,4 @@
-<div class="hotel-trip-page mx-auto flex h-full min-h-0 w-full max-w-[1400px] flex-col gap-4 overflow-y-auto bg-page-bg px-8 py-6 max-lg:px-5 max-md:px-4 max-md:py-3">
+<div class="hotel-trip-page mx-auto flex h-full min-h-0 w-full max-w-[1400px] flex-col gap-4 overflow-y-auto overflow-x-hidden bg-page-bg px-4 py-4 sm:px-5 sm:py-5 lg:px-8 lg:py-6">
 
   <!-- Breadcrumb -->
   <!-- <nav class="flex items-center gap-1.5 text-cell mb-4" aria-label="Breadcrumb">
@@ -126,7 +126,7 @@
 
       <!-- Loading skeleton — mimics the 3-column field grid -->
       @if (tripLoading()) {
-        <div class="grid grid-cols-3 gap-x-6 gap-y-5 p-4 pb-6 max-md:grid-cols-2 max-sm:grid-cols-1" aria-hidden="true">
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5 p-4 pb-6 md:grid-cols-2 xl:grid-cols-3" aria-hidden="true">
           @for (_ of [1,2,3,4,5,6,7,8,9]; track $index) {
             <div class="flex flex-col gap-2">
               <app-skeleton-block width="50%" height="0.75rem" />
@@ -139,7 +139,7 @@
       <!-- Fields Grid -->
       @if (!tripLoading()) {
         @if (trip(); as t) {
-          <div class="grid grid-cols-3 gap-4 gap-x-6 p-4 pb-5 max-md:grid-cols-2 max-sm:grid-cols-1">
+          <div class="grid grid-cols-1 gap-4 gap-x-6 p-4 pb-5 md:grid-cols-2 xl:grid-cols-3">
             <div class="flex flex-col gap-1">
               <span class="text-xs text-muted font-medium">{{ 'hotelTrip.tripId' | translate }}</span>
               <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.tripCode || '--' }}</span>

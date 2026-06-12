@@ -454,7 +454,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   }
 
   private getLatestLogoUrl(): string {
-    const logoUrl = this.coreAuth.profile()?.configuration.logoUrl;
+    const logoUrl = this.coreAuth.profile()?.configuration?.logoUrl;
 
     if (typeof logoUrl === 'string' && logoUrl.trim()) {
       return logoUrl.trim();
