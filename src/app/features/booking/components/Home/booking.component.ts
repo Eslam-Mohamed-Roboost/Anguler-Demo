@@ -468,7 +468,7 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     const requestId = ++this.dropOffSearchRequestId;
     this.dropOffSearchTimer = setTimeout(() => {
       void this.loadDropOffSuggestions(query, requestId);
-    }, 250);
+    }, 500);
   }
 
   protected onDropOffSearchFocus(): void {

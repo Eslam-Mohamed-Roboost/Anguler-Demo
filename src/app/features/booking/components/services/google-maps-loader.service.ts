@@ -115,11 +115,14 @@ export function getGoogleMapsSearchErrorMessage(error: unknown): string {
 
 export interface GoogleGeocoderResult {
   formatted_address: string;
+  geometry: {
+    location: GoogleLatLng;
+  };
 }
 
 export interface GoogleGeocoder {
   geocode(
-    request: { location: MapCoordinates },
+    request: { location: MapCoordinates } | { placeId: string },
     callback: (results: GoogleGeocoderResult[] | null, status: string) => void,
   ): void;
 }
@@ -167,6 +170,7 @@ export class GoogleMapsLoaderService {
   private readonly document = inject(DOCUMENT);
   private loadPromise: Promise<GoogleMapsApi> | null = null;
   private autocompleteSessionToken: GoogleAutocompleteSessionToken | null = null;
+  private geocoder: GoogleGeocoder | null = null;
 
   load(): Promise<GoogleMapsApi> {
     if (!isPlatformBrowser(this.platformId)) {
@@ -348,14 +352,24 @@ export class GoogleMapsLoaderService {
   }
 
   async resolvePlaceSuggestion(suggestion: GooglePlaceSuggestion): Promise<LocationSelection> {
+    const maps = await this.load();
     const place = suggestion.prediction.toPlace();
     await place.fetchFields({ fields: ['id', 'displayName', 'formattedAddress', 'location'] });
+    console.log('[GoogleMaps] fetchFields location:', place.location);
 
     let location = this.getCoordinates(place.location);
     if (!location) {
       // Some responses omit `location` when batched with text fields; fetch it on its own.
       await place.fetchFields({ fields: ['location'] });
+      console.log('[GoogleMaps] location-only fetchFields location:', place.location);
       location = this.getCoordinates(place.location);
+    }
+
+    const placeId = place.id ?? suggestion.placeId;
+    if (!location && placeId) {
+      // Last resort: forward-geocode the place id to recover coordinates.
+      location = await this.geocodeByPlaceId(maps, placeId);
+      console.log('[GoogleMaps] geocodeByPlaceId location:', location);
     }
 
     this.autocompleteSessionToken = null;
@@ -368,8 +382,22 @@ export class GoogleMapsLoaderService {
       ...location,
       address: place.formattedAddress ?? suggestion.text,
       name: this.getTextValue(place.displayName) ?? suggestion.mainText,
-      placeId: place.id ?? suggestion.placeId,
+      placeId,
     };
+  }
+
+  private geocodeByPlaceId(maps: GoogleMapsApi, placeId: string): Promise<MapCoordinates | null> {
+    this.geocoder ??= new maps.Geocoder();
+
+    return new Promise((resolve) => {
+      this.geocoder?.geocode({ placeId }, (results, status) => {
+        if (status === 'OK' && results?.[0]) {
+          resolve(this.getCoordinates(results[0].geometry.location));
+        } else {
+          resolve(null);
+        }
+      });
+    });
   }
 
   resetAutocompleteSession(): void {

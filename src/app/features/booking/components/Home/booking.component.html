@@ -49,6 +49,7 @@
                     @for (suggestion of dropOffSuggestions(); track suggestion.placeId) {
                       <button
                         type="button"
+                        (mousedown)="$event.preventDefault()"
                         (click)="selectDropOffSuggestion(suggestion)"
                         class="flex w-full flex-col items-start gap-0.5 px-4 py-2.5 text-start text-sm transition hover:bg-primary/5 focus:bg-primary/5 focus:outline-none"
                       >
