@@ -11,6 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import {
   getGoogleMapsSearchErrorMessage,
   GoogleGeocoder,
@@ -33,13 +34,17 @@ const DEFAULT_LOCATION: LocationSelection = {
 @Component({
   selector: 'app-location-picker',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent],
+  imports: [IconComponent, TranslatePipe],
   templateUrl: './location-picker.component.html',
   styleUrl: './location-picker.component.css',
 })
 export class LocationPickerComponent {
   readonly initialLocation = input<LocationSelection | null>(null);
   readonly confirmLabel = input('Use this location');
+  readonly showSummary = input(true);
+  readonly showActions = input(true);
+  readonly mapHeight = input('min(52vh, 420px)');
+  readonly locationChange = output<LocationSelection>();
   readonly locationSelected = output<LocationSelection>();
 
   private readonly googleMapsLoader = inject(GoogleMapsLoaderService);
@@ -146,6 +151,7 @@ export class LocationPickerComponent {
 
   protected selectSuggestion(suggestion: GooglePlaceSuggestion): void {
     this.resolving.set(true);
+    this.suggestionsOpen.set(false);
     void this.googleMapsLoader.resolvePlaceSuggestion(suggestion)
       .then((location) => {
         this.applyLocation(location);
@@ -182,7 +188,7 @@ export class LocationPickerComponent {
         title: 'Selected location',
       });
       this.geocoder = new maps.Geocoder();
-      this.selectedLocation.set(initialLocation);
+      this.applyLocation(initialLocation);
 
       this.listeners.push(
         this.map.addListener('click', (event) => {
@@ -223,11 +229,14 @@ export class LocationPickerComponent {
   }
 
   private applyLocation(location: LocationSelection): void {
+    const position = { lat: location.lat, lng: location.lng };
+
     this.selectedLocation.set(location);
     this.error.set('');
-    this.marker?.setPosition(location);
-    this.map?.setCenter(location);
+    this.marker?.setPosition(position);
+    this.map?.setCenter(position);
     this.map?.setZoom(15);
+    this.locationChange.emit(location);
   }
 
   private async loadSuggestions(query: string, requestId: number): Promise<void> {

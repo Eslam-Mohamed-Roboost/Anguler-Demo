@@ -215,28 +215,17 @@
     </p>
   </div>
 
-  <!-- Progress bar (3 segments) -->
+  <!-- Progress bar (4 segments) -->
   <div class="mt-3 flex gap-4">
     <div class="h-[7px] flex-1 rounded-full bg-[#00a63e]"></div>
     <div class="h-[7px] flex-1 rounded-full" [class]="joinStep() >= 2 ? 'bg-[#00a63e]' : 'bg-[#f0fdf4]'"></div>
     <div class="h-[7px] flex-1 rounded-full" [class]="joinStep() >= 3 ? 'bg-[#00a63e]' : 'bg-[#f0fdf4]'"></div>
+    <div class="h-[7px] flex-1 rounded-full" [class]="joinStep() >= 4 ? 'bg-[#00a63e]' : 'bg-[#f0fdf4]'"></div>
   </div>
 
   <!-- ═══ Step 1: Hotel Details ═══ -->
   @if (joinStep() === 1) {
     <div class="mt-4 rounded-xl border border-gray-200 p-4">
-      <div class="mb-3 flex items-center justify-end">
-        <button
-          type="button"
-          (click)="openJoinLocationMap()"
-          class="flex size-10 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary transition hover:bg-primary hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
-          [attr.aria-label]="'join.pickLocation' | translate"
-          [title]="'join.pickLocation' | translate"
-        >
-          <app-icon name="map-pin" size="sm" />
-        </button>
-      </div>
-
       <!-- Hotel photo uploader -->
       <div class="mb-4 flex justify-center">
         <div class="relative">
@@ -365,20 +354,6 @@
           [placeholder]="'join.addressPlaceholder' | translate"
           inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
         />
-        @if (joinSelectedLocation(); as location) {
-          <div class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm text-primary-text">
-            <div class="flex items-start gap-2">
-              <app-icon name="map-pin" size="sm" class="mt-0.5 text-primary" />
-              <div class="min-w-0">
-                <p class="font-semibold">{{ 'join.selectedLocation' | translate }}</p>
-                <p class="mt-1 truncate text-[#5B738B]">{{ location.address }}</p>
-                <p class="mt-1 text-xs text-[#5B738B]">
-                  {{ location.lat }}, {{ location.lng }}
-                </p>
-              </div>
-            </div>
-          </div>
-        }
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <app-input
             [label]="entityPhoneLabel()"
@@ -408,8 +383,22 @@
     </div>
   }
 
-  <!-- ═══ Step 2: Service Preferences & Vehicle Specifications ═══ -->
+  <!-- ═══ Step 2: Location Picker ═══ -->
   @if (joinStep() === 2) {
+    <div class="mt-4 rounded-xl border border-gray-200 p-4 sm:p-5">
+      <p class="mb-4 text-base font-semibold text-[#223548]">{{ 'join.pickLocation' | translate }}:</p>
+      <app-location-picker
+        [initialLocation]="joinSelectedLocation()"
+        [showSummary]="false"
+        [showActions]="false"
+        mapHeight="min(44vh, 320px)"
+        (locationChange)="onJoinLocationChanged($event)"
+      />
+    </div>
+  }
+
+  <!-- ═══ Step 3: Service Preferences & Vehicle Specifications ═══ -->
+  @if (joinStep() === 3) {
     <div class="mt-4 rounded-lg border-[0.3px] border-[#a9b4be] p-7">
       <p class="mb-4 text-base font-semibold text-[#223548]">{{ 'join.servicePreferences' | translate }}</p>
 
@@ -460,8 +449,8 @@
     </div>
   }
 
-  <!-- ═══ Step 3: Withdrawal Details ═══ -->
-  @if (joinStep() === 3) {
+  <!-- ═══ Step 4: Withdrawal Details ═══ -->
+  @if (joinStep() === 4) {
     <div class="mt-4 rounded-xl border border-gray-200 p-4">
       <h3 class="mb-3 text-base font-bold text-primary-text">{{ 'withdrawal.title' | translate }}</h3>
       <!-- Warning banner -->
@@ -565,7 +554,7 @@
   }
 
   <!-- Footer -->
-  <div modal-footer class="flex items-center justify-end gap-3 px-4 pb-4 pt-2">
+  <div modal-footer class="flex flex-col items-stretch justify-end gap-3 px-4 pb-4 pt-2 sm:flex-row sm:items-center">
     @if (joinStep() === 1) {
       <button
         type="button"
@@ -582,6 +571,22 @@
         }
       </button>
     } @else if (joinStep() === 2) {
+      <button
+        type="button"
+        (click)="prevStep()"
+        class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary"
+      >
+        {{ 'join.back' | translate }}
+      </button>
+      <button
+        type="button"
+        (click)="nextToServicePreferences()"
+        class="flex items-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:bg-success-light hover:text-primary"
+      >
+        <app-icon name="zap" size="sm" />
+        <span>{{ 'join.next' | translate }}</span>
+      </button>
+    } @else if (joinStep() === 3) {
       <button
         type="button"
         (click)="prevStep()"
@@ -622,31 +627,6 @@
     }
   </div>
 </app-modal>
-
-@if (showJoinLocationMap()) {
-  <app-modal
-    [open]="showJoinLocationMap()"
-    (closed)="closeJoinLocationMap()"
-    [closeOnBackdrop]="false"
-  >
-    <div class="mb-3 flex items-center justify-between">
-      <h3 class="text-base font-bold text-primary-text">{{ 'join.pickLocation' | translate }}</h3>
-      <button
-        type="button"
-        (click)="closeJoinLocationMap()"
-        class="flex size-9 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:text-gray-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
-        [attr.aria-label]="'common.close' | translate"
-      >
-        <app-icon name="close" size="sm" />
-      </button>
-    </div>
-    <app-location-picker
-      [initialLocation]="joinSelectedLocation()"
-      [confirmLabel]="'join.useSelectedLocation' | translate"
-      (locationSelected)="onJoinLocationSelected($event)"
-    />
-  </app-modal>
-}
 
 <!-- Sign In Modal-->
 <app-modal [open]="showSiginInModal()" (closed)="closeSignInModal()">

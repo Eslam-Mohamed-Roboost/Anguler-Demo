@@ -117,10 +117,10 @@ export class BookingComponent extends BaseComponent {
   readonly dropOffSuggestionsLoading = signal(false);
   readonly googleDropOffLocation = signal<LocationSelection | null>(null);
   readonly selectedDestination = signal<LocationItem | null>(null);
-  readonly showJoinLocationMap = signal(false);
   readonly joinSelectedLocation = signal<LocationSelection | null>(null);
   readonly distanceInfo = signal<DistanceInfo | null>(null);
   readonly distanceInfoLoading = signal(false);
+  private readonly browserLocation = signal<{ lat: number; lng: number } | null>(null);
   private vehicleTypesRequestKey = '';
   private distanceInfoRequestKey = '';
   private dropOffSearchTimer: ReturnType<typeof setTimeout> | null = null;
@@ -144,15 +144,20 @@ export class BookingComponent extends BaseComponent {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-          this.mapCenter.set([latitude, longitude]);
-          this.weatherLat.set(latitude);
-          this.weatherLng.set(longitude);
+          this.browserLocation.set({ lat: latitude, lng: longitude });
         },
         () => {
           // Fallback: keep default coordinates
         },
       );
     }
+
+    effect(() => {
+      const location = this.getProfileMapLocation() ?? this.browserLocation();
+      if (!location) return;
+
+      this.setMapLocation(location);
+    });
 
     // Auto-open sign-in modal when redirected here by authGuard (?signin=1)
     this.route.queryParams.pipe(this.takeUntilDestroyed()).subscribe(params => {
@@ -447,6 +452,12 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
     this.weatherLng.set(center.lng);
   }
 
+  private setMapLocation(location: { lat: number; lng: number }): void {
+    this.mapCenter.set([location.lat, location.lng]);
+    this.weatherLat.set(location.lat);
+    this.weatherLng.set(location.lng);
+  }
+
   protected onDropOffSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const query = input.value;
@@ -496,15 +507,11 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
       .finally(() => this.dropOffSuggestionsLoading.set(false));
   }
 
-  protected openJoinLocationMap(): void {
-    this.showJoinLocationMap.set(true);
+  protected onJoinLocationChanged(location: LocationSelection): void {
+    this.setJoinLocation(location);
   }
 
-  protected closeJoinLocationMap(): void {
-    this.showJoinLocationMap.set(false);
-  }
-
-  protected onJoinLocationSelected(location: LocationSelection): void {
+  private setJoinLocation(location: LocationSelection): void {
     this.joinSelectedLocation.set(location);
     this.joinFormModel.update((model) => ({
       ...model,
@@ -513,7 +520,6 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
       latitude: location.lat,
       longitude: location.lng,
     }));
-    this.closeJoinLocationMap();
   }
 
   private async loadDropOffSuggestions(query: string, requestId: number): Promise<void> {
@@ -556,14 +562,38 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   }
 
   private getOriginCoordinates(): { lat: number; lng: number } {
-    const lat = this.coreAuth.profile()?.configuration?.latitude;
-    const lng = this.coreAuth.profile()?.configuration?.longitude;
+    const profileLocation = this.getProfileMapLocation();
+    if (profileLocation) return profileLocation;
+
     const [currentLat, currentLng] = this.mapCenter();
 
     return {
-      lat: lat ?? currentLat,
-      lng: lng ?? currentLng,
+      lat: currentLat,
+      lng: currentLng,
     };
+  }
+
+  private getProfileMapLocation(): { lat: number; lng: number } | null {
+    const configuration = this.coreAuth.profile()?.configuration;
+    return this.toMapLocation(configuration?.latitude, configuration?.longitude);
+  }
+
+  private toMapLocation(
+    lat: number | null | undefined,
+    lng: number | null | undefined,
+  ): { lat: number; lng: number } | null {
+    const isValid =
+      typeof lat === 'number' &&
+      typeof lng === 'number' &&
+      Number.isFinite(lat) &&
+      Number.isFinite(lng) &&
+      lat >= -90 &&
+      lat <= 90 &&
+      lng >= -180 &&
+      lng <= 180 &&
+      !(lat === 0 && lng === 0);
+
+    return isValid ? { lat, lng } : null;
   }
 
   private loadDistanceInfo(destination: LocationItem, vehicleId: string): void {
@@ -631,7 +661,7 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   readonly showVerificationModal = signal(false);
   readonly showWelcomeModal = signal(false);
   readonly otpDigits = signal<string[]>(['', '', '', '', '', '']);
-  readonly joinStep = signal<1 | 2 | 3>(1);
+  readonly joinStep = signal<1 | 2 | 3 | 4>(1);
   readonly ShowComfirmBookingModel = signal(false);
   readonly ShowRideRequestSentModel = signal(false);
   readonly showPickupTimeModal = signal(false);
@@ -830,9 +860,14 @@ readonly activeTab = signal<'login' | 'register'>('register');
     this.joinStep.set(2);
   }
 
-  nextToWithdrawal(): void {
+  nextToServicePreferences(): void {
     if (!this.validateStep2()) return;
     this.joinStep.set(3);
+  }
+
+  nextToWithdrawal(): void {
+    if (!this.validateStep3()) return;
+    this.joinStep.set(4);
   }
 
   private validateStep1(): boolean {
@@ -894,11 +929,25 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   private validateStep2(): boolean {
     const form = this.joinFormModel();
- 
+    const selectedLocation = this.joinSelectedLocation();
+    const hasCoordinates =
+      !!selectedLocation ||
+      (typeof form.latitude === 'number' && Number.isFinite(form.latitude) &&
+        typeof form.longitude === 'number' && Number.isFinite(form.longitude));
+
+    if (!hasCoordinates) {
+      this.showError('Please pick your location on the map.');
+      return false;
+    }
+
     return true;
   }
 
   private validateStep3(): boolean {
+    return true;
+  }
+
+  private validateStep4(): boolean {
     const form = this.joinFormModel();
     if (!form.bankAccountHolderName?.trim()) {
       this.showError('Please enter the account holder name.');
@@ -925,7 +974,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   prevStep(): void {
     const step = this.joinStep();
-    if (step === 3) this.joinStep.set(2);
+    if (step === 4) this.joinStep.set(3);
+    else if (step === 3) this.joinStep.set(2);
     else this.joinStep.set(1);
   }
 
@@ -1169,7 +1219,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   private createTrip(isScheduled: boolean, scheduledAt: string | null): void {
     const { clientName, roomNo, addDriverNote, driverNote } = this.formModel();
-    const [lat, lng] = this.mapCenter();
+    const origin = this.getOriginCoordinates();
     const car = this.selectedCarOption();
     const destination = this.selectedDestination();
     if (!destination) {
@@ -1178,7 +1228,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
     }
 
     const payload: CreateTripRequest = {
-      startLocation: { latitude: lat, longitude: lng, address: 'Current Location', order: 0 },
+      startLocation: { latitude: origin.lat, longitude: origin.lng, address: 'Current Location', order: 0 },
       endLocations: [{
         latitude: destination.latitude,
         longitude: destination.longitude,
@@ -1326,7 +1376,14 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.joinStep.set(2);
       return;
     }
-    if (!this.validateStep3()) return;
+    if (!this.validateStep3()) {
+      this.joinStep.set(3);
+      return;
+    }
+    if (!this.validateStep4()) {
+      this.joinStep.set(4);
+      return;
+    }
 
     const form = this.joinFormModel();
 
