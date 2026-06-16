@@ -203,7 +203,7 @@ export class InputComponent {
 
   protected readonly classes = computed(() => {
     const base =
-      'w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
+      'w-full rounded-lg border border-input-border bg-input-bg px-3 py-2.5 text-sm text-body placeholder:text-muted-light transition-colors focus:border-warning focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:cursor-not-allowed disabled:bg-disabled disabled:text-muted-light';
 
     const spinClass = this.hideNativeSpinners() ? 'hide-spin-buttons' : '';
     const customSpinPadding = this.showCustomSpinners() ? 'pe-9' : '';

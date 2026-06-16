@@ -1,11 +1,11 @@
 @if (loading()) {
   <div class="weather-widget">
     <div class="flex items-center gap-3">
-      <div class="size-10 animate-pulse rounded-full bg-gray-200"></div>
-      <div class="h-12 w-px bg-gray-200"></div>
+      <div class="size-10 animate-pulse rounded-full bg-skeleton"></div>
+      <div class="h-12 w-px bg-divider"></div>
       <div class="space-y-1.5">
-        <div class="h-3 w-20 animate-pulse rounded bg-gray-200"></div>
-        <div class="h-5 w-12 animate-pulse rounded bg-gray-200"></div>
+        <div class="h-3 w-20 animate-pulse rounded bg-skeleton"></div>
+        <div class="h-5 w-12 animate-pulse rounded bg-skeleton"></div>
       </div>
     </div>
   </div>
@@ -13,7 +13,7 @@
   <div class="weather-widget" role="status" aria-label="Current weather">
     <!-- Left: icon + condition -->
     <div class="flex flex-col items-center gap-1 px-1">
-      <span class="text-sm font-medium text-primary-text">{{ w.condition }}</span>
+      <span class="text-sm font-medium text-body">{{ w.condition }}</span>
       <span class="text-3xl leading-none" role="img" [attr.aria-label]="w.condition">{{ w.iconUrl }}</span>
     </div>
 
@@ -22,16 +22,16 @@
 
     <!-- Right: city + day + temp -->
     <div class="flex flex-col items-end pe-1">
-      <span class="text-sm font-semibold text-primary-text">{{ w.city }}, {{ w.country }}</span>
-      <span class="text-xs font-medium text-primary-text/70">{{ w.dayOfWeek }}</span>
+      <span class="text-sm font-semibold text-body">{{ w.city }}, {{ w.country }}</span>
+      <span class="text-xs font-medium text-muted">{{ w.dayOfWeek }}</span>
       <div class="flex items-baseline gap-1">
         <span class="text-3xl font-bold leading-tight text-primary">{{ w.tempC }}&deg;</span>
       </div>
-      <span class="text-xs font-medium text-primary-text/70">{{ w.tempF }} F</span>
+      <span class="text-xs font-medium text-muted">{{ w.tempF }} F</span>
     </div>
   </div>
 } @else if (error()) {
   <div class="weather-widget">
-    <span class="text-xs text-gray-400">Weather unavailable</span>
+    <span class="text-xs text-muted">Weather unavailable</span>
   </div>
 }

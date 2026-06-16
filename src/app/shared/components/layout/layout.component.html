@@ -1,4 +1,4 @@
-<div class="flex h-dvh min-h-0 overflow-hidden bg-gray-50 dark:bg-gray-900">
+<div class="flex h-dvh min-h-0 overflow-hidden bg-page-bg text-body">
   <!-- Sidebar -->
   @if (navbarStyle() === 'default') {
     <app-sidebar [open]="sidebarOpen()" (closed)="closeSidebar()" />
@@ -27,7 +27,7 @@
         }
       </div>
     } @else {
-      <main id="main-content" class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden" @routeAnimation>
+      <main id="main-content" class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-page-bg" @routeAnimation>
         @if (routeOutletVisible()) {
           <router-outlet />
         }

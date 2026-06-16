@@ -126,7 +126,7 @@ export class SelectComponent {
 
   protected readonly classes = computed(() => {
     const base =
-      'w-full rounded border px-3 py-2 text-sm transition-colors placeholder:text-primary-text dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 disabled:bg-gray-100 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
+      'w-full rounded border border-input-border bg-input-bg px-3 py-2 text-sm text-body transition-colors placeholder:text-muted-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-disabled disabled:text-muted-light';
 
     const hideArrow = this.hideNativeArrow() ? 'hide-native-arrow' : '';
     const customPadding = this.showCustomArrow() ? 'pe-9' : '';

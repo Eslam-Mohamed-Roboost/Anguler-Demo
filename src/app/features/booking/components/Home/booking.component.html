@@ -141,7 +141,7 @@
       <!-- ── Bottom bar: Contact + App links ── -->
       <div class="flex flex-col gap-2 sm:flex-row sm:gap-3 mt-3">
         <!-- Contact Us -->
-        <div class="flex-1 rounded-2xl bg-white/[0.92] px-3 pb-2 pt-2.5 sm:pt-3">
+        <div class="flex-1 rounded-2xl bg-contact-bg px-3 pb-2 pt-2.5 sm:pt-3">
           <p class="mb-1.5 text-center text-xs font-semibold tracking-wide text-[#5B738B] sm:mb-2 sm:text-sm">
             {{ 'contact.title' | translate }}
           </p>
@@ -198,7 +198,7 @@
     <button
       type="button"
       (click)="closeJoinModal()"
-      class="flex size-10 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:text-gray-700"
+      class="flex size-10 items-center justify-center rounded-full bg-input-bg text-muted transition hover:bg-hover hover:text-body"
       [attr.aria-label]="'common.close' | translate"
     >
       <app-icon name="close" size="sm" />

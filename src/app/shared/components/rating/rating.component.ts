@@ -43,9 +43,9 @@ export class RatingComponent {
 
   protected readonly colorClasses = computed(() => {
     switch (this.variant()) {
-      case 'red': return { filled: 'text-red-500', empty: 'text-gray-300 dark:text-gray-600' };
-      case 'blue': return { filled: 'text-blue-500', empty: 'text-gray-300 dark:text-gray-600' };
-      default: return { filled: 'text-yellow-400', empty: 'text-gray-300 dark:text-gray-600' };
+      case 'red': return { filled: 'text-danger', empty: 'text-disabled' };
+      case 'blue': return { filled: 'text-blue', empty: 'text-disabled' };
+      default: return { filled: 'text-warning', empty: 'text-disabled' };
     }
   });
 

@@ -46,10 +46,10 @@ export class CardComponent {
       ? 'overflow-hidden rounded-2xl transition-shadow' 
       : 'overflow-hidden rounded-lg transition-shadow';
     const variantClass = {
-      default: 'border bg-white dark:border-gray-700 dark:bg-gray-800',
-      elevated: 'bg-white shadow-md hover:shadow-lg dark:bg-gray-800',
-      outlined: 'border-2 border-dashed border-gray-300 bg-transparent dark:border-gray-600',
-      booking: 'bg-white/90 shadow-2xl backdrop-blur-md',
+      default: 'border border-card-border bg-panel text-body',
+      elevated: 'bg-panel text-body shadow-md hover:shadow-lg',
+      outlined: 'border-2 border-dashed border-card-border bg-transparent text-body',
+      booking: 'bg-panel/90 text-body shadow-2xl backdrop-blur-md',
     }[this.variant()];
     const extra = this.cardClass();
     return [base, variantClass, extra].filter(Boolean).join(' ');

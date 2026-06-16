@@ -1,18 +1,18 @@
 <div @fadeSlideIn class="flex flex-col items-center justify-center py-12 text-center">
   @if (icon()) {
-    <div class="mb-4 rounded-full bg-gray-100 p-4 dark:bg-gray-800">
+    <div class="mb-4 rounded-full bg-input-bg p-4 text-muted">
       <app-icon [name]="$any(icon())" size="lg" />
     </div>
   }
 
   @if (title()) {
-    <h3 class="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+    <h3 class="mb-1 text-lg font-semibold text-body">
       {{ title() }}
     </h3>
   }
 
   @if (description()) {
-    <p class="mb-4 max-w-sm text-sm text-gray-500 dark:text-gray-400">
+    <p class="mb-4 max-w-sm text-sm text-muted">
       {{ description() }}
     </p>
   }

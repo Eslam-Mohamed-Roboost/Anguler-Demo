@@ -65,13 +65,13 @@ export class TabsComponent {
 
     if (this.variant() === 'pills') {
       return isActive
-        ? `${base} rounded-lg bg-[#FFF8D6] text-[#E76500]`
-        : `${base} rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700`;
+        ? `${base} rounded-lg bg-warning-light text-warning`
+        : `${base} rounded-lg text-muted hover:bg-hover`;
     }
 
     // underline variant
     return isActive
-      ? `${base} bg-[#FFF8D6] text-center text-[#E76500] dark:border-[#E76500] dark:text-[#E76500]`
-      : `${base}  text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200`;
+      ? `${base} bg-warning-light text-center text-warning`
+      : `${base} text-muted hover:border-card-border hover:text-body`;
   }
 }

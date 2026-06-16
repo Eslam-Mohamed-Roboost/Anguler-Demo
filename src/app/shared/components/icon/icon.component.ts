@@ -34,6 +34,7 @@ export type IconName =
   | 'search'
   | 'sun'
   | 'moon'
+  | 'monitor'
   | 'menu'
   | 'home'
   | 'users'
@@ -98,6 +99,11 @@ const ICON_PATHS: Record<string, string[]> = {
   ],
   moon: [
     'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z',
+  ],
+  monitor: [
+    'M3 5.25A2.25 2.25 0 0 1 5.25 3h13.5A2.25 2.25 0 0 1 21 5.25v9.5A2.25 2.25 0 0 1 18.75 17H5.25A2.25 2.25 0 0 1 3 14.75v-9.5Z',
+    'M8 21h8',
+    'M12 17v4',
   ],
   menu: ['M3 12h18M3 6h18M3 18h18'],
   home: [

@@ -1,10 +1,10 @@
-<header class="flex h-16 items-center justify-between border-b bg-white px-4 dark:border-gray-700 dark:bg-gray-800">
+<header class="flex h-16 items-center justify-between border-b border-divider bg-panel px-4 text-body">
   <!-- Left side: mobile menu + breadcrumbs -->
   <div class="flex items-center gap-4">
     <button
       type="button"
       (click)="menuToggle.emit()"
-      class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 lg:hidden dark:text-gray-400 dark:hover:bg-gray-700"
+      class="rounded p-1.5 text-muted transition-colors hover:bg-hover lg:hidden"
       aria-label="Toggle sidebar"
       i18n-aria-label="@@nav.toggleSidebar"
     >
@@ -21,13 +21,13 @@
       <button
         type="button"
         (click)="onMessageClick()"
-        class="relative rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+        class="relative rounded p-1.5 text-muted transition-colors hover:bg-hover"
         [appTooltip]="'Messages'"
         aria-label="Messages"
       >
         <app-icon name="chat-bubble" size="sm" />
         @if (messageCount() > 0) {
-          <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+            <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-xs font-medium text-white">
             {{ messageCount() > 99 ? '99+' : messageCount() }}
           </span>
         }
@@ -37,13 +37,13 @@
       <button
         type="button"
         (click)="onNotificationClick()"
-        class="relative rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+        class="relative rounded p-1.5 text-muted transition-colors hover:bg-hover"
         [appTooltip]="'Notifications'"
         aria-label="Notifications"
       >
         <app-icon name="alert-triangle" size="sm" />
         @if (notificationCount() > 0) {
-          <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+            <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-xs font-medium text-white">
             {{ notificationCount() > 99 ? '99+' : notificationCount() }}
           </span>
         }
@@ -53,24 +53,24 @@
     <!-- Theme toggle -->
     <button
       type="button"
-      (click)="themeService.toggleTheme()"
-      class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
-      [appTooltip]="themeService.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+      (click)="themeService.cycleTheme()"
+      class="rounded p-1.5 text-muted transition-colors hover:bg-hover"
+      [appTooltip]="themeService.themeTooltip()"
       aria-label="Toggle theme"
       i18n-aria-label="@@nav.toggleTheme"
     >
-      <app-icon [name]="themeService.isDark() ? 'sun' : 'moon'" size="sm" />
+      <app-icon [name]="themeService.themeIcon()" size="sm" />
     </button>
 
     <!-- Auth info -->
     @if (authService.isAuthenticated()) {
-      <span class="hidden text-sm text-gray-600 sm:block dark:text-gray-300">
+      <span class="hidden text-sm text-body-soft sm:block">
         {{ hotelName() || authService.userName() }}
       </span>
       <button
         type="button"
         (click)="authService.logout()"
-        class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+        class="rounded p-1.5 text-muted transition-colors hover:bg-hover"
         [appTooltip]="'Log out'"
         aria-label="Log out"
         i18n-aria-label="@@nav.logout"
@@ -81,7 +81,7 @@
       <button
         type="button"
         (click)="mockLogin()"
-        class="inline-flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700"
+        class="inline-flex items-center gap-1.5 rounded bg-blue px-3 py-1.5 text-xs font-medium text-white transition-colors hover:brightness-95"
       >
         <app-icon name="log-in" size="xs" />
         <span i18n="@@nav.login">Log in</span>

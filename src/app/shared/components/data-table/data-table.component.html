@@ -1,14 +1,14 @@
 @if (loading()) {
   <app-skeleton-table [rows]="skeletonRows()" [columns]="columns().length" />
 } @else {
-  <div class="w-full overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700" dir="ltr">
+  <div class="w-full overflow-x-auto rounded-xl border border-card-border" dir="ltr">
     <table
-      class="w-full min-w-max text-left text-sm text-gray-700 dark:text-gray-200"
+      class="w-full min-w-max text-left text-sm text-body"
       dir="ltr"
       [attr.aria-label]="ariaLabel() || null"
     >
       <thead>
-        <tr class="border-b border-gray-200 bg-gray-50/60 text-xs font-medium uppercase tracking-wider text-gray-400 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-500">
+        <tr class="border-b border-divider bg-input-bg text-xs font-medium uppercase tracking-wider text-muted">
           @for (col of columns(); track col.key) {
             <th
               scope="col"
@@ -23,16 +23,16 @@
               <span class="inline-flex items-center justify-start gap-1">
                 {{ col.header | translate }}
                 @if (col.sortable) {
-                  <span class="inline-flex flex-col text-gray-300 dark:text-gray-600" aria-hidden="true">
+                  <span class="inline-flex flex-col text-muted-light" aria-hidden="true">
                     <app-icon
                       name="chevron-up"
                       size="xs"
-                      [class]="getSortDirection(col.key) === 'asc' ? 'text-blue-600 dark:text-blue-400' : ''"
+                      [class]="getSortDirection(col.key) === 'asc' ? 'text-blue' : ''"
                     />
                     <app-icon
                       name="chevron-down"
                       size="xs"
-                      [class]="getSortDirection(col.key) === 'desc' ? 'text-blue-600 dark:text-blue-400' : ''"
+                      [class]="getSortDirection(col.key) === 'desc' ? 'text-blue' : ''"
                     />
                   </span>
                 }
@@ -43,7 +43,7 @@
       </thead>
       <tbody>
         @for (row of data(); track trackByFn(row)) {
-          <tr class="border-b border-gray-100 transition-colors hover:bg-gray-50/50 dark:border-gray-700 dark:hover:bg-gray-800/50">
+          <tr class="border-b border-divider bg-panel transition-colors hover:bg-hover">
             @for (col of columns(); track col.key) {
               <td class="whitespace-nowrap px-3 py-3.5 text-left text-sm align-top" [class]="col.cellClass ?? ''">
                 @if (templateMap().get(col.key); as tmpl) {

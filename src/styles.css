@@ -3,42 +3,159 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+:root {
+  color-scheme: light;
+
+  /* Lines System: l.m (light mode) */
+  --Surface-bg-screen: #FFFFFF;
+  --Surface-bg-icon-gray: #F9FAFAB2;
+  --Surface-bg-bording-mock: #12171C;
+  --Surface-dark: #12171C;
+  --Surface-primary-green: #00A63E;
+  --Surface-green-bg: #F0FDF4;
+  --Surface-primary-red: #EE3939;
+  --Surface-red-bg: #FFF3F9;
+  --Surface-primary-Orange: #E76500;
+  --Surface-orange-bg: #FFF8D6;
+  --Surface-primary-prrple: #6C32A9;
+  --Surface-purple-bg: #F5EDFF;
+  --Surface-primary-blue: #1B90FF;
+  --Surface-blue-bg: #EBF8FF;
+  --text-icons-t-road-line: #223548;
+  --text-icons-t-sec: #5B738B;
+  --text-icons-t-btn-negative: #FFFFFF;
+  --text-icons-t-green: #00C950;
+  --text-icons-t-blue: #1B90FF;
+  --text-icons-t-purple: #6C32A9;
+  --text-icons-t-orange: #E76500;
+  --text-icons-t-placeholder: #A9B4BE;
+
+  --app-bg-screen: var(--Surface-bg-screen);
+  --app-bg-surface: var(--Surface-bg-screen);
+  --app-bg-elevated: var(--Surface-bg-screen);
+  --app-bg-muted: var(--Surface-bg-icon-gray);
+  --app-bg-contact: rgb(255 255 255 / 92%);
+  --app-bg-hover: #F4F7F9;
+  --app-bg-selected: var(--Surface-blue-bg);
+  --app-bg-disabled: #F1F4F6;
+  --app-bg-overlay: rgb(12 15 19 / 52%);
+  --app-border: #E1E7EF;
+  --app-border-strong: var(--text-icons-t-placeholder);
+  --app-divider: #EDF1F5;
+  --app-text: var(--text-icons-t-road-line);
+  --app-text-soft: var(--text-icons-t-sec);
+  --app-text-muted: var(--text-icons-t-placeholder);
+  --app-text-disabled: #8FA0AF;
+  --app-focus-ring: rgb(27 144 255 / 28%);
+  --app-shadow-color: rgb(12 15 19 / 12%);
+  --app-skeleton: #E8EEF3;
+  --app-table-row: var(--Surface-bg-screen);
+  --app-table-row-hover: #F7FAFC;
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Lines System: l.d (dark mode) */
+  --Surface-bg-screen: #0C0F13;
+  --Surface-bg-icon-gray: #161B21;
+  --Surface-bg-bording-mock: #FFFFFF;
+  --Surface-dark: #FFFFFF;
+  --Surface-primary-green: #00A63E;
+  --Surface-green-bg: #00A63E14;
+  --Surface-primary-red: #EE3939;
+  --Surface-red-bg: #EE393914;
+  --Surface-primary-Orange: #E76500;
+  --Surface-orange-bg: #FFF8D6;
+  --Surface-primary-prrple: #6C32A914;
+  --Surface-purple-bg: #6C32A914;
+  --Surface-primary-blue: #1B90FF;
+  --Surface-blue-bg: #1B90FF14;
+  --text-icons-t-road-line: #FFFFFF;
+  --text-icons-t-sec: #A9B4BE;
+  --text-icons-t-btn-negative: #FFFFFF;
+  --text-icons-t-green: #00C950;
+  --text-icons-t-blue: #1B90FF;
+  --text-icons-t-purple: #6C32A9;
+  --text-icons-t-orange: #E76500;
+  --text-icons-t-placeholder: #5B738B;
+
+  --app-bg-screen: var(--Surface-bg-screen);
+  --app-bg-surface: #11161B;
+  --app-bg-elevated: var(--Surface-bg-icon-gray);
+  --app-bg-muted: #1D232A;
+  --app-bg-contact: #0C0F13EB;
+  --app-bg-hover: #202832;
+  --app-bg-selected: #1B90FF1F;
+  --app-bg-disabled: #202832;
+  --app-bg-overlay: rgb(0 0 0 / 68%);
+  --app-border: #26313A;
+  --app-border-strong: #354451;
+  --app-divider: #202A33;
+  --app-text: var(--text-icons-t-road-line);
+  --app-text-soft: var(--text-icons-t-sec);
+  --app-text-muted: var(--text-icons-t-placeholder);
+  --app-text-disabled: #65717D;
+  --app-focus-ring: rgb(27 144 255 / 34%);
+  --app-shadow-color: rgb(0 0 0 / 38%);
+  --app-skeleton: #26313A;
+  --app-table-row: var(--app-bg-surface);
+  --app-table-row-hover: var(--app-bg-hover);
+}
+
 @theme {
   --font-sans: "Poppins", sans-serif;
 
-  /* ── Light mode colors ────────────────────────────── */
-  --color-primary: #00A63E;
-  --color-primary-text: #223548;
-  --color-warning: #E76500;
-  --color-danger: #EF4343;
-  --color-surface: #FFFFFFF7;
-  --color-input-border: #A9B4BE;
-  --color-input-bg: #F9FAFAB2;
-  --color-success-light: #F0FDF4;
-  --color-warning-light: #FFFCEC;
-  --color-gold-light: #FFF8D6;
+  /* ── Lines System color aliases ───────────────────── */
+  --color-primary: var(--Surface-primary-green);
+  --color-primary-dark: #008A34;
+  --color-primary-text: var(--text-icons-t-road-line);
+  --color-warning: var(--Surface-primary-Orange);
+  --color-warning-dark: #C75600;
+  --color-danger: var(--Surface-primary-red);
+  --color-surface: color-mix(in srgb, var(--Surface-bg-screen) 97%, transparent);
+  --color-surface-dark: var(--Surface-dark);
+  --color-input-border: var(--text-icons-t-placeholder);
+  --color-input-bg: var(--Surface-bg-icon-gray);
+  --color-success-light: var(--Surface-green-bg);
+  --color-warning-light: var(--Surface-orange-bg);
+  --color-gold-light: var(--Surface-orange-bg);
+  --color-purple: var(--Surface-primary-prrple);
+  --color-purple-light: var(--Surface-purple-bg);
+  --color-blue: var(--Surface-primary-blue);
+  --color-blue-light: var(--Surface-blue-bg);
+  --color-red-light: var(--Surface-red-bg);
+  --color-overlay: var(--app-bg-overlay);
+  --color-focus-ring: var(--app-focus-ring);
+  --color-disabled: var(--app-bg-disabled);
+  --color-skeleton: var(--app-skeleton);
 
   /* ── Page / Layout ─────────────────────────────── */
-  --color-page-bg: #f9fafb;
-  --color-card-border: #e5e7eb;
-  --color-muted: #6b7280;
-  --color-muted-light: #9ca3af;
-  --color-body: #111827;
-  --color-body-soft: #374151;
+  --color-page-bg: var(--Surface-bg-screen);
+  --color-card-border: var(--app-border);
+  --color-divider: var(--app-divider);
+  --color-panel: var(--app-bg-elevated);
+  --color-contact-bg: var(--app-bg-contact);
+  --color-hover: var(--app-bg-hover);
+  --color-selected: var(--app-bg-selected);
+  --color-muted: var(--text-icons-t-sec);
+  --color-muted-light: var(--text-icons-t-placeholder);
+  --color-body: var(--text-icons-t-road-line);
+  --color-body-soft: var(--text-icons-t-sec);
 
   /* ── Trip / Hotel Status ────────────────────────── */
-  --color-status-completed: #16a34a;
-  --color-status-completed-bg: #f0fdf4;
-  --color-status-active: #00a63e;
-  --color-status-active-bg: #eafbf1;
-  --color-status-scheduled: #f26500;
-  --color-status-scheduled-bg: #fff6d8;
-  --color-status-cancelled: #dc2626;
-  --color-status-cancelled-bg: #fef2f2;
+  --color-status-completed: var(--text-icons-t-green);
+  --color-status-completed-bg: var(--Surface-green-bg);
+  --color-status-active: var(--Surface-primary-green);
+  --color-status-active-bg: var(--Surface-green-bg);
+  --color-status-scheduled: var(--Surface-primary-Orange);
+  --color-status-scheduled-bg: var(--Surface-orange-bg);
+  --color-status-cancelled: var(--Surface-primary-red);
+  --color-status-cancelled-bg: var(--Surface-red-bg);
 
   /* ── Section icon circle ───────────────────────── */
-  --color-icon-circle-bg: #f0fdf4;
-  --color-icon-circle: #16a34a;
+  --color-icon-circle-bg: var(--Surface-green-bg);
+  --color-icon-circle: var(--text-icons-t-green);
 
   /* ── Border radius ─────────────────────────────── */
   --radius-badge: 9999px;
@@ -55,6 +172,320 @@ html,
 body {
   overflow: hidden;
   height: 100%;
+  background: var(--app-bg-screen);
+  color: var(--app-text);
+}
+
+body {
+  color-scheme: light dark;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  outline-color: var(--Surface-primary-blue);
+}
+
+::selection {
+  background: var(--Surface-blue-bg);
+  color: var(--app-text);
+}
+
+/* Compatibility layer for legacy Tailwind neutral utilities while templates migrate. */
+.bg-white,
+.dark .dark\:bg-white,
+.dark .dark\:bg-gray-800 {
+  background-color: var(--app-bg-elevated) !important;
+}
+
+.bg-gray-50,
+.bg-gray-100,
+.bg-gray-100\/70,
+.dark .dark\:bg-gray-900,
+.dark .dark\:bg-gray-800\/50,
+.dark .dark\:bg-gray-800\/30,
+.dark .dark\:bg-gray-700 {
+  background-color: var(--app-bg-muted) !important;
+}
+
+.hover\:bg-gray-50:hover,
+.hover\:bg-gray-100:hover,
+.dark .dark\:hover\:bg-gray-700:hover,
+.dark .dark\:hover\:bg-gray-800\/30:hover {
+  background-color: var(--app-bg-hover) !important;
+}
+
+.bg-gray-200,
+.bg-gray-300,
+.dark .dark\:bg-gray-600 {
+  background-color: var(--app-skeleton) !important;
+}
+
+.border,
+.border-gray-100,
+.border-gray-200,
+.border-gray-300,
+.border-gray-400,
+.dark .dark\:border-gray-700,
+.dark .dark\:border-gray-600 {
+  border-color: var(--app-border) !important;
+}
+
+.divide-gray-200 > :not(:last-child),
+.dark .dark\:divide-gray-700 > :not(:last-child) {
+  border-color: var(--app-divider) !important;
+}
+
+.text-white,
+.dark .dark\:text-white {
+  color: var(--text-icons-t-btn-negative) !important;
+}
+
+.text-gray-900,
+.text-gray-800,
+.text-gray-700,
+.dark .dark\:text-gray-100,
+.dark .dark\:text-gray-200,
+.dark .dark\:text-gray-300 {
+  color: var(--app-text) !important;
+}
+
+.text-gray-600,
+.text-gray-500,
+.text-gray-400,
+.dark .dark\:text-gray-400,
+.dark .dark\:text-gray-500 {
+  color: var(--app-text-soft) !important;
+}
+
+.text-gray-300,
+.dark .dark\:text-gray-600 {
+  color: var(--app-text-disabled) !important;
+}
+
+.placeholder\:text-gray-400::placeholder,
+.placeholder-gray-400::placeholder,
+.placeholder\:text-primary-text::placeholder {
+  color: var(--app-text-muted) !important;
+}
+
+.shadow-xl,
+.shadow-lg,
+.shadow-md,
+.shadow-sm {
+  --tw-shadow-color: var(--app-shadow-color) !important;
+}
+
+/* Legacy arbitrary Figma values mapped to live theme tokens. */
+[class*="bg-[#ffffff]" i],
+[class*="bg-white"],
+[class*="bg-[rgba(249,250,250,0.7)]" i],
+[class*="bg-[#f9fafa" i] {
+  background-color: var(--app-bg-elevated) !important;
+}
+
+[class*="bg-[#f0fdf4]" i],
+[class*="bg-green-50"] {
+  background-color: var(--Surface-green-bg) !important;
+}
+
+[class*="bg-[#fff8d6]" i],
+[class*="bg-amber-50"],
+[class*="bg-orange-50"] {
+  background-color: var(--Surface-orange-bg) !important;
+}
+
+[class*="bg-[#fff3f9]" i],
+[class*="bg-red-50"] {
+  background-color: var(--Surface-red-bg) !important;
+}
+
+[class*="bg-[#ebf8ff]" i],
+[class*="bg-blue-50"] {
+  background-color: var(--Surface-blue-bg) !important;
+}
+
+[class*="text-[#223548]" i],
+[class*="text-gray-900"],
+[class*="text-gray-800"],
+[class*="text-gray-700"] {
+  color: var(--app-text) !important;
+}
+
+[class*="text-[#5b738b]" i],
+[class*="text-gray-600"],
+[class*="text-gray-500"],
+[class*="text-gray-400"] {
+  color: var(--app-text-soft) !important;
+}
+
+[class*="text-[#a9b4be]" i],
+[class*="text-gray-300"] {
+  color: var(--app-text-muted) !important;
+}
+
+[class*="text-[#00a63e]" i],
+[class*="text-[#008f36]" i],
+[class*="text-green-600"],
+[class*="text-green-700"],
+[class*="text-emerald-500"],
+[class*="text-emerald-600"] {
+  color: var(--Surface-primary-green) !important;
+}
+
+[class*="text-[#00c950]" i] {
+  color: var(--text-icons-t-green) !important;
+}
+
+[class*="text-[#e76500]" i],
+[class*="text-orange-600"],
+[class*="text-amber-600"] {
+  color: var(--Surface-primary-Orange) !important;
+}
+
+[class*="text-[#1b90ff]" i],
+[class*="text-blue-600"],
+[class*="text-blue-700"] {
+  color: var(--Surface-primary-blue) !important;
+}
+
+[class*="text-red-600"],
+[class*="text-red-700"],
+[class*="text-[#ee3939]" i],
+[class*="text-[#ef4343]" i] {
+  color: var(--Surface-primary-red) !important;
+}
+
+[class*="border-[#a9b4be]" i],
+[class*="border-[#e1e7ef]" i],
+[class*="border-gray-"] {
+  border-color: var(--app-border) !important;
+}
+
+[class*="border-[#00a63e]" i],
+[class*="border-[#008f36]" i],
+[class*="border-green-"],
+[class*="border-emerald-"] {
+  border-color: var(--Surface-primary-green) !important;
+}
+
+[class*="border-[#e76500]" i],
+[class*="border-orange-"],
+[class*="border-amber-"] {
+  border-color: var(--Surface-primary-Orange) !important;
+}
+
+[class*="border-[#1b90ff]" i],
+[class*="border-blue-"] {
+  border-color: var(--Surface-primary-blue) !important;
+}
+
+[class*="placeholder-[rgba(34,53,72,0.4)]" i]::placeholder,
+[class*="placeholder:text-[#5b738b]" i]::placeholder {
+  color: var(--app-text-muted) !important;
+}
+
+svg [stroke="#00C950"],
+svg [stroke="#00c950"] {
+  stroke: var(--text-icons-t-green) !important;
+}
+
+svg [stroke="#00A63E"],
+svg [stroke="#00a63e"],
+svg [stroke="#008F36"],
+svg [stroke="#008f36"] {
+  stroke: var(--Surface-primary-green) !important;
+}
+
+svg [stroke="#223548"],
+svg [stroke="#223548"] {
+  stroke: var(--app-text) !important;
+}
+
+svg [stroke="#5B738B"],
+svg [stroke="#5b738b"] {
+  stroke: var(--app-text-soft) !important;
+}
+
+svg [stroke="#E76500"],
+svg [stroke="#e76500"] {
+  stroke: var(--Surface-primary-Orange) !important;
+}
+
+svg [stroke="#FF7A00"],
+svg [stroke="#ff7a00"] {
+  stroke: var(--Surface-primary-Orange) !important;
+}
+
+svg [stroke="#EE3939"],
+svg [stroke="#ee3939"] {
+  stroke: var(--Surface-primary-red) !important;
+}
+
+svg [fill="#00C950"],
+svg [fill="#00c950"] {
+  fill: var(--text-icons-t-green) !important;
+}
+
+svg [fill="#00A63E"],
+svg [fill="#00a63e"],
+svg [fill="#008F36"],
+svg [fill="#008f36"] {
+  fill: var(--Surface-primary-green) !important;
+}
+
+.dark .leaflet-container {
+  background: var(--app-bg-screen) !important;
+}
+
+.dark .leaflet-tile-pane .leaflet-tile {
+  filter: brightness(0.78) contrast(0.96) saturate(0.82);
+}
+
+.dark .leaflet-overlay-pane,
+.dark .leaflet-shadow-pane,
+.dark .leaflet-marker-pane {
+  filter: brightness(0.92) saturate(0.9);
+}
+
+.dark .leaflet-control-container .leaflet-control {
+  border-color: var(--app-border) !important;
+  background: var(--app-bg-elevated) !important;
+  color: var(--app-text) !important;
+}
+
+.dark .leaflet-control-container .leaflet-control a,
+.dark .leaflet-control-attribution {
+  background: var(--app-bg-elevated) !important;
+  color: var(--app-text-soft) !important;
+}
+
+.dark .leaflet-control-container .leaflet-control a:hover {
+  background: var(--app-bg-hover) !important;
+  color: var(--app-text) !important;
+}
+
+svg [fill="#223548"] {
+  fill: var(--app-text) !important;
+}
+
+svg [fill="#5B738B"],
+svg [fill="#5b738b"] {
+  fill: var(--app-text-soft) !important;
+}
+
+svg [fill="#E76500"],
+svg [fill="#e76500"],
+svg [fill="#FF7A00"],
+svg [fill="#ff7a00"] {
+  fill: var(--Surface-primary-Orange) !important;
+}
+
+svg [fill="#EE3939"],
+svg [fill="#ee3939"] {
+  fill: var(--Surface-primary-red) !important;
 }
 
 /* Custom animations for billing panel */
