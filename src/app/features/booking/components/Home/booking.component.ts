@@ -1239,8 +1239,6 @@ readonly activeTab = signal<'login' | 'register'>('register');
       scheduledAt,
       vehicleTypeId: this.selectedCar(),
       paymentMethodId: '168ac692-3a98-8cb0-8934-019b1e8abaa8',
-      estimatedPrice: car?.price ?? 0,
-      distance: 50,
       userRewardId: null,
       paymentMethodType: 0,
       roomNumber: parseInt(roomNo, 10) || 0,

@@ -17,8 +17,8 @@ export interface CreateTripRequest {
   scheduledAt: string | null;
   vehicleTypeId: string;
   paymentMethodId: string | null;
-  estimatedPrice: number;
-  distance: number;
+  estimatedPrice?: number;
+  distance?: number;
   userRewardId: string | null;
   paymentMethodType: number;
   roomNumber: number;
