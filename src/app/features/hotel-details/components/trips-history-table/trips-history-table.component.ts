@@ -98,10 +98,10 @@ export class TripsHistoryTableComponent {
     const count = this.selectedHotelsCount();
     return count > 0 && count < this.hotels().length;
   });
-  protected readonly commissionModalTitle = computed(() =>
+  protected readonly commissionModalTitleKey = computed(() =>
     this.hasSelectedHotels()
-      ? `Hotels Commissions (${this.selectedHotelsCount()})`
-      : 'Hotel Commission',
+      ? 'hotelDetails.commissionsPlural'
+      : 'hotelDetails.commissionSingle',
   );
 
   private readonly hotelCommissionInfo = inject(HotelDetailsService);

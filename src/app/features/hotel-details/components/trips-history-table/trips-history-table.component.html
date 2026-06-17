@@ -114,7 +114,7 @@
                 class="w-full px-4 py-2 text-left text-sm text-body hover:bg-hover border-b border-divider transition"
                 [class.bg-primary/10]="statusFilter() === ''"
               >
-                All Status
+                {{ 'hotelDetails.allStatus' | translate }}
               </button>
               @for (status of statusOptions(); track status) {
                 <button
@@ -155,7 +155,7 @@
         [data]="trips()"
         [columns]="tripColumns()"
         [loading]="loading()"
-        ariaLabel="Hotel integration trips table"
+        [ariaLabel]="'hotelDetails.tripTableLabel' | translate"
         trackByKey="id"
       >
           <!-- Trip Code Cell -->
@@ -265,7 +265,7 @@
               class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
               type="button"
               (click)="onTripAction(row, 'view')"
-              aria-label="View trip details"
+              [attr.aria-label]="'riderHistory.viewDetails' | translate"
             >
               <app-icon name="eye" size="sm" aria-hidden="true" />
             </button>
@@ -288,7 +288,7 @@
         [data]="hotels()"
         [columns]="hotelColumns()"
         [loading]="loading()"
-        ariaLabel="All hotels table"
+        [ariaLabel]="'hotelDetails.hotelsTableLabel' | translate"
         trackByKey="id"
       >
         <ng-template headerCellDef="select">
@@ -299,7 +299,7 @@
             [checked]="allHotelsSelected()"
             [indeterminate]="someHotelsSelected()"
             (change)="toggleAllHotelsSelection($event)"
-            aria-label="Select all hotels"
+            [attr.aria-label]="'hotelDetails.selectAllHotels' | translate"
           />
         </ng-template>
 
@@ -310,7 +310,7 @@
             [style.accent-color]="'var(--color-primary)'"
             [checked]="isHotelSelected(row)"
             (change)="toggleHotelSelection(row)"
-            [attr.aria-label]="'Select ' + (row.hotelName || row.displayId || 'hotel')"
+            [attr.aria-label]="('hotelDetails.selectHotel' | translate) + ' ' + (row.hotelName || row.displayId || ('hotelDetails.hotelFallback' | translate))"
           />
         </ng-template>
 
@@ -332,7 +332,7 @@
                 class="inline-block size-[7px] shrink-0 rounded-full"
                 [class]="row.hotelStatus === 'active' ? 'bg-status-completed' : 'bg-status-cancelled'"
               ></span>
-              {{ row.hotelStatus === 'active' ? 'Active' : 'Suspended' }}
+              {{ (row.hotelStatus === 'active' ? 'hotelDetails.statusActive' : 'hotelDetails.statusSuspended') | translate }}
             </span>
           </div>
         </ng-template>
@@ -371,7 +371,7 @@
             [class.bg-status-completed-bg]="row.settlementStatus === 'settled'"
             [class.text-status-completed]="row.settlementStatus === 'settled'"
           >
-            {{ row.settlementStatus === 'in-progress' ? 'In Progress' : 'Settled' }} : {{ row.settlementAmount }} CHF
+            {{ (row.settlementStatus === 'in-progress' ? 'hotelDetails.statusInProgress' : 'hotelDetails.statusSettled') | translate }} : {{ row.settlementAmount }} CHF
           </span>
         </ng-template>
 
@@ -382,7 +382,7 @@
               class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-input-bg text-muted hover:bg-hover"
               type="button"
               (click)="toggleHotelActionMenu($event, row)"
-              aria-label="Open hotel actions"
+              [attr.aria-label]="'hotelDetails.openHotelActions' | translate"
               aria-haspopup="menu"
             >
               <span class="flex flex-col items-center gap-0.5" aria-hidden="true">
@@ -412,7 +412,7 @@
               <path d="M1.25 7.5S3.4375 3.125 7.5 3.125 13.75 7.5 13.75 7.5 11.5625 11.875 7.5 11.875 1.25 7.5 1.25 7.5Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M7.5 9.375C8.53553 9.375 9.375 8.53553 9.375 7.5C9.375 6.46447 8.53553 5.625 7.5 5.625C6.46447 5.625 5.625 6.46447 5.625 7.5C5.625 8.53553 6.46447 9.375 7.5 9.375Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <span>View Hotel Info</span>
+            <span>{{ 'hotelDetails.viewHotelInfo' | translate }}</span>
           </button>
 
           @if (menu.hotel.settlementStatus === 'in-progress') {
@@ -423,7 +423,7 @@
               role="menuitem"
             >
               <span class="w-[15px] text-center text-xl leading-none text-purple" aria-hidden="true">$</span>
-              <span>Settle Balance</span>
+              <span>{{ 'hotelDetails.settleBalance' | translate }}</span>
             </button>
           }
 
@@ -437,7 +437,7 @@
               <path d="M7.5 13.75C10.9518 13.75 13.75 10.9518 13.75 7.5C13.75 4.04822 10.9518 1.25 7.5 1.25C4.04822 1.25 1.25 4.04822 1.25 7.5C1.25 10.9518 4.04822 13.75 7.5 13.75Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M3.0625 3.0625L11.9375 11.9375" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <span>{{ menu.hotel.hotelStatus === 'active' ? 'Block Hotel' : 'Unblock Hotel' }}</span>
+            <span>{{ (menu.hotel.hotelStatus === 'active' ? 'hotelDetails.blockHotel' : 'hotelDetails.unblockHotel') | translate }}</span>
           </button>
         </div>
       }
@@ -459,7 +459,12 @@
       <svg class="size-3 shrink-0 text-primary" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M0 2.268C0 1.558 0.205 1.003 0.616 0.602C1.036 0.2 1.573 0 2.226 0C2.879 0 3.411 0.2 3.822 0.602C4.242 1.003 4.452 1.558 4.452 2.268C4.452 2.986 4.242 3.546 3.822 3.948C3.411 4.349 2.879 4.55 2.226 4.55C1.573 4.55 1.036 4.349 0.616 3.948C0.205 3.546 0 2.986 0 2.268ZM8.988 0.168L3.486 9.968H1.582L7.07 0.168H8.988ZM2.212 1.176C1.699 1.176 1.442 1.54 1.442 2.268C1.442 3.005 1.699 3.374 2.212 3.374C2.464 3.374 2.66 3.285 2.8 3.108C2.94 2.921 3.01 2.641 3.01 2.268C3.01 1.54 2.744 1.176 2.212 1.176ZM6.146 7.854C6.146 7.135 6.351 6.58 6.762 6.188C7.182 5.786 7.719 5.586 8.372 5.586C9.025 5.586 9.553 5.786 9.954 6.188C10.365 6.58 10.57 7.135 10.57 7.854C10.57 8.572 10.365 9.132 9.954 9.534C9.553 9.935 9.025 10.136 8.372 10.136C7.709 10.136 7.173 9.935 6.762 9.534C6.351 9.132 6.146 8.572 6.146 7.854ZM8.358 6.762C7.826 6.762 7.56 7.126 7.56 7.854C7.56 8.591 7.826 8.96 8.358 8.96C8.881 8.96 9.142 8.591 9.142 7.854C9.142 7.126 8.881 6.762 8.358 6.762Z" fill="currentColor"/>
       </svg>
-      <h2 class="truncate text-xl font-bold text-body">{{ commissionModalTitle() }}</h2>
+      <h2 class="truncate text-xl font-bold text-body">
+        {{ commissionModalTitleKey() | translate }}
+        @if (hasSelectedHotels()) {
+          ({{ selectedHotelsCount() }})
+        }
+      </h2>
     </div>
     <button
       type="button"
@@ -477,8 +482,8 @@
   </div>
 
   @if (hasSelectedHotels()) {
-    <section class="mb-5 rounded-xl bg-input-bg px-4 py-4" aria-label="Selected hotels">
-      <p class="mb-4 text-sm font-medium text-muted">Selected Hotels:</p>
+    <section class="mb-5 rounded-xl bg-input-bg px-4 py-4" [attr.aria-label]="'hotelDetails.selectedHotels' | translate">
+      <p class="mb-4 text-sm font-medium text-muted">{{ 'hotelDetails.selectedHotels' | translate }}:</p>
       <div class="flex flex-col gap-4">
         @for (hotel of selectedHotels(); track hotel.id) {
           <div class="flex items-center justify-between gap-3">
@@ -487,7 +492,7 @@
               type="button"
               class="flex size-5 shrink-0 items-center justify-center rounded-full border border-status-cancelled text-status-cancelled transition hover:bg-status-cancelled-bg"
               (click)="removeSelectedHotel(hotel)"
-              [attr.aria-label]="'Remove ' + (hotel.hotelName || hotel.displayId)"
+              [attr.aria-label]="('hotelDetails.removeHotel' | translate) + ' ' + (hotel.hotelName || hotel.displayId)"
             >
               <app-icon name="close" size="xs" aria-hidden="true" />
             </button>
@@ -500,7 +505,7 @@
   <div class="flex flex-col">
     <label for="commission-rate" class="mb-2 block text-sm font-medium text-muted">
       @if (hasSelectedHotels()) {
-        General Commission for selected Hotels (%)
+        {{ 'hotelDetails.selectedCommissionLabel' | translate }}
       } @else {
         {{ 'GeneralCommission' | translate }}
       }
@@ -527,11 +532,11 @@
       class="flex-1 rounded-lg bg-primary px-4 py-3.5 text-base font-bold text-white transition hover:brightness-95 disabled:bg-disabled disabled:text-muted disabled:cursor-not-allowed"
     >
       @if (commissionLoading()) {
-        Loading...
+        {{ 'common.loading' | translate }}
       } @else if (commissionSaving()) {
         {{ 'common.saving' | translate }}
       } @else {
-        Save Changes
+        {{ 'hotelDetails.saveChanges' | translate }}
       }
     </button>
   </div>

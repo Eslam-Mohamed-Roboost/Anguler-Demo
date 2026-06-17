@@ -280,7 +280,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       hotelName: item.hotelName,
       hotelStatus: item.isActive ? 'active' : 'suspended',
       totalTrips: item.totalTrips,
-      hotelComm: `${(item.commissionRate * 100).toFixed(2)}%`,
+      hotelComm: this.formatCommissionRate(item.commissionRate),
       hotelProfits: item.hotelProfits.toFixed(2),
       linesProfits: item.linesProfits.toFixed(2),
       monthlyDues: item.monthlyDues.toFixed(2),
@@ -309,6 +309,14 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
         return typeof name === 'string' ? name : '';
       })
       .filter(name => name.length > 0);
+  }
+
+  private formatCommissionRate(rate: number | null | undefined): string {
+    if (rate === null || rate === undefined || Number.isNaN(rate)) {
+      return '--';
+    }
+
+    return `${rate}%`;
   }
 
   private toSettlementStatus(item: HotelFinancialsItem): HotelRecord['settlementStatus'] {
