@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { CellDefDirective } from '../../../../shared/components/data-table/cell-def.directive';
+import { HeaderCellDefDirective } from '../../../../shared/components/data-table/header-cell-def.directive';
 import type { ColumnDef } from '../../../../shared/components/data-table/column-def';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 import { CardComponent } from '../../../../shared/components/card/card.component';
@@ -38,6 +39,7 @@ interface HotelActionMenuState {
   imports: [
     DataTableComponent,
     CellDefDirective,
+    HeaderCellDefDirective,
     CardComponent,
     IconComponent,
     PaginationComponent,
@@ -79,8 +81,27 @@ export class TripsHistoryTableComponent {
   readonly showFilterDropdown = signal(false);
   readonly statusFilter = signal('');
   readonly hotelActionMenu = signal<HotelActionMenuState | null>(null);
+  readonly selectedHotelIds = signal<Set<string>>(new Set<string>());
   protected readonly searchPlaceholderKey = computed(() =>
     this.activeTab() === 'trips' ? 'hotelDetails.searchTrips' : 'hotelDetails.searchHotels'
+  );
+  protected readonly selectedHotels = computed(() =>
+    this.hotels().filter(hotel => this.selectedHotelIds().has(hotel.id)),
+  );
+  protected readonly selectedHotelsCount = computed(() => this.selectedHotels().length);
+  protected readonly hasSelectedHotels = computed(() => this.selectedHotelsCount() > 0);
+  protected readonly allHotelsSelected = computed(() => {
+    const hotels = this.hotels();
+    return hotels.length > 0 && hotels.every(hotel => this.selectedHotelIds().has(hotel.id));
+  });
+  protected readonly someHotelsSelected = computed(() => {
+    const count = this.selectedHotelsCount();
+    return count > 0 && count < this.hotels().length;
+  });
+  protected readonly commissionModalTitle = computed(() =>
+    this.hasSelectedHotels()
+      ? `Hotels Commissions (${this.selectedHotelsCount()})`
+      : 'Hotel Commission',
   );
 
   private readonly hotelCommissionInfo = inject(HotelDetailsService);
@@ -127,9 +148,11 @@ export class TripsHistoryTableComponent {
   ]);
 
   protected readonly hotelColumns = computed<ColumnDef[]>(() => [
+    { key: 'select', header: '', sortable: false, headerClass: 'w-10', cellClass: 'w-10' },
     { key: 'id', header: 'ID', sortable: false, headerClass: 'w-24' },
     { key: 'hotelName', header: 'Hotel Name', sortable: false, headerClass: 'w-56' },
     { key: 'totalTrips', header: 'Total Trips', sortable: false, headerClass: 'w-24' },
+    { key: 'hotelComm', header: 'Hotel Comm.', sortable: false, headerClass: 'w-24' },
     { key: 'hotelProfits', header: 'Hotel Profits', sortable: false, headerClass: 'w-28' },
     { key: 'linesProfits', header: 'Lines profits', sortable: false, headerClass: 'w-28' },
     { key: 'monthlyDues', header: 'Monthly Dues', sortable: false, headerClass: 'w-28' },
@@ -176,6 +199,7 @@ export class TripsHistoryTableComponent {
     this.showFilterDropdown.set(false);
     this.showSortDropdown.set(false);
     this.hotelActionMenu.set(null);
+    this.selectedHotelIds.set(new Set<string>());
     this.tabChange.emit(tab);
   }
 
@@ -227,7 +251,41 @@ export class TripsHistoryTableComponent {
   protected onSearchChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.hotelActionMenu.set(null);
+    if (this.activeTab() === 'hotels') {
+      this.selectedHotelIds.set(new Set<string>());
+    }
     this.searchChange.emit(target.value);
+  }
+
+  protected isHotelSelected(hotel: HotelRecord): boolean {
+    return this.selectedHotelIds().has(hotel.id);
+  }
+
+  protected toggleHotelSelection(hotel: HotelRecord): void {
+    this.selectedHotelIds.update(current => {
+      const next = new Set(current);
+      if (next.has(hotel.id)) {
+        next.delete(hotel.id);
+      } else {
+        next.add(hotel.id);
+      }
+      return next;
+    });
+  }
+
+  protected toggleAllHotelsSelection(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.selectedHotelIds.set(
+      target.checked ? new Set(this.hotels().map(hotel => hotel.id)) : new Set<string>(),
+    );
+  }
+
+  protected removeSelectedHotel(hotel: HotelRecord): void {
+    this.selectedHotelIds.update(current => {
+      const next = new Set(current);
+      next.delete(hotel.id);
+      return next;
+    });
   }
 
   protected onTripAction(trip: TripRecord, action: string): void {
@@ -271,6 +329,7 @@ export class TripsHistoryTableComponent {
 
   protected onHotelPageChange(page: number): void {
     this.hotelActionMenu.set(null);
+    this.selectedHotelIds.set(new Set<string>());
     this.pageChange.emit(page);
   }
 
@@ -306,7 +365,7 @@ export class TripsHistoryTableComponent {
   }
 
   updateCommissionSettings(): void {
-    this.hotelCommissionInfo.updateHotelCommission(this.generalCommissionField()).subscribe({
+    this.hotelCommissionInfo.updateHotelCommission(this.generalCommissionField(), Array.from(this.selectedHotelIds())).subscribe({
       next: (result) => {
         if (result.isSuccess) {
            this.closeCommissionModal();
@@ -320,6 +379,7 @@ export class TripsHistoryTableComponent {
 
   protected saveCommission(): void {
     const commission = this.generalCommissionField();
+    const targetHotelIds = Array.from(this.selectedHotelIds());
 
     if (commission < 0 || commission > 100) {
       return;
@@ -327,12 +387,15 @@ export class TripsHistoryTableComponent {
 
     this.commissionSaving.set(true);
     this.hotelCommissionInfo
-      .updateHotelCommission(commission)
+      .updateHotelCommission(commission, targetHotelIds)
       .subscribe({
         next: (result) => {
           this.commissionSaving.set(false);
           if (result.isSuccess) {
-            this.appConfig.setCommissionPercentage(commission);
+            if (targetHotelIds.length === 0) {
+              this.appConfig.setCommissionPercentage(commission);
+            }
+            this.selectedHotelIds.set(new Set<string>());
             this.closeCommissionModal();
           }
         },

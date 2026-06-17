@@ -4,16 +4,16 @@
     <!-- Tabs -->
     <div class="flex gap-1">
       <button
-        class="px-4 py-2 border rounded-btn bg-white text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50"
-        [class]="activeTab() === 'trips' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-gray-300'"
+        class="px-4 py-2 border rounded-btn bg-panel text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover"
+        [class]="activeTab() === 'trips' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-card-border'"
         type="button"
         (click)="setTab('trips')"
       >
         {{ 'hotelDetails.tripsTab' | translate }}
       </button>
       <button
-        class="px-4 py-2 border rounded-btn bg-white text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50"
-        [class]="activeTab() === 'hotels' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-gray-300'"
+        class="px-4 py-2 border rounded-btn bg-panel text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover"
+        [class]="activeTab() === 'hotels' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-card-border'"
         type="button"
         (click)="setTab('hotels')"
       >
@@ -31,7 +31,7 @@
           [placeholder]="searchPlaceholderKey() | translate"
           [value]="searchQuery()"
           (input)="onSearchChange($event)"
-          class="w-full py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-white outline-none focus:border-warning focus:ring-2 focus:ring-warning/10 lg:w-[180px]"
+          class="w-full py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-input-bg outline-none focus:border-warning focus:ring-2 focus:ring-focus-ring lg:w-[180px]"
           [attr.aria-label]="searchPlaceholderKey() | translate"
         />
       </div>
@@ -50,15 +50,15 @@
               <span>{{ selectedSortLabel() | translate }}</span>
             </button>
             @if (showSortDropdown()) {
-              <div class="absolute top-full left-0 mt-1 bg-white border border-card-border rounded-lg shadow-lg z-10 min-w-max">
+              <div class="absolute top-full left-0 mt-1 bg-panel border border-card-border rounded-lg shadow-lg z-10 min-w-max">
                 @for (option of sortOptions; track option.value) {
                   <button
                     type="button"
                     (click)="onSortOption(option.value)"
-                    class="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition"
+                    class="w-full px-4 py-2 text-left text-sm text-body hover:bg-hover transition"
                     [class.bg-primary/10]="selectedSort() === option.value"
                     [class.border-b]="!$last"
-                    [class.border-gray-100]="!$last"
+                    [class.border-divider]="!$last"
                   >
                     {{ option.label | translate }}
                   </button>
@@ -71,7 +71,7 @@
             <button
               type="button"
               (click)="toggleSortDropdown()"
-              class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
+              class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-panel text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover max-md:[&_span]:hidden max-md:px-2.5"
               [attr.aria-label]="'hotelDetails.sort' | translate"
               [attr.aria-expanded]="showSortDropdown()"
             >
@@ -79,15 +79,15 @@
               <span>{{ selectedHotelSortLabel() | translate }}</span>
             </button>
             @if (showSortDropdown()) {
-              <div class="absolute top-full left-0 mt-1 bg-white border border-card-border rounded-lg shadow-lg z-10 min-w-max">
+              <div class="absolute top-full left-0 mt-1 bg-panel border border-card-border rounded-lg shadow-lg z-10 min-w-max">
                 @for (option of hotelSortOptions; track option.label) {
                   <button
                     type="button"
                     (click)="onHotelSortOption(option)"
-                    class="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition"
+                    class="w-full px-4 py-2 text-left text-sm text-body hover:bg-hover transition"
                     [class.bg-primary/10]="selectedHotelSortBy() === option.sortBy && selectedHotelSortDirection() === option.sortDirection"
                     [class.border-b]="!$last"
-                    [class.border-gray-100]="!$last"
+                    [class.border-divider]="!$last"
                   >
                     {{ option.label | translate }}
                   </button>
@@ -100,18 +100,18 @@
           <button
             type="button"
             (click)="toggleFilterDropdown()"
-            class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
+            class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-panel text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover max-md:[&_span]:hidden max-md:px-2.5"
             [attr.aria-label]="'hotelDetails.filter' | translate"
           >
             <app-icon name="filter" size="sm" aria-hidden="true" />
             <span>{{ 'hotelDetails.filter' | translate }}</span>
           </button>
           @if (showFilterDropdown()) {
-            <div class="absolute top-full left-0 mt-1 bg-white border border-card-border rounded-lg shadow-lg z-10 min-w-max">
+            <div class="absolute top-full left-0 mt-1 bg-panel border border-card-border rounded-lg shadow-lg z-10 min-w-max">
               <button
                 type="button"
                 (click)="onStatusFilter('')"
-                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 border-b border-gray-100 transition"
+                class="w-full px-4 py-2 text-left text-sm text-body hover:bg-hover border-b border-divider transition"
                 [class.bg-primary/10]="statusFilter() === ''"
               >
                 All Status
@@ -120,11 +120,10 @@
                 <button
                   type="button"
                   (click)="onStatusFilter(status)"
-                  class="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition"
+                  class="w-full px-4 py-2 text-left text-sm text-body hover:bg-hover transition"
                   [class.bg-primary/10]="statusFilter() === status"
-                  [class.border-b="!$last"]
                   [class.border-b]="!$last"
-                  [class.border-gray-100]="!$last"
+                  [class.border-divider]="!$last"
                 >
                   {{ status }}
                 </button>
@@ -133,12 +132,17 @@
           }
         </div>
         <button
-          class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
+          class="flex items-center gap-1.5 px-3.5 py-[7px] border rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap max-md:[&_span]:hidden max-md:px-2.5"
+          [class]="hasSelectedHotels() ? 'border-warning bg-status-scheduled-bg text-status-scheduled hover:bg-status-scheduled-bg' : 'border-card-border bg-panel text-body-soft hover:bg-hover'"
           type="button"
           (click)="openCommissionModal()"
         >
           <app-icon name="layers" size="sm" aria-hidden="true" />
-          <span>{{ 'hotelDetails.commSettings' | translate }}</span>
+          @if (hasSelectedHotels()) {
+            <span>{{ 'hotelDetails.editCommission' | translate }} ({{ selectedHotelsCount() }})</span>
+          } @else {
+            <span>{{ 'hotelDetails.commSettings' | translate }}</span>
+          }
         </button>
       </div>
     </div>
@@ -165,8 +169,8 @@
             <span class="block max-w-full truncate text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName ?? '--' }}</span>
             @if (row.hotelPhone) {
               <span class="phone-line inline-flex max-w-full items-center gap-1 text-xs text-muted">
-                <svg class="size-3 shrink-0" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="#5B738B" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <svg class="size-3 shrink-0 text-muted" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 <span class="min-w-0 truncate" dir="ltr" [title]="row.hotelPhone">{{ row.hotelPhone }}</span>
               </span>
@@ -191,8 +195,8 @@
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
             @if (row.driverPhoneNumber) {
               <span class="inline-flex items-center gap-1 text-xs text-muted" dir="ltr">
-                <svg class="size-3 shrink-0" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="#5B738B" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <svg class="size-3 shrink-0 text-muted" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 {{ row.driverPhoneNumber }}
               </span>
@@ -287,6 +291,29 @@
         ariaLabel="All hotels table"
         trackByKey="id"
       >
+        <ng-template headerCellDef="select">
+          <input
+            type="checkbox"
+            class="size-3.5 rounded border-card-border bg-input-bg focus:ring-2 focus:ring-focus-ring"
+            [style.accent-color]="'var(--color-primary)'"
+            [checked]="allHotelsSelected()"
+            [indeterminate]="someHotelsSelected()"
+            (change)="toggleAllHotelsSelection($event)"
+            aria-label="Select all hotels"
+          />
+        </ng-template>
+
+        <ng-template cellDef="select" let-row>
+          <input
+            type="checkbox"
+            class="size-3.5 rounded border-card-border bg-input-bg focus:ring-2 focus:ring-focus-ring"
+            [style.accent-color]="'var(--color-primary)'"
+            [checked]="isHotelSelected(row)"
+            (change)="toggleHotelSelection(row)"
+            [attr.aria-label]="'Select ' + (row.hotelName || row.displayId || 'hotel')"
+          />
+        </ng-template>
+
         <ng-template cellDef="id" let-row>
           <span class="text-cell font-medium text-body-soft max-sm:text-xs">{{ row.displayId }}</span>
         </ng-template>
@@ -313,6 +340,11 @@
         <!-- Total Trips Cell -->
         <ng-template cellDef="totalTrips" let-row>
           <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.totalTrips }}</span>
+        </ng-template>
+
+        <!-- Hotel Commission Cell -->
+        <ng-template cellDef="hotelComm" let-row>
+          <span class="text-cell font-bold text-body max-sm:text-xs">{{ row.hotelComm }}</span>
         </ng-template>
 
         <!-- Hotel Profits Cell -->
@@ -376,9 +408,9 @@
             (click)="onHotelAction('view', menu.hotel)"
             role="menuitem"
           >
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M1.25 7.5S3.4375 3.125 7.5 3.125 13.75 7.5 13.75 7.5 11.5625 11.875 7.5 11.875 1.25 7.5 1.25 7.5Z" stroke="#FF7A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7.5 9.375C8.53553 9.375 9.375 8.53553 9.375 7.5C9.375 6.46447 8.53553 5.625 7.5 5.625C6.46447 5.625 5.625 6.46447 5.625 7.5C5.625 8.53553 6.46447 9.375 7.5 9.375Z" stroke="#FF7A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg class="text-warning" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M1.25 7.5S3.4375 3.125 7.5 3.125 13.75 7.5 13.75 7.5 11.5625 11.875 7.5 11.875 1.25 7.5 1.25 7.5Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7.5 9.375C8.53553 9.375 9.375 8.53553 9.375 7.5C9.375 6.46447 8.53553 5.625 7.5 5.625C6.46447 5.625 5.625 6.46447 5.625 7.5C5.625 8.53553 6.46447 9.375 7.5 9.375Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span>View Hotel Info</span>
           </button>
@@ -401,9 +433,9 @@
             (click)="onHotelAction('block', menu.hotel)"
             role="menuitem"
           >
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M7.5 13.75C10.9518 13.75 13.75 10.9518 13.75 7.5C13.75 4.04822 10.9518 1.25 7.5 1.25C4.04822 1.25 1.25 4.04822 1.25 7.5C1.25 10.9518 4.04822 13.75 7.5 13.75Z" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M3.0625 3.0625L11.9375 11.9375" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg class="text-status-cancelled" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7.5 13.75C10.9518 13.75 13.75 10.9518 13.75 7.5C13.75 4.04822 10.9518 1.25 7.5 1.25C4.04822 1.25 1.25 4.04822 1.25 7.5C1.25 10.9518 4.04822 13.75 7.5 13.75Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3.0625 3.0625L11.9375 11.9375" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span>{{ menu.hotel.hotelStatus === 'active' ? 'Block Hotel' : 'Unblock Hotel' }}</span>
           </button>
@@ -421,53 +453,78 @@
 
 
 
- <app-modal [open]="showCommissionsModal()" (closed)="closeCommissionModal()">
-  <!-- Custom header -->
+<app-modal [open]="showCommissionsModal()" (closed)="closeCommissionModal()">
   <div class="flex items-center justify-between gap-3">
-    <div class="flex items-center gap-2">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-       <path d="M-6.63996e-05 2.26777C-6.63996e-05 1.55844 0.205267 1.00311 0.615934 0.601773C1.03593 0.20044 1.5726 -0.000226736 2.22593 -0.000226736C2.87927 -0.000226736 3.41127 0.20044 3.82193 0.601773C4.24193 1.00311 4.45193 1.55844 4.45193 2.26777C4.45193 2.98644 4.24193 3.54644 3.82193 3.94777C3.41127 4.34911 2.87927 4.54977 2.22593 4.54977C1.5726 4.54977 1.03593 4.34911 0.615934 3.94777C0.205267 3.54644 -6.63996e-05 2.98644 -6.63996e-05 2.26777ZM8.98793 0.167773L3.48593 9.96777H1.58193L7.06993 0.167773H8.98793ZM2.21193 1.17577C1.6986 1.17577 1.44193 1.53977 1.44193 2.26777C1.44193 3.00511 1.6986 3.37377 2.21193 3.37377C2.46393 3.37377 2.65993 3.28511 2.79993 3.10777C2.93993 2.92111 3.00993 2.64111 3.00993 2.26777C3.00993 1.53977 2.74393 1.17577 2.21193 1.17577ZM6.14593 7.85377C6.14593 7.13511 6.35127 6.57977 6.76193 6.18777C7.18193 5.78644 7.7186 5.58577 8.37193 5.58577C9.02527 5.58577 9.5526 5.78644 9.95393 6.18777C10.3646 6.57977 10.5699 7.13511 10.5699 7.85377C10.5699 8.57244 10.3646 9.13244 9.95393 9.53377C9.5526 9.93511 9.02527 10.1358 8.37193 10.1358C7.70927 10.1358 7.1726 9.93511 6.76193 9.53377C6.35127 9.13244 6.14593 8.57244 6.14593 7.85377ZM8.35793 6.76177C7.82593 6.76177 7.55993 7.12577 7.55993 7.85377C7.55993 8.59111 7.82593 8.95977 8.35793 8.95977C8.8806 8.95977 9.14193 8.59111 9.14193 7.85377C9.14193 7.12577 8.8806 6.76177 8.35793 6.76177Z" fill="#00C950"/>
-    </svg>
-
-      <h2 class="text-xl font-bold text-primary-text">{{ 'hotel.commission' | translate }}</h2>
+    <div class="flex min-w-0 items-center gap-2">
+      <svg class="size-3 shrink-0 text-primary" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M0 2.268C0 1.558 0.205 1.003 0.616 0.602C1.036 0.2 1.573 0 2.226 0C2.879 0 3.411 0.2 3.822 0.602C4.242 1.003 4.452 1.558 4.452 2.268C4.452 2.986 4.242 3.546 3.822 3.948C3.411 4.349 2.879 4.55 2.226 4.55C1.573 4.55 1.036 4.349 0.616 3.948C0.205 3.546 0 2.986 0 2.268ZM8.988 0.168L3.486 9.968H1.582L7.07 0.168H8.988ZM2.212 1.176C1.699 1.176 1.442 1.54 1.442 2.268C1.442 3.005 1.699 3.374 2.212 3.374C2.464 3.374 2.66 3.285 2.8 3.108C2.94 2.921 3.01 2.641 3.01 2.268C3.01 1.54 2.744 1.176 2.212 1.176ZM6.146 7.854C6.146 7.135 6.351 6.58 6.762 6.188C7.182 5.786 7.719 5.586 8.372 5.586C9.025 5.586 9.553 5.786 9.954 6.188C10.365 6.58 10.57 7.135 10.57 7.854C10.57 8.572 10.365 9.132 9.954 9.534C9.553 9.935 9.025 10.136 8.372 10.136C7.709 10.136 7.173 9.935 6.762 9.534C6.351 9.132 6.146 8.572 6.146 7.854ZM8.358 6.762C7.826 6.762 7.56 7.126 7.56 7.854C7.56 8.591 7.826 8.96 8.358 8.96C8.881 8.96 9.142 8.591 9.142 7.854C9.142 7.126 8.881 6.762 8.358 6.762Z" fill="currentColor"/>
+      </svg>
+      <h2 class="truncate text-xl font-bold text-body">{{ commissionModalTitle() }}</h2>
     </div>
     <button
       type="button"
       (click)="closeCommissionModal()"
-      class="flex size-10 items-center justify-center rounded-full bg-input-bg text-muted transition hover:bg-hover hover:text-body"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-input-bg text-muted transition hover:bg-hover hover:text-body"
       [attr.aria-label]="'common.close' | translate"
     >
-      <app-icon name="close" size="sm" />
+      <app-icon name="close" size="sm" aria-hidden="true" />
     </button>
   </div>
-  <div class="flex items-center gap-2 px-4 py-3 bg-input-bg border border-card-border rounded-btn text-cell text-muted mb-5" role="note">
-    <app-icon name="info" size="sm" aria-hidden="true" />
+
+  <div class="mb-5 mt-4 flex items-start gap-2 rounded-btn border border-card-border bg-input-bg px-4 py-3 text-cell text-muted" role="note">
+    <app-icon name="info" class="mt-0.5 shrink-0" size="sm" aria-hidden="true" />
     <span>{{ 'commission.info' | translate }}</span>
   </div>
- 
-     <div class="flex flex-col mt-4 rounded-xl border border-card-border bg-panel p-4">
-               <label for="client-name" class="mb-1 block text-xs font-medium text-muted">{{  'GeneralCommission' | translate }}</label>
-                <input
-                  type="text"
-                  id="client-name"
-                  [value]="generalCommissionField()"
-                  (input)="onGeneralCommissionChange($event)"
-                  [disabled]="commissionLoading() || commissionSaving()"
-                  [placeholder]="'form.clientNamePlaceholder' | translate"
-                  class="rounded-xl border border-card-border bg-input-bg focus-visible:outline-hidden placeholder:text-muted-light w-full px-4 py-2.5 text-sm text-body focus:border-warning focus:ring-2 focus:ring-focus-ring disabled:bg-disabled disabled:text-muted disabled:opacity-50"
-                />
-   
-     </div>
 
- 
-  <!-- Footer -->
+  @if (hasSelectedHotels()) {
+    <section class="mb-5 rounded-xl bg-input-bg px-4 py-4" aria-label="Selected hotels">
+      <p class="mb-4 text-sm font-medium text-muted">Selected Hotels:</p>
+      <div class="flex flex-col gap-4">
+        @for (hotel of selectedHotels(); track hotel.id) {
+          <div class="flex items-center justify-between gap-3">
+            <span class="min-w-0 truncate text-sm font-medium text-body">{{ hotel.hotelName || hotel.displayId }}</span>
+            <button
+              type="button"
+              class="flex size-5 shrink-0 items-center justify-center rounded-full border border-status-cancelled text-status-cancelled transition hover:bg-status-cancelled-bg"
+              (click)="removeSelectedHotel(hotel)"
+              [attr.aria-label]="'Remove ' + (hotel.hotelName || hotel.displayId)"
+            >
+              <app-icon name="close" size="xs" aria-hidden="true" />
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <div class="flex flex-col">
+    <label for="commission-rate" class="mb-2 block text-sm font-medium text-muted">
+      @if (hasSelectedHotels()) {
+        General Commission for selected Hotels (%)
+      } @else {
+        {{ 'GeneralCommission' | translate }}
+      }
+    </label>
+    <input
+      type="number"
+      id="commission-rate"
+      min="0"
+      max="100"
+      inputmode="decimal"
+      [value]="generalCommissionField()"
+      (input)="onGeneralCommissionChange($event)"
+      [disabled]="commissionLoading() || commissionSaving()"
+      placeholder="0"
+      class="w-full rounded-xl border border-card-border bg-input-bg px-4 py-3 text-base text-body placeholder:text-muted-light focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-disabled disabled:text-muted disabled:opacity-50"
+    />
+  </div>
+
   <div modal-footer class="flex gap-3 px-4 pb-4 pt-2">
-   
     <button
       type="button"
       (click)="saveCommission()"
       [disabled]="commissionLoading() || commissionSaving()"
-      class="flex-1 px-4 py-3.5 rounded-lg bg-primary text-white font-bold text-base hover:brightness-95 disabled:bg-disabled disabled:text-muted disabled:cursor-not-allowed transition"
+      class="flex-1 rounded-lg bg-primary px-4 py-3.5 text-base font-bold text-white transition hover:brightness-95 disabled:bg-disabled disabled:text-muted disabled:cursor-not-allowed"
     >
       @if (commissionLoading()) {
         Loading...

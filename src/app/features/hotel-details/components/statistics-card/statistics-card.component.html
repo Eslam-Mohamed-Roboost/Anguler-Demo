@@ -2,11 +2,14 @@
   <div class="flex items-center justify-between h-full px-4 gap-3 max-sm:px-3">
     <div class="flex-1 min-w-0 flex flex-col gap-1">
       <div class="text-xs text-muted leading-[1.3] truncate max-sm:text-2xs">{{ $any(statistic().label) | translate }}</div>
-      <div class="text-xl font-bold text-gray-800 leading-[1.2] max-md:text-lg max-sm:text-base">{{ formatValue() }}</div>
+      <div class="text-xl font-bold text-body leading-[1.2] max-md:text-lg max-sm:text-base">{{ formatValue() }}</div>
     </div>
 
-    <div class="shrink-0 size-11 bg-orange-50 rounded-full flex items-center justify-center text-orange-400 max-md:size-[38px]">
-      <app-icon name="user" size="md" />
+    <div
+      class="shrink-0 size-11 rounded-full flex items-center justify-center max-md:size-[38px]"
+      [class]="iconClass()"
+    >
+      <app-icon name="user" size="md" aria-hidden="true" />
     </div>
   </div>
 </app-card>

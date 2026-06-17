@@ -20,23 +20,27 @@
               [attr.tabindex]="col.sortable ? 0 : null"
               [attr.role]="col.sortable ? 'columnheader button' : null"
             >
-              <span class="inline-flex items-center justify-start gap-1">
-                {{ col.header | translate }}
-                @if (col.sortable) {
-                  <span class="inline-flex flex-col text-muted-light" aria-hidden="true">
-                    <app-icon
-                      name="chevron-up"
-                      size="xs"
-                      [class]="getSortDirection(col.key) === 'asc' ? 'text-blue' : ''"
-                    />
-                    <app-icon
-                      name="chevron-down"
-                      size="xs"
-                      [class]="getSortDirection(col.key) === 'desc' ? 'text-blue' : ''"
-                    />
-                  </span>
-                }
-              </span>
+              @if (headerTemplateMap().get(col.key); as headerTmpl) {
+                <ng-container [ngTemplateOutlet]="headerTmpl" />
+              } @else {
+                <span class="inline-flex items-center justify-start gap-1">
+                  {{ col.header | translate }}
+                  @if (col.sortable) {
+                    <span class="inline-flex flex-col text-muted-light" aria-hidden="true">
+                      <app-icon
+                        name="chevron-up"
+                        size="xs"
+                        [class]="getSortDirection(col.key) === 'asc' ? 'text-blue' : ''"
+                      />
+                      <app-icon
+                        name="chevron-down"
+                        size="xs"
+                        [class]="getSortDirection(col.key) === 'desc' ? 'text-blue' : ''"
+                      />
+                    </span>
+                  }
+                </span>
+              }
             </th>
           }
         </tr>

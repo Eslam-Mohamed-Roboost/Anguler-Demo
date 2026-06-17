@@ -144,9 +144,12 @@ export class HotelDetailsService extends ApiService {
     return this.adminApi.put<boolean>(`/admin/hotels/${hotelId}/toggle-block`, {});
   }
 
-    updateHotelCommission(newCommission: number): Observable<Result<void>> {
-      return this.adminApi.put<void>(`/admin/hotels/global-commission?newCommission=${newCommission}`, { newCommission });
-    }
+  updateHotelCommission(newCommission: number, targetHotelIds: string[] = []): Observable<Result<void>> {
+    return this.adminApi.put<void>('/admin/hotels/global-commission', {
+      newCommission,
+      targetHotelIds,
+    });
+  }
 
   getGlobalCommission(): Observable<Result<number>> {
     return this.adminApi.get<number>('/admin/hotels/global-commission');

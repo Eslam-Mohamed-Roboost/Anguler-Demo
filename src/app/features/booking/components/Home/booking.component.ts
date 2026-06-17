@@ -336,6 +336,9 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   );
 
   readonly commissionPercentage = computed(() => this.appConfig.commissionPercentage());
+  readonly showLoggedInContact = computed(() =>
+    this.coreAuth.isAuthenticated() || this.loginService.isLoggedIn(),
+  );
 
   readonly isCreatingTrip = signal(false);
   readonly isReschedulingTrip = signal(false);

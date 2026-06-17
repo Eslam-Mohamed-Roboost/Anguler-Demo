@@ -39,8 +39,10 @@ import { NgTemplateOutlet } from '@angular/common';
 import { SkeletonTableComponent } from '../skeleton/skeleton-table.component';
 import { IconComponent } from '../icon/icon.component';
 import { CellDefDirective } from './cell-def.directive';
+import { HeaderCellDefDirective } from './header-cell-def.directive';
 // Re-export CellDefDirective so consumers don't need a separate import
 export { CellDefDirective } from './cell-def.directive';
+export { HeaderCellDefDirective } from './header-cell-def.directive';
 import type { ColumnDef, SortState, SortDirection } from './column-def';
 import { TranslatePipe } from "../../pipes/translate.pipe";
 
@@ -79,11 +81,22 @@ export class DataTableComponent {
   /** Collect custom cell templates */
   private readonly cellDefs = contentChildren(CellDefDirective);
 
+  /** Collect custom header cell templates */
+  private readonly headerCellDefs = contentChildren(HeaderCellDefDirective);
+
   /** Map from column key to template ref */
   protected readonly templateMap = computed(() => {
     const map = new Map<string, TemplateRef<unknown>>();
     for (const def of this.cellDefs()) {
       map.set(def.cellDef(), def.templateRef);
+    }
+    return map;
+  });
+
+  protected readonly headerTemplateMap = computed(() => {
+    const map = new Map<string, TemplateRef<unknown>>();
+    for (const def of this.headerCellDefs()) {
+      map.set(def.headerCellDef(), def.templateRef);
     }
     return map;
   });
@@ -128,7 +141,7 @@ export class DataTableComponent {
   /** CSS classes for sortable header */
   protected headerClasses(col: ColumnDef): string {
     const base = 'px-3 py-3 text-left';
-    const sortable = col.sortable ? 'cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-800/50' : '';
+    const sortable = col.sortable ? 'cursor-pointer select-none hover:bg-hover' : '';
     const extra = col.headerClass ?? '';
     return [base, sortable, extra].filter(Boolean).join(' ');
   }

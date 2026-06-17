@@ -1,9 +1,9 @@
 <div class="mx-auto h-full min-h-0 max-w-[1400px] overflow-y-auto overflow-x-hidden bg-page-bg px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
   <!-- Error Message -->
   @if (error()) {
-    <div class="mb-4 flex flex-col gap-3 rounded-btn border border-red-200 bg-red-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+    <div class="mb-4 flex flex-col gap-3 rounded-btn border border-status-cancelled bg-status-cancelled-bg px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <span class="text-sm text-status-cancelled">{{ error() }}</span>
-      <button class="text-cell font-medium text-status-cancelled border border-status-cancelled rounded-btn px-3 py-1 cursor-pointer bg-transparent hover:bg-red-50 transition" type="button" (click)="refreshData()">{{ 'hotelDetails.retry' | translate }}</button>
+      <button class="text-cell font-medium text-status-cancelled border border-status-cancelled rounded-btn px-3 py-1 cursor-pointer bg-transparent hover:bg-status-cancelled-bg transition" type="button" (click)="refreshData()">{{ 'hotelDetails.retry' | translate }}</button>
     </div>
   }
 
@@ -20,7 +20,7 @@
   </section>
 
   <!-- Info Banner -->
-  <div class="flex items-center gap-2 px-4 py-3 bg-amber-50 border border-amber-200 rounded-btn text-cell text-amber-800 mb-5" role="note">
+  <div class="mb-5 flex items-center gap-2 rounded-btn border border-warning/30 bg-status-scheduled-bg px-4 py-3 text-cell text-status-scheduled" role="note">
     <app-icon name="info" size="sm" aria-hidden="true" />
     <span>{{ 'hotelDetails.payoutInfo' | translate }}</span>
   </div>

@@ -260,7 +260,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (result) => {
           if (result.isSuccess && result.data) {
-            this.statusOptions.set(result.data.status.map(status => status.name));
+            this.statusOptions.set(this.statusNames(result.data));
           } else {
             this.statusOptions.set([]);
           }
@@ -288,6 +288,27 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       settlementAmount: item.totalFare.toFixed(2),
       hotelPhone: item.hotelPhone,
     };
+  }
+
+  private statusNames(data: unknown): string[] {
+    const statusCandidate = data && typeof data === 'object' && 'status' in data
+      ? (data as { status?: unknown }).status
+      : data;
+
+    if (!Array.isArray(statusCandidate)) {
+      return [];
+    }
+
+    return statusCandidate
+      .map(status => {
+        if (!status || typeof status !== 'object' || !('name' in status)) {
+          return '';
+        }
+
+        const name = (status as { name?: unknown }).name;
+        return typeof name === 'string' ? name : '';
+      })
+      .filter(name => name.length > 0);
   }
 
   private toSettlementStatus(item: HotelFinancialsItem): HotelRecord['settlementStatus'] {
