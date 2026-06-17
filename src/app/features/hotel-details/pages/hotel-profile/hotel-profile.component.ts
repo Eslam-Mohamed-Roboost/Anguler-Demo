@@ -461,6 +461,29 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       .trim();
   }
 
+  protected statusTranslationKey(status: string): string {
+    const normalized = this.normalizeStatus(this.formatStatus(status));
+    const map: Record<string, string> = {
+      pending: 'tripDetails.status.Pending',
+      accepted: 'tripDetails.status.Accepted',
+      arrived: 'tripDetails.status.Arrived',
+      active: 'tripDetails.status.Active',
+      'in-progress': 'tripDetails.status.InProgress',
+      completed: 'tripDetails.status.Completed',
+      scheduled: 'tripDetails.status.Scheduled',
+      'not-started': 'tripDetails.status.NotStarted',
+      rejected: 'tripDetails.status.Rejected',
+      failed: 'tripDetails.status.Failed',
+      'waiting-driver': 'tripDetails.status.WaitingDriver',
+    };
+
+    if (normalized.includes('cancel')) {
+      return 'tripDetails.status.Cancelled';
+    }
+
+    return map[normalized] ?? this.formatStatus(status);
+  }
+
   private loadWithdrawalDetails(hotelId: string): void {
     this.withdrawalLoading.set(true);
     this.service
@@ -617,15 +640,15 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   private settlementStatusText(status: SettlementStatus | null): string {
     switch (status) {
       case SettlementStatus.Pending:
-        return 'Pending';
+        return this.languageService.translate('tripDetails.status.Pending');
       case SettlementStatus.AwaitingPayout:
-        return 'Awaiting Payout';
+        return this.languageService.translate('withdrawal.awaitingPayout');
       case SettlementStatus.Settled:
-        return 'Settled';
+        return this.languageService.translate('hotelDetails.statusSettled');
       case SettlementStatus.Failed:
-        return 'Failed';
+        return this.languageService.translate('tripDetails.status.Failed');
       default:
-        return 'Awaiting Payout';
+        return this.languageService.translate('withdrawal.awaitingPayout');
     }
   }
 

@@ -364,6 +364,33 @@ export class TripsHistoryTableComponent {
       .trim();
   }
 
+  protected statusTranslationKey(status: string): string {
+    const normalized = this.normalizeStatus(this.formatStatus(status));
+    const map: Record<string, string> = {
+      pending: 'tripDetails.status.Pending',
+      accepted: 'tripDetails.status.Accepted',
+      arrived: 'tripDetails.status.Arrived',
+      active: 'tripDetails.status.Active',
+      'in-progress': 'tripDetails.status.InProgress',
+      completed: 'tripDetails.status.Completed',
+      scheduled: 'tripDetails.status.Scheduled',
+      'not-started': 'tripDetails.status.NotStarted',
+      rejected: 'tripDetails.status.Rejected',
+      failed: 'tripDetails.status.Failed',
+      'waiting-driver': 'tripDetails.status.WaitingDriver',
+    };
+
+    if (normalized.includes('cancel')) {
+      return 'tripDetails.status.Cancelled';
+    }
+
+    return map[normalized] ?? this.formatStatus(status);
+  }
+
+  private normalizeStatus(status: string): string {
+    return status.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+
   updateCommissionSettings(): void {
     this.hotelCommissionInfo.updateHotelCommission(this.generalCommissionField(), Array.from(this.selectedHotelIds())).subscribe({
       next: (result) => {

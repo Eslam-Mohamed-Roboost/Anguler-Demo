@@ -310,11 +310,15 @@ export const TRANSLATIONS = {
     'tripDetails.status.Pending': 'Pending',
     'tripDetails.status.Accepted': 'Accepted',
     'tripDetails.status.Arrived': 'Arrived',
+    'tripDetails.status.Active': 'Active',
     'tripDetails.status.InProgress': 'In Progress',
     'tripDetails.status.Completed': 'Completed',
     'tripDetails.status.Cancelled': 'Cancelled',
     'tripDetails.status.Rejected': 'Rejected',
     'tripDetails.status.Scheduled': 'Scheduled',
+    'tripDetails.status.NotStarted': 'Not Started',
+    'tripDetails.status.WaitingDriver': 'Waiting Driver',
+    'tripDetails.status.Failed': 'Failed',
     'tripDetails.status.Unknown': 'Unknown',
 
     // ── Profile page ──────────────────────────────────────────────────────
@@ -801,11 +805,15 @@ export const TRANSLATIONS = {
     'tripDetails.status.Pending': 'قيد الانتظار',
     'tripDetails.status.Accepted': 'مقبولة',
     'tripDetails.status.Arrived': 'وصل',
+    'tripDetails.status.Active': 'نشطة',
     'tripDetails.status.InProgress': 'قيد التنفيذ',
     'tripDetails.status.Completed': 'مكتملة',
     'tripDetails.status.Cancelled': 'ملغاة',
     'tripDetails.status.Rejected': 'مرفوضة',
     'tripDetails.status.Scheduled': 'مجدولة',
+    'tripDetails.status.NotStarted': 'لم تبدأ',
+    'tripDetails.status.WaitingDriver': 'بانتظار السائق',
+    'tripDetails.status.Failed': 'فشلت',
     'tripDetails.status.Unknown': 'غير معروف',
 
     // ── Profile page ──────────────────────────────────────────────────────
@@ -1291,11 +1299,15 @@ export const TRANSLATIONS = {
     'tripDetails.status.Pending': 'Ausstehend',
     'tripDetails.status.Accepted': 'Angenommen',
     'tripDetails.status.Arrived': 'Angekommen',
+    'tripDetails.status.Active': 'Aktiv',
     'tripDetails.status.InProgress': 'In Bearbeitung',
     'tripDetails.status.Completed': 'Abgeschlossen',
     'tripDetails.status.Cancelled': 'Storniert',
     'tripDetails.status.Rejected': 'Abgelehnt',
     'tripDetails.status.Scheduled': 'Geplant',
+    'tripDetails.status.NotStarted': 'Nicht gestartet',
+    'tripDetails.status.WaitingDriver': 'Wartet auf Fahrer',
+    'tripDetails.status.Failed': 'Fehlgeschlagen',
     'tripDetails.status.Unknown': 'Unbekannt',
 
     // ── Profile page ──────────────────────────────────────────────────────

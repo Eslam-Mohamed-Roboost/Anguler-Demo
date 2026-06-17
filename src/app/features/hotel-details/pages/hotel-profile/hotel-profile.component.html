@@ -322,7 +322,7 @@
             >
               <option value="">{{ 'hotelTrip.allStatuses' | translate }}</option>
               @for (status of statusOptions(); track status.id) {
-                <option [value]="status.name">{{ status.name }}</option>
+                <option [value]="status.name">{{ statusTranslationKey(status.name) | translate }}</option>
               }
             </select>
           </div>
@@ -395,7 +395,7 @@
           <ng-template cellDef="requestStatus" let-row>
             <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium capitalize max-sm:px-2 max-sm:text-2xs"
                   [class]="statusColorClass(row.requestStatusKey)">
-              {{ formatStatus(row.requestStatus) }}
+              {{ statusTranslationKey(row.requestStatus) | translate }}
             </span>
           </ng-template>
 
@@ -403,7 +403,7 @@
           <ng-template cellDef="tripStatus" let-row>
             <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium capitalize max-sm:px-2 max-sm:text-2xs"
                   [class]="statusColorClass(row.tripStatusKey)">
-              {{ formatStatus(row.tripStatus) }}
+              {{ statusTranslationKey(row.tripStatus) | translate }}
             </span>
           </ng-template>
 
@@ -425,7 +425,7 @@
                 @if (row.endDate) {
                   {{ formatDate(row.endDate) }}
                 } @else {
-                  Requested: {{ formatDate(row.requestedAt) }}
+                  {{ 'admin.pendingRequests.requestedAt' | translate }}: {{ formatDate(row.requestedAt) }}
                 }
               </span>
             </div>

@@ -33,7 +33,7 @@
           aria-haspopup="menu"
         >
           <app-icon name="filter" size="sm" />
-          <span>{{ statusFilter() || ('filter.Filter' | translate) }}</span>
+          <span>{{ statusFilter() ? (statusTranslationKey(statusFilter()) | translate) : ('filter.Filter' | translate) }}</span>
         </button>
         @if (showFilterDropdown()) {
           <div class="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-lg border border-gray-200 bg-white shadow-lg">
@@ -43,7 +43,7 @@
               class="w-full border-b border-gray-100 px-4 py-2 text-left text-sm transition hover:bg-gray-50"
               [class.bg-primary/10]="statusFilter() === ''"
             >
-              All Status
+              {{ 'hotelDetails.allStatus' | translate }}
             </button>
             @for (status of statusOptions(); track status) {
               <button
@@ -54,7 +54,7 @@
                 [class.border-b]="!$last"
                 [class.border-gray-100]="!$last"
               >
-                {{ status }}
+                {{ statusTranslationKey(status) | translate }}
               </button>
             }
           </div>
@@ -128,14 +128,14 @@
       <!-- Custom cell: Request Status badge -->
       <ng-template cellDef="requestStatus" let-row>
         <app-badge [variant]="getStatusVariant(requestStatus(row))">
-          {{ formatStatus(requestStatus(row)) }}
+          {{ statusTranslationKey(requestStatus(row)) | translate }}
         </app-badge>
       </ng-template>
 
       <!-- Custom cell: Trip Status badge -->
       <ng-template cellDef="tripStatus" let-row>
         <app-badge [variant]="getStatusVariant(tripStatus(row))">
-          {{ formatStatus(tripStatus(row)) }}
+          {{ statusTranslationKey(tripStatus(row)) | translate }}
         </app-badge>
       </ng-template>
 
