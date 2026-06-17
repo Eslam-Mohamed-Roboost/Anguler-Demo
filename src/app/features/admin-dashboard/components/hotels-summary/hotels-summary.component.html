@@ -7,7 +7,7 @@
     <div class="flex w-full min-w-0 items-center gap-[5px] overflow-x-auto rounded-[8px] border border-[#e76500] p-1 sm:w-auto">
       <button
         type="button"
-        class="px-4 py-2.5 text-[16px] text-[#223548] opacity-85 rounded-[6px] transition hover:bg-gray-50"
+        class="rounded-[6px] px-4 py-2.5 text-[16px] text-body opacity-85 transition hover:bg-hover"
       >
         {{ 'hotelDetails.tripsTab' | translate }}
       </button>
@@ -36,7 +36,7 @@
         <!-- Sort -->
         <button
           type="button"
-          class="flex items-center gap-2 h-10 rounded-[10px] border-[0.3px] border-[#a9b4be] bg-[rgba(249,250,250,0.7)] px-[17px] py-[9px] text-[13px] text-[#223548]"
+          class="flex h-10 items-center gap-2 rounded-[10px] border-[0.3px] border-card-border bg-panel px-[17px] py-[9px] text-[13px] text-body transition hover:bg-hover"
         >
           <svg class="size-4 text-[#223548]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
             <line x1="2" y1="4" x2="14" y2="4"/><line x1="4" y1="8" x2="12" y2="8"/><line x1="6" y1="12" x2="10" y2="12"/>
@@ -47,7 +47,7 @@
         <!-- Filter -->
         <button
           type="button"
-          class="flex items-center gap-2 h-10 rounded-[10px] border-[0.3px] border-[#a9b4be] bg-[rgba(249,250,250,0.7)] px-[17px] py-[9px] text-[13px] text-[#223548]"
+          class="flex h-10 items-center gap-2 rounded-[10px] border-[0.3px] border-card-border bg-panel px-[17px] py-[9px] text-[13px] text-body transition hover:bg-hover"
         >
           <app-icon name="filter" size="sm" />
           {{ 'hotelDetails.filter' | translate }}
@@ -57,7 +57,7 @@
       <!-- Commission Settings -->
       <button
         type="button"
-        class="flex h-10 w-full items-center justify-center gap-1 rounded-[8px] border-[0.5px] border-[#5b738b] px-2 py-[9px] text-[14px] tracking-[0.25px] text-[#223548] sm:w-auto"
+        class="flex h-10 w-full items-center justify-center gap-1 rounded-[8px] border-[0.5px] border-card-border bg-panel px-2 py-[9px] text-[14px] tracking-[0.25px] text-body transition hover:bg-hover sm:w-auto"
       >
         <svg class="size-4 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
           <circle cx="8" cy="8" r="2.5"/><path d="M8 1v1.5m0 9V13m4.95-9.95-1.06 1.06M4.11 11.89l-1.06 1.06M15 8h-1.5m-9 0H3m9.95 4.95-1.06-1.06M4.11 4.11 3.05 3.05"/>
@@ -187,7 +187,7 @@
                 <td class="pr-4 text-left">
                   <button
                     type="button"
-                    class="inline-flex items-center justify-center size-8 rounded-[5.3px] bg-[rgba(249,250,250,0.7)] hover:bg-gray-100 transition"
+                    class="inline-flex size-8 items-center justify-center rounded-[5.3px] bg-input-bg text-body transition hover:bg-hover"
                     [attr.aria-label]="('hotelDetails.actionsFor' | translate) + ' ' + hotel.hotelName"
                   >
                     <svg class="size-[18px] text-[#223548]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

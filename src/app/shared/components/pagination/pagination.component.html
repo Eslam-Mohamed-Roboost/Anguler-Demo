@@ -8,7 +8,7 @@
       type="button"
       (click)="goToPage(currentPage() - 1)"
       [disabled]="!hasPrev()"
-      class="flex size-8 shrink-0 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-gray-700 sm:size-9"
+      class="flex size-8 shrink-0 items-center justify-center rounded-full text-muted transition hover:bg-hover hover:text-body disabled:cursor-not-allowed disabled:opacity-30 sm:size-9"
       [attr.aria-label]="'shared.pagination.prev' | translate"
     >
       <app-icon name="chevron-left" size="sm" />
@@ -25,7 +25,7 @@
           class="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-medium transition-colors sm:size-9"
           [class]="item === currentPage()
             ? 'bg-primary text-white shadow-sm'
-            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'"
+            : 'text-muted hover:bg-hover hover:text-body'"
           [attr.aria-current]="item === currentPage() ? ('shared.pagination.current' | translate) : null"
         >
           {{ item }}
@@ -38,7 +38,7 @@
       type="button"
       (click)="goToPage(currentPage() + 1)"
       [disabled]="!hasNext()"
-      class="flex size-8 shrink-0 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-gray-700 sm:size-9"
+      class="flex size-8 shrink-0 items-center justify-center rounded-full text-muted transition hover:bg-hover hover:text-body disabled:cursor-not-allowed disabled:opacity-30 sm:size-9"
       [attr.aria-label]="'shared.pagination.next' | translate"
     >
       <app-icon name="chevron-right" size="sm" />

@@ -1,14 +1,14 @@
 <div class="flex w-full min-w-0 flex-col items-center justify-center px-0 sm:px-4 lg:px-10 xl:px-20">
   <!-- Custom Tabs Component -->
-  <div class="flex w-full overflow-x-auto rounded-lg border-1 border-[#E76500] border-b p-1 dark:border-gray-700 md:w-[70%] lg:w-[52%] xl:w-[41.65%]">
+  <div class="flex w-full overflow-x-auto rounded-lg border border-warning p-1 md:w-[70%] lg:w-[52%] xl:w-[41.65%]">
     @for (tab of tabs; track tab.key) {
       <button
         type="button"
         (click)="activeTab.set(tab.key)"
         class="inline-flex min-w-max flex-1 items-center justify-center gap-1.5 px-3 py-2 text-center text-sm font-medium transition-colors focus:outline-none sm:px-4"
         [class]="activeTab() === tab.key
-          ? 'bg-[#FFF8D6] text-center text-[#E76500]'
-          : 'text-gray-500 hover:border-gray-300 hover:text-gray-700'"
+          ? 'bg-status-scheduled-bg text-center text-warning'
+          : 'text-muted hover:bg-hover hover:text-body'"
       >
         {{ tab.label | translate }}
       </button>
@@ -88,17 +88,17 @@
 
           <div class="mt-6 flex flex-col justify-end gap-3 sm:flex-row sm:space-x-3">
             @if (DisableHotleInfo()) {
-              <button (click)="ChangeDiableForHotelInfo()" class="px-6 py-2 bg-[#FFF8D6] hover:text-[#FFF8D6] text-[#E76500] rounded-lg hover:bg-[#E76500]/90 transition-colors">
+              <button (click)="ChangeDiableForHotelInfo()" class="rounded-lg border border-warning/30 bg-status-scheduled-bg px-6 py-2 text-warning transition hover:bg-warning hover:text-white">
                 {{ 'profile.editDetails' | translate }}
               </button>
             } @else {
-              <button (click)="ChangeDiableForHotelInfo()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
+              <button (click)="ChangeDiableForHotelInfo()" class="rounded-lg border border-card-border bg-panel px-6 py-2 text-body transition hover:bg-hover">
                 {{ 'common.cancel' | translate }}
               </button>
               <button
                 (click)="submitHotelInfo()"
                 [disabled]="hotelInfoLoading()"
-                class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                class="rounded-lg bg-primary px-6 py-2 text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
               >
                 @if (hotelInfoLoading()) {
                   <span>{{ 'common.loading' | translate }}</span>
@@ -155,7 +155,7 @@
               type="button"
               (click)="submitChangePassword()"
               [disabled]="passwordLoading()"
-              class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="rounded-lg bg-primary px-6 py-2 text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
             >
               @if (passwordLoading()) {
                 <span>{{ 'common.loading' | translate }}</span>
@@ -228,17 +228,17 @@
 
           <div class="mt-6 flex flex-col justify-end gap-3 sm:flex-row sm:space-x-3">
             @if (Disablewithdrawal()) {
-              <button class="px-6 py-2 bg-[#FFF8D6] hover:text-[#FFF8D6] text-[#E76500] rounded-lg hover:bg-[#E76500]/90 transition-colors" (click)="ChangeDiableForwithdrawal()">
+              <button class="rounded-lg border border-warning/30 bg-status-scheduled-bg px-6 py-2 text-warning transition hover:bg-warning hover:text-white" (click)="ChangeDiableForwithdrawal()">
                 {{ 'profile.updateDetails' | translate }}
               </button>
             } @else {
-              <button (click)="ChangeDiableForwithdrawal()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
+              <button (click)="ChangeDiableForwithdrawal()" class="rounded-lg border border-card-border bg-panel px-6 py-2 text-body transition hover:bg-hover">
                 {{ 'common.cancel' | translate }}
               </button>
               <button
                 (click)="submitWithdrawalDetails()"
                 [disabled]="withdrawalLoading()"
-                class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                class="rounded-lg bg-primary px-6 py-2 text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
               >
                 @if (withdrawalLoading()) {
                   <span>{{ 'common.loading' | translate }}</span>

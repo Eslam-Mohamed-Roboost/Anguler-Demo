@@ -14,7 +14,7 @@ import { PaginationComponent } from '../../../../shared/components/pagination/pa
 import { SearchInputComponent } from '../../../../shared/components/search-input/search-input.component';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
-import type { ColumnDef, SortState } from '../../../../shared/components/data-table/column-def';
+import type { ColumnDef } from '../../../../shared/components/data-table/column-def';
 import { HotelRequestItem } from '../../models/trip-model';
 import { RiderHistoryService } from '../../services/rider-history.service';
 import { ResultHandlerService } from '../../../../core/services/result-handler.service';
@@ -47,20 +47,19 @@ export class RiderHistoryComponent extends BaseComponent {
   private readonly languageService = inject(LanguageService);
 
   protected readonly columns: ColumnDef[] = [
-    { key: 'tripCode', header: 'TripID', sortable: true },
-    { key: 'driverName', header: 'Driver', sortable: true },
-    { key: 'guestName', header: 'Guest Name', sortable: true },
+    { key: 'tripCode', header: 'TripID' },
+    { key: 'driverName', header: 'Driver' },
+    { key: 'guestName', header: 'Guest Name' },
     { key: 'roomNumber', header: 'Room No.' },
     { key: 'route', header: 'Route' },
-    { key: 'requestStatus', header: 'Request Status', sortable: true },
-    { key: 'tripStatus', header: 'Trip Status', sortable: true },
+    { key: 'requestStatus', header: 'Request Status' },
+    { key: 'tripStatus', header: 'Trip Status' },
     { key: 'duration', header: 'Duration' },
-    { key: 'fare', header: 'Fare', sortable: true },
-    { key: 'startEndDate', header: 'Start.End.Date', sortable: true },
+    { key: 'fare', header: 'Fare' },
+    { key: 'startEndDate', header: 'Start.End.Date' },
     { key: 'actions', header: 'Actions' },
   ];
 
-  protected readonly sortState = signal<SortState>({ column: '', direction: null });
   protected readonly trips = signal<HotelRequestItem[]>([]);
   protected readonly searchQuery = signal('');
   protected readonly currentPage = signal(1);
@@ -72,24 +71,7 @@ export class RiderHistoryComponent extends BaseComponent {
   protected readonly statusFilter = signal('');
   protected readonly statusOptions = signal<string[]>([]);
 
-  protected readonly filteredTrips = computed(() => {
-    let result = this.trips();
-    const { column, direction } = this.sortState();
-    if (column && direction) {
-      result = [...result].sort((a, b) => {
-        const aVal = this.getSortValue(a, column);
-        const bVal = this.getSortValue(b, column);
-        if (typeof aVal === 'string' && typeof bVal === 'string') {
-          return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-        }
-        if (typeof aVal === 'number' && typeof bVal === 'number') {
-          return direction === 'asc' ? aVal - bVal : bVal - aVal;
-        }
-        return 0;
-      });
-    }
-    return result;
-  });
+  protected readonly filteredTrips = computed(() => this.trips());
 
   constructor() {
     super();
@@ -133,10 +115,6 @@ export class RiderHistoryComponent extends BaseComponent {
     this.currentPage.set(1);
   }
 
-  onSort(state: SortState): void {
-    this.sortState.set(state);
-  }
-
   onPageChange(page: number): void {
     this.currentPage.set(page);
   }
@@ -149,10 +127,6 @@ export class RiderHistoryComponent extends BaseComponent {
     this.statusFilter.set(status);
     this.showFilterDropdown.set(false);
     this.currentPage.set(1);
-  }
-
-  clearSort(): void {
-    this.sortState.set({ column: '', direction: null });
   }
 
   isCancellable(row: HotelRequestItem): boolean {
@@ -277,18 +251,6 @@ export class RiderHistoryComponent extends BaseComponent {
         },
         error: () => this.statusOptions.set([]),
       });
-  }
-
-  private getSortValue(row: HotelRequestItem, column: string): unknown {
-    if (column === 'requestStatus') {
-      return this.requestStatus(row);
-    }
-
-    if (column === 'tripStatus') {
-      return this.tripStatus(row);
-    }
-
-    return (row as unknown as Record<string, unknown>)[column];
   }
 
   private isScheduledBeforeStart(row: HotelRequestItem): boolean {

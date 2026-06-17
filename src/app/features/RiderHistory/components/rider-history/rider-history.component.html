@@ -9,7 +9,7 @@
 
   <!-- ═══════ Header ═══════ -->
   <header class="flex flex-col gap-3 px-4 pt-6 pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4 md:px-6">
-    <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">{{'riderHistory.title' | translate}}</h1>
+    <h1 class="text-xl font-bold text-body sm:text-2xl">{{'riderHistory.title' | translate}}</h1>
 
     <div class="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 lg:w-auto">
       <!-- Search -->
@@ -25,10 +25,10 @@
         <button
           type="button"
           (click)="toggleFilterDropdown()"
-          class="flex w-full items-center justify-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:w-auto"
+          class="flex w-full items-center justify-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-hover sm:w-auto"
           [class]="statusFilter()
             ? 'border-primary bg-primary/10 text-primary'
-            : 'border-gray-300 bg-white text-gray-700'"
+            : 'border-card-border bg-panel text-body'"
           [attr.aria-expanded]="showFilterDropdown()"
           aria-haspopup="menu"
         >
@@ -36,11 +36,11 @@
           <span>{{ statusFilter() ? (statusTranslationKey(statusFilter()) | translate) : ('filter.Filter' | translate) }}</span>
         </button>
         @if (showFilterDropdown()) {
-          <div class="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-lg border border-gray-200 bg-white shadow-lg">
+          <div class="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-lg border border-card-border bg-panel shadow-lg">
             <button
               type="button"
               (click)="onStatusFilter('')"
-              class="w-full border-b border-gray-100 px-4 py-2 text-left text-sm transition hover:bg-gray-50"
+              class="w-full border-b border-divider px-4 py-2 text-left text-sm text-body transition hover:bg-hover"
               [class.bg-primary/10]="statusFilter() === ''"
             >
               {{ 'hotelDetails.allStatus' | translate }}
@@ -49,10 +49,10 @@
               <button
                 type="button"
                 (click)="onStatusFilter(status)"
-                class="w-full px-4 py-2 text-left text-sm transition hover:bg-gray-50"
+                class="w-full px-4 py-2 text-left text-sm text-body transition hover:bg-hover"
                 [class.bg-primary/10]="statusFilter() === status"
                 [class.border-b]="!$last"
-                [class.border-gray-100]="!$last"
+                [class.border-divider]="!$last"
               >
                 {{ statusTranslationKey(status) | translate }}
               </button>
@@ -61,21 +61,10 @@
         }
       </div>
 
-      @if (sortState().direction) {
-        <button
-          type="button"
-          (click)="clearSort()"
-          class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition hover:bg-primary/20 sm:flex-none"
-        >
-          <app-icon name="close" size="sm" />
-          <span>{{ 'filter.ClearSort' | translate }}</span>
-        </button>
-      }
-
       <!-- Export button hidden for now.
       <button
         type="button"
-        class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:flex-none"
+        class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-card-border bg-panel px-4 py-2 text-sm font-medium text-body transition hover:bg-hover sm:flex-none"
       >
         <app-icon name="download" size="sm" />
         <span>{{'Export' | translate}}</span>
@@ -92,15 +81,14 @@
       trackByKey="tripRequestId"
       [loading]="loading()"
       ariaLabel="Hotel requests history table"
-      (sortChange)="onSort($event)"
     >
       <!-- Custom cell: Driver -->
       <ng-template cellDef="driverName" let-row>
         <div class="flex items-center">
           <div class="flex min-w-0 flex-col">
-            <span class="text-sm text-gray-700">{{ row.driverName || '--' }}</span>
+            <span class="text-sm text-body">{{ row.driverName || '--' }}</span>
             @if (row.driverPhoneNumber) {
-              <span class="inline-flex items-center gap-1 text-xs text-[#5B738B]" dir="ltr">
+              <span class="inline-flex items-center gap-1 text-xs text-muted" dir="ltr">
                 <svg class="size-3 shrink-0" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="#5B738B" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -141,31 +129,31 @@
 
       <!-- Custom cell: Duration -->
       <ng-template cellDef="duration" let-row>
-        <div class="flex flex-col text-xs text-gray-600">
+        <div class="flex flex-col text-xs text-muted">
           <span class="flex items-center gap-1">
-            <svg class="size-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="size-3.5 text-muted-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
             {{ row.durationMinutes }} {{ 'unit.min' | translate }}
           </span>
-          <span class="text-gray-400 ps-[18px]">{{ row.distanceInKm }} {{ 'unit.km' | translate }}</span>
+          <span class="ps-[18px] text-muted-light">{{ row.distanceInKm }} {{ 'unit.km' | translate }}</span>
         </div>
       </ng-template>
 
       <!-- Custom cell: Fare -->
       <ng-template cellDef="fare" let-row>
         <div class="flex flex-col text-xs">
-          <span class="font-semibold text-gray-800">{{ formatCurrency(row.fare, row.currency) }}</span>
-          <span class="text-gray-400">{{ 'riderHistory.commission' | translate }}: {{ formatCurrency(row.commission, row.currency) }}</span>
+          <span class="font-semibold text-body">{{ formatCurrency(row.fare, row.currency) }}</span>
+          <span class="text-muted-light">{{ 'riderHistory.commission' | translate }}: {{ formatCurrency(row.commission, row.currency) }}</span>
         </div>
       </ng-template>
 
       <!-- Custom cell: Start/End Date -->
       <ng-template cellDef="startEndDate" let-row>
-        <div class="flex flex-col text-xs text-gray-600">
+        <div class="flex flex-col text-xs text-muted">
           <span>{{ formatDate(startDate(row)) }}</span>
-          <span class="text-gray-400">{{ formatDate(row.endedAt) }}</span>
+          <span class="text-muted-light">{{ formatDate(row.endedAt) }}</span>
         </div>
       </ng-template>
 
@@ -174,7 +162,7 @@
         <div class="flex items-center gap-1">
           <a
             [routerLink]="['/TripDetails', row.tripRequestId]"
-            class="flex size-8 items-center justify-center rounded-full text-primary transition hover:bg-gray-100"
+            class="flex size-8 items-center justify-center rounded-full text-primary transition hover:bg-hover"
             [attr.aria-label]="'riderHistory.viewDetails' | translate"
           >
             <app-icon name="eye" size="sm" />
@@ -184,7 +172,7 @@
               type="button"
               (click)="cancelTrip(row.tripRequestId)"
               [disabled]="cancelLoading() === row.tripRequestId"
-              class="flex size-8 items-center justify-center rounded-full text-red-500 transition hover:bg-red-50 disabled:opacity-40"
+              class="flex size-8 items-center justify-center rounded-full text-danger transition hover:bg-status-cancelled-bg disabled:opacity-40"
               [attr.aria-label]="'Cancel trip'"
             >
               @if (cancelLoading() === row.tripRequestId) {

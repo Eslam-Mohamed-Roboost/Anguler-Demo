@@ -1,11 +1,11 @@
 <div class="flex min-w-0 items-center gap-2 sm:gap-4">
   <div class="relative min-w-0 flex-1">
-    <span class="pointer-events-none absolute left-3 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-[#00A63E]"></span>
+    <span class="pointer-events-none absolute left-3 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary"></span>
     <input
       #messageInput
       type="text"
       placeholder="{{ 'chatInput.placeholder' | translate }}"
-      class="min-w-0 w-full rounded-full border border-transparent bg-[#F8FAFF] py-2.5 pe-4 ps-5 text-[11px] text-primary-text outline-none transition placeholder:text-[#A9B8D3] focus:border-primary/40 focus:ring-2 focus:ring-primary/10 dark:bg-gray-700 dark:text-gray-100 dark:placeholder:text-gray-400 sm:py-3 sm:pe-5"
+      class="min-w-0 w-full rounded-full border border-transparent bg-input-bg py-2.5 pe-4 ps-5 text-[11px] text-body outline-none transition placeholder:text-muted-light focus:border-primary/40 focus:ring-2 focus:ring-primary/10 sm:py-3 sm:pe-5"
       [attr.aria-label]="'chatInput.messageInput' | translate"
       [disabled]="loading()"
       (keydown.enter)="onSend(messageInput)"
@@ -13,7 +13,7 @@
   </div>
   <button
     type="button"
-    class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#00A63E] text-white transition hover:bg-[#008F36] focus:outline-none focus:ring-2 focus:ring-[#00A63E]/30 disabled:opacity-60 sm:size-11"
+    class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-white transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:opacity-60 sm:size-11"
     [attr.aria-label]="'chatInput.sendMessage' | translate"
     [disabled]="loading()"
     (click)="onSend(messageInput)"

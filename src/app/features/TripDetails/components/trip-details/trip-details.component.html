@@ -4,9 +4,9 @@
     <div class="trip-details-shell">
 
       <!-- Details card skeleton -->
-      <section class="trip-details-card rounded-xl border border-gray-200 bg-white px-4 py-4 shadow-sm">
+      <section class="trip-details-card rounded-xl border border-card-border bg-panel px-4 py-4 shadow-sm">
         <!-- Header row -->
-        <div class="flex items-center justify-between border-b border-gray-200 px-1 pb-3">
+        <div class="flex items-center justify-between border-b border-divider px-1 pb-3">
           <app-skeleton-block width="160px" height="1.5rem" />
           <app-skeleton-block width="80px" height="1.75rem" />
         </div>
@@ -22,7 +22,7 @@
       </section>
 
       <!-- Chat card skeleton -->
-      <section class="trip-details-chat flex flex-col gap-3 rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm">
+      <section class="trip-details-chat flex flex-col gap-3 rounded-xl border border-card-border bg-panel px-5 py-4 shadow-sm">
         <app-skeleton-block width="120px" height="1.25rem" />
         <div class="flex flex-1 flex-col gap-3 pt-2">
           <div class="flex justify-end"><app-skeleton-block width="55%" height="2.25rem" /></div>
@@ -31,7 +31,7 @@
           <div class="flex justify-start"><app-skeleton-block width="38%" height="2.25rem" /></div>
         </div>
         <!-- Input row -->
-        <div class="flex items-center gap-2 border-t border-gray-100 pt-3">
+        <div class="flex items-center gap-2 border-t border-divider pt-3">
           <app-skeleton-block width="100%" height="2.5rem" />
           <app-skeleton-block width="2.5rem" height="2.5rem" />
         </div>
@@ -40,7 +40,7 @@
     </div>
   </div>
 } @else if (error()) {
-  <div class="flex h-full flex-col items-center justify-center gap-3 bg-page-bg p-4 text-gray-500">
+  <div class="flex h-full flex-col items-center justify-center gap-3 bg-page-bg p-4 text-muted">
     <p>{{ 'tripDetails.loadError' | translate }}</p>
   </div>
 } @else if (tripData(); as data) {

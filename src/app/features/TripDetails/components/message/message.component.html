@@ -4,27 +4,27 @@
       <!-- RIGHT MESSAGE (Current user) -->
       <div class="message-row message-row--mine flex w-fit max-w-[92%] flex-col items-end sm:max-w-[78%] lg:max-w-[62%] xl:max-w-[56%]">
         <div class="mb-1.5 flex items-center gap-1.5 pe-1">
-          <span class="text-[11px] font-bold text-[#607089]" dir="auto">{{ roleLabelKey(msg.senderRole) | translate }}</span>
-          <span class="flex size-4 items-center justify-center rounded-full bg-[#8AA0C2] text-white">
+          <span class="text-[11px] font-bold text-muted" dir="auto">{{ roleLabelKey(msg.senderRole) | translate }}</span>
+          <span class="flex size-4 items-center justify-center rounded-full bg-input-bg text-white">
             <app-icon name="user" size="xs" class="text-white" />
           </span>
         </div>
-        <div class="max-w-full whitespace-pre-wrap break-words rounded-[20px] rounded-br-none bg-[#00A63E] px-4 py-3 text-xs leading-5 text-white shadow-sm [overflow-wrap:anywhere] sm:px-5 sm:py-3.5" dir="auto">
+        <div class="max-w-full whitespace-pre-wrap break-words rounded-[20px] rounded-br-none bg-primary px-4 py-3 text-xs leading-5 text-white shadow-sm [overflow-wrap:anywhere] sm:px-5 sm:py-3.5" dir="auto">
           {{ msg.message }}
         </div>
-        <span class="mt-1.5 text-xs text-[#A9B8D3]" dir="ltr">{{ formatDateTime(msg.createdAt) }}</span>
+        <span class="mt-1.5 text-xs text-muted-light" dir="ltr">{{ formatDateTime(msg.createdAt) }}</span>
       </div>
     } @else {
       <!-- LEFT MESSAGE (Other user) -->
       <div class="message-row message-row--other flex w-fit max-w-[92%] flex-col items-start sm:max-w-[78%] lg:max-w-[62%] xl:max-w-[56%]">
         <div class="mb-1.5 flex items-center gap-1.5 ps-1">
           <img src="assets/booking/logo-lines.png" alt="" class="size-4 rounded-full object-contain" />
-          <span class="text-[11px] font-bold text-[#607089]" dir="auto">{{ roleLabelKey(msg.senderRole) | translate }}</span>
+          <span class="text-[11px] font-bold text-muted" dir="auto">{{ roleLabelKey(msg.senderRole) | translate }}</span>
         </div>
-        <div class="max-w-full whitespace-pre-wrap break-words rounded-[20px] rounded-bl-none bg-[#FCFCFD] px-4 py-3 text-xs leading-5 text-primary-text shadow-sm [overflow-wrap:anywhere] dark:bg-gray-700 dark:text-gray-100 sm:px-5 sm:py-3.5" dir="auto">
+        <div class="max-w-full whitespace-pre-wrap break-words rounded-[20px] rounded-bl-none bg-input-bg px-4 py-3 text-xs leading-5 text-body shadow-sm [overflow-wrap:anywhere] sm:px-5 sm:py-3.5" dir="auto">
           {{ msg.message }}
         </div>
-        <span class="mt-1.5 text-xs text-[#A9B8D3]" dir="ltr">{{ formatDateTime(msg.createdAt) }}</span>
+        <span class="mt-1.5 text-xs text-muted-light" dir="ltr">{{ formatDateTime(msg.createdAt) }}</span>
       </div>
     }
   }

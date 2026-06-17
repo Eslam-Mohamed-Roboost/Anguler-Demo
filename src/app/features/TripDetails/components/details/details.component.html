@@ -1,6 +1,6 @@
-<section class="w-full rounded-xl border border-[#D8E2EE] bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+<section class="w-full rounded-xl border border-card-border bg-panel shadow-sm">
   <!-- Header with Status -->
-  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#EDF1F5] px-4 py-3 sm:px-5">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-divider px-4 py-3 sm:px-5">
     <h2 class="flex items-center gap-2 text-lg font-bold text-primary-text sm:text-xl">
       <app-icon name="truck" size="sm" class="text-primary" />
       {{ 'tripDetails.title' | translate }}
@@ -9,7 +9,7 @@
       @if (canShowScheduledActions()) {
         <button
           type="button"
-          class="flex size-9 items-center justify-center rounded-xl text-[#223548] transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-warning/30"
+          class="flex size-9 items-center justify-center rounded-xl text-body transition hover:bg-hover focus:outline-none focus:ring-2 focus:ring-warning/30"
           [attr.aria-label]="'tripDetails.scheduledActions' | translate"
           [attr.aria-expanded]="showScheduledMenu()"
           (click)="toggleScheduledMenu()"
@@ -22,19 +22,19 @@
         </button>
 
         @if (showScheduledMenu()) {
-          <div class="absolute end-0 top-11 z-20 w-[210px] rounded-sm border border-[#D8E0E8] bg-white py-1 shadow-lg">
+          <div class="absolute end-0 top-11 z-20 w-[210px] rounded-sm border border-card-border bg-panel py-1 shadow-lg">
             <button
               type="button"
-              class="flex w-full items-center gap-2 px-4 py-3 text-start text-sm font-medium text-[#223548] transition hover:bg-[#FFF8F1]"
+              class="flex w-full items-center gap-2 px-4 py-3 text-start text-sm font-medium text-body transition hover:bg-hover"
               (click)="openRescheduleModal()"
             >
               <app-icon name="calendar" size="xs" class="text-warning" />
               {{ 'tripDetails.rescheduleTrip' | translate }}
             </button>
-            <div class="mx-4 h-px bg-[#E4EAF0]"></div>
+            <div class="mx-4 h-px bg-divider"></div>
             <button
               type="button"
-              class="flex w-full items-center gap-2 px-4 py-3 text-start text-sm font-medium text-[#223548] transition hover:bg-red-50 disabled:opacity-60"
+              class="flex w-full items-center gap-2 px-4 py-3 text-start text-sm font-medium text-body transition hover:bg-status-cancelled-bg disabled:opacity-60"
               [disabled]="cancelLoading()"
               (click)="cancelTrip()"
             >
@@ -52,56 +52,56 @@
   <div class="px-4 py-4 sm:px-5">
     <div class="grid grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-3">
       <div>
-        <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.tripId' | translate }}</label>
-        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.tripId' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
           {{ data().tripCode || '--' }}
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.passenger' | translate }}</label>
-        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.passenger' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
           {{ data().guestName || '--' }}
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'form.roomNo' | translate }}</label>
-        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'form.roomNo' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
           {{ data().roomNumber }}
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.destinations' | translate }}</label>
-        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.destinations' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
           {{ data().endLocation.address || '--' }}
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.fareChf' | translate }}</label>
-        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.fareChf' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
           {{ formatMoney(data().estimatedPrice) }}
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.hotelProfitWithRate' | translate }}</label>
-        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.hotelProfitWithRate' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
           {{ formatMoney(hotelProfit()) }}
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.startDate' | translate }}</label>
-        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.startDate' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
           {{ formatDateTime(data().scheduledAt || data().startedAt || data().requestedAt) }}
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.endDate' | translate }}</label>
-        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.endDate' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
           {{ formatDateTime(data().endedAt) }}
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-xs font-medium text-[#52647A]">{{ 'tripDetails.tripRate' | translate }}</label>
-        <div class="min-h-10 break-words rounded-lg border border-[#E4EAF0] bg-[#FCFDFE] px-3.5 py-2.5 text-sm text-[#223548]">
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.tripRate' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
           {{ data().driver?.rating ?? '--' }}
         </div>
       </div>
@@ -109,39 +109,39 @@
 
     <!-- Hotel Information -->
     @if (hotelInfo(); as hotel) {
-      <div class="mt-5 border-t border-gray-200 pt-5 dark:border-gray-700">
-        <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+      <div class="mt-5 border-t border-divider pt-5">
+        <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-body">
           <app-icon name="home" size="xs" class="text-primary" />
           {{ 'tripDetails.hotelInfo' | translate }}
         </h3>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.hotelName' | translate }}</label>
+            <label class="mb-0.5 block text-xs font-medium text-muted">{{ 'tripDetails.hotelName' | translate }}</label>
             <p class="text-sm font-medium text-primary-text">{{ hotel.hotelName }}</p>
           </div>
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.hotelAddress' | translate }}</label>
+            <label class="mb-0.5 block text-xs font-medium text-muted">{{ 'tripDetails.hotelAddress' | translate }}</label>
             <p class="text-sm text-primary-text">{{ hotel.address }}</p>
           </div>
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.hotelPhone' | translate }}</label>
+            <label class="mb-0.5 block text-xs font-medium text-muted">{{ 'tripDetails.hotelPhone' | translate }}</label>
             <p class="text-sm text-primary-text">{{ hotel.phoneNumber }}</p>
           </div>
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.hotelEmail' | translate }}</label>
+            <label class="mb-0.5 block text-xs font-medium text-muted">{{ 'tripDetails.hotelEmail' | translate }}</label>
             <p class="text-sm text-primary-text">{{ hotel.email }}</p>
           </div>
           <div>
-            <label class="mb-0.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'tripDetails.commissionRate' | translate }}</label>
+            <label class="mb-0.5 block text-xs font-medium text-muted">{{ 'tripDetails.commissionRate' | translate }}</label>
             <p class="text-sm text-primary-text">{{ hotel.commissionRate }}%</p>
           </div>
           <div class="flex items-center gap-3">
             <span
               class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-              [class]="hotel.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'"
+              [class]="hotel.isActive ? 'bg-status-active-bg text-status-active' : 'bg-status-cancelled-bg text-status-cancelled'"
             >{{ hotel.isActive ? ('tripDetails.active' | translate) : ('tripDetails.inactive' | translate) }}</span>
             @if (hotel.isVerified) {
-              <span class="inline-flex items-center gap-1 text-xs text-emerald-600">
+              <span class="inline-flex items-center gap-1 text-xs text-status-active">
                 <app-icon name="check" size="xs" />
                 {{ 'tripDetails.verified' | translate }}
               </span>
@@ -153,23 +153,23 @@
 
     <!-- Admin: Assign Driver (Pending trips with no driver yet) -->
     @if (canAssignDriver()) {
-      <div class="mt-5 border-t border-gray-200 pt-5 dark:border-gray-700">
-        <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+      <div class="mt-5 border-t border-divider pt-5">
+        <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-body">
           <app-icon name="users" size="xs" class="text-primary" />
           {{ 'tripDetails.assignDriver' | translate }}
         </h3>
         @if (driversLoading()) {
-          <div class="flex items-center gap-2 text-sm text-gray-400">
-            <span class="size-4 animate-spin rounded-full border-2 border-gray-300 border-t-primary block"></span>
+          <div class="flex items-center gap-2 text-sm text-muted">
+            <span class="size-4 animate-spin rounded-full border-2 border-card-border border-t-primary block"></span>
             {{ 'tripDetails.loadingDrivers' | translate }}
           </div>
         } @else {
           <div class="flex flex-wrap items-end gap-3">
             <div class="flex-1 min-w-[200px]">
-              <label for="assign-driver-select" class="mb-1 block text-xs font-medium text-gray-500">{{ 'tripDetails.selectDriver' | translate }}</label>
+              <label for="assign-driver-select" class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.selectDriver' | translate }}</label>
               <select
                 id="assign-driver-select"
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-white"
+                class="w-full rounded-lg border border-card-border bg-input-bg px-3 py-2 text-sm text-body focus:outline-none focus:ring-2 focus:ring-focus-ring"
                 [value]="selectedDriverId()"
                 (change)="selectedDriverId.set($any($event.target).value)"
               >
@@ -183,7 +183,7 @@
               type="button"
               (click)="assignDriver()"
               [disabled]="assignLoading() || !selectedDriverId()"
-              class="flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:opacity-50"
+              class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary-dark disabled:opacity-50"
             >
               @if (assignLoading()) {
                 <span class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
@@ -199,12 +199,12 @@
 
     <!-- Admin Status Actions -->
     @if (canShowStatusActions()) {
-      <div class="mt-5 flex justify-end border-t border-gray-200 pt-5 dark:border-gray-700">
+      <div class="mt-5 flex justify-end border-t border-divider pt-5">
         <button
           type="button"
           (click)="triggerStatusAction()"
           [disabled]="actionLoading()"
-          class="flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:opacity-50"
+          class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary-dark disabled:opacity-50"
         >
           @if (actionLoading()) {
             <span class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>

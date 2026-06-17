@@ -24,22 +24,22 @@
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background: #f3b26d;
+  background: var(--Surface-primary-Orange);
   border-radius: 6px;
-  border: 2px solid #fff;
+  border: 2px solid var(--app-bg-elevated);
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #e9a257;
+  background: var(--Surface-primary-Orange);
 }
 
 .chat-messages::-webkit-scrollbar-thumb:active {
-  background: #d8893d;
+  background: color-mix(in srgb, var(--Surface-primary-Orange) 82%, black);
 }
 
 .chat-messages {
   scrollbar-width: thin;
-  scrollbar-color: #f3b26d transparent;
+  scrollbar-color: var(--Surface-primary-Orange) transparent;
 }
 
 /* Input area - always visible at bottom of chat section */

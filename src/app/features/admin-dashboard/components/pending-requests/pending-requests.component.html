@@ -1,6 +1,6 @@
 <div class="flex min-w-0 flex-col gap-4">
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <h2 class="text-lg font-semibold text-gray-800">{{ 'admin.pendingRequests.title' | translate }}</h2>
+    <h2 class="text-lg font-semibold text-body">{{ 'admin.pendingRequests.title' | translate }}</h2>
     <button
       type="button"
       (click)="showCommissionsModal.set(true)"
@@ -59,7 +59,7 @@
           type="button"
           (click)="assignDriver(row.tripRequestId)"
           [disabled]="assignLoading() === row.tripRequestId || !assignDriverId()[row.tripRequestId]"
-          class="flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1 text-xs font-medium text-white transition hover:bg-emerald-600 disabled:opacity-50"
+          class="flex items-center gap-1 rounded-lg bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary-dark disabled:opacity-50"
         >
           @if (assignLoading() === row.tripRequestId) {
             <span class="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
@@ -70,7 +70,7 @@
         </button>
         <a
           [routerLink]="['/admin/trip', row.tripRequestId]"
-          class="flex size-7 items-center justify-center rounded-full text-primary hover:bg-gray-100"
+          class="flex size-7 items-center justify-center rounded-full text-primary transition hover:bg-hover"
           [attr.aria-label]="'admin.pendingRequests.viewTripDetails' | translate"
         >
           <app-icon name="eye" size="sm" />

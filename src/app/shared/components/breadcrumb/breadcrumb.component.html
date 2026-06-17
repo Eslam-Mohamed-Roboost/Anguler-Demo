@@ -4,7 +4,7 @@
       <li>
         <a
           routerLink="/"
-          class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          class="rounded p-0.5 text-muted transition hover:bg-hover hover:text-body"
         >
           <app-icon name="home" size="sm" />
         </a>
@@ -13,13 +13,13 @@
         <li class="flex items-center gap-1">
           <app-icon name="chevron-right" size="xs" />
           @if (last) {
-            <span class="font-medium text-gray-900 dark:text-white" aria-current="page">
+            <span class="font-medium text-body" aria-current="page">
               {{ crumb.label }}
             </span>
           } @else {
             <a
               [routerLink]="crumb.url"
-              class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              class="rounded px-1 text-muted transition hover:bg-hover hover:text-body"
             >
               {{ crumb.label }}
             </a>

@@ -31,12 +31,12 @@
             />
         </label>
     </div>
-    <h2 class="text-lg font-semibold">{{ hotelName() }}</h2>
+    <h2 class="text-lg font-semibold text-body">{{ hotelName() }}</h2>
     @if (hotelId()) {
-        <h3 class="rounded-md bg-[#FFF8D6] p-2 text-sm text-[#E76500]">ID: {{ hotelId() }}</h3>
+        <h3 class="rounded-md bg-status-scheduled-bg p-2 text-sm font-medium text-warning">ID: {{ hotelId() }}</h3>
     }
     @if (uploading()) {
-        <p class="text-sm text-[#5B738B]" role="status">Uploading image...</p>
+        <p class="text-sm text-muted" role="status">Uploading image...</p>
     }
 
 </div>
