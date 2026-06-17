@@ -229,6 +229,7 @@ export const TRANSLATIONS = {
     // units
     'unit.min': 'min',
     'unit.km': 'km',
+    'currency.chf': 'CHF',
     'riderHistory.commission': 'Comm.',
     'riderHistory.viewDetails': 'View trip details',
 
@@ -714,11 +715,12 @@ export const TRANSLATIONS = {
     // trip table column headers
     'Trip Code': 'رمز الرحلة',
     'Driver Name': 'اسم السائق',
-    'Fare (CHF)': 'الأجرة (CHF)',
+    'Fare (CHF)': 'الأجرة (فرانك)',
 
     // units
     'unit.min': 'دقيقة',
     'unit.km': 'كم',
+    'currency.chf': 'فرانك',
     'riderHistory.commission': 'عمولة',
     'riderHistory.viewDetails': 'عرض تفاصيل الرحلة',
 
@@ -784,8 +786,8 @@ export const TRANSLATIONS = {
     'tripDetails.cancelTrip': 'إلغاء الرحلة',
     'tripDetails.cancelSuccess': 'تم إلغاء الرحلة بنجاح.',
     'tripDetails.cancelError': 'فشل في إلغاء الرحلة.',
-    'tripDetails.fareChf': 'الأجرة (CHF)',
-    'tripDetails.hotelProfitWithRate': 'ربح الفندق (CHF) =',
+    'tripDetails.fareChf': 'الأجرة (فرانك)',
+    'tripDetails.hotelProfitWithRate': 'ربح الفندق (فرانك) =',
     'tripDetails.tripRate': 'تقييم الرحلة',
     'tripDetails.chatConversation': 'محادثة الرحلة',
     'tripDetails.chatStatus.Open': 'مفتوحة',
@@ -922,8 +924,8 @@ export const TRANSLATIONS = {
     'hotelTrip.guestName': 'اسم الضيف',
     'hotelTrip.roomNo': 'رقم الغرفة',
     'hotelTrip.destination': 'الوجهة',
-    'hotelTrip.fare': 'الأجرة (CHF)',
-    'hotelTrip.hotelProfits': 'أرباح الفندق (CHF)',
+    'hotelTrip.fare': 'الأجرة (فرانك)',
+    'hotelTrip.hotelProfits': 'أرباح الفندق (فرانك)',
     'hotelTrip.startDate': 'تاريخ البداية',
     'hotelTrip.endDate': 'تاريخ النهاية',
     'hotelTrip.tripRate': 'تقييم الرحلة',
@@ -947,7 +949,7 @@ export const TRANSLATIONS = {
     'hotelTrip.cancelTrip': 'إلغاء الرحلة',
     'hotelTrip.endTrip': 'إنهاء الرحلة',
     'hotelTrip.carType': 'نوع السيارة',
-    'hotelTrip.hotelProfit': 'ربح الفندق (CHF)',
+    'hotelTrip.hotelProfit': 'ربح الفندق (فرانك)',
     'hotelTrip.hotelNote': 'ملاحظة الفندق',
     'hotelTrip.tripId': 'معرف الرحلة',
     'hotelTrip.driver': 'السائق',
@@ -1208,6 +1210,7 @@ export const TRANSLATIONS = {
     // units
     'unit.min': 'Min',
     'unit.km': 'km',
+    'currency.chf': 'CHF',
     'riderHistory.commission': 'Prov.',
     'riderHistory.viewDetails': 'Fahrtdetails anzeigen',
 

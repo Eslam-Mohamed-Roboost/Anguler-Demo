@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   effect,
   input,
   output,
@@ -15,6 +16,7 @@ import { InputComponent } from '../../../../shared/components/input/input.compon
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { BaseFormComponent } from '../../../../shared/base/base-form.component';
 import type { WithdrawalFormData } from '../../types/hotel-details.types';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-withdrawal-details',
@@ -24,13 +26,15 @@ import type { WithdrawalFormData } from '../../types/hotel-details.types';
   styleUrl: './withdrawal-details.component.css',
 })
 export class WithdrawalDetailsComponent extends BaseFormComponent<WithdrawalFormData> {
+  private readonly languageService = inject(LanguageService);
+
   awaitingAmount = input(0);
   initialData = input<Partial<WithdrawalFormData>>();
   loading = input(false);
   settleSubmit = output<WithdrawalFormData>();
 
   protected readonly amountLabel = computed(() =>
-    `${this.awaitingAmount().toLocaleString()} CHF`
+    `${this.awaitingAmount().toLocaleString()} ${this.languageService.translate('currency.chf')}`
   );
 
   constructor() {

@@ -45,7 +45,7 @@
                   class="h-11 w-full rounded-full border border-input-border bg-input-bg pe-4 ps-11 text-sm text-gray-900 placeholder:text-primary-text focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30"
                 />
                 @if (dropOffSuggestionsOpen()) {
-                  <div class="absolute start-0 top-full z-30 mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-input-border bg-white py-2 shadow-xl">
+                  <div class="absolute start-0 top-full z-30 mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-input-border bg-panel py-2 shadow-xl">
                     @for (suggestion of dropOffSuggestions(); track suggestion.placeId) {
                       <button
                         type="button"
@@ -219,7 +219,7 @@
   </div>
 
   <!-- Info banner -->
-  <div class="mt-3 flex items-start gap-3 rounded-lg bg-gray-50 p-3">
+  <div class="mt-3 flex items-start gap-3 rounded-lg border border-card-border bg-input-bg p-3">
     <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
       <app-icon name="zap" size="xs" class="text-primary" />
     </div>
@@ -316,7 +316,7 @@
 
             <!-- Saved other entity type -->
             @if (savedOtherEntityType()) {
-              <div class="flex items-center justify-between gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div class="flex items-center justify-between gap-3 rounded-lg border border-status-completed/30 bg-status-completed-bg p-3">
                 <div class="flex items-center gap-3 flex-1">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0 7C0 3.13401 3.13401 0 7 0C10.866 0 14 3.13401 14 7C14 10.866 10.866 14 7 14C3.13401 14 0 10.866 0 7Z" fill="#00A63E"/>
@@ -522,7 +522,7 @@
               }
 
               @if (savedOtherBankName()) {
-                <div class="flex items-center justify-between gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <div class="flex items-center justify-between gap-3 rounded-lg border border-status-completed/30 bg-status-completed-bg p-3">
                   <div class="flex items-center gap-3 flex-1">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M0 7C0 3.13401 3.13401 0 7 0C10.866 0 14 3.13401 14 7C14 10.866 10.866 14 7 14C3.13401 14 0 10.866 0 7Z" fill="#00A63E"/>
@@ -989,7 +989,7 @@
       @if (distanceInfoLoading()) {
         <app-icon name="spinner" size="sm" class="mt-1 inline-block" />
       } @else {
-        <p class="mt-1 text-base font-bold text-primary-text">{{ tripCostLabel() }} CHF</p>
+        <p class="mt-1 text-base font-bold text-primary-text">{{ tripCostLabel() }} {{ 'currency.chf' | translate }}</p>
       }
     </div>
     <div class="rounded-xl border border-card-border p-4">

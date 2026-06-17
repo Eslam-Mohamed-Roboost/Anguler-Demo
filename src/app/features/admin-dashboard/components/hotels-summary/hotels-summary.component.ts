@@ -11,6 +11,7 @@ import { IconComponent } from '../../../../shared/components/icon/icon.component
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { HotelRequestsService, type HotelSummaryItem } from '../../services/hotel-requests.service';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-hotels-summary',
@@ -21,6 +22,7 @@ import { HotelRequestsService, type HotelSummaryItem } from '../../services/hote
 })
 export class HotelsSummaryComponent extends BaseComponent {
   private readonly service = inject(HotelRequestsService);
+  private readonly languageService = inject(LanguageService);
 
   protected readonly hotels = signal<HotelSummaryItem[]>([]);
   protected readonly loading = signal(false);
@@ -105,7 +107,7 @@ export class HotelsSummaryComponent extends BaseComponent {
   }
 
   formatChf(value: number): string {
-    return `${value.toFixed(0)} CHF`;
+    return `${value.toFixed(0)} ${this.languageService.translate('currency.chf')}`;
   }
 
   isSettled(hotel: HotelSummaryItem): boolean {

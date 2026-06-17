@@ -237,7 +237,7 @@
         <!-- Fare Cell -->
         <ng-template cellDef="fare" let-row>
           <div class="flex flex-col items-start gap-0.5 text-left">
-            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price.toFixed(2) }} CHF</span>
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price.toFixed(2) }} {{ 'currency.chf' | translate }}</span>
             @if (row.commission != null) {
               <span class="text-xs text-muted">Comm.: {{ row.commission.toFixed(2) }}</span>
             }
@@ -371,7 +371,7 @@
             [class.bg-status-completed-bg]="row.settlementStatus === 'settled'"
             [class.text-status-completed]="row.settlementStatus === 'settled'"
           >
-            {{ (row.settlementStatus === 'in-progress' ? 'hotelDetails.statusInProgress' : 'hotelDetails.statusSettled') | translate }} : {{ row.settlementAmount }} CHF
+            {{ (row.settlementStatus === 'in-progress' ? 'hotelDetails.statusInProgress' : 'hotelDetails.statusSettled') | translate }} : {{ row.settlementAmount }} {{ 'currency.chf' | translate }}
           </span>
         </ng-template>
 

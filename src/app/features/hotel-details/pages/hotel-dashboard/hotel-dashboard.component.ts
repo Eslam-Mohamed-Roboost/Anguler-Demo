@@ -20,6 +20,7 @@ import { HotelFinancialsItem, HotelTripItem, DashboardStatsResponse, HotelFinanc
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { LanguageService } from '../../../../core/services/language.service';
 
 const DASHBOARD_STATS_REFRESH_MS = 30_000;
 const TABLES_REFRESH_MS = 30_000;
@@ -43,6 +44,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationStore);
+  private readonly languageService = inject(LanguageService);
   private readonly searchRequests = new Subject<string>();
 
   readonly loading = signal(false);
@@ -167,7 +169,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   }
 
   private buildStatistics(stats?: DashboardStatsResponse): StatisticItem[] {
-    const currency = (n: number) => `${n.toLocaleString()} CHF`;
+    const currency = (n: number) => `${n.toLocaleString()} ${this.languageService.translate('currency.chf')}`;
     const count = (n: number) => String(n);
     return [
       { label: 'stats.totalHotels', value: count(stats?.totalHotels ?? 0), color: 'orange' },

@@ -21,6 +21,7 @@ import { ResultHandlerService } from '../../../../core/services/result-handler.s
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { TripRequestService } from '../../../booking/components/services/trip-request.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-rider-history',
@@ -43,6 +44,7 @@ export class RiderHistoryComponent extends BaseComponent {
   private readonly resultHandler = inject(ResultHandlerService);
   private readonly tripRequestService = inject(TripRequestService);
   private readonly notifications = inject(NotificationStore);
+  private readonly languageService = inject(LanguageService);
 
   protected readonly columns: ColumnDef[] = [
     { key: 'tripCode', header: 'TripID', sortable: true },
@@ -225,10 +227,13 @@ export class RiderHistoryComponent extends BaseComponent {
 
   formatCurrency(amount: number | null | undefined, currency: string): string {
     if (amount == null) return '--';
-    if (currency) {
-      return `${amount.toFixed(2)} ${currency}`;
-    }
-    return `$ ${amount.toFixed(2)}`;
+    return `${amount.toFixed(2)} ${this.currencyLabel(currency)}`;
+  }
+
+  private currencyLabel(currency: string | null | undefined): string {
+    return currency?.toUpperCase() === 'CHF'
+      ? this.languageService.translate('currency.chf')
+      : (currency || '$');
   }
 
   private loadStatusOptions(): void {

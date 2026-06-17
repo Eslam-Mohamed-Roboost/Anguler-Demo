@@ -10,6 +10,7 @@ import { BaseComponent } from '../../../../shared/base/base.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 import { FinancialHistoryService } from '../../services/financial-history.service';
 import {
   HotelFinancialItemType,
@@ -27,6 +28,7 @@ import {
 })
 export class FinancialHistoryComponent extends BaseComponent {
   private readonly financialHistoryService = inject(FinancialHistoryService);
+  private readonly languageService = inject(LanguageService);
 
   protected readonly items = signal<FinancialHistoryItem[]>([]);
   protected readonly currentPage = signal(1);
@@ -100,7 +102,13 @@ export class FinancialHistoryComponent extends BaseComponent {
 
   formatCurrency(amount: number | null | undefined, currency: string): string {
     if (amount == null) return '--';
-    return currency ? `${amount.toFixed(2)} ${currency}` : `$${amount.toFixed(2)}`;
+    return `${amount.toFixed(2)} ${this.currencyLabel(currency)}`;
+  }
+
+  private currencyLabel(currency: string | null | undefined): string {
+    return currency?.toUpperCase() === 'CHF'
+      ? this.languageService.translate('currency.chf')
+      : (currency || '$');
   }
 
   protected isTripItem(item: FinancialHistoryItem): item is FinancialHistoryTripItem {
@@ -123,14 +131,14 @@ export class FinancialHistoryComponent extends BaseComponent {
     const baseClass = 'border px-4 py-3 text-center text-xs font-semibold sm:text-sm';
 
     if (payoutStatus === 2) {
-      return `${baseClass} border-blue-100 bg-blue-50 text-slate-600`;
+      return `${baseClass} border-blue/30 bg-blue-light text-blue`;
     }
 
     if (payoutStatus === 3) {
-      return `${baseClass} border-red-200 bg-red-50 text-red-700`;
+      return `${baseClass} border-status-cancelled/30 bg-status-cancelled-bg text-status-cancelled`;
     }
 
-    return `${baseClass} border-amber-200 bg-amber-50 text-orange-700`;
+    return `${baseClass} border-status-scheduled/30 bg-status-scheduled-bg text-status-scheduled`;
   }
 
   protected bannerCardClass(payoutStatus: number): string {

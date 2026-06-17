@@ -25,6 +25,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { HotelRequestsService, type DriverItem } from '../../../admin-dashboard/services/hotel-requests.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { HotelFinancialSortBy, SortDirection } from '../../models/dto';
+import { LanguageService } from '../../../../core/services/language.service';
 
 export interface TripDetail {
   tripId: string;
@@ -68,10 +69,11 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   private readonly hotelRequestsService = inject(HotelRequestsService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationStore);
+  private readonly languageService = inject(LanguageService);
 
   readonly isAdmin = computed(() => this.authService.hasRole('admin'));
   readonly hotelProfitLabel = computed(() =>
-    `Hotel Profit (CHF) =`
+    `${this.languageService.translate('hotelTrip.hotelProfit')} =`
   );
 
   readonly hotelId = signal('');

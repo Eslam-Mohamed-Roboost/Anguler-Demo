@@ -27,6 +27,7 @@ import { HotelApiItem, HotelTripItem, TripRequestStatusItem } from '../../models
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { TranslatePipe } from "../../../../shared/pipes/translate.pipe";
+import { LanguageService } from '../../../../core/services/language.service';
 
 const TABLE_REFRESH_MS = 30_000;
  
@@ -50,8 +51,9 @@ const TABLE_REFRESH_MS = 30_000;
 export class HotelProfileComponent extends BaseComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly renderer = inject(Renderer2);
-   private readonly service = inject(HotelDetailsService);
+  private readonly service = inject(HotelDetailsService);
   private readonly notifications = inject(NotificationStore);
+  private readonly languageService = inject(LanguageService);
 
   readonly hotelId = signal('');
   readonly routeHotelId = signal('');
@@ -119,7 +121,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   });
 
   readonly awaitingAmountLabel = computed(() =>
-    `${this.awaitingAmount().toLocaleString('en-US', { maximumFractionDigits: 2 })} CHF`
+    this.formatCurrency(this.awaitingAmount())
   );
   readonly settlementBadgeLabel = computed(() =>
     `${this.settlementStatusText(this.currentSettlementStatus())} : ${this.awaitingAmountLabel()}`
@@ -200,9 +202,9 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
             const stats = result.data;
             this.statistics.set([
               { label: 'stats.commissionPercentage', value: `${stats.commissionPercentage.value}%`, color: 'orange' },
-              { label: 'stats.hotelBalance', value: `${stats.hotelRevenue.value} CHF`, color: 'orange' },
-              { label: 'stats.hotelCommission', value: `${stats.hotelCommission.value} CHF`, color: 'orange' },
-              { label: 'stats.linesNetProfit', value: `${stats.linesNetProfit.value} CHF`, color: 'orange' },
+              { label: 'stats.hotelBalance', value: this.formatCurrency(stats.hotelRevenue.value), color: 'orange' },
+              { label: 'stats.hotelCommission', value: this.formatCurrency(stats.hotelCommission.value), color: 'orange' },
+              { label: 'stats.linesNetProfit', value: this.formatCurrency(stats.linesNetProfit.value), color: 'orange' },
               { label: 'stats.activeTrips', value: String(stats.activeTrips.value), color: 'orange' },
               { label: 'stats.scheduledTrips', value: String(stats.scheduledTrips.value), color: 'orange' },
               { label: 'stats.completedTrips', value: String(stats.completedTrips.value), color: 'orange' },
@@ -625,6 +627,14 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       default:
         return 'Awaiting Payout';
     }
+  }
+
+  protected formatCurrency(amount: number | null | undefined): string {
+    if (amount === null || amount === undefined) {
+      return `-- ${this.languageService.translate('currency.chf')}`;
+    }
+
+    return `${amount.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${this.languageService.translate('currency.chf')}`;
   }
 
   private currentSettlementStatus(): SettlementStatus | null {

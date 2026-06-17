@@ -1,11 +1,11 @@
-<div class="flex h-full min-h-0 flex-col overflow-hidden rounded-[12px] bg-white p-3 sm:p-4">
+<div class="flex h-full min-h-0 flex-col overflow-hidden rounded-[12px] bg-panel p-3 text-body sm:p-4">
   <!-- ═══════ Info Banner ═══════ -->
-  <div class="mx-0 mt-2 flex items-start justify-between gap-3 rounded-lg border border-blue-200 bg-[#F9FAFAB2] px-3 py-3 text-sm text-[#5B738B] sm:mx-4 sm:mt-4 sm:px-4 md:mx-6 md:mt-6">
+  <div class="mx-0 mt-2 flex items-start justify-between gap-3 rounded-lg border border-card-border bg-input-bg px-3 py-3 text-sm text-muted sm:mx-4 sm:mt-4 sm:px-4 md:mx-6 md:mt-6">
     <div class="flex flex-1 items-start gap-2 sm:items-center">
       <app-icon name="info" size="sm" />
       <span class="min-w-0 leading-5">{{ 'financial.Payouts' | translate }}</span>
       @if (globalCommissionLoading()) {
-        <span class="ms-1 shrink-0 text-gray-400 sm:ms-2">Loading...</span>
+        <span class="ms-1 shrink-0 text-muted sm:ms-2">{{ 'common.loading' | translate }}</span>
       } @else {
         <span class="ms-1 shrink-0 font-semibold text-primary sm:ms-2">( {{ globalCommission() }}% )</span>
       }

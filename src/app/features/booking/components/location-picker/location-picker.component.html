@@ -4,7 +4,7 @@
       {{ 'join.searchLocation' | translate }}
     </label>
     <div class="relative">
-      <app-icon name="search" size="sm" class="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
+      <app-icon name="search" size="sm" class="absolute start-3 top-1/2 -translate-y-1/2 text-muted" />
       <input
         id="google-location-search"
         type="text"
@@ -13,21 +13,21 @@
         (input)="onSearchInput($event)"
         (focus)="onSearchFocus()"
         (blur)="onSearchBlur()"
-        class="w-full rounded-xl border border-gray-300 bg-white py-2.5 pe-3 ps-9 text-sm text-primary-text outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        class="w-full rounded-xl border border-input-border bg-input-bg py-2.5 pe-3 ps-9 text-sm text-body outline-none transition focus:border-primary focus:ring-2 focus:ring-focus-ring"
         [placeholder]="'join.searchLocationPlaceholder' | translate"
       />
       @if (suggestionsOpen()) {
-        <div class="absolute start-0 top-full z-30 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-gray-200 bg-white py-2 shadow-xl">
+        <div class="absolute start-0 top-full z-30 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-card-border bg-panel py-2 shadow-xl">
           @for (suggestion of suggestions(); track suggestion.placeId) {
             <button
               type="button"
               (mousedown)="$event.preventDefault()"
               (click)="selectSuggestion(suggestion)"
-              class="flex w-full flex-col items-start gap-0.5 px-4 py-2.5 text-start text-sm transition hover:bg-primary/5 focus:bg-primary/5 focus:outline-none"
+              class="flex w-full flex-col items-start gap-0.5 px-4 py-2.5 text-start text-sm transition hover:bg-hover focus:bg-hover focus:outline-none"
             >
-              <span class="font-semibold text-primary-text">{{ suggestion.mainText }}</span>
+              <span class="font-semibold text-body">{{ suggestion.mainText }}</span>
               @if (suggestion.secondaryText) {
-                <span class="text-xs text-gray-500">{{ suggestion.secondaryText }}</span>
+                <span class="text-xs text-muted">{{ suggestion.secondaryText }}</span>
               }
             </button>
           }
@@ -35,27 +35,27 @@
       }
     </div>
     @if (suggestionsLoading()) {
-      <p class="text-xs text-gray-500">{{ 'common.loading' | translate }}</p>
+      <p class="text-xs text-muted">{{ 'common.loading' | translate }}</p>
     }
   </div>
 
-  <div class="relative overflow-hidden rounded-xl border border-gray-200">
+  <div class="relative overflow-hidden rounded-xl border border-card-border">
     <div #mapEl class="location-map" [style.height]="mapHeight()"></div>
     @if (loading()) {
-      <div class="absolute inset-0 flex items-center justify-center bg-white/80 text-sm text-gray-500">
+      <div class="absolute inset-0 flex items-center justify-center bg-overlay text-sm text-muted">
         {{ 'join.loadingMap' | translate }}
       </div>
     }
   </div>
 
   @if (showSummary()) {
-    <div class="rounded-xl border border-gray-200 bg-gray-50 p-3">
-      <p class="text-xs font-medium uppercase text-gray-400">{{ 'join.selectedLocation' | translate }}</p>
-      <p class="mt-1 text-sm font-semibold text-primary-text">
+    <div class="rounded-xl border border-card-border bg-input-bg p-3">
+      <p class="text-xs font-medium uppercase text-muted">{{ 'join.selectedLocation' | translate }}</p>
+      <p class="mt-1 text-sm font-semibold text-body">
         {{ selectedLocation()?.address || ('join.locationFallback' | translate) }}
       </p>
       @if (selectedLocation(); as location) {
-        <p class="mt-1 text-xs text-gray-500" dir="ltr">
+        <p class="mt-1 text-xs text-muted" dir="ltr">
           {{ location.lat.toFixed(6) }}, {{ location.lng.toFixed(6) }}
         </p>
       }
@@ -63,7 +63,7 @@
   }
 
   @if (error()) {
-    <p class="text-sm text-red-600" role="alert">{{ error() }}</p>
+    <p class="rounded-lg border border-status-cancelled/30 bg-status-cancelled-bg px-3 py-2 text-sm text-status-cancelled" role="alert">{{ error() }}</p>
   }
 
   @if (showActions()) {
@@ -72,7 +72,7 @@
         type="button"
         (click)="useCurrentLocation()"
         [disabled]="loading() || resolving()"
-        class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-semibold text-primary-text transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+        class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-card-border bg-panel px-4 py-2.5 text-sm font-semibold text-body transition hover:bg-hover disabled:cursor-not-allowed disabled:opacity-50"
       >
         <app-icon name="map-pin" size="sm" />
         <span>{{ 'join.useCurrentLocation' | translate }}</span>
