@@ -210,7 +210,7 @@
     <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
       <app-icon name="zap" size="xs" class="text-primary" />
     </div>
-    <p class="text-sm leading-relaxed text-[#5B738B]">
+    <p class="text-sm leading-relaxed text-muted">
       {{ 'join.infoPrefix' | translate }}{{ commissionPercentage() }}%{{ 'join.infoSuffix' | translate }}
     </p>
   </div>
@@ -225,11 +225,11 @@
 
   <!-- ═══ Step 1: Hotel Details ═══ -->
   @if (joinStep() === 1) {
-    <div class="mt-4 rounded-xl border border-gray-200 p-4">
+    <div class="mt-4 rounded-xl border border-card-border p-4">
       <!-- Hotel photo uploader -->
       <div class="mb-4 flex justify-center">
         <div class="relative">
-          <div class="size-24 overflow-hidden rounded-full border-2 border-gray-200 bg-gray-100">
+          <div class="size-24 overflow-hidden rounded-full border-2 border-card-border bg-input-bg">
             <img
               [src]="hotelImageSrc()"
               alt="Hotel photo"
@@ -268,7 +268,7 @@
           optionValue="id"
           optionLabel="name"
           dropdownArrow="custom"
-          selectClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+          selectClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
         />
 
         <!-- Other Entity Type Form -->
@@ -282,13 +282,13 @@
                 <path d="M3.5 7L5.6875 9.1875L11.375 3.5" stroke="white" stroke-width="1.3125" stroke-linecap="round"/>
                 </svg>
 
-                <div class="flex-1 flex items-center border border-gray-300 rounded-lg bg-white focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+                <div class="flex-1 flex items-center border border-card-border rounded-lg bg-input-bg focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
                   <input
                     type="text"
                     [value]="joinFormModel().otherEntityType"
                     (input)="onOtherEntityTypeInput($event)"
                     [placeholder]="'join.otherEntityTypePlaceholder' | translate"
-                    class="flex-1 px-4 py-2.5 bg-transparent text-sm focus:outline-none placeholder:text-gray-400"
+                    class="flex-1 px-4 py-2.5 bg-transparent text-sm text-body focus:outline-none placeholder:text-muted-light"
                   />
                   <button
                     type="button"
@@ -309,7 +309,7 @@
                     <path d="M0 7C0 3.13401 3.13401 0 7 0C10.866 0 14 3.13401 14 7C14 10.866 10.866 14 7 14C3.13401 14 0 10.866 0 7Z" fill="#00A63E"/>
                     <path d="M3.5 7L5.6875 9.1875L11.375 3.5" stroke="white" stroke-width="1.3125" stroke-linecap="round"/>
                 </svg>
-                  <span class="text-sm font-medium text-gray-800">{{ savedOtherEntityType() }}</span>
+                  <span class="text-sm font-medium text-body">{{ savedOtherEntityType() }}</span>
                 </div>
                 <button
                   type="button"
@@ -333,7 +333,7 @@
             inputId="hotel-name"
             [field]="jf.hotelName"
             [placeholder]="entityNamePlaceholder()"
-            inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+            inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
           />
           <app-select
             [label]="'join.city' | translate"
@@ -344,7 +344,7 @@
             optionLabel="name"
             [placeholder]="'join.cityPlaceholder' | translate"
             dropdownArrow="custom"
-            selectClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+            selectClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
           />
         </div>
         <app-input
@@ -352,7 +352,7 @@
           inputId="join-address"
           [field]="jf.address"
           [placeholder]="'join.addressPlaceholder' | translate"
-          inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+          inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
         />
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <app-input
@@ -361,7 +361,7 @@
             type="tel"
             [field]="jf.phoneNumber"
             [placeholder]="entityPhonePlaceholder()"
-            inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+            inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
           />
           <app-input
             [label]="entityEmailLabel()"
@@ -369,7 +369,7 @@
             type="email"
             [field]="jf.email"
             [placeholder]="'join.emailPlaceholder' | translate"
-            inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+            inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
           />
         </div>
         <app-password-input
@@ -377,7 +377,7 @@
           inputId="join-password"
           [field]="jf.password"
           [placeholder]="'join.passwordPlaceholder' | translate"
-          inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+          inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
         />
       </div>
     </div>
@@ -385,8 +385,8 @@
 
   <!-- ═══ Step 2: Location Picker ═══ -->
   @if (joinStep() === 2) {
-    <div class="mt-4 rounded-xl border border-gray-200 p-4 sm:p-5">
-      <p class="mb-4 text-base font-semibold text-[#223548]">{{ 'join.pickLocation' | translate }}:</p>
+    <div class="mt-4 rounded-xl border border-card-border p-4 sm:p-5">
+      <p class="mb-4 text-base font-semibold text-body">{{ 'join.pickLocation' | translate }}:</p>
       <app-location-picker
         [initialLocation]="joinSelectedLocation()"
         [showSummary]="false"
@@ -399,8 +399,8 @@
 
   <!-- ═══ Step 3: Service Preferences & Vehicle Specifications ═══ -->
   @if (joinStep() === 3) {
-    <div class="mt-4 rounded-lg border-[0.3px] border-[#a9b4be] p-7">
-      <p class="mb-4 text-base font-semibold text-[#223548]">{{ 'join.servicePreferences' | translate }}</p>
+    <div class="mt-4 rounded-lg border-[0.3px] border-card-border p-7">
+      <p class="mb-4 text-base font-semibold text-body">{{ 'join.servicePreferences' | translate }}</p>
 
       <div class="flex gap-7">
         <!-- Left column -->
@@ -413,7 +413,7 @@
                 (change)="togglePreference(item.key)"
                 class="size-4 rounded-[4px] border border-[#a9b4be] accent-[#00a63e]"
               />
-              <span class="text-[14px] text-[#223548]">{{ item.label }}</span>
+              <span class="text-[14px] text-body">{{ item.label }}</span>
             </label>
           }
         </div>
@@ -428,7 +428,7 @@
                 (change)="togglePreference(item.key)"
                 class="size-4 rounded-[4px] border border-[#a9b4be] accent-[#00a63e]"
               />
-              <span class="text-[14px] text-[#223548]">{{ item.label }}</span>
+              <span class="text-[14px] text-body">{{ item.label }}</span>
             </label>
           }
         </div>
@@ -451,10 +451,10 @@
 
   <!-- ═══ Step 4: Withdrawal Details ═══ -->
   @if (joinStep() === 4) {
-    <div class="mt-4 rounded-xl border border-gray-200 p-4">
+    <div class="mt-4 rounded-xl border border-card-border p-4">
       <h3 class="mb-3 text-base font-bold text-primary-text">{{ 'withdrawal.title' | translate }}</h3>
       <!-- Warning banner -->
-      <div class="mb-4 rounded-lg border border-warning/30 bg-[#FFFCEC] p-3">
+      <div class="mb-4 rounded-lg border border-warning/30 bg-status-scheduled-bg p-3">
         <p class="text-xs leading-relaxed text-warning">
           {{ 'withdrawal.warningPrefix' | translate }}{{ commissionPercentage() }}{{ 'withdrawal.warningSuffix' | translate }}
         </p>
@@ -466,7 +466,7 @@
             inputId="account-holder"
             [field]="jf.bankAccountHolderName"
             [placeholder]="'withdrawal.accountHolderPlaceholder' | translate"
-            inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+            inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
           />
           <app-select
             [label]="'withdrawal.bankName' | translate"
@@ -477,7 +477,7 @@
             optionLabel="name"
             [placeholder]="'withdrawal.bankNamePlaceholder' | translate"
             dropdownArrow="custom"
-            selectClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+            selectClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
           />
           @if (isOtherBankSelected()) {
             <div class="space-y-3 pt-3 sm:col-span-2">
@@ -488,14 +488,14 @@
                     <path d="M3.5 7L5.6875 9.1875L11.375 3.5" stroke="white" stroke-width="1.3125" stroke-linecap="round"/>
                   </svg>
 
-                  <div class="flex-1 flex items-center border border-gray-300 rounded-lg bg-white focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+                  <div class="flex-1 flex items-center border border-card-border rounded-lg bg-input-bg focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
                     <input
                       id="other-bank-name"
                       type="text"
                       [value]="otherBankName()"
                       (input)="onOtherBankInput($event)"
                       [placeholder]="'withdrawal.otherBankNamePlaceholder' | translate"
-                      class="flex-1 px-4 py-2.5 bg-transparent text-sm focus:outline-none placeholder:text-gray-400"
+                      class="flex-1 px-4 py-2.5 bg-transparent text-sm text-body focus:outline-none placeholder:text-muted-light"
                     />
                     <button
                       type="button"
@@ -515,7 +515,7 @@
                       <path d="M0 7C0 3.13401 3.13401 0 7 0C10.866 0 14 3.13401 14 7C14 10.866 10.866 14 7 14C3.13401 14 0 10.866 0 7Z" fill="#00A63E"/>
                       <path d="M3.5 7L5.6875 9.1875L11.375 3.5" stroke="white" stroke-width="1.3125" stroke-linecap="round"/>
                     </svg>
-                    <span class="text-sm font-medium text-gray-800">{{ savedOtherBankName() }}</span>
+                    <span class="text-sm font-medium text-body">{{ savedOtherBankName() }}</span>
                   </div>
                   <button
                     type="button"
@@ -539,14 +539,14 @@
             inputId="iban"
             [field]="jf.bankAccountNumber"
             [placeholder]="'withdrawal.ibanPlaceholder' | translate"
-            inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+            inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
           />
           <app-input
             [label]="'withdrawal.swiftCode' | translate"
             inputId="swift-code"
             [field]="jf.bankRoutingNumber"
             [placeholder]="'withdrawal.swiftCodePlaceholder' | translate"
-            inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
+            inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
           />
         </div>
       </div>
@@ -574,7 +574,7 @@
       <button
         type="button"
         (click)="prevStep()"
-        class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary"
+        class="rounded-full border-2 border-card-border px-6 py-2.5 text-base font-semibold text-body transition hover:bg-hover hover:border-primary hover:text-primary"
       >
         {{ 'join.back' | translate }}
       </button>
@@ -590,7 +590,7 @@
       <button
         type="button"
         (click)="prevStep()"
-        class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary"
+        class="rounded-full border-2 border-card-border px-6 py-2.5 text-base font-semibold text-body transition hover:bg-hover hover:border-primary hover:text-primary"
       >
         {{ 'join.back' | translate }}
       </button>
@@ -606,7 +606,7 @@
       <button
         type="button"
         (click)="prevStep()"
-        class="rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary"
+        class="rounded-full border-2 border-card-border px-6 py-2.5 text-base font-semibold text-body transition hover:bg-hover hover:border-primary hover:text-primary"
       >
         {{ 'join.back' | translate }}
       </button>
@@ -642,7 +642,7 @@
     <button
       type="button"
       (click)="closeSignInModal()"
-      class="rounded-full p-2 text-gray-400 transition hover:text-gray-600"
+      class="rounded-full p-2 text-muted transition hover:bg-hover hover:text-body"
     >
       <app-icon name="close" size="sm" />
     </button>
@@ -656,20 +656,20 @@
       [field]="SignInFormF.email"
       type="email"
       placeholder="example@gmail.com"
-      inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
-      placeholderClass="placeholder:text-gray-400 placeholder:text-xs"
-      labelClass="text-gray-700 "
+      inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
+      placeholderClass="placeholder:text-muted-light placeholder:text-xs"
+      labelClass="text-body "
     />
     <app-password-input
       [label]="'signIn.password' | translate"
       inputId="sign-in-password"
       [field]="SignInFormF.password"
       [placeholder]="'signIn.passwordPlaceholder' | translate"
-      inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
-      placeholderClass="placeholder:text-gray-400 placeholder:text-xs"
-      labelClass="text-gray-700 "
+      inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
+      placeholderClass="placeholder:text-muted-light placeholder:text-xs"
+      labelClass="text-body "
     />
-    <a (click)="openForgotPasswordMode()" class="text-end text-gray-400 text-sm cursor-pointer">{{ 'signIn.forgotPassword' | translate }}</a>
+    <a (click)="openForgotPasswordMode()" class="text-end text-muted text-sm cursor-pointer hover:text-body">{{ 'signIn.forgotPassword' | translate }}</a>
   </div>
 
   <!-- Footer -->
@@ -707,12 +707,12 @@
           </span>
           <span>{{ 'forgotPassword.title' | translate }}</span>
         </h2>
-        <span class="text-sm text-[#5B738B]">{{ 'forgotPassword.subtitle' | translate }}</span>
+        <span class="text-sm text-muted">{{ 'forgotPassword.subtitle' | translate }}</span>
       </div>
     <button
       type="button"
       (click)="closeSignInModal()"
-      class="shrink-0 rounded-full p-2 text-gray-400 transition hover:text-gray-600"
+      class="shrink-0 rounded-full p-2 text-muted transition hover:bg-hover hover:text-body"
     >
       <app-icon name="close" size="sm" />
     </button>
@@ -726,9 +726,9 @@
       [field]="SignInFormF.email"
       type="email"
       placeholder="example@gmail.com"
-      inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
-      placeholderClass="placeholder:text-gray-400 placeholder:text-xs"
-      labelClass="text-gray-700 "
+      inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
+      placeholderClass="placeholder:text-muted-light placeholder:text-xs"
+      labelClass="text-body "
     />
   </div>
 
@@ -737,7 +737,7 @@
     <button
       type="button"
       (click)="ColseForgotPasswordMode()"
-      class="flex-1 rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary"
+      class="flex-1 rounded-full border-2 border-card-border px-6 py-2.5 text-base font-semibold text-body transition hover:bg-hover hover:border-primary hover:text-primary"
     >
       {{ 'forgotPassword.goBack' | translate }}
     </button>
@@ -770,14 +770,14 @@
         </span>
         <span>{{ 'verification.title' | translate }}</span>
       </h2>
-      <p class="mt-1 text-sm text-[#5B738B]">
+      <p class="mt-1 text-sm text-muted">
         {{ 'verification.subtitle' | translate }} <strong class="text-primary-text">you&#64;example.com</strong>
       </p>
     </div>
     <button
       type="button"
       (click)="closeVerificationModal()"
-      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:text-gray-700"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-input-bg text-muted transition hover:bg-hover hover:text-body"
       [attr.aria-label]="'common.close' | translate"
     >
       <app-icon name="close" size="sm" />
@@ -785,8 +785,8 @@
   </div>
 
   <!-- OTP Card -->
-  <div class="mt-4 rounded-xl border border-gray-200 p-4">
-    <label class="mb-2 block text-sm text-[#5B738B]">{{ 'verification.label' | translate }}</label>
+  <div class="mt-4 rounded-xl border border-card-border p-4">
+    <label class="mb-2 block text-sm text-muted">{{ 'verification.label' | translate }}</label>
     <div class="flex justify-between gap-2">
       @for (digit of otpDigits(); track $index) {
         <input
@@ -796,12 +796,12 @@
           [value]="digit"
           (input)="onOtpInput($event, $index)"
           (keydown)="onOtpKeydown($event, $index)"
-          class="size-12 rounded-lg border border-[#A9B4BE] bg-white text-center text-lg font-semibold text-primary-text outline-none transition focus:border-primary focus:ring-1 focus:ring-primary sm:size-14"
+          class="size-12 rounded-lg border border-card-border bg-input-bg text-center text-lg font-semibold text-body outline-none transition focus:border-primary focus:ring-1 focus:ring-primary sm:size-14"
           [attr.aria-label]="'Digit ' + ($index + 1)"
         />
       }
     </div>
-    <p class="mt-3 text-center text-sm text-[#5B738B]">
+    <p class="mt-3 text-center text-sm text-muted">
       {{ 'verification.noCode' | translate }}
       <button type="button" (click)="sendForgotPasswordCode()" [disabled]="isSendingOtp()" class="font-semibold text-danger transition hover:underline disabled:opacity-50">{{ 'verification.resend' | translate }}</button>
     </p>
@@ -812,7 +812,7 @@
     <button
       type="button"
       (click)="closeVerificationModal()"
-      class="flex-1 rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary"
+      class="flex-1 rounded-full border-2 border-card-border px-6 py-2.5 text-base font-semibold text-body transition hover:bg-hover hover:border-primary hover:text-primary"
     >
       {{ 'verification.goBack' | translate }}
     </button>
@@ -838,12 +838,12 @@
   <div class="flex items-start justify-between px-4 pt-4">
     <div>
       <h2 class="text-xl font-bold text-primary-text">{{ 'resetPassword.title' | translate }}</h2>
-      <p class="mt-1 text-sm text-[#5B738B]">{{ 'resetPassword.subtitle' | translate }}</p>
+      <p class="mt-1 text-sm text-muted">{{ 'resetPassword.subtitle' | translate }}</p>
     </div>
     <button
       type="button"
       (click)="closeResetPasswordModal()"
-      class="rounded-full p-2 text-gray-400 transition hover:text-gray-600"
+      class="rounded-full p-2 text-muted transition hover:bg-hover hover:text-body"
       [attr.aria-label]="'common.close' | translate"
     >
       <app-icon name="close" size="sm" />
@@ -857,16 +857,16 @@
       inputId="reset-new-password"
       [field]="rpf.newPassword"
       [placeholder]="'resetPassword.newPasswordPlaceholder' | translate"
-      inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
-      labelClass="text-gray-700 "
+      inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
+      labelClass="text-body "
     />
     <app-password-input
       [label]="'resetPassword.confirmPassword' | translate"
       inputId="reset-confirm-password"
       [field]="rpf.confirmPassword"
       [placeholder]="'resetPassword.confirmPasswordPlaceholder' | translate"
-      inputClass="rounded-lg border border-gray-300 bg-white text-sm text-gray-900"
-      labelClass="text-gray-700 "
+      inputClass="rounded-lg border border-card-border bg-input-bg text-sm text-body"
+      labelClass="text-body "
     />
   </div>
 
@@ -900,10 +900,10 @@
 
     <!-- Title -->
     <h2 class="text-2xl font-bold text-primary-text">{{ 'welcome.title' | translate }}</h2>
-    <p class="mt-1 text-sm font-medium text-[#5B738B]">{{ 'welcome.subtitle' | translate }}</p>
+    <p class="mt-1 text-sm font-medium text-muted">{{ 'welcome.subtitle' | translate }}</p>
 
     <!-- Description -->
-    <p class="mt-3 text-sm leading-relaxed text-[#5B738B]">
+    <p class="mt-3 text-sm leading-relaxed text-muted">
       {{ 'welcome.desc' | translate }}
     </p>
 
@@ -933,8 +933,8 @@
   </div>
 
   <!-- Drop off location -->
-  <div class="mt-4 rounded-xl border border-gray-200 p-4">
-    <p class="text-sm text-[#5B738B]">{{ 'confirm.dropOff' | translate }}</p>
+  <div class="mt-4 rounded-xl border border-card-border p-4">
+    <p class="text-sm text-muted">{{ 'confirm.dropOff' | translate }}</p>
     <p class="mt-1 text-base font-bold text-primary-text">{{ distnationName() || '—' }}</p>
   </div>
 
@@ -943,23 +943,23 @@
     class="mt-3 grid gap-3"
     [class]="shouldShowManyBagsNotice() ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'"
   >
-    <div class="rounded-xl border border-gray-200 p-4">
-      <p class="text-xs text-[#5B738B]">{{ 'confirm.clientName' | translate }}</p>
+    <div class="rounded-xl border border-card-border p-4">
+      <p class="text-xs text-muted">{{ 'confirm.clientName' | translate }}</p>
       <p class="mt-1 text-sm font-bold text-primary-text">{{ formModel().clientName || '—' }}</p>
     </div>
-    <div class="rounded-xl border border-gray-200 p-4">
-      <p class="text-xs text-[#5B738B]">{{ 'confirm.roomNo' | translate }}</p>
+    <div class="rounded-xl border border-card-border p-4">
+      <p class="text-xs text-muted">{{ 'confirm.roomNo' | translate }}</p>
       <p class="mt-1 text-sm font-bold text-primary-text">{{ formModel().roomNo || '—' }}</p>
     </div>
     @if (shouldShowManyBagsNotice()) {
-      <div class="rounded-xl border border-gray-200 p-4">
-        <p class="text-xs font-medium text-[#5B738B]">{{ 'confirm.manyBags' | translate }}</p>
+      <div class="rounded-xl border border-card-border p-4">
+        <p class="text-xs font-medium text-muted">{{ 'confirm.manyBags' | translate }}</p>
       </div>
     }
   </div>
 
   <!-- Car selector -->
-  <div class="mt-3 rounded-xl border border-gray-200 p-4">
+  <div class="mt-3 rounded-xl border border-card-border p-4">
     <app-car-selector
       [label]="'form.chooseCar' | translate"
       [options]="carTypes()"
@@ -971,24 +971,24 @@
 
   <!-- Trip cost / duration / distance -->
   <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
-    <div class="rounded-xl border border-gray-200 p-4">
-      <p class="text-xs text-[#5B738B]">{{ 'confirm.tripCost' | translate }}</p>
+    <div class="rounded-xl border border-card-border p-4">
+      <p class="text-xs text-muted">{{ 'confirm.tripCost' | translate }}</p>
       @if (distanceInfoLoading()) {
         <app-icon name="spinner" size="sm" class="mt-1 inline-block" />
       } @else {
         <p class="mt-1 text-base font-bold text-primary-text">{{ tripCostLabel() }} CHF</p>
       }
     </div>
-    <div class="rounded-xl border border-gray-200 p-4">
-      <p class="text-xs text-[#5B738B]">{{ 'confirm.tripDuration' | translate }}</p>
+    <div class="rounded-xl border border-card-border p-4">
+      <p class="text-xs text-muted">{{ 'confirm.tripDuration' | translate }}</p>
       @if (distanceInfoLoading()) {
         <app-icon name="spinner" size="sm" class="mt-1 inline-block" />
       } @else {
         <p class="mt-1 text-base font-bold text-primary-text">{{ tripDurationLabel() }}</p>
       }
     </div>
-    <div class="rounded-xl border border-gray-200 p-4">
-      <p class="text-xs text-[#5B738B]">{{ 'confirm.tripDistance' | translate }}</p>
+    <div class="rounded-xl border border-card-border p-4">
+      <p class="text-xs text-muted">{{ 'confirm.tripDistance' | translate }}</p>
       @if (distanceInfoLoading()) {
         <app-icon name="spinner" size="sm" class="mt-1 inline-block" />
       } @else {
@@ -1019,7 +1019,7 @@
     <button
       type="button"
       (click)="CloseComfirmBookingModel()"
-      class="w-full rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary"
+      class="w-full rounded-full border-2 border-card-border px-6 py-2.5 text-base font-semibold text-body transition hover:bg-hover hover:border-primary hover:text-primary"
     >
       {{ 'confirm.goBack' | translate }}
     </button>
@@ -1036,7 +1036,7 @@
       class="mb-4 h-40 w-auto object-contain"
     />
     <h2 class="text-2xl font-bold text-primary-text">{{ 'rideSent.title' | translate }}</h2>
-    <p class="mt-3 text-sm leading-relaxed text-[#5B738B] text-center">
+    <p class="mt-3 text-sm leading-relaxed text-muted text-center">
       {{ 'rideSent.desc' | translate }}
     </p>
     <div class="mt-6 flex flex-col w-full gap-2">
@@ -1051,7 +1051,7 @@
       <button
         type="button"
         (click)="viewTripDetails()"
-        class="flex items-center justify-center gap-1.5 rounded-full border-2 border-gray-300 px-6 py-3 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary w-full"
+        class="flex items-center justify-center gap-1.5 rounded-full border-2 border-card-border px-6 py-3 text-base font-semibold text-body transition hover:bg-hover hover:border-primary hover:text-primary w-full"
       >
         <span>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1084,7 +1084,7 @@
     <button
       type="button"
       (click)="closePickupTimeModal()"
-      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:text-gray-700"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-input-bg text-muted transition hover:bg-hover hover:text-body"
       [attr.aria-label]="'common.close' | translate"
     >
       <app-icon name="close" size="sm" />
@@ -1095,7 +1095,7 @@
   <div class="mt-5 flex items-center justify-center gap-2">
     <!-- Date picker column -->
     <div class="relative w-[130px] h-[120px] overflow-hidden">
-      <div class="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[40px] border-t-[2.5px] border-b-[2.5px] border-gray-300 pointer-events-none z-[1]"></div>
+      <div class="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[40px] border-t-[2.5px] border-b-[2.5px] border-card-border pointer-events-none z-[1]"></div>
       <div
         class="pickup-picker-scroll"
         (scroll)="onPickerScroll('date', $event)"
@@ -1115,7 +1115,7 @@
 
     <!-- Hour picker column -->
     <div class="relative w-[60px] h-[120px] overflow-hidden">
-      <div class="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[40px] border-t-[2.5px] border-b-[2.5px] border-gray-300 pointer-events-none z-[1]"></div>
+      <div class="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[40px] border-t-[2.5px] border-b-[2.5px] border-card-border pointer-events-none z-[1]"></div>
       <div
         class="pickup-picker-scroll"
         (scroll)="onPickerScroll('hour', $event)"
@@ -1138,7 +1138,7 @@
 
     <!-- Minute picker column -->
     <div class="relative w-[60px] h-[120px] overflow-hidden">
-      <div class="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[40px] border-t-[2.5px] border-b-[2.5px] border-gray-300 pointer-events-none z-[1]"></div>
+      <div class="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[40px] border-t-[2.5px] border-b-[2.5px] border-card-border pointer-events-none z-[1]"></div>
       <div
         class="pickup-picker-scroll"
         (scroll)="onPickerScroll('minute', $event)"
@@ -1183,7 +1183,7 @@
     <button
       type="button"
       (click)="closePickupTimeModal()"
-      class="w-full rounded-full border-2 border-gray-300 px-6 py-2.5 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary"
+      class="w-full rounded-full border-2 border-card-border px-6 py-2.5 text-base font-semibold text-body transition hover:bg-hover hover:border-primary hover:text-primary"
     >
       {{ 'pickup.goBack' | translate }}
     </button>
@@ -1200,7 +1200,7 @@
       class="mb-4 h-40 w-auto object-contain"
     />
     <h2 class="text-2xl font-bold text-primary-text">{{ 'scheduled.title' | translate }}</h2>
-    <p class="mt-3 text-sm leading-relaxed text-[#5B738B] text-center">
+    <p class="mt-3 text-sm leading-relaxed text-muted text-center">
       {{ 'scheduled.desc' | translate }}
     </p>
     <div class="mt-6 flex flex-col w-full gap-2">
@@ -1215,7 +1215,7 @@
       <button
         type="button"
         (click)="viewTripDetails()"
-        class="flex items-center justify-center gap-1.5 rounded-full border-2 border-gray-300 px-6 py-3 text-base font-semibold text-primary-text transition hover:bg-success-light hover:border-primary hover:text-primary w-full"
+        class="flex items-center justify-center gap-1.5 rounded-full border-2 border-card-border px-6 py-3 text-base font-semibold text-body transition hover:bg-hover hover:border-primary hover:text-primary w-full"
       >
         <span>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

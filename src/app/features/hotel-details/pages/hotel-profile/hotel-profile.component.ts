@@ -128,14 +128,14 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     const status = this.currentSettlementStatus();
 
     if (status === SettlementStatus.Settled) {
-      return 'bg-[#EAFBF2] text-[#00A63E]';
+      return 'bg-status-completed-bg text-status-completed';
     }
 
     if (status === SettlementStatus.Failed) {
-      return 'bg-[#FFECEC] text-[#E03131]';
+      return 'bg-status-cancelled-bg text-status-cancelled';
     }
 
-    return 'bg-[#FFF1F4] text-[#FF2D55]';
+    return 'bg-status-scheduled-bg text-status-scheduled';
   });
   readonly canSettlePayout = computed(() => {
     const status = this.currentSettlementStatus();

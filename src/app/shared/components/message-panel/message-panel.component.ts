@@ -243,11 +243,11 @@ export class MessagePanelComponent extends BaseComponent implements OnInit {
       case 'Waiting Driver':
         return 'bg-status-scheduled-bg text-status-scheduled';
       case 'Completed':
-        return 'bg-[#F1F4F8] text-[#6B7C93]';
+        return 'bg-input-bg text-muted';
       case 'Cancelled':
         return 'bg-status-cancelled-bg text-status-cancelled';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-input-bg text-muted';
     }
   }
 

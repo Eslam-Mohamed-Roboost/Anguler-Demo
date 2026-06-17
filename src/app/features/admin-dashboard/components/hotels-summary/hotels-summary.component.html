@@ -169,14 +169,14 @@
                 <!-- Status badge -->
                 <td class="px-4 text-left">
                   @if (isSettled(hotel)) {
-                    <div class="inline-flex items-center rounded-[8px] bg-[#f0fdf4] px-2 py-1">
-                      <span class="text-[14px] font-semibold text-[#00a63e] tracking-[0.1px] whitespace-nowrap">
+                    <div class="inline-flex items-center rounded-[8px] bg-status-completed-bg px-2 py-1">
+                      <span class="text-[14px] font-semibold text-status-completed tracking-[0.1px] whitespace-nowrap">
                         {{ 'hotelDetails.statusSettled' | translate }} : {{ formatChf(hotel.totalDriverPayouts) }}
                       </span>
                     </div>
                   } @else {
-                    <div class="inline-flex items-center rounded-[8px] bg-[#fff8d6] px-2 py-1">
-                      <span class="text-[14px] font-semibold text-[#e76500] tracking-[0.1px] whitespace-nowrap">
+                    <div class="inline-flex items-center rounded-[8px] bg-status-scheduled-bg px-2 py-1">
+                      <span class="text-[14px] font-semibold text-status-scheduled tracking-[0.1px] whitespace-nowrap">
                         {{ 'hotelDetails.statusInProgress' | translate }} : {{ formatChf(hotel.totalDriverPayouts) }}
                       </span>
                     </div>

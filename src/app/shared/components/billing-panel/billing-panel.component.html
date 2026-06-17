@@ -1,19 +1,19 @@
 @if (isOpen()) {
   <div
-    class="fixed inset-0 z-[1000] flex items-stretch justify-end bg-black/50 animate-fade-in"
+    class="fixed inset-0 z-[1000] flex items-stretch justify-end bg-overlay animate-fade-in"
     (click)="onClose()"
   >
     <div
-      class="flex h-dvh max-h-dvh w-full max-w-full flex-col bg-white shadow-[-4px_0_20px_rgba(0,0,0,0.15)] animate-slide-in sm:max-w-[480px] sm:rounded-l-3xl"
+      class="flex h-dvh max-h-dvh w-full max-w-full flex-col bg-panel text-body shadow-[-4px_0_20px_var(--app-shadow-color)] animate-slide-in sm:max-w-[480px] sm:rounded-l-3xl"
       (click)="$event.stopPropagation()"
     >
       <!-- Header -->
-      <div class="flex items-center justify-between gap-3 border-b border-gray-200 p-4 sm:p-6">
-        <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-700">
+      <div class="flex items-center justify-between gap-3 border-b border-divider p-4 sm:p-6">
+        <h3 class="flex items-center gap-2 text-lg font-semibold text-body">
           <app-icon name="alert-triangle" size="sm" />
           {{ 'billing.title' | translate }}
            @if (UnreadCount() > 0) {
-            <span class="bg-[#e76500] text-white px-3 py-1 rounded-full text-xs font-medium">
+            <span class="bg-warning text-white px-3 py-1 rounded-full text-xs font-medium">
               {{ UnreadCount() }}
             </span>
           }
@@ -22,7 +22,7 @@
           type="button"
           (click)="onClose()"
           [attr.aria-label]="'billing.closeAriaLabel' | translate"
-          class="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+          class="rounded-md p-2 text-muted transition-colors hover:bg-hover hover:text-body"
         >
           <app-icon name="close" size="sm" />
         </button>
@@ -33,7 +33,7 @@
 
         <!-- Loading -->
         @if (loading()) {
-          <div class="flex flex-col items-center justify-center py-16 text-gray-400">
+          <div class="flex flex-col items-center justify-center py-16 text-muted">
             <app-icon name="spinner" size="lg" />
           </div>
         }
@@ -48,9 +48,9 @@
 
         <!-- Empty -->
         @if (!loading() && !error() && notifications().length === 0) {
-          <div class="flex flex-col items-center justify-center py-16 px-4 text-center text-gray-500">
-            <app-icon name="alert-triangle" size="lg" class="mb-3 text-gray-300" />
-            <h4 class="text-base font-semibold text-gray-700">{{ 'billing.empty' | translate }}</h4>
+          <div class="flex flex-col items-center justify-center py-16 px-4 text-center text-muted">
+            <app-icon name="alert-triangle" size="lg" class="mb-3 text-disabled" />
+            <h4 class="text-base font-semibold text-body">{{ 'billing.empty' | translate }}</h4>
             <p class="mt-1 text-sm">{{ 'billing.emptyDesc' | translate }}</p>
           </div>
         }
@@ -63,7 +63,7 @@
                 role="button"
                 tabindex="0"
                 class="flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 sm:p-4"
-                [class]="item.isRead ? 'border-gray-200 bg-white' : 'border-primary/20 bg-primary/5'"
+                [class]="item.isRead ? 'border-card-border bg-panel' : 'border-primary/20 bg-success-light'"
                 (click)="onNotificationClick(item)"
                 (keydown.enter)="onNotificationClick(item)"
                 (keydown.space)="$event.preventDefault(); onNotificationClick(item)"
@@ -71,13 +71,13 @@
                 <!-- Read/unread dot -->
                 <span
                   class="mt-1.5 size-2 shrink-0 rounded-full"
-                  [class]="item.isRead ? 'bg-gray-300' : 'bg-primary'"
+                  [class]="item.isRead ? 'bg-disabled' : 'bg-primary'"
                 ></span>
 
                 <!-- Content -->
                 <div class="min-w-0 flex-1">
-                  <p class="text-sm leading-relaxed text-gray-800">{{ item.message }}</p>
-                  <p class="mt-1 text-xs text-gray-400">{{ formatDate(item.createdDate) }}</p>
+                  <p class="text-sm leading-relaxed text-body">{{ item.message }}</p>
+                  <p class="mt-1 text-xs text-muted">{{ formatDate(item.createdDate) }}</p>
                 </div>
               </div>
             }

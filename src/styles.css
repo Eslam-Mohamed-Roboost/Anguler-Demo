@@ -38,6 +38,7 @@
   --app-bg-hover: #F4F7F9;
   --app-bg-selected: var(--Surface-blue-bg);
   --app-bg-disabled: #F1F4F6;
+  --app-status-pending-bg: var(--Surface-orange-bg);
   --app-bg-overlay: rgb(12 15 19 / 52%);
   --app-border: #E1E7EF;
   --app-border-strong: var(--text-icons-t-placeholder);
@@ -88,6 +89,7 @@
   --app-bg-hover: #202832;
   --app-bg-selected: #1B90FF1F;
   --app-bg-disabled: #202832;
+  --app-status-pending-bg: #E7650014;
   --app-bg-overlay: rgb(0 0 0 / 68%);
   --app-border: #26313A;
   --app-border-strong: #354451;
@@ -149,7 +151,7 @@
   --color-status-active: var(--Surface-primary-green);
   --color-status-active-bg: var(--Surface-green-bg);
   --color-status-scheduled: var(--Surface-primary-Orange);
-  --color-status-scheduled-bg: var(--Surface-orange-bg);
+  --color-status-scheduled-bg: var(--app-status-pending-bg);
   --color-status-cancelled: var(--Surface-primary-red);
   --color-status-cancelled-bg: var(--Surface-red-bg);
 

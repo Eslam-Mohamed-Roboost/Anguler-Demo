@@ -602,10 +602,10 @@
           <app-icon name="eye" size="sm" /> Open Modal
         </app-btn>
         <app-modal [open]="modalOpen()" title="Demo Modal" (closed)="modalOpen.set(false)">
-          <p class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="text-sm text-muted">
             This is a reusable modal with animated open/close, focus trapping, and escape key support.
           </p>
-          <div modal-footer class="flex justify-end gap-2 border-t px-4 py-3 dark:border-gray-700">
+          <div modal-footer class="flex justify-end gap-2 border-t border-divider bg-input-bg px-4 py-3">
             <app-btn variant="secondary" size="sm" (click)="modalOpen.set(false)">Cancel</app-btn>
             <app-btn variant="primary" size="sm" (click)="modalOpen.set(false)">Confirm</app-btn>
           </div>

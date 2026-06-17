@@ -1,15 +1,15 @@
 <!-- Message Panel -->
 @if (isOpen()) {
-  <div class="fixed inset-0 z-[1000] flex items-stretch justify-end bg-black/50 animate-fade-in" (click)="onClose()">
-    <div class="flex h-dvh max-h-dvh w-full max-w-full flex-col bg-white shadow-[-4px_0_20px_rgba(0,0,0,0.15)] animate-slide-in sm:max-w-[480px] sm:rounded-l-3xl" (click)="$event.stopPropagation()">
-      <div class="flex items-center justify-between gap-3 border-b border-gray-200 p-4 sm:p-6">
-        <h3 class="m-0 flex items-center gap-2 text-lg font-semibold text-gray-700">
+  <div class="fixed inset-0 z-[1000] flex items-stretch justify-end bg-overlay animate-fade-in" (click)="onClose()">
+    <div class="flex h-dvh max-h-dvh w-full max-w-full flex-col bg-panel text-body shadow-[-4px_0_20px_var(--app-shadow-color)] animate-slide-in sm:max-w-[480px] sm:rounded-l-3xl" (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between gap-3 border-b border-divider p-4 sm:p-6">
+        <h3 class="m-0 flex items-center gap-2 text-lg font-semibold text-body">
           <app-icon name="chat-bubble" size="sm" />
           <span>
             {{ 'messages.title' | translate }}
           </span>
           @if (getUnreadCount() > 0) {
-            <span class="rounded-full bg-[#e76500] px-3 py-1 text-xs font-medium text-white">
+            <span class="rounded-full bg-warning px-3 py-1 text-xs font-medium text-white">
               {{ getUnreadCount() }}
             </span>
           }
@@ -17,7 +17,7 @@
 
         <button
           type="button"
-          class="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+          class="rounded-md p-2 text-muted transition-colors hover:bg-hover hover:text-body"
           (click)="onClose()"
           [attr.aria-label]="'messages.closeAriaLabel' | translate"
         >
@@ -27,7 +27,7 @@
 
       <div class="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">
         @if (loading()) {
-          <div class="flex flex-col items-center justify-center py-16 text-gray-400">
+          <div class="flex flex-col items-center justify-center py-16 text-muted">
             <app-icon name="spinner" size="lg" />
           </div>
         }
@@ -39,35 +39,35 @@
                 role="button"
                 tabindex="0"
                 class="grid cursor-pointer grid-cols-[8px_minmax(0,1fr)_18px] items-start gap-3 rounded-xl border p-3 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 sm:p-4"
-                [class]="message.read ? 'border-gray-200 bg-white' : 'border-primary/20 bg-primary/5'"
+                [class]="message.read ? 'border-card-border bg-panel' : 'border-primary/20 bg-success-light'"
                 (click)="onMessageClick(message)"
                 (keydown.enter)="onMessageClick(message)"
                 (keydown.space)="$event.preventDefault(); onMessageClick(message)"
               >
                 <span
                   class="mt-1.5 block size-2 rounded-full"
-                  [class]="message.read ? 'bg-gray-300' : 'bg-primary'"
+                  [class]="message.read ? 'bg-disabled' : 'bg-primary'"
                   aria-hidden="true"
                 ></span>
 
                 <span class="min-w-0">
                   <span class="mb-1 flex items-center justify-between gap-2">
-                    <span class="truncate text-sm font-bold leading-5 text-[#263548]">Trip #{{ message.tripID }}</span>
+                    <span class="truncate text-sm font-bold leading-5 text-body">Trip #{{ message.tripID }}</span>
                     <span class="shrink-0 rounded-md px-2 py-0.5 text-xs font-bold leading-4" [class]="statusClass(message)">
                       {{ statusLabel(message) }}
                     </span>
                   </span>
 
-                  <span class="line-clamp-2 text-sm font-medium leading-relaxed text-[#5B738B]">
+                  <span class="line-clamp-2 text-sm font-medium leading-relaxed text-muted">
                     {{ message.content }}
                   </span>
 
-                  <span class="mt-1 block text-xs font-medium leading-4 text-[#8A99AA]">
+                  <span class="mt-1 block text-xs font-medium leading-4 text-muted-light">
                     {{ relativeTime(message.time) }}
                   </span>
                 </span>
 
-                <span class="flex h-full items-center justify-end text-[#7A8797] transition" aria-hidden="true">
+                <span class="flex h-full items-center justify-end text-muted transition" aria-hidden="true">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -76,9 +76,9 @@
             }
           </div>
         } @else if (!loading()) {
-          <div class="flex flex-col items-center justify-center px-4 py-16 text-center text-gray-500">
-            <app-icon name="chat-bubble" size="lg" class="text-gray-300 mb-4" />
-            <h4 class="text-base font-semibold text-gray-700">{{ 'messages.empty' | translate }}</h4>
+          <div class="flex flex-col items-center justify-center px-4 py-16 text-center text-muted">
+            <app-icon name="chat-bubble" size="lg" class="text-disabled mb-4" />
+            <h4 class="text-base font-semibold text-body">{{ 'messages.empty' | translate }}</h4>
             <p class="mt-1 text-sm">{{ 'messages.emptyDesc' | translate }}</p>
           </div>
         }

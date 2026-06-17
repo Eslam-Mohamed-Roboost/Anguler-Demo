@@ -33,8 +33,8 @@
       <button
         class="shrink-0 size-8 flex items-center justify-center transition-colors border-none max-md:absolute max-md:top-0 max-md:end-0 rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         [class]="hotel().isBlocked
-          ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          : 'bg-red-100 text-status-cancelled hover:bg-red-200'"
+          ? 'bg-input-bg text-muted hover:bg-hover'
+          : 'bg-status-cancelled-bg text-status-cancelled hover:brightness-95'"
         type="button"
         (click)="onBlockClick()"
         [disabled]="toggleLoading()"
@@ -76,7 +76,7 @@
         {{ 'BlockAccess' | translate }}
       </h2>
 
-      <p class="mt-2 text-sm font-medium text-[#5B738B] max-w-[260px]">
+      <p class="mt-2 text-sm font-medium text-muted max-w-[260px]">
         {{ 'blockmessage' | translate }}
       </p>
 
@@ -93,7 +93,7 @@
         {{ 'UnblockAccess' | translate }}
       </h2>
 
-      <p class="mt-2 text-sm font-medium text-[#5B738B] max-w-[260px]">
+      <p class="mt-2 text-sm font-medium text-muted max-w-[260px]">
         {{ 'unblockmessage' | translate }}
       </p>
 
@@ -106,7 +106,7 @@
       <button
         type="button"
         (click)="closeConfirmBlockModal()"
-        class="flex-1 rounded-lg border border-[#D1D5DB] bg-white py-3 text-base font-semibold text-[#1F2937] transition hover:bg-gray-50"
+        class="flex-1 rounded-lg border border-card-border bg-panel py-3 text-base font-semibold text-body transition hover:bg-hover"
       >
         {{ 'common.cancel' | translate }}
       </button>
@@ -130,7 +130,7 @@
         type="button"
         (click)="toggleBlockHotel()"
         [disabled]="toggleLoading()"
-        class="flex-1 rounded-lg bg-[#EE3939] py-3 text-base font-semibold text-white transition hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex-1 rounded-lg bg-danger py-3 text-base font-semibold text-white transition hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         @if (toggleLoading()) {
           {{ 'common.loading' | translate }}

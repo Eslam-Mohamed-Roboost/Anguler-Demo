@@ -42,7 +42,7 @@
             <button
               type="button"
               (click)="toggleSortDropdown()"
-              class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
+    class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-panel text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover max-md:[&_span]:hidden max-md:px-2.5"
               [attr.aria-label]="'hotelDetails.sort' | translate"
               [attr.aria-expanded]="showSortDropdown()"
             >
@@ -334,10 +334,10 @@
         <ng-template cellDef="status" let-row>
           <span
             class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold"
-            [class.bg-[#FFF3D8]]="row.settlementStatus === 'in-progress'"
-            [class.text-[#FF7A00]]="row.settlementStatus === 'in-progress'"
-            [class.bg-[#EAFBF2]]="row.settlementStatus === 'settled'"
-            [class.text-[#00B64F]]="row.settlementStatus === 'settled'"
+            [class.bg-status-scheduled-bg]="row.settlementStatus === 'in-progress'"
+            [class.text-status-scheduled]="row.settlementStatus === 'in-progress'"
+            [class.bg-status-completed-bg]="row.settlementStatus === 'settled'"
+            [class.text-status-completed]="row.settlementStatus === 'settled'"
           >
             {{ row.settlementStatus === 'in-progress' ? 'In Progress' : 'Settled' }} : {{ row.settlementAmount }} CHF
           </span>
@@ -347,7 +347,7 @@
         <ng-template cellDef="actions" let-row>
           <div class="relative flex justify-start">
             <button
-              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-gray-50 text-muted hover:bg-gray-100"
+              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-input-bg text-muted hover:bg-hover"
               type="button"
               (click)="toggleHotelActionMenu($event, row)"
               aria-label="Open hotel actions"
@@ -365,14 +365,14 @@
       </app-data-table>
       @if (hotelActionMenu(); as menu) {
         <div
-          class="fixed z-[80] min-w-[194px] rounded-xl bg-white p-3 text-start shadow-[0_12px_30px_rgba(15,23,42,0.16)] ring-1 ring-black/5"
+          class="fixed z-[80] min-w-[194px] rounded-xl bg-panel p-3 text-start text-body shadow-[0_12px_30px_var(--app-shadow-color)] ring-1 ring-card-border"
           [style.left.px]="menu.left"
           [style.top.px]="menu.top"
           role="menu"
         >
           <button
             type="button"
-            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
+            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-body transition hover:bg-hover"
             (click)="onHotelAction('view', menu.hotel)"
             role="menuitem"
           >
@@ -386,18 +386,18 @@
           @if (menu.hotel.settlementStatus === 'in-progress') {
             <button
               type="button"
-              class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
+              class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-body transition hover:bg-hover"
               (click)="onHotelAction('settle', menu.hotel)"
               role="menuitem"
             >
-              <span class="w-[15px] text-center text-xl leading-none text-[#6D28D9]" aria-hidden="true">$</span>
+              <span class="w-[15px] text-center text-xl leading-none text-purple" aria-hidden="true">$</span>
               <span>Settle Balance</span>
             </button>
           }
 
           <button
             type="button"
-            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-[#223548] transition hover:bg-gray-50"
+            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-body transition hover:bg-hover"
             (click)="onHotelAction('block', menu.hotel)"
             role="menuitem"
           >
@@ -434,19 +434,19 @@
     <button
       type="button"
       (click)="closeCommissionModal()"
-      class="flex size-10 items-center justify-center rounded-full bg-gray-100/70 text-gray-500 transition hover:bg-gray-200"
+      class="flex size-10 items-center justify-center rounded-full bg-input-bg text-muted transition hover:bg-hover hover:text-body"
       [attr.aria-label]="'common.close' | translate"
     >
       <app-icon name="close" size="sm" />
     </button>
   </div>
-  <div class="flex items-center gap-2 px-4 py-3 bg-[#F9FAFAB2] border border-[#E1E7EF] rounded-btn text-cell text-[#5B738B] mb-5" role="note">
+  <div class="flex items-center gap-2 px-4 py-3 bg-input-bg border border-card-border rounded-btn text-cell text-muted mb-5" role="note">
     <app-icon name="info" size="sm" aria-hidden="true" />
     <span>{{ 'commission.info' | translate }}</span>
   </div>
  
-     <div class="flex flex-col mt-4 rounded-xl border border-gray-200 p-4">
-               <label for="client-name" class="mb-1 block text-xs font-medium text-gray-500">{{  'GeneralCommission' | translate }}</label>
+     <div class="flex flex-col mt-4 rounded-xl border border-card-border bg-panel p-4">
+               <label for="client-name" class="mb-1 block text-xs font-medium text-muted">{{  'GeneralCommission' | translate }}</label>
                 <input
                   type="text"
                   id="client-name"
@@ -454,7 +454,7 @@
                   (input)="onGeneralCommissionChange($event)"
                   [disabled]="commissionLoading() || commissionSaving()"
                   [placeholder]="'form.clientNamePlaceholder' | translate"
-                  class="rounded-xl border-input-border bg-input-bg focus-visible:outline-hidden placeholder:text-primary-text w-full px-4 py-2.5 border text-sm disabled:opacity-50"
+                  class="rounded-xl border border-card-border bg-input-bg focus-visible:outline-hidden placeholder:text-muted-light w-full px-4 py-2.5 text-sm text-body focus:border-warning focus:ring-2 focus:ring-focus-ring disabled:bg-disabled disabled:text-muted disabled:opacity-50"
                 />
    
      </div>
@@ -467,7 +467,7 @@
       type="button"
       (click)="saveCommission()"
       [disabled]="commissionLoading() || commissionSaving()"
-      class="flex-1 px-4 py-3.5 rounded-lg bg-green-600 text-white font-bold text-base hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+      class="flex-1 px-4 py-3.5 rounded-lg bg-primary text-white font-bold text-base hover:brightness-95 disabled:bg-disabled disabled:text-muted disabled:cursor-not-allowed transition"
     >
       @if (commissionLoading()) {
         Loading...
