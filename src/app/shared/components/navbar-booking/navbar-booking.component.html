@@ -43,6 +43,16 @@
         </ul>
       }
     </div>
+    <button
+      type="button"
+      (click)="themeService.cycleTheme()"
+      class="flex items-center gap-1 rounded-full border border-card-border bg-panel px-2 py-1 text-xs font-medium text-body shadow-sm backdrop-blur-sm transition hover:bg-hover sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-sm"
+      [attr.aria-label]="'nav.toggleTheme' | translate"
+      [attr.title]="themeService.themeTooltip()"
+    >
+      <app-icon [name]="themeService.themeIcon()" size="xs" />
+      <span class="hidden sm:inline">{{ themeLabelKey() | translate }}</span>
+    </button>
   </div>
 
   <!-- Right: Guest buttons (unauthenticated) -->

@@ -27,6 +27,7 @@ import { BaseComponent } from '../../base/base.component';
 import { NotificationsService } from '../../../core/services/notifications.service';
 import { ApiService } from '../../../core/services/api.service';
 import { NotificationSoundService } from '../../../core/services/notification-sound.service';
+import { ThemeService } from '../../../core/services/theme.service';
 
 const NAVBAR_REFRESH_MS = 5_000;
 
@@ -46,6 +47,7 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   private readonly notifiactionService = inject(NotificationsService);
   private readonly api = inject(ApiService);
   private readonly notificationSound = inject(NotificationSoundService);
+  protected readonly themeService = inject(ThemeService);
   /** Logo image source */
   readonly logoSrc = input('assets/booking/logo-lines.png');
 
@@ -301,6 +303,13 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
     if (l === 'ar') return 'العربية';
     if (l === 'de') return 'Deutsch';
     return 'English';
+  });
+
+  protected readonly themeLabelKey = computed(() => {
+    const theme = this.themeService.theme();
+    if (theme === 'light') return 'nav.themeLight';
+    if (theme === 'dark') return 'nav.themeDark';
+    return 'nav.themeSystem';
   });
 
   /** Handle message panel toggle */

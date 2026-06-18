@@ -91,6 +91,7 @@ export interface TableColumn {
 
 export interface HotelRecord {
   id: string;
+  rowKey: string;
   code: string;
   displayId: string;
   hotelName: string;

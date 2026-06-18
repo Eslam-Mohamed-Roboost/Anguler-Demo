@@ -242,7 +242,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
         next: (result) => {
           if (showLoading) this.loading.set(false);
           if (result.isSuccess && result.data) {
-            this.hotels.set(result.data.items.map(item => this.toHotelRecord(item)));
+            this.hotels.set(result.data.items.map((item, index) => this.toHotelRecord(item, index)));
             this.totalHotels.set(result.data.totalCount);
           }
         },
@@ -271,12 +271,14 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private toHotelRecord(item: HotelFinancialsItem): HotelRecord {
+  private toHotelRecord(item: HotelFinancialsItem, index: number): HotelRecord {
     const code = item.hotelCode?.trim() || item.code?.trim() || '--';
+    const id = item.hotelId?.trim() ?? '';
     const settlementStatus = this.toSettlementStatus(item);
 
     return {
-      id: item.hotelId,
+      id,
+      rowKey: id || `${code}-${item.hotelName || 'hotel'}-${index}`,
       code,
       displayId: code,
       hotelName: item.hotelName,

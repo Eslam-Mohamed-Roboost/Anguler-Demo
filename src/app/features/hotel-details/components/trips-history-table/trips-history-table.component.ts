@@ -86,17 +86,21 @@ export class TripsHistoryTableComponent {
     this.activeTab() === 'trips' ? 'hotelDetails.searchTrips' : 'hotelDetails.searchHotels'
   );
   protected readonly selectedHotels = computed(() =>
-    this.hotels().filter(hotel => this.selectedHotelIds().has(hotel.id)),
+    this.hotels().filter(hotel => {
+      const id = this.hotelSelectionKey(hotel);
+      return id.length > 0 && this.selectedHotelIds().has(id);
+    }),
   );
   protected readonly selectedHotelsCount = computed(() => this.selectedHotels().length);
   protected readonly hasSelectedHotels = computed(() => this.selectedHotelsCount() > 0);
   protected readonly allHotelsSelected = computed(() => {
-    const hotels = this.hotels();
-    return hotels.length > 0 && hotels.every(hotel => this.selectedHotelIds().has(hotel.id));
+    const ids = this.selectableHotelIds();
+    return ids.length > 0 && ids.every(id => this.selectedHotelIds().has(id));
   });
   protected readonly someHotelsSelected = computed(() => {
-    const count = this.selectedHotelsCount();
-    return count > 0 && count < this.hotels().length;
+    const ids = this.selectableHotelIds();
+    const count = ids.filter(id => this.selectedHotelIds().has(id)).length;
+    return count > 0 && count < ids.length;
   });
   protected readonly commissionModalTitleKey = computed(() =>
     this.selectedHotelsCount() > 1
@@ -183,9 +187,14 @@ export class TripsHistoryTableComponent {
   }
 
   protected openHotelCommissionModal(hotel: HotelRecord): void {
+    const id = this.hotelSelectionKey(hotel);
+    if (!id) {
+      return;
+    }
+
     this.hotelActionMenu.set(null);
-    this.singleCommissionHotelId.set(hotel.id);
-    this.selectedHotelIds.set(new Set([hotel.id]));
+    this.singleCommissionHotelId.set(id);
+    this.selectedHotelIds.set(new Set([id]));
     this.generalCommissionField.set(this.parseCommissionValue(hotel.hotelComm));
     this.showCommissionsModal.set(true);
   }
@@ -272,16 +281,22 @@ export class TripsHistoryTableComponent {
   }
 
   protected isHotelSelected(hotel: HotelRecord): boolean {
-    return this.selectedHotelIds().has(hotel.id);
+    const id = this.hotelSelectionKey(hotel);
+    return id.length > 0 && this.selectedHotelIds().has(id);
   }
 
   protected toggleHotelSelection(hotel: HotelRecord): void {
+    const id = this.hotelSelectionKey(hotel);
+    if (!id) {
+      return;
+    }
+
     this.selectedHotelIds.update(current => {
       const next = new Set(current);
-      if (next.has(hotel.id)) {
-        next.delete(hotel.id);
+      if (next.has(id)) {
+        next.delete(id);
       } else {
-        next.add(hotel.id);
+        next.add(id);
       }
       return next;
     });
@@ -290,14 +305,19 @@ export class TripsHistoryTableComponent {
   protected toggleAllHotelsSelection(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.selectedHotelIds.set(
-      target.checked ? new Set(this.hotels().map(hotel => hotel.id)) : new Set<string>(),
+      target.checked ? new Set(this.selectableHotelIds()) : new Set<string>(),
     );
   }
 
   protected removeSelectedHotel(hotel: HotelRecord): void {
+    const id = this.hotelSelectionKey(hotel);
+    if (!id) {
+      return;
+    }
+
     this.selectedHotelIds.update(current => {
       const next = new Set(current);
-      next.delete(hotel.id);
+      next.delete(id);
       return next;
     });
   }
@@ -339,6 +359,10 @@ export class TripsHistoryTableComponent {
   protected onHotelAction(type: 'view' | 'settle' | 'block', hotel: HotelRecord): void {
     this.hotelActionMenu.set(null);
     this.hotelAction.emit({ type, hotel });
+  }
+
+  protected hotelSelectionKey(hotel: HotelRecord): string {
+    return hotel.id.trim();
   }
 
   protected onHotelPageChange(page: number): void {
@@ -466,5 +490,11 @@ export class TripsHistoryTableComponent {
   private parseCommissionValue(value: string): number {
     const parsed = Number.parseFloat(value.replace('%', '').trim());
     return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  private selectableHotelIds(): string[] {
+    return this.hotels()
+      .map(hotel => this.hotelSelectionKey(hotel))
+      .filter(id => id.length > 0);
   }
 }

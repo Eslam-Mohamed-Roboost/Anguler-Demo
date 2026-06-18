@@ -289,7 +289,7 @@
         [columns]="hotelColumns()"
         [loading]="loading()"
         [ariaLabel]="'hotelDetails.hotelsTableLabel' | translate"
-        trackByKey="id"
+        trackByKey="rowKey"
       >
         <ng-template headerCellDef="select">
           <input
@@ -298,6 +298,7 @@
             [style.accent-color]="'var(--color-primary)'"
             [checked]="allHotelsSelected()"
             [indeterminate]="someHotelsSelected()"
+            [attr.aria-checked]="someHotelsSelected() ? 'mixed' : allHotelsSelected()"
             (change)="toggleAllHotelsSelection($event)"
             [attr.aria-label]="'hotelDetails.selectAllHotels' | translate"
           />
@@ -309,6 +310,7 @@
             class="size-3.5 rounded border-card-border bg-input-bg focus:ring-2 focus:ring-focus-ring"
             [style.accent-color]="'var(--color-primary)'"
             [checked]="isHotelSelected(row)"
+            [disabled]="!hotelSelectionKey(row)"
             (change)="toggleHotelSelection(row)"
             [attr.aria-label]="('hotelDetails.selectHotel' | translate) + ' ' + (row.hotelName || row.displayId || ('hotelDetails.hotelFallback' | translate))"
           />
