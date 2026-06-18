@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
-import { HotelDashboardComponent } from './pages/hotel-dashboard/hotel-dashboard.component';
 
 export const HOTEL_DETAILS_ROUTES: Routes = [
   {
     path: '',
-    component: HotelDashboardComponent,
+    loadComponent: () =>
+      import('./pages/hotel-dashboard/hotel-dashboard.component').then(
+        (m) => m.HotelDashboardComponent,
+      ),
     data: { breadcrumb: 'Hotel Integration' },
   },
   {
@@ -30,13 +32,5 @@ export const HOTEL_DETAILS_ROUTES: Routes = [
         (m) => m.HotelProfileComponent
       ),
     data: { breadcrumb: 'Hotel Profile' },
-  },
-  {
-    path: ':id/trip/:tripId',
-    loadComponent: () =>
-      import('./pages/hotel-trip-detail/hotel-trip-detail.component').then(
-        (m) => m.HotelTripDetailComponent
-      ),
-    data: { breadcrumb: 'Trip Detail' },
   },
 ];

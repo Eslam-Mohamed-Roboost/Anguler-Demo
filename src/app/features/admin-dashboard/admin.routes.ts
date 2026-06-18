@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
-import { PendingRequestsComponent } from './components/pending-requests/pending-requests.component';
 
 export const Admin_ROUTES: Routes = [
   {
     path: '',
-    component: PendingRequestsComponent,
+    loadComponent: () =>
+      import('./components/pending-requests/pending-requests.component').then(
+        (m) => m.PendingRequestsComponent,
+      ),
     data: { breadcrumb: 'Pending Requests' },
   },
   {

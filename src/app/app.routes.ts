@@ -1,16 +1,15 @@
 // Top-level routes — features are lazy-loaded inside the layout shell
 import { Routes } from '@angular/router';
-import { LayoutComponent } from './shared/components/layout/layout.component';
-import { LayoutBookingComponent } from './shared/components/layout-booking/layout-booking.component';
-import { NotFoundComponent } from './features/not-found/not-found.component';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
-import { DefaultPageComponent } from './core/components/default-page/default-page.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: LayoutBookingComponent,
+    loadComponent: () =>
+      import('./shared/components/layout-booking/layout-booking.component').then(
+        (m) => m.LayoutBookingComponent,
+      ),
     data: { breadcrumb: $localize`:@@breadcrumb.booking:Booking` },
     children: [
       {
@@ -54,12 +53,20 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/admin-dashboard/admin.routes').then((m) => m.Admin_ROUTES),
       },
-      { path: '', component: DefaultPageComponent, pathMatch: 'full' },
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./core/components/default-page/default-page.component').then(
+            (m) => m.DefaultPageComponent,
+          ),
+      },
     ],
   },
   {
     path: 'demo',
-    component: LayoutComponent,
+    loadComponent: () =>
+      import('./shared/components/layout/layout.component').then((m) => m.LayoutComponent),
     children: [
       {
         path: 'demo',
@@ -81,5 +88,9 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '**', component: NotFoundComponent },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
+  },
 ];
