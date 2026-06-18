@@ -131,19 +131,16 @@
             </div>
           }
         </div>
-        <button
-          class="flex items-center gap-1.5 px-3.5 py-[7px] border rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap max-md:[&_span]:hidden max-md:px-2.5"
-          [class]="hasSelectedHotels() ? 'border-warning bg-status-scheduled-bg text-status-scheduled hover:bg-status-scheduled-bg' : 'border-card-border bg-panel text-body-soft hover:bg-hover'"
-          type="button"
-          (click)="openCommissionModal()"
-        >
-          <app-icon name="layers" size="sm" aria-hidden="true" />
-          @if (hasSelectedHotels()) {
+        @if (activeTab() === 'hotels' && hasSelectedHotels()) {
+          <button
+            class="flex items-center gap-1.5 rounded-btn border border-warning bg-status-scheduled-bg px-3.5 py-[7px] text-cell font-medium text-status-scheduled cursor-pointer transition whitespace-nowrap hover:bg-status-scheduled-bg max-md:[&_span]:hidden max-md:px-2.5"
+            type="button"
+            (click)="openCommissionModal()"
+          >
+            <app-icon name="layers" size="sm" aria-hidden="true" />
             <span>{{ 'hotelDetails.editCommission' | translate }} ({{ selectedHotelsCount() }})</span>
-          } @else {
-            <span>{{ 'hotelDetails.commSettings' | translate }}</span>
-          }
-        </button>
+          </button>
+        }
       </div>
     </div>
   </div>
