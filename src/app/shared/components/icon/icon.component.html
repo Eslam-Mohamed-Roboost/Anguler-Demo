@@ -4,6 +4,36 @@
     <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25" />
     <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
   </svg>
+} @else if (isThemeDark()) {
+  <svg [class]="sizeClass()" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M24 0.5C36.9787 0.5 47.5 11.0213 47.5 24C47.5 36.9787 36.9787 47.5 24 47.5C11.0213 47.5 0.5 36.9787 0.5 24C0.5 11.0213 11.0213 0.5 24 0.5Z" stroke="currentColor"/>
+    <g clip-path="url(#theme-dark-clip)">
+      <mask id="theme-dark-mask-0" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="14" y="13" width="16" height="13">
+        <path d="M19.5 25C22.5376 25 25 22.5376 25 19.5C25 16.4624 22.5376 14 19.5 14C16.4624 14 14 16.4624 14 19.5C14 22.5376 16.4624 25 19.5 25Z" fill="white"/>
+        <path d="M23 26C26.5899 26 29.5 23.0899 29.5 19.5C29.5 15.9101 26.5899 13 23 13C19.4101 13 16.5 15.9101 16.5 19.5C16.5 23.0899 19.4101 26 23 26Z" fill="black"/>
+      </mask>
+      <g mask="url(#theme-dark-mask-0)">
+        <path d="M12 12H36V36H12V12Z" fill="currentColor"/>
+      </g>
+      <mask id="theme-dark-mask-1" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="7" y="5" width="30" height="30">
+        <path d="M30.011 30.0104C32.1589 27.8625 32.1589 24.3801 30.011 22.2323C27.8631 20.0844 24.3807 20.0844 22.2328 22.2323C20.085 24.3801 20.085 27.8625 22.2328 30.0104C24.3807 32.1583 27.8631 32.1583 30.011 30.0104Z" fill="white"/>
+        <path d="M32.5 24.1691L31 21.571L33.9151 21.62L32.5 24.1691Z" fill="white"/>
+        <path d="M31.7158 29.7527L32.7419 26.9336L34.5781 29.1982L31.7158 29.7527Z" fill="white"/>
+        <path d="M26.9346 32.741L29.7536 31.7149L29.1992 34.5772L26.9346 32.741Z" fill="white"/>
+        <path d="M21.5713 30.9991L24.1694 32.4991L21.6203 33.9142L21.5713 30.9991Z" fill="white"/>
+        <path d="M7.03027 24L25.4103 5.62L36.0203 16.23L17.6403 34.61L7.03027 24Z" fill="black"/>
+      </mask>
+      <g mask="url(#theme-dark-mask-1)">
+        <path d="M12 12H36V36H12V12Z" fill="currentColor"/>
+      </g>
+      <path d="M31.778 16.2218L16.2217 31.7782" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <defs>
+      <clipPath id="theme-dark-clip">
+        <rect width="24" height="24" fill="white" transform="translate(12 12)"/>
+      </clipPath>
+    </defs>
+  </svg>
 } @else {
   <!-- Standard stroke icon -->
   <svg

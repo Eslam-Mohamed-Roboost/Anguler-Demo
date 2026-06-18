@@ -34,6 +34,7 @@ export type IconName =
   | 'search'
   | 'sun'
   | 'moon'
+  | 'theme-dark'
   | 'monitor'
   | 'menu'
   | 'home'
@@ -226,6 +227,7 @@ const SIZE_MAP: Record<string, string> = {
   sm: 'size-4',
   md: 'size-5',
   lg: 'size-6',
+  xl: 'size-12',
 };
 
 @Component({
@@ -240,9 +242,10 @@ const SIZE_MAP: Record<string, string> = {
 })
 export class IconComponent {
   readonly name = input.required<IconName>();
-  readonly size = input<'xs' | 'sm' | 'md' | 'lg'>('md');
+  readonly size = input<'xs' | 'sm' | 'md' | 'lg' | 'xl'>('md');
 
   protected readonly sizeClass = computed(() => SIZE_MAP[this.size()] ?? 'size-5');
   protected readonly paths = computed(() => ICON_PATHS[this.name()] ?? []);
   protected readonly isSpinner = computed(() => this.name() === 'spinner');
+  protected readonly isThemeDark = computed(() => this.name() === 'theme-dark');
 }

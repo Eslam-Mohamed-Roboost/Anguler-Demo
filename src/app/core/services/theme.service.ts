@@ -63,9 +63,7 @@ export class ThemeService {
   }
 
   readonly themeIcon = computed(() => {
-    const theme = this._theme();
-    if (theme === 'system') return 'monitor';
-    return this.isDark() ? 'sun' : 'moon';
+    return 'theme-dark' as const;
   });
 
   readonly themeTooltip = computed(() => {

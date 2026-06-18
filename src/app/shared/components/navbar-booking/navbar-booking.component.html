@@ -43,21 +43,21 @@
         </ul>
       }
     </div>
-    <button
-      type="button"
-      (click)="themeService.cycleTheme()"
-      class="flex items-center gap-1 rounded-full border border-card-border bg-panel px-2 py-1 text-xs font-medium text-body shadow-sm backdrop-blur-sm transition hover:bg-hover sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-sm"
-      [attr.aria-label]="'nav.toggleTheme' | translate"
-      [attr.title]="themeService.themeTooltip()"
-    >
-      <app-icon [name]="themeService.themeIcon()" size="xs" />
-      <span class="hidden sm:inline">{{ themeLabelKey() | translate }}</span>
-    </button>
   </div>
 
   <!-- Right: Guest buttons (unauthenticated) -->
   @if (!isAuthenticated()) {
     <div class="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
+      <button
+        type="button"
+        (click)="themeService.cycleTheme()"
+        class="flex size-12 shrink-0 items-center justify-center rounded-full border bg-panel text-primary shadow-sm backdrop-blur-sm transition focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-page-bg"
+        [class]="themeSwitchClass()"
+        [attr.aria-label]="'nav.toggleTheme' | translate"
+        [attr.title]="themeService.themeTooltip()"
+      >
+        <app-icon [name]="themeService.themeIcon()" size="xl" />
+      </button>
       <button
         type="button"
         (click)="signInClick.emit()"
@@ -81,6 +81,16 @@
   <!-- Right: Authenticated state -->
   @if (isAuthenticated()) {
     <div class="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
+      <button
+        type="button"
+        (click)="themeService.cycleTheme()"
+        class="flex size-12 shrink-0 items-center justify-center rounded-full border bg-panel text-primary shadow-sm backdrop-blur-sm transition focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-page-bg"
+        [class]="themeSwitchClass()"
+        [attr.aria-label]="'nav.toggleTheme' | translate"
+        [attr.title]="themeService.themeTooltip()"
+      >
+        <app-icon [name]="themeService.themeIcon()" size="xl" />
+      </button>
       <!-- Phone notification -->
       <button
         type="button"

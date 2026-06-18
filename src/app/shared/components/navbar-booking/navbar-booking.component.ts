@@ -312,6 +312,12 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
     return 'nav.themeSystem';
   });
 
+  protected readonly themeSwitchClass = computed(() =>
+    this.themeService.isDark()
+      ? 'border-[#5B738B] bg-[#0C0F13] text-white hover:bg-[#161B21]'
+      : 'border-primary bg-panel text-primary hover:bg-success-light',
+  );
+
   /** Handle message panel toggle */
   protected onMessageClick(): void {
     this.notificationSound.unlock();

@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  computed,
   inject,
   input,
   output,
@@ -56,6 +57,12 @@ export class NavbarComponent {
 
   /** Hotel name loaded from profile */
   protected readonly hotelName = signal<string>('');
+
+  protected readonly themeSwitchClass = computed(() =>
+    this.themeService.isDark()
+      ? 'border-[#5B738B] bg-[#0C0F13] text-white hover:bg-[#161B21]'
+      : 'border-primary bg-panel text-primary hover:bg-success-light',
+  );
 
   constructor() {
     // Load hotel profile when authenticated
