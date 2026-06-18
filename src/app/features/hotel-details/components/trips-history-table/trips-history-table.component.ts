@@ -99,7 +99,7 @@ export class TripsHistoryTableComponent {
     return count > 0 && count < this.hotels().length;
   });
   protected readonly commissionModalTitleKey = computed(() =>
-    this.hasSelectedHotels()
+    this.selectedHotelsCount() > 1
       ? 'hotelDetails.commissionsPlural'
       : 'hotelDetails.commissionSingle',
   );
@@ -174,10 +174,20 @@ export class TripsHistoryTableComponent {
   readonly showCommissionsModal = signal(false);
   readonly commissionLoading = signal(false);
   readonly commissionSaving = signal(false);
+  readonly singleCommissionHotelId = signal<string | null>(null);
 
   protected openCommissionModal(): void {
+    this.singleCommissionHotelId.set(null);
     this.showCommissionsModal.set(true);
     this.loadCurrentCommission();
+  }
+
+  protected openHotelCommissionModal(hotel: HotelRecord): void {
+    this.hotelActionMenu.set(null);
+    this.singleCommissionHotelId.set(hotel.id);
+    this.selectedHotelIds.set(new Set([hotel.id]));
+    this.generalCommissionField.set(this.parseCommissionValue(hotel.hotelComm));
+    this.showCommissionsModal.set(true);
   }
   onGeneralCommissionChange(event: Event): void {
     const target = event.target as HTMLInputElement;
@@ -192,6 +202,10 @@ export class TripsHistoryTableComponent {
   }
   protected closeCommissionModal(): void {
     this.showCommissionsModal.set(false);
+    if (this.singleCommissionHotelId()) {
+      this.selectedHotelIds.set(new Set<string>());
+      this.singleCommissionHotelId.set(null);
+    }
   }
   protected setTab(tab: 'trips' | 'hotels'): void {
     this.activeTab.set(tab);
@@ -307,7 +321,7 @@ export class TripsHistoryTableComponent {
     }
 
     const menuWidth = 194;
-    const menuHeight = hotel.settlementStatus === 'in-progress' ? 132 : 92;
+    const menuHeight = hotel.settlementStatus === 'in-progress' ? 172 : 132;
     const viewportPadding = 12;
     const rect = trigger.getBoundingClientRect();
     const left = Math.max(
@@ -423,6 +437,7 @@ export class TripsHistoryTableComponent {
               this.appConfig.setCommissionPercentage(commission);
             }
             this.selectedHotelIds.set(new Set<string>());
+            this.singleCommissionHotelId.set(null);
             this.closeCommissionModal();
           }
         },
@@ -446,5 +461,10 @@ export class TripsHistoryTableComponent {
         this.commissionLoading.set(false);
       },
     });
+  }
+
+  private parseCommissionValue(value: string): number {
+    const parsed = Number.parseFloat(value.replace('%', '').trim());
+    return Number.isFinite(parsed) ? parsed : 0;
   }
 }

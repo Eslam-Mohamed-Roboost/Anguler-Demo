@@ -42,6 +42,8 @@ export interface TripDetail {
   status: 'active' | 'completed' | 'cancelled' | 'scheduled' | 'pending';
   hotelNote?: string;
   carType: string;
+  actualFare?: number;
+  estimatedPrice?: number;
 }
 
 @Component({
@@ -413,6 +415,8 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       status: isScheduledTrip ? 'scheduled' : isCompletedTrip ? 'completed' : isCancelledTrip ? 'cancelled' : statusMap[normalizedStatus] ?? 'pending',
       hotelNote: data.notes || data.specialRequests,
       carType: 'Van',
+      actualFare: data.actualFare ?? undefined,
+      estimatedPrice: data.estimatedPrice,
     };
   }
 

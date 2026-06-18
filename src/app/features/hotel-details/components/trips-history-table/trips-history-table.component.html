@@ -415,6 +415,19 @@
             <span>{{ 'hotelDetails.viewHotelInfo' | translate }}</span>
           </button>
 
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-body transition hover:bg-hover"
+            (click)="openHotelCommissionModal(menu.hotel)"
+            role="menuitem"
+          >
+            <svg class="text-warning" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M8.594 2.188 12.812 6.406 5.156 14.062H.938V9.844L8.594 2.188Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10.625.938 14.063 4.375" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ 'hotelDetails.editHotelCommission' | translate }}</span>
+          </button>
+
           @if (menu.hotel.settlementStatus === 'in-progress') {
             <button
               type="button"
@@ -488,14 +501,16 @@
         @for (hotel of selectedHotels(); track hotel.id) {
           <div class="flex items-center justify-between gap-3">
             <span class="min-w-0 truncate text-sm font-medium text-body">{{ hotel.hotelName || hotel.displayId }}</span>
-            <button
-              type="button"
-              class="flex size-5 shrink-0 items-center justify-center rounded-full border border-status-cancelled text-status-cancelled transition hover:bg-status-cancelled-bg"
-              (click)="removeSelectedHotel(hotel)"
-              [attr.aria-label]="('hotelDetails.removeHotel' | translate) + ' ' + (hotel.hotelName || hotel.displayId)"
-            >
-              <app-icon name="close" size="xs" aria-hidden="true" />
-            </button>
+            @if (singleCommissionHotelId() !== hotel.id) {
+              <button
+                type="button"
+                class="flex size-5 shrink-0 items-center justify-center rounded-full border border-status-cancelled text-status-cancelled transition hover:bg-status-cancelled-bg"
+                (click)="removeSelectedHotel(hotel)"
+                [attr.aria-label]="('hotelDetails.removeHotel' | translate) + ' ' + (hotel.hotelName || hotel.displayId)"
+              >
+                <app-icon name="close" size="xs" aria-hidden="true" />
+              </button>
+            }
           </div>
         }
       </div>
