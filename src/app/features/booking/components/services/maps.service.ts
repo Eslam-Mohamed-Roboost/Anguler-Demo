@@ -12,9 +12,11 @@ export interface DistanceInfoRequest {
 }
 
 export interface DistanceInfo {
+  isValid: boolean;
   distanceInMeters: number;
   durationInSeconds: number;
   estimatedCost: number;
+  message: string;
 }
 
 @Injectable({ providedIn: 'root' })

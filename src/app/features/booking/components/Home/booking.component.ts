@@ -221,7 +221,7 @@ export class BookingComponent extends BaseComponent {
       this.loadVehicleTypes(50, destination.latitude, destination.longitude);
     });
 
-    // Fetch distance/duration/cost from the maps API while the booking confirmation modal is open
+    // Refresh distance/duration/cost if the confirmation modal is already open.
     effect(() => {
       if (!this.ShowComfirmBookingModel()) return;
 
@@ -600,9 +600,25 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   }
 
   private loadDistanceInfo(destination: LocationItem, vehicleId: string): void {
+    this.requestDistanceInfo(destination, vehicleId);
+  }
+
+  private requestDistanceInfo(
+    destination: LocationItem,
+    vehicleId: string,
+    onValid?: (info: DistanceInfo) => void,
+    force = false,
+  ): void {
     const origin = this.getOriginCoordinates();
     const requestKey = `${origin.lat}:${origin.lng}:${destination.latitude}:${destination.longitude}:${vehicleId}`;
-    if (this.distanceInfoRequestKey === requestKey) return;
+    if (!force && this.distanceInfoRequestKey === requestKey) {
+      const info = this.distanceInfo();
+      if (info) {
+        onValid?.(info);
+      }
+      return;
+    }
+
     this.distanceInfoRequestKey = requestKey;
 
     this.distanceInfoLoading.set(true);
@@ -623,14 +639,59 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
       next: (result) => {
         this.distanceInfoLoading.set(false);
         if (result.isSuccess && result.data) {
+          if (result.data.isValid === false) {
+            this.distanceInfo.set(null);
+            this.distanceInfoRequestKey = '';
+            this.ShowComfirmBookingModel.set(false);
+            this.showError(result.data.message || 'This trip is not available for the selected route.');
+            return;
+          }
+
           this.distanceInfo.set(result.data);
+          onValid?.(result.data);
+        } else {
+          this.distanceInfoRequestKey = '';
+          this.showError(result.error?.description || 'Failed to calculate trip distance. Please try again.');
         }
       },
       error: () => {
         this.distanceInfoLoading.set(false);
         this.distanceInfoRequestKey = '';
+        this.showError('Failed to calculate trip distance. Please try again.');
       },
     });
+  }
+
+  private openConfirmationAfterDistanceValidation(
+    mode: 'booking' | 'scheduled',
+    scheduledAt: string | null,
+  ): void {
+    const destination = this.selectedDestination();
+    if (!destination) {
+      this.showError('Please select a destination.');
+      return;
+    }
+
+    const vehicleId = this.selectedCar();
+    if (!vehicleId) {
+      this.showError('Please select a vehicle type.');
+      return;
+    }
+
+    this.distnationName.set(destination.name);
+    this.requestDistanceInfo(
+      destination,
+      vehicleId,
+      () => {
+        this.confirmationMode.set(mode);
+        this.scheduledAtToConfirm.set(scheduledAt);
+        if (mode === 'scheduled') {
+          this.showPickupTimeModal.set(false);
+        }
+        this.ShowComfirmBookingModel.set(true);
+      },
+      true,
+    );
   }
 
   private googleMapsUrl(location: LocationSelection): string {
@@ -1130,21 +1191,11 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.signInModalOpen();
       return;
     }
-    const destination = this.selectedDestination();
-    if (!destination) {
-      this.showError('Please select a destination.');
-      return;
-    }
-
-    this.distnationName.set(destination.name);
-    this.confirmationMode.set('booking');
-    this.scheduledAtToConfirm.set(null);
-    this.ShowComfirmBookingModel.set(true);
+    this.openConfirmationAfterDistanceValidation('booking', null);
   }
 
   openComfirmBookingModel(): void {
-    this.confirmationMode.set('booking');
-    this.ShowComfirmBookingModel.set(true);
+    this.openConfirmationAfterDistanceValidation('booking', null);
   }
 
   CloseComfirmBookingModel(): void {
@@ -1199,17 +1250,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       return;
     }
 
-    const destination = this.selectedDestination();
-    if (!destination) {
-      this.showError('Please select a destination.');
-      return;
-    }
-
-    this.distnationName.set(destination.name);
-    this.scheduledAtToConfirm.set(this.getScheduledAt());
-    this.confirmationMode.set('scheduled');
-    this.showPickupTimeModal.set(false);
-    this.ShowComfirmBookingModel.set(true);
+    this.openConfirmationAfterDistanceValidation('scheduled', this.getScheduledAt());
   }
 
   private getScheduledAt(): string {
