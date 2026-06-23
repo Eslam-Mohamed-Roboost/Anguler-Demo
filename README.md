@@ -4,9 +4,14 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## Design System & Onboarding
 
-New to the project? Read **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** — a
-cheat sheet for using the design tokens (colors), text & localization, and the
-reusable components in `src/app/shared/components/`.
+New to the project? Start here:
+
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — app architecture & how-to:
+  folder structure, routing/pages, creating components & services, calling APIs
+  (the `Result<T>` pattern), state, and a full "add a new feature" walkthrough.
+- **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** — cheat sheet for design
+  tokens (colors), text & localization, and the reusable components in
+  `src/app/shared/components/`.
 
 ## Development server
 
