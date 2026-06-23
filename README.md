@@ -2,6 +2,12 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
 
+## Design System & Onboarding
+
+New to the project? Read **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** — a
+cheat sheet for using the design tokens (colors), text & localization, and the
+reusable components in `src/app/shared/components/`.
+
 ## Development server
 
 To start a local development server, run:
