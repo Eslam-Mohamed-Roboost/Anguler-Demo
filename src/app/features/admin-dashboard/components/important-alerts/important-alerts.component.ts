@@ -21,8 +21,8 @@ export class ImportantAlertsComponent {
 
   roleBadgeClass(role: AlertRole): string {
     return role === 'Rider'
-      ? 'bg-purple-100 text-purple-600'
-      : 'bg-emerald-100 text-emerald-600';
+      ? 'bg-purple-light text-purple'
+      : 'bg-success-light text-primary';
   }
 
   getInitials(name: string): string {

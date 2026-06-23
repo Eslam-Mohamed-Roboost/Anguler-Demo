@@ -24,9 +24,9 @@ export class RecentTripsComponent {
 
   statusClass(status: TripStatus): string {
     switch (status) {
-      case 'Active': return 'bg-emerald-500 text-white';
-      case 'Completed': return 'bg-blue-500 text-white';
-      case 'Canceled': return 'bg-red-500 text-white';
+      case 'Active': return 'bg-primary text-white';
+      case 'Completed': return 'bg-blue text-white';
+      case 'Canceled': return 'bg-danger text-white';
     }
   }
 }
