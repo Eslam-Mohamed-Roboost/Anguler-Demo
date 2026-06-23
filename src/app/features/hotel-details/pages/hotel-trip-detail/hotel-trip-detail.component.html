@@ -1,0 +1,202 @@
+<div class="hotel-trip-page mx-auto flex h-full min-h-0 w-full max-w-[1400px] flex-col gap-4 overflow-y-auto overflow-x-hidden bg-page-bg px-4 py-4 sm:px-5 sm:py-5 lg:px-8 lg:py-6">
+
+  <!-- Breadcrumb -->
+  <!-- <nav class="flex items-center gap-1.5 text-cell mb-4" aria-label="Breadcrumb">
+    <a class="text-muted no-underline hover:text-body-soft hover:underline transition-colors" routerLink="/hotel-details">
+      {{ 'hotelTrip.breadcrumbRoot' | translate }}
+    </a>
+    @if (hotelId() && !hotelLoading()) {
+      <span class="text-muted-light" aria-hidden="true">/</span>
+      <a class="text-muted no-underline hover:text-body-soft hover:underline transition-colors" [routerLink]="['/hotel-details', hotelId()]">
+        #{{ hotelId() }}
+      </a>
+    } @else if (hotelLoading()) {
+      <span class="text-muted-light" aria-hidden="true">/</span>
+      <span class="inline-block h-3 w-16 animate-pulse rounded bg-gray-200"></span>
+    }
+    <span class="text-muted-light" aria-hidden="true">/</span>
+    <span class="text-warning font-semibold">
+      {{ trip()?.tripCode ?? '--' }}
+    </span>
+  </nav> -->
+
+  <!-- Hotel Info Card skeleton -->
+  @if (hotelLoading() || (tripLoading() && !hasHotelData())) {
+    <div class="flex shrink-0 items-center gap-4 rounded-card border border-card-border bg-panel p-4" aria-hidden="true">
+      <app-skeleton-block width="64px" height="64px" />
+      <div class="flex flex-col gap-2 flex-1">
+        <app-skeleton-block width="40%" height="1.1rem" />
+        <app-skeleton-block width="60%" height="0.85rem" />
+        <app-skeleton-block width="35%" height="0.85rem" />
+      </div>
+    </div>
+  } @else if (shouldShowHotelCard()) {
+    <section class="shrink-0">
+      <app-hotel-info-card [hotel]="hotel()" (deleteClick)="onHotelDelete()" />
+    </section>
+  }
+
+  <!-- Hotel Note Section -->
+  @if (trip()?.hotelNote) {
+    <section class="shrink-0">
+      <div class="rounded-card border border-card-border bg-panel overflow-hidden">
+        <!-- Header with divider -->
+        <div class="px-4 py-4 border-b border-card-border">
+          <div class="flex items-center gap-2.5 mb-3">
+            <div class="flex items-center justify-center size-6 rounded-full bg-status-completed-bg text-status-completed shrink-0">
+              <app-icon name="info" size="sm" aria-hidden="true" />
+            </div>
+            <h3 class="text-base font-semibold text-body m-0">{{ 'hotelTrip.hotelNote' | translate }}</h3>
+          </div>
+        </div>
+
+        <!-- Note Content -->
+        <div class="px-4 py-4 bg-input-bg">
+          <p class="text-sm text-body-soft leading-relaxed m-0">{{ trip()?.hotelNote }}</p>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Trip Details Card -->
+  <section class="shrink-0">
+    <app-card variant="elevated">
+
+      <!-- Card Header -->
+      <div class="flex items-center justify-between px-4 py-4 border-b border-gray-100 max-md:flex-wrap max-md:gap-3">
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <div class="flex items-center justify-center size-8 rounded-full bg-icon-circle-bg text-icon-circle shrink-0">
+            <app-icon name="calendar" size="sm" aria-hidden="true" />
+          </div>
+          <h3 class="text-[15px] font-semibold text-body m-0">{{ 'hotelTrip.title' | translate }}</h3>
+          @if (trip()) {
+            <span class="text-xs font-semibold px-3 py-1 rounded-badge" [class]="statusBadgeClass()">
+              {{ statusLabel() | translate }}
+            </span>
+            <span class="text-xs font-semibold px-3 py-1 rounded-badge bg-input-bg text-muted">
+              {{ 'hotelTrip.carType' | translate }}: {{ trip()!.carType }}
+            </span>
+          }
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- Trip Actions in header -->
+          @if (!tripLoading() && trip()) {
+            @if (canCancelTrip()) {
+              <button
+                type="button"
+                (click)="cancelTrip()"
+                [disabled]="actionLoading()"
+                class="flex items-center gap-1.5 rounded-lg border border-status-cancelled bg-panel px-4 py-1.5 text-xs font-semibold text-status-cancelled transition hover:bg-status-cancelled-bg disabled:opacity-50"
+              >
+                @if (actionLoading()) {
+                  <span class="size-3 animate-spin rounded-full border-2 border-status-cancelled/40 border-t-status-cancelled block"></span>
+                }
+                {{ 'hotelTrip.cancelTrip' | translate }}
+              </button>
+            }
+            @if (canAccept()) {
+              <button
+                type="button"
+                (click)="acceptTrip()"
+                [disabled]="actionLoading()"
+                class="flex items-center gap-1.5 rounded-lg bg-warning px-4 py-1.5 text-xs font-semibold text-white transition hover:brightness-90 disabled:opacity-50"
+              >
+                @if (actionLoading()) {
+                  <span class="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
+                }
+                {{ 'hotelTrip.acceptTrip' | translate }}
+              </button>
+            }
+            @if (canEndTrip()) {
+              <button
+                type="button"
+                (click)="endTrip()"
+                [disabled]="actionLoading()"
+                class="flex items-center gap-1.5 rounded-lg bg-warning px-4 py-1.5 text-xs font-semibold text-white transition hover:brightness-90 disabled:opacity-50"
+              >
+                @if (actionLoading()) {
+                  <span class="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
+                }
+                {{ 'hotelTrip.endTrip' | translate }}
+              </button>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Loading skeleton — mimics the 3-column field grid -->
+      @if (tripLoading()) {
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5 p-4 pb-6 md:grid-cols-2 xl:grid-cols-3" aria-hidden="true">
+          @for (_ of [1,2,3,4,5,6,7,8,9]; track $index) {
+            <div class="flex flex-col gap-2">
+              <app-skeleton-block width="50%" height="0.75rem" />
+              <app-skeleton-block width="100%" height="1rem" />
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Fields Grid -->
+      @if (!tripLoading()) {
+        @if (trip(); as t) {
+          <div class="grid grid-cols-1 gap-4 gap-x-6 p-4 pb-5 md:grid-cols-2 xl:grid-cols-3">
+            <div class="flex flex-col gap-1">
+              <span class="text-xs text-muted font-medium">{{ 'hotelTrip.tripId' | translate }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.tripCode || '--' }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs text-muted font-medium">{{ 'hotelTrip.guestName' | translate }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.guestName }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs text-muted font-medium">{{ 'hotelTrip.roomNo' | translate }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.roomNo }}</span>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <span class="text-xs text-muted font-medium">{{ 'hotelTrip.destination' | translate }}</span>
+              <span class="text-sm text-muted-light font-normal border-b border-card-border pb-1.5 min-h-7">{{ t.destinations }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs text-muted font-medium">{{ 'hotelTrip.fare' | translate }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.estimatedPrice }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs text-muted font-medium">{{ hotelProfitLabel() }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ formatMoney(t.actualFare) }}</span>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <span class="text-xs text-muted font-medium">{{ 'hotelTrip.startDate' | translate }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ formatDateOnly(t.startDate) }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs text-muted font-medium">{{ 'hotelTrip.endDate' | translate }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ formatDateOnly(t.endDate) }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs text-muted font-medium">{{ 'hotelTrip.tripRate' | translate }}</span>
+              <span class="text-sm text-body font-medium border-b border-card-border pb-1.5 min-h-7">{{ t.tripRate != null ? t.tripRate : '--' }}</span>
+            </div>
+          </div>
+        } @else {
+          <p class="px-4 py-8 text-sm text-muted text-center">{{ 'hotelTrip.noData' | translate }}</p>
+        }
+      }
+
+
+    </app-card>
+  </section>
+
+  <!-- Trip Conversation -->
+  @if (!chatHasError()) {
+    <section class="flex h-[430px] min-h-0 min-w-0 shrink-0 flex-col max-md:h-[380px]">
+      <app-chat
+        [tripRequestId]="tripId()"
+        [senderRole]="isAdmin() ? 'Admin' : 'Hotel'"
+        (chatError)="chatHasError.set($event)"
+      />
+    </section>
+  }
+
+</div>

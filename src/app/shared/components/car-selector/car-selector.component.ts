@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   model,
 } from '@angular/core';
@@ -29,7 +30,20 @@ export class CarSelectorComponent {
   /** Label displayed above the car grid */
   readonly label = input('');
 
+  /** Show skeleton placeholders instead of real options */
+  readonly loading = input(false);
+
+  /** Number of skeleton placeholder cards to show while loading */
+  readonly skeletonCount = input(6);
+
+  /** Disable car selection */
+  readonly disabled = input(false);
+
+  readonly skeletonItems = computed(() => Array.from({ length: this.skeletonCount() }));
+
   selectCar(id: string): void {
-    this.selected.set(id);
+    if (!this.disabled()) {
+      this.selected.set(id);
+    }
   }
 }

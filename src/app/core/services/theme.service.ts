@@ -52,4 +52,23 @@ export class ThemeService {
   toggleTheme(): void {
     this.setTheme(this.isDark() ? 'light' : 'dark');
   }
+
+  cycleTheme(): void {
+    const nextTheme: Record<Theme, Theme> = {
+      system: 'light',
+      light: 'dark',
+      dark: 'system',
+    };
+    this.setTheme(nextTheme[this._theme()]);
+  }
+
+  readonly themeIcon = computed(() => {
+    return 'theme-dark' as const;
+  });
+
+  readonly themeTooltip = computed(() => {
+    const theme = this._theme();
+    if (theme === 'system') return 'System theme';
+    return this.isDark() ? 'Dark theme' : 'Light theme';
+  });
 }

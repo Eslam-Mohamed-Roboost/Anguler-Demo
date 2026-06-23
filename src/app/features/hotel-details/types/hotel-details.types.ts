@@ -1,10 +1,12 @@
 export interface HotelInfo {
   id: string;
+  code: string;
   name: string;
   address: string;
   phone: string;
   email: string;
   imageUrl?: string;
+  isBlocked: boolean;
 }
 
 export interface HotelStatistics {
@@ -25,15 +27,23 @@ export interface HotelDetails {
 
 export interface TripRecord {
   id: string;
+  hotelId?: string;
+  tripCode?: string;
+  tripId?: string;
   customerName: string;
   pickupLocation: string;
   dropoffLocation: string;
-  date: string;
+  date?: string;
   status: 'completed' | 'active' | 'pending' | 'cancelled' | 'scheduled';
+  tripStatus: string;
+  tripStatusKey: string;
+  requestStatus: string;
+  requestStatusKey: string;
+  isScheduled?: boolean;
   price: number;
   currency: string;
-  distance: number;
-  duration: number;
+  distance: number | null;
+  duration: number | null;
   rating?: number;
   paymentStatus: string;
   customerPhone?: string;
@@ -42,11 +52,18 @@ export interface TripRecord {
   hotelName?: string;
   hotelPhone?: string;
   driverName?: string;
+  driverPhoneNumber?: string;
   driverId?: string;
   room?: string;
   commission?: number;
-  endDate?: string;
+  endDate?: string | null;
+  scheduledAt?: string | null;
+  requestedAt?: string | null;
+  notes?: string | null;
+  placeTypeName?: string | null;
+  otherPlaceText?: string | null;
 }
+
 
 export interface HotelFormData {
   name: string;
@@ -61,7 +78,7 @@ export interface WithdrawalFormData {
   accountHolderName: string;
   bankName: string;
   iban: string;
-  swiftCode: string;
+  swiftCode?: string;
 }
 
 export interface TableColumn {
@@ -74,6 +91,9 @@ export interface TableColumn {
 
 export interface HotelRecord {
   id: string;
+  rowKey: string;
+  code: string;
+  displayId: string;
   hotelName: string;
   hotelStatus: 'active' | 'suspended';
   totalTrips: number;
@@ -83,6 +103,7 @@ export interface HotelRecord {
   monthlyDues: string;
   settlementStatus: 'in-progress' | 'settled';
   settlementAmount: string;
+  hotelPhone: string;
 }
 
 export interface TripSearchFilters {

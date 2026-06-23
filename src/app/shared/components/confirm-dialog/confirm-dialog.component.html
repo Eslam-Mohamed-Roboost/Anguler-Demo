@@ -1,7 +1,7 @@
 <app-modal [open]="isOpen()" [title]="title()" (closed)="dialog.cancel()">
-  <p class="text-sm text-gray-600 dark:text-gray-300">{{ message() }}</p>
+  <p class="text-sm text-body-soft">{{ message() }}</p>
 
-  <div modal-footer class="flex justify-end gap-2 border-t bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800">
+  <div modal-footer class="flex justify-end gap-2 border-t border-divider bg-input-bg px-4 py-3">
     <app-btn variant="secondary" size="sm" (click)="dialog.cancel()">
       {{ cancelLabel() }}
     </app-btn>

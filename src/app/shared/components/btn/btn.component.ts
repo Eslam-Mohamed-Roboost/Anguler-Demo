@@ -70,7 +70,7 @@ export class BtnComponent {
   /** Computed Tailwind classes based on variant + size */
   protected readonly buttonClasses = computed(() => {
     const base =
-      'inline-flex w-full items-center justify-center gap-2 rounded font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed';
+      'inline-flex w-full items-center justify-center gap-2 rounded font-medium transition focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-page-bg disabled:cursor-not-allowed disabled:opacity-50';
 
     const sizeClasses = {
       sm: 'px-3 py-1.5 text-xs',
@@ -80,11 +80,11 @@ export class BtnComponent {
 
     const variantClasses = {
       primary:
-        'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+        'bg-primary text-white hover:bg-primary-dark',
       secondary:
-        'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700',
+        'border border-card-border bg-panel text-body hover:border-blue hover:bg-hover hover:text-body',
       danger:
-        'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+        'bg-danger text-white hover:bg-danger',
     }[this.variant()];
 
     return `${base} ${sizeClasses} ${variantClasses}`;

@@ -1,0 +1,29 @@
+<div class="flex min-w-0 items-center gap-2 sm:gap-4">
+  <div class="relative min-w-0 flex-1">
+    <span class="pointer-events-none absolute left-3 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary"></span>
+    <input
+      #messageInput
+      type="text"
+      placeholder="{{ 'chatInput.placeholder' | translate }}"
+      class="min-w-0 w-full rounded-full border border-transparent bg-input-bg py-2.5 pe-4 ps-5 text-[11px] text-body outline-none transition placeholder:text-muted-light focus:border-primary/40 focus:ring-2 focus:ring-primary/10 sm:py-3 sm:pe-5"
+      [attr.aria-label]="'chatInput.messageInput' | translate"
+      [disabled]="loading()"
+      (keydown.enter)="onSend(messageInput)"
+    />
+  </div>
+  <button
+    type="button"
+    class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-white transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:opacity-60 sm:size-11"
+    [attr.aria-label]="'chatInput.sendMessage' | translate"
+    [disabled]="loading()"
+    (click)="onSend(messageInput)"
+  >
+    @if (loading()) {
+      <span class="block size-5 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
+    } @else {
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M23.2806 2.67519C23.8548 1.08689 22.3157 -0.452233 20.7274 0.123276L1.31557 7.14369C-0.278047 7.72053 -0.470769 9.89497 0.99525 10.7443L7.19161 14.3316L12.7247 8.79844C12.9754 8.55633 13.3111 8.42236 13.6596 8.42539C14.0081 8.42842 14.3415 8.5682 14.5879 8.81463C14.8343 9.06106 14.9741 9.39442 14.9772 9.74291C14.9802 10.0914 14.8462 10.4271 14.6041 10.6778L9.07098 16.2109L12.6596 22.4073C13.5076 23.8733 15.682 23.6793 16.2589 22.087L23.2806 2.67519Z" fill="currentColor"/>
+      </svg>
+    }
+  </button>
+</div>

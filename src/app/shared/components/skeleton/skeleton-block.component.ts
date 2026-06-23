@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   host: { 'aria-hidden': 'true' },
   template: `
     <div
-      class="animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+      class="animate-pulse rounded bg-skeleton"
       [style.width]="width()"
       [style.height]="height()"
     ></div>

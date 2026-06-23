@@ -1,26 +1,36 @@
 import { Routes } from '@angular/router';
-import { HotelDetailsComponent } from './pages/hotel-details/hotel-details.component';
 
 export const HOTEL_DETAILS_ROUTES: Routes = [
   {
     path: '',
-    component: HotelDetailsComponent,
-    data: { breadcrumb: 'Hotel Integration' },
-  },
-  {
-    path: ':id',
     loadComponent: () =>
-      import('./pages/hotel-detail-view/hotel-detail-view.component').then(
-        (m) => m.HotelDetailViewComponent
+      import('./pages/hotel-dashboard/hotel-dashboard.component').then(
+        (m) => m.HotelDashboardComponent,
       ),
-    data: { breadcrumb: 'Hotel Details' },
+    data: { breadcrumb: 'Hotel Integration' },
   },
   {
     path: ':id/trip/:tripId',
     loadComponent: () =>
-      import('./pages/trip-detail/trip-detail.component').then(
-        (m) => m.TripDetailComponent
+      import('./pages/hotel-trip-detail/hotel-trip-detail.component').then(
+        (m) => m.HotelTripDetailComponent
       ),
-    data: { breadcrumb: 'Trip Details' },
+    data: { breadcrumb: 'Trip Detail' },
+  },
+  {
+    path: 'trip/:tripId',
+    loadComponent: () =>
+      import('./pages/hotel-trip-detail/hotel-trip-detail.component').then(
+        (m) => m.HotelTripDetailComponent
+      ),
+    data: { breadcrumb: 'Trip Detail' },
+  },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./pages/hotel-profile/hotel-profile.component').then(
+        (m) => m.HotelProfileComponent
+      ),
+    data: { breadcrumb: 'Hotel Profile' },
   },
 ];

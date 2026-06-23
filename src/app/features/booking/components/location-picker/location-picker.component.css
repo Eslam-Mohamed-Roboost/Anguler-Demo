@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+.location-map {
+  height: min(52vh, 420px);
+  min-height: 320px;
+  width: 100%;
+}

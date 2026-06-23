@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+::ng-deep body.hotel-details-active {
+  overflow: auto !important;
+}

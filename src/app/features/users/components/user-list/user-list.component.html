@@ -1,5 +1,5 @@
-<div class="mx-auto max-w-4xl p-4">
-  <header class="mb-4 flex items-center justify-between">
+<div class="mx-auto w-full max-w-4xl p-3 sm:p-4">
+  <header class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
     <h1 class="text-2xl font-bold dark:text-white" i18n="@@users.list.title">Users</h1>
     <a routerLink="new">
       <app-btn variant="primary" size="sm">
@@ -10,7 +10,7 @@
   </header>
 
   <!-- Search -->
-  <div class="mb-4 max-w-sm">
+  <div class="mb-4 w-full max-w-sm">
     <app-search-input
       placeholder="Search by name or email..."
       i18n-placeholder="@@users.list.searchPlaceholder"
@@ -44,7 +44,7 @@
       i18n-ariaLabel="@@users.list.tableLabel"
     >
       <ng-template cellDef="actions" let-row>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <a
             [routerLink]="[row.id, 'edit']"
             class="inline-flex items-center gap-1 text-blue-600 hover:underline dark:text-blue-400"

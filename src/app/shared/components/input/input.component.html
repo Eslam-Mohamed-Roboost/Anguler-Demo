@@ -1,7 +1,7 @@
 <div>
   <!-- ═══════ LABEL ═══════ -->
   @if (label()) {
-    <label [for]="inputId()" class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400" [class]="labelClass()">
+    <label [for]="inputId()" class="mb-1 block text-xs font-medium text-muted" [class]="labelClass()">
       {{ label() }}
       <ng-content select="[label-hint]" />
     </label>
@@ -12,10 +12,11 @@
     <textarea
       #textareaEl
       [id]="inputId()"
+      [value]="getFieldValue()"
       [placeholder]="placeholder()"
       [rows]="rows()"
       [class]="classes()"
-      [formField]="$any(field())"
+      (input)="onInputChange($event)"
       (blur)="onFieldBlur()"
     ></textarea>
   } @else {
@@ -24,35 +25,36 @@
         #inputEl
         [id]="inputId()"
         [type]="type()"
+        [value]="getFieldValue()"
         [placeholder]="placeholder()"
         [attr.step]="step() || null"
         [class]="classes()"
-        [formField]="$any(field())"
+        (input)="onInputChange($event)"
         (blur)="onFieldBlur()"
       />
 
       <!-- ═══════ CUSTOM SPIN BUTTONS ═══════ -->
       @if (showCustomSpinners()) {
         <div
-          class="absolute inset-y-0 end-0 flex flex-col border-s dark:border-gray-600"
+          class="absolute inset-y-0 end-0 flex flex-col border-s border-card-border"
           aria-hidden="true"
         >
           <button
             type="button"
             tabindex="-1"
             (click)="increment()"
-            class="flex flex-1 items-center justify-center px-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 active:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200 dark:active:bg-gray-600"
+            class="flex flex-1 items-center justify-center px-1.5 text-muted transition-colors hover:bg-hover hover:text-body active:bg-selected"
             aria-label="Increment"
             i18n-aria-label="@@shared.input.increment"
           >
             <app-icon name="chevron-up" size="xs" />
           </button>
-          <div class="border-t dark:border-gray-600"></div>
+          <div class="border-t border-card-border"></div>
           <button
             type="button"
             tabindex="-1"
             (click)="decrement()"
-            class="flex flex-1 items-center justify-center px-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 active:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200 dark:active:bg-gray-600"
+            class="flex flex-1 items-center justify-center px-1.5 text-muted transition-colors hover:bg-hover hover:text-body active:bg-selected"
             aria-label="Decrement"
             i18n-aria-label="@@shared.input.decrement"
           >
@@ -65,7 +67,7 @@
 
   <!-- ═══════ HINT TEXT ═══════ -->
   @if (hint()) {
-    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ hint() }}</p>
+    <p class="mt-1 text-xs text-muted">{{ hint() }}</p>
   }
 
   <!-- ═══════ CUSTOM CONTENT (e.g. disabled reason) ═══════ -->
@@ -73,7 +75,7 @@
 
   <!-- ═══════ VALIDATION ERRORS ═══════ -->
   @if (touched() && invalid()) {
-    <ul role="alert" class="mt-1 text-xs text-red-600 dark:text-red-400">
+    <ul role="alert" class="mt-1 text-xs text-danger">
       @for (err of errors(); track $index) {
         <li>{{ err.message }}</li>
       }

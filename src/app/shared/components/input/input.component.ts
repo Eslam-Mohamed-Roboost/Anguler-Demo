@@ -66,7 +66,6 @@ import {
   viewChild,
   ElementRef,
 } from '@angular/core';
-import { FormField } from '@angular/forms/signals';
 import { IconComponent } from '../icon/icon.component';
 
 /**
@@ -81,7 +80,7 @@ export type SpinButtonMode = 'native' | 'custom' | 'none';
 @Component({
   selector: 'app-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent, FormField],
+  imports: [IconComponent],
   templateUrl: './input.component.html',
   styleUrl: './input.component.css',
 })
@@ -177,8 +176,10 @@ export class InputComponent {
       if (node && typeof node === 'object' && 'model' in node) {
         return (node as any).invalid?.() ?? false;
       }
-      // Handle legacy structure
-      return (node as any)?.()?.invalid?.() ?? false;
+      if (typeof node === 'function') {
+        return (node as any)()?.invalid?.() ?? false;
+      }
+      return false;
     } catch {
       return false;
     }
@@ -191,8 +192,10 @@ export class InputComponent {
       if (node && typeof node === 'object' && 'model' in node) {
         return ((node as any).errors?.() ?? []) as { message: string }[];
       }
-      // Handle legacy structure
-      return ((node as any)?.()?.errors?.() ?? []) as { message: string }[];
+      if (typeof node === 'function') {
+        return (((node as any)()?.errors?.() ?? []) as { message: string }[]);
+      }
+      return [];
     } catch {
       return [];
     }
@@ -200,7 +203,7 @@ export class InputComponent {
 
   protected readonly classes = computed(() => {
     const base =
-      'w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
+      'w-full rounded-lg border border-input-border bg-input-bg px-3 py-2.5 text-sm text-body placeholder:text-muted-light transition-colors focus:border-warning focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:cursor-not-allowed disabled:bg-disabled disabled:text-muted-light';
 
     const spinClass = this.hideNativeSpinners() ? 'hide-spin-buttons' : '';
     const customSpinPadding = this.showCustomSpinners() ? 'pe-9' : '';
@@ -242,6 +245,42 @@ export class InputComponent {
       }
     } catch (error) {
       console.warn('Failed to mark field as touched:', error);
+    }
+  }
+
+  protected getFieldValue(): string {
+    const field = this.field();
+    try {
+      // Handle signal forms field structure
+      if (field && typeof field === 'object' && 'value' in field) {
+        const val = (field as any).value?.();
+        return val ?? '';
+      }
+      // Handle legacy structure
+      if (typeof field === 'function') {
+        const val = (field as any)()?.value?.();
+        return val ?? '';
+      }
+    } catch {
+      // Fail silently
+    }
+    return '';
+  }
+
+  protected onInputChange(event: Event): void {
+    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
+    const field = this.field();
+    try {
+      // Handle signal forms field structure
+      if (field && typeof field === 'object' && 'value' in field) {
+        (field as any).value?.set(value);
+      }
+      // Handle legacy structure
+      else if (typeof field === 'function') {
+        (field as any)()?.value?.set(value);
+      }
+    } catch (error) {
+      console.warn('Failed to update field value:', error);
     }
   }
 

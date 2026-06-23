@@ -73,15 +73,15 @@ export class AccordionComponent {
   protected readonly containerClasses = computed(() => {
     const v = this.variant();
     if (v === 'separated') return 'space-y-3';
-    if (v === 'bordered') return 'divide-y divide-gray-200 rounded-xl border border-gray-200 dark:divide-gray-700 dark:border-gray-700';
-    return 'divide-y divide-gray-200 dark:divide-gray-700';
+    if (v === 'bordered') return 'divide-y divide-divider rounded-xl border border-card-border';
+    return 'divide-y divide-divider';
   });
 
   protected panelClasses(item: AccordionItem): string {
     const v = this.variant();
     const base = 'overflow-hidden transition-colors';
     if (v === 'separated') {
-      return `${base} rounded-xl border border-gray-200 dark:border-gray-700`;
+      return `${base} rounded-xl border border-card-border`;
     }
     return base;
   }
@@ -109,12 +109,12 @@ export class AccordionComponent {
     const isOpen = this.isExpanded(item.key);
     const base = 'flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm font-medium transition-colors';
     if (item.disabled) {
-      return `${base} cursor-not-allowed text-gray-400 dark:text-gray-600`;
+      return `${base} cursor-not-allowed text-muted-light opacity-60`;
     }
     if (isOpen) {
-      return `${base} cursor-pointer text-gray-900 bg-gray-50 dark:bg-gray-800/50 dark:text-white`;
+      return `${base} cursor-pointer bg-hover text-body`;
     }
-    return `${base} cursor-pointer text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/30`;
+    return `${base} cursor-pointer text-body hover:bg-hover`;
   }
 
   protected trackByKey(_index: number, item: AccordionItem): string {

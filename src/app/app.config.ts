@@ -4,7 +4,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -14,7 +14,6 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { langInterceptor } from './core/interceptors/lang.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
-import { mockInterceptor } from './core/interceptors/mock.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,9 +21,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor, langInterceptor, errorInterceptor, loadingInterceptor, mockInterceptor]),
+      withInterceptors([authInterceptor, langInterceptor, errorInterceptor, loadingInterceptor]),
     ),
-    provideRouter(routes, withComponentInputBinding(), withViewTransitions()),
+    provideRouter(routes, withComponentInputBinding()),
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
     provideHighcharts(),

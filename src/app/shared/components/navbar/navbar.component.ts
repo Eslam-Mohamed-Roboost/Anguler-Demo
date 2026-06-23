@@ -2,11 +2,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  computed,
   inject,
   input,
   output,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IconComponent } from '../icon/icon.component';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { ThemeService } from '../../../core/services/theme.service';
@@ -14,6 +17,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NotificationStore } from '../../../core/stores/notification.store';
 import { TooltipDirective } from '../../directives/tooltip.directive';
 import { BillingPanelComponent, BillingItem } from '../billing-panel/billing-panel.component';
+import { HotelDetailsService } from '../../../features/hotel-details/services/hotel-details.service';
 
 @Component({
   selector: 'app-navbar',
@@ -26,6 +30,9 @@ export class NavbarComponent {
   protected readonly themeService = inject(ThemeService);
   protected readonly authService = inject(AuthService);
   private readonly notifications = inject(NotificationStore);
+  private readonly hotelDetailsService = inject(HotelDetailsService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly menuToggle = output<void>();
   readonly messageClick = output<void>();
   readonly notificationClick = output<void>();
@@ -48,6 +55,35 @@ export class NavbarComponent {
   /** Sample billing data */
   protected readonly billingItems = signal<BillingItem[]>([]);
 
+  /** Hotel name loaded from profile */
+  protected readonly hotelName = signal<string>('');
+
+  protected readonly themeSwitchClass = computed(() =>
+    this.themeService.isDark()
+      ? 'border-[#5B738B] bg-[#0C0F13] text-white hover:bg-[#161B21]'
+      : 'border-primary bg-panel text-primary hover:bg-success-light',
+  );
+
+  constructor() {
+    // Load hotel profile when authenticated
+    if (this.authService.isAuthenticated()) {
+      this.loadHotelProfile();
+    }
+  }
+
+  private loadHotelProfile(): void {
+    this.hotelDetailsService
+      .getMyProfile()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.hotelName.set(result.data.hotelName);
+          }
+        },
+      });
+  }
+
   /** Mock login for demo purposes — calls the mock auth endpoint */
   protected mockLogin(): void {
     this.authService.login('admin@demo.com', 'password').subscribe({
@@ -55,6 +91,7 @@ export class NavbarComponent {
         this.notifications.showSuccess(
           $localize`:@@nav.loginSuccess:Logged in successfully`,
         );
+        this.loadHotelProfile();
       },
     });
   }

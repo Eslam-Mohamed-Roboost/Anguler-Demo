@@ -1,6 +1,6 @@
 <div>
   @if (label()) {
-    <span class="mb-1.5 block text-sm font-medium dark:text-gray-200">{{ label() }}</span>
+    <span class="mb-1.5 block text-sm font-medium text-body">{{ label() }}</span>
   }
 
   <div
@@ -26,7 +26,7 @@
     }
 
     @if (value() > 0) {
-      <span class="ml-1.5 text-sm font-medium tabular-nums text-gray-600 dark:text-gray-400">
+      <span class="ml-1.5 text-sm font-medium tabular-nums text-muted">
         {{ value() }}/{{ max() }}
       </span>
     }

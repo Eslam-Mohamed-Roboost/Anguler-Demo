@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-2xl p-4">
+<div class="mx-auto w-full max-w-2xl p-3 sm:p-4">
   <h1 class="mb-4 text-2xl font-bold dark:text-white">
     @if (isEditMode()) {
       <span i18n="@@users.form.editTitle">Edit User</span>
@@ -30,7 +30,7 @@
         i18n-placeholder="@@users.form.emailPlaceholder"
       />
 
-      <div class="flex gap-2">
+      <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <app-btn type="submit" variant="primary" [loading]="submitLoading()" [showLoader]="true">
           <app-icon name="check" size="sm" />
           <span i18n="@@users.form.save">Save</span>

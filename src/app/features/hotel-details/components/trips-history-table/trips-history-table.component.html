@@ -1,84 +1,184 @@
 <app-card variant="elevated" class="mb-6">
   <!-- Tabs + Toolbar -->
-  <div class="flex justify-between items-center px-4 pt-4 gap-4 flex-wrap max-lg:flex-col max-lg:items-start">
+  <div class="flex flex-wrap items-center justify-between gap-4 px-4 pt-4 max-xl:flex-col max-xl:items-start">
     <!-- Tabs -->
     <div class="flex gap-1">
       <button
-        class="px-4 py-2 border rounded-btn bg-white text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50"
-        [class]="activeTab() === 'trips' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-gray-300'"
+        class="px-4 py-2 border rounded-btn bg-panel text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover"
+        [class]="activeTab() === 'trips' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-card-border'"
         type="button"
         (click)="setTab('trips')"
       >
-        Hotels Trips
+        {{ 'hotelDetails.tripsTab' | translate }}
       </button>
       <button
-        class="px-4 py-2 border rounded-btn bg-white text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50"
-        [class]="activeTab() === 'hotels' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-gray-300'"
+        class="px-4 py-2 border rounded-btn bg-panel text-sm font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover"
+        [class]="activeTab() === 'hotels' ? 'bg-warning! text-white! border-warning!' : 'border-card-border text-muted hover:border-card-border'"
         type="button"
         (click)="setTab('hotels')"
       >
-        All Hotels ({{ totalHotels() }})
+        {{ 'hotelDetails.hotelsTab' | translate }} ({{ totalHotels() }})
       </button>
     </div>
 
     <!-- Toolbar -->
-    <div class="flex items-center gap-3 flex-wrap max-lg:w-full">
-      <div class="relative flex items-center max-lg:flex-1">
+    <div class="flex flex-wrap items-center gap-3 max-xl:w-full">
+      <div class="relative flex min-w-0 items-center max-xl:flex-1">
         <app-icon name="search" class="absolute start-3 text-muted-light z-[1] pointer-events-none" size="sm" aria-hidden="true" />
         <input
           id="trips-search"
           type="text"
-          placeholder="Search Trips"
+          [placeholder]="searchPlaceholderKey() | translate"
           [value]="searchQuery()"
           (input)="onSearchChange($event)"
-          class="w-full rounded-btn border border-card-border bg-white px-3 py-[7px] ps-8 text-cell text-body placeholder:text-muted-light focus:border-primary focus:outline-none"
+          class="w-full py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-input-bg outline-none focus:border-warning focus:ring-2 focus:ring-focus-ring lg:w-[180px]"
+          [attr.aria-label]="searchPlaceholderKey() | translate"
         />
       </div>
 
-      <div class="flex gap-2">
-        <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5" type="button" aria-label="Sort">
-          <app-icon name="chevron-down" size="sm" aria-hidden="true" />
-          <span>Sort</span>
-        </button>
-        <button class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5" type="button" aria-label="Filter">
-          <app-icon name="filter" size="sm" aria-hidden="true" />
-          <span>Filter</span>
-        </button>
-        <button
-          class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-white text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-gray-50 max-md:[&_span]:hidden max-md:px-2.5"
-          type="button"
-          (click)="commissionSettings.emit()"
-        >
-          <app-icon name="layers" size="sm" aria-hidden="true" />
-          <span>Commission Settings</span>
-        </button>
+      <div class="flex flex-wrap gap-2">
+        @if (activeTab() === 'trips') {
+          <div class="relative">
+            <button
+              type="button"
+              (click)="toggleSortDropdown()"
+    class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-panel text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover max-md:[&_span]:hidden max-md:px-2.5"
+              [attr.aria-label]="'hotelDetails.sort' | translate"
+              [attr.aria-expanded]="showSortDropdown()"
+            >
+              <app-icon name="chevron-down" size="sm" aria-hidden="true" />
+              <span>{{ selectedSortLabel() | translate }}</span>
+            </button>
+            @if (showSortDropdown()) {
+              <div class="absolute top-full left-0 mt-1 bg-panel border border-card-border rounded-lg shadow-lg z-10 min-w-max">
+                @for (option of sortOptions; track option.value) {
+                  <button
+                    type="button"
+                    (click)="onSortOption(option.value)"
+                    class="w-full px-4 py-2 text-left text-sm text-body hover:bg-hover transition"
+                    [class.bg-primary/10]="selectedSort() === option.value"
+                    [class.border-b]="!$last"
+                    [class.border-divider]="!$last"
+                  >
+                    {{ option.label | translate }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="relative">
+            <button
+              type="button"
+              (click)="toggleSortDropdown()"
+              class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-panel text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover max-md:[&_span]:hidden max-md:px-2.5"
+              [attr.aria-label]="'hotelDetails.sort' | translate"
+              [attr.aria-expanded]="showSortDropdown()"
+            >
+              <app-icon name="chevron-down" size="sm" aria-hidden="true" />
+              <span>{{ selectedHotelSortLabel() | translate }}</span>
+            </button>
+            @if (showSortDropdown()) {
+              <div class="absolute top-full left-0 mt-1 bg-panel border border-card-border rounded-lg shadow-lg z-10 min-w-max">
+                @for (option of hotelSortOptions; track option.label) {
+                  <button
+                    type="button"
+                    (click)="onHotelSortOption(option)"
+                    class="w-full px-4 py-2 text-left text-sm text-body hover:bg-hover transition"
+                    [class.bg-primary/10]="selectedHotelSortBy() === option.sortBy && selectedHotelSortDirection() === option.sortDirection"
+                    [class.border-b]="!$last"
+                    [class.border-divider]="!$last"
+                  >
+                    {{ option.label | translate }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
+        <div class="relative">
+          <button
+            type="button"
+            (click)="toggleFilterDropdown()"
+            class="flex items-center gap-1.5 px-3.5 py-[7px] border border-card-border bg-panel text-body-soft rounded-btn text-cell font-medium cursor-pointer transition whitespace-nowrap hover:bg-hover max-md:[&_span]:hidden max-md:px-2.5"
+            [attr.aria-label]="'hotelDetails.filter' | translate"
+          >
+            <app-icon name="filter" size="sm" aria-hidden="true" />
+            <span>{{ 'hotelDetails.filter' | translate }}</span>
+          </button>
+          @if (showFilterDropdown()) {
+            <div class="absolute top-full left-0 mt-1 bg-panel border border-card-border rounded-lg shadow-lg z-10 min-w-max">
+              <button
+                type="button"
+                (click)="onStatusFilter('')"
+                class="w-full px-4 py-2 text-left text-sm text-body hover:bg-hover border-b border-divider transition"
+                [class.bg-primary/10]="statusFilter() === ''"
+              >
+                {{ 'hotelDetails.allStatus' | translate }}
+              </button>
+              @for (status of statusOptions(); track status) {
+                <button
+                  type="button"
+                  (click)="onStatusFilter(status)"
+                  class="w-full px-4 py-2 text-left text-sm text-body hover:bg-hover transition"
+                  [class.bg-primary/10]="statusFilter() === status"
+                  [class.border-b]="!$last"
+                  [class.border-divider]="!$last"
+                >
+                  {{ statusTranslationKey(status) | translate }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+        @if (activeTab() === 'hotels' && hasSelectedHotels()) {
+          <button
+            class="flex items-center gap-1.5 rounded-btn border border-warning bg-status-scheduled-bg px-3.5 py-[7px] text-cell font-medium text-status-scheduled cursor-pointer transition whitespace-nowrap hover:bg-status-scheduled-bg max-md:[&_span]:hidden max-md:px-2.5"
+            type="button"
+            (click)="openCommissionModal()"
+          >
+            <app-icon name="layers" size="sm" aria-hidden="true" />
+            <span>{{ 'hotelDetails.editCommission' | translate }} ({{ selectedHotelsCount() }})</span>
+          </button>
+        }
       </div>
     </div>
   </div>
 
   <!-- Hotels Trips Table -->
   @if (activeTab() === 'trips') {
-    <div class="px-4 py-3 overflow-x-auto max-md:px-3 max-md:py-2">
+    <div class="flex min-w-0 flex-col gap-3 overflow-x-auto px-3 py-2 sm:px-4 sm:py-3">
       <app-data-table
         [data]="trips()"
         [columns]="tripColumns()"
         [loading]="loading()"
-        ariaLabel="Hotel integration trips table"
+        [ariaLabel]="'hotelDetails.tripTableLabel' | translate"
         trackByKey="id"
       >
+          <!-- Trip Code Cell -->
+        <ng-template cellDef="tripId" let-row>
+          <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.tripCode??'--' }}</span>
+        </ng-template>
+
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
-          <div class="flex flex-col gap-0.5">
-            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName ?? '--' }}</span>
+          <div class="flex min-w-0 max-w-32 flex-col items-start gap-0.5 text-left sm:max-w-36">
+            <span class="block max-w-full truncate text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName ?? '--' }}</span>
             @if (row.hotelPhone) {
-              <span class="text-xs text-muted">{{ row.hotelPhone }}</span>
+              <span class="phone-line inline-flex max-w-full items-center gap-1 text-xs text-muted">
+                <svg class="size-3 shrink-0 text-muted" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="min-w-0 truncate" dir="ltr" [title]="row.hotelPhone">{{ row.hotelPhone }}</span>
+              </span>
             }
+
           </div>
         </ng-template>
 
         <!-- Guest Name Cell -->
         <ng-template cellDef="guestName" let-row>
-          <div class="flex flex-col gap-0.5">
+          <div class="flex flex-col items-start gap-0.5 text-left">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.customerName }}</span>
             @if (row.room) {
               <span class="text-xs text-muted">{{ row.room }}</span>
@@ -88,40 +188,53 @@
 
         <!-- Driver Name Cell -->
         <ng-template cellDef="driverName" let-row>
-          <div class="flex flex-col gap-0.5">
+          <div class="flex flex-col items-start gap-0.5 text-left">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
-            @if (row.driverId) {
-              <span class="text-xs text-muted">{{ row.driverId }}</span>
+            @if (row.driverPhoneNumber) {
+              <span class="inline-flex items-center gap-1 text-xs text-muted" dir="ltr">
+                <svg class="size-3 shrink-0 text-muted" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {{ row.driverPhoneNumber }}
+              </span>
             }
           </div>
         </ng-template>
 
         <!-- Route Cell -->
         <ng-template cellDef="route" let-row>
-          <div class="flex flex-col gap-1">
-            <div class="flex items-center gap-1.5">
+          <div class="flex flex-col items-start gap-1 text-left">
+            <div class="flex items-center justify-start gap-1.5">
               <span class="inline-block size-2 rounded-full shrink-0 bg-status-completed" aria-hidden="true"></span>
               <span class="text-cell text-body-soft">{{ row.pickupLocation }}</span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center justify-start gap-1.5">
               <span class="inline-block size-2 rounded-full shrink-0 bg-status-cancelled" aria-hidden="true"></span>
               <span class="text-cell text-body-soft">{{ row.dropoffLocation }}</span>
             </div>
           </div>
         </ng-template>
 
-        <!-- Status Cell -->
-        <ng-template cellDef="status" let-row>
+        <!-- Request Status Cell -->
+        <ng-template cellDef="requestStatus" let-row>
           <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium capitalize max-sm:px-2 max-sm:text-2xs"
-                [class]="tripStatusColorMap[row.status] || 'text-status-scheduled bg-status-scheduled-bg'">
-            {{ row.status.charAt(0).toUpperCase() + row.status.slice(1) }}
+                [class]="statusColorClass(row.requestStatusKey)">
+            {{ statusTranslationKey(row.requestStatus) | translate }}
+          </span>
+        </ng-template>
+
+        <!-- Trip Status Cell -->
+        <ng-template cellDef="tripStatus" let-row>
+          <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium capitalize max-sm:px-2 max-sm:text-2xs"
+                [class]="statusColorClass(row.tripStatusKey)">
+            {{ statusTranslationKey(row.tripStatus) | translate }}
           </span>
         </ng-template>
 
         <!-- Fare Cell -->
         <ng-template cellDef="fare" let-row>
-          <div class="flex flex-col gap-0.5">
-            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price != null ? row.price.toFixed(2) : '--' }} CHF</span>
+          <div class="flex flex-col items-start gap-0.5 text-left">
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.price != null ? row.price.toFixed(2) : '--' }} {{ 'currency.chf' | translate }}</span>
             @if (row.commission != null) {
               <span class="text-xs text-muted">Comm.: {{ row.commission!.toFixed(2) }}</span>
             }
@@ -130,57 +243,95 @@
 
         <!-- Start/End Date Cell -->
         <ng-template cellDef="startEndDate" let-row>
-          <div class="flex flex-col gap-0.5">
+          <div class="flex flex-col items-start gap-0.5 text-left">
             <span class="text-cell font-medium text-body max-sm:text-xs">{{ formatDate(row.date) }}</span>
-            <span class="text-xs text-muted">{{ formatDate(row.endDate) }}</span>
+            <span class="text-xs text-muted">
+              @if (row.endDate) {
+                {{ formatDate(row.endDate) }}
+              } @else {
+                {{ 'admin.pendingRequests.requestedAt' | translate }}: {{ formatDate(row.requestedAt) }}
+              }
+            </span>
           </div>
         </ng-template>
 
         <!-- Actions Cell -->
         <ng-template cellDef="actions" let-row>
-          <div class="flex gap-1.5">
+          <div class="flex justify-start gap-1.5">
             <button
               class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
               type="button"
               (click)="onTripAction(row, 'view')"
-              aria-label="View trip details"
+              [attr.aria-label]="'riderHistory.viewDetails' | translate"
             >
               <app-icon name="eye" size="sm" aria-hidden="true" />
             </button>
           </div>
         </ng-template>
       </app-data-table>
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalItems]="totalTrips()"
+        [pageSize]="pageSize()"
+        (pageChange)="pageChange.emit($event)"
+      />
     </div>
   }
 
   <!-- All Hotels Table -->
   @if (activeTab() === 'hotels') {
-    <div class="px-4 py-3 overflow-x-auto max-md:px-3 max-md:py-2">
+    <div class="min-w-0 overflow-x-auto px-3 py-2 sm:px-4 sm:py-3">
       <app-data-table
         [data]="hotels()"
         [columns]="hotelColumns()"
         [loading]="loading()"
-        ariaLabel="All hotels table"
-        trackByKey="id"
+        [ariaLabel]="'hotelDetails.hotelsTableLabel' | translate"
+        trackByKey="rowKey"
       >
-        <!-- Select Cell -->
+        <ng-template headerCellDef="select">
+          <input
+            type="checkbox"
+            class="size-3.5 rounded border-card-border bg-input-bg focus:ring-2 focus:ring-focus-ring"
+            [style.accent-color]="'var(--color-primary)'"
+            [checked]="allHotelsSelected()"
+            [indeterminate]="someHotelsSelected()"
+            [attr.aria-checked]="someHotelsSelected() ? 'mixed' : allHotelsSelected()"
+            (change)="toggleAllHotelsSelection($event)"
+            [attr.aria-label]="'hotelDetails.selectAllHotels' | translate"
+          />
+        </ng-template>
+
         <ng-template cellDef="select" let-row>
           <input
             type="checkbox"
-            class="size-4 cursor-pointer accent-warning"
-            [attr.aria-label]="'Select ' + row.hotelName"
+            class="size-3.5 rounded border-card-border bg-input-bg focus:ring-2 focus:ring-focus-ring"
+            [style.accent-color]="'var(--color-primary)'"
+            [checked]="isHotelSelected(row)"
+            [disabled]="!hotelSelectionKey(row)"
+            (change)="toggleHotelSelection(row)"
+            [attr.aria-label]="('hotelDetails.selectHotel' | translate) + ' ' + (row.hotelName || row.displayId || ('hotelDetails.hotelFallback' | translate))"
           />
+        </ng-template>
+
+        <ng-template cellDef="id" let-row>
+          <span class="text-cell font-medium text-body-soft max-sm:text-xs">{{ row.displayId }}</span>
         </ng-template>
 
         <!-- Hotel Name Cell -->
         <ng-template cellDef="hotelName" let-row>
-          <div class="flex flex-col gap-0.5">
-            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.hotelName }}</span>
-            <span class="flex items-center gap-1 text-xs font-medium"
-                  [class]="row.hotelStatus === 'active' ? 'text-status-completed' : 'text-status-cancelled'">
-              <span class="inline-block size-[7px] rounded-full"
-                    [class]="row.hotelStatus === 'active' ? 'bg-status-completed' : 'bg-status-cancelled'"></span>
-              {{ row.hotelStatus === 'active' ? 'Active' : 'Suspended' }}
+          <div class="flex min-w-[170px] max-w-[240px] flex-col items-start gap-0.5 text-left">
+            <span class="block max-w-full whitespace-normal break-words text-cell font-medium leading-snug text-body max-sm:text-xs">
+              {{ row.hotelName || '--' }}
+            </span>
+            <span
+              class="inline-flex items-center justify-start gap-1 text-xs font-medium leading-none"
+              [class]="row.hotelStatus === 'active' ? 'text-status-completed' : 'text-status-cancelled'"
+            >
+              <span
+                class="inline-block size-[7px] shrink-0 rounded-full"
+                [class]="row.hotelStatus === 'active' ? 'bg-status-completed' : 'bg-status-cancelled'"
+              ></span>
+              {{ (row.hotelStatus === 'active' ? 'hotelDetails.statusActive' : 'hotelDetails.statusSuspended') | translate }}
             </span>
           </div>
         </ng-template>
@@ -190,9 +341,9 @@
           <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.totalTrips }}</span>
         </ng-template>
 
-        <!-- Hotel Comm Cell -->
+        <!-- Hotel Commission Cell -->
         <ng-template cellDef="hotelComm" let-row>
-          <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.hotelComm }}</span>
+          <span class="text-cell font-bold text-body max-sm:text-xs">{{ row.hotelComm }}</span>
         </ng-template>
 
         <!-- Hotel Profits Cell -->
@@ -212,25 +363,195 @@
 
         <!-- Status Cell -->
         <ng-template cellDef="status" let-row>
-          <span class="text-cell font-semibold"
-                [class]="row.settlementStatus === 'in-progress' ? 'text-warning' : 'text-status-completed'">
-            {{ row.settlementStatus === 'in-progress' ? 'In Progress' : 'Settled' }} : {{ row.settlementAmount }}
+          <span
+            class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold"
+            [class.bg-status-scheduled-bg]="row.settlementStatus === 'in-progress'"
+            [class.text-status-scheduled]="row.settlementStatus === 'in-progress'"
+            [class.bg-status-completed-bg]="row.settlementStatus === 'settled'"
+            [class.text-status-completed]="row.settlementStatus === 'settled'"
+          >
+            {{ (row.settlementStatus === 'in-progress' ? 'hotelDetails.statusInProgress' : 'hotelDetails.statusSettled') | translate }} : {{ row.settlementAmount }} {{ 'currency.chf' | translate }}
           </span>
         </ng-template>
 
         <!-- Actions Cell -->
         <ng-template cellDef="actions" let-row>
-          <div class="flex gap-1.5">
-            <a
-              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
-              [routerLink]="['/hotel-details', row.id]"
-              aria-label="View hotel details"
+          <div class="relative flex justify-start">
+            <button
+              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-input-bg text-muted hover:bg-hover"
+              type="button"
+              (click)="toggleHotelActionMenu($event, row)"
+              [attr.aria-label]="'hotelDetails.openHotelActions' | translate"
+              aria-haspopup="menu"
             >
-              <app-icon name="eye" size="sm" aria-hidden="true" />
-            </a>
+              <span class="flex flex-col items-center gap-0.5" aria-hidden="true">
+                <span class="size-1 rounded-full bg-current"></span>
+                <span class="size-1 rounded-full bg-current"></span>
+                <span class="size-1 rounded-full bg-current"></span>
+              </span>
+            </button>
+
           </div>
         </ng-template>
       </app-data-table>
+      @if (hotelActionMenu(); as menu) {
+        <div
+          class="fixed z-[80] min-w-[194px] rounded-xl bg-panel p-3 text-start text-body shadow-[0_12px_30px_var(--app-shadow-color)] ring-1 ring-card-border"
+          [style.left.px]="menu.left"
+          [style.top.px]="menu.top"
+          role="menu"
+        >
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-body transition hover:bg-hover"
+            (click)="onHotelAction('view', menu.hotel)"
+            role="menuitem"
+          >
+            <svg class="text-warning" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M1.25 7.5S3.4375 3.125 7.5 3.125 13.75 7.5 13.75 7.5 11.5625 11.875 7.5 11.875 1.25 7.5 1.25 7.5Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7.5 9.375C8.53553 9.375 9.375 8.53553 9.375 7.5C9.375 6.46447 8.53553 5.625 7.5 5.625C6.46447 5.625 5.625 6.46447 5.625 7.5C5.625 8.53553 6.46447 9.375 7.5 9.375Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ 'hotelDetails.viewHotelInfo' | translate }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-body transition hover:bg-hover"
+            (click)="openHotelCommissionModal(menu.hotel)"
+            role="menuitem"
+          >
+            <svg class="text-warning" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M8.594 2.188 12.812 6.406 5.156 14.062H.938V9.844L8.594 2.188Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10.625.938 14.063 4.375" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ 'hotelDetails.editHotelCommission' | translate }}</span>
+          </button>
+
+          @if (menu.hotel.settlementStatus === 'in-progress') {
+            <button
+              type="button"
+              class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-body transition hover:bg-hover"
+              (click)="onHotelAction('settle', menu.hotel)"
+              role="menuitem"
+            >
+              <span class="w-[15px] text-center text-xl leading-none text-purple" aria-hidden="true">$</span>
+              <span>{{ 'hotelDetails.settleBalance' | translate }}</span>
+            </button>
+          }
+
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 rounded-lg px-1 py-2 text-sm font-medium text-body transition hover:bg-hover"
+            (click)="onHotelAction('block', menu.hotel)"
+            role="menuitem"
+          >
+            <svg class="text-status-cancelled" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7.5 13.75C10.9518 13.75 13.75 10.9518 13.75 7.5C13.75 4.04822 10.9518 1.25 7.5 1.25C4.04822 1.25 1.25 4.04822 1.25 7.5C1.25 10.9518 4.04822 13.75 7.5 13.75Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3.0625 3.0625L11.9375 11.9375" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ (menu.hotel.hotelStatus === 'active' ? 'hotelDetails.blockHotel' : 'hotelDetails.unblockHotel') | translate }}</span>
+          </button>
+        </div>
+      }
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalItems]="totalHotels()"
+        [pageSize]="pageSize()"
+        (pageChange)="onHotelPageChange($event)"
+      />
     </div>
   }
 </app-card>
+
+
+
+<app-modal [open]="showCommissionsModal()" (closed)="closeCommissionModal()">
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex min-w-0 items-center gap-2">
+      <svg class="size-3 shrink-0 text-primary" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M0 2.268C0 1.558 0.205 1.003 0.616 0.602C1.036 0.2 1.573 0 2.226 0C2.879 0 3.411 0.2 3.822 0.602C4.242 1.003 4.452 1.558 4.452 2.268C4.452 2.986 4.242 3.546 3.822 3.948C3.411 4.349 2.879 4.55 2.226 4.55C1.573 4.55 1.036 4.349 0.616 3.948C0.205 3.546 0 2.986 0 2.268ZM8.988 0.168L3.486 9.968H1.582L7.07 0.168H8.988ZM2.212 1.176C1.699 1.176 1.442 1.54 1.442 2.268C1.442 3.005 1.699 3.374 2.212 3.374C2.464 3.374 2.66 3.285 2.8 3.108C2.94 2.921 3.01 2.641 3.01 2.268C3.01 1.54 2.744 1.176 2.212 1.176ZM6.146 7.854C6.146 7.135 6.351 6.58 6.762 6.188C7.182 5.786 7.719 5.586 8.372 5.586C9.025 5.586 9.553 5.786 9.954 6.188C10.365 6.58 10.57 7.135 10.57 7.854C10.57 8.572 10.365 9.132 9.954 9.534C9.553 9.935 9.025 10.136 8.372 10.136C7.709 10.136 7.173 9.935 6.762 9.534C6.351 9.132 6.146 8.572 6.146 7.854ZM8.358 6.762C7.826 6.762 7.56 7.126 7.56 7.854C7.56 8.591 7.826 8.96 8.358 8.96C8.881 8.96 9.142 8.591 9.142 7.854C9.142 7.126 8.881 6.762 8.358 6.762Z" fill="currentColor"/>
+      </svg>
+      <h2 class="truncate text-xl font-bold text-body">
+        {{ commissionModalTitleKey() | translate }}
+        @if (hasSelectedHotels()) {
+          ({{ selectedHotelsCount() }})
+        }
+      </h2>
+    </div>
+    <button
+      type="button"
+      (click)="closeCommissionModal()"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-input-bg text-muted transition hover:bg-hover hover:text-body"
+      [attr.aria-label]="'common.close' | translate"
+    >
+      <app-icon name="close" size="sm" aria-hidden="true" />
+    </button>
+  </div>
+
+  <div class="mb-5 mt-4 flex items-start gap-2 rounded-btn border border-card-border bg-input-bg px-4 py-3 text-cell text-muted" role="note">
+    <app-icon name="info" class="mt-0.5 shrink-0" size="sm" aria-hidden="true" />
+    <span>{{ 'commission.info' | translate }}</span>
+  </div>
+
+  @if (hasSelectedHotels()) {
+    <section class="mb-5 rounded-xl bg-input-bg px-4 py-4" [attr.aria-label]="'hotelDetails.selectedHotels' | translate">
+      <p class="mb-4 text-sm font-medium text-muted">{{ 'hotelDetails.selectedHotels' | translate }}:</p>
+      <div class="flex flex-col gap-4">
+        @for (hotel of selectedHotels(); track hotel.id) {
+          <div class="flex items-center justify-between gap-3">
+            <span class="min-w-0 truncate text-sm font-medium text-body">{{ hotel.hotelName || hotel.displayId }}</span>
+            @if (singleCommissionHotelId() !== hotel.id) {
+              <button
+                type="button"
+                class="flex size-5 shrink-0 items-center justify-center rounded-full border border-status-cancelled text-status-cancelled transition hover:bg-status-cancelled-bg"
+                (click)="removeSelectedHotel(hotel)"
+                [attr.aria-label]="('hotelDetails.removeHotel' | translate) + ' ' + (hotel.hotelName || hotel.displayId)"
+              >
+                <app-icon name="close" size="xs" aria-hidden="true" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <div class="flex flex-col">
+    <label for="commission-rate" class="mb-2 block text-sm font-medium text-muted">
+      @if (hasSelectedHotels()) {
+        {{ 'hotelDetails.selectedCommissionLabel' | translate }}
+      } @else {
+        {{ 'GeneralCommission' | translate }}
+      }
+    </label>
+    <input
+      type="number"
+      id="commission-rate"
+      min="0"
+      max="100"
+      inputmode="decimal"
+      [value]="generalCommissionField()"
+      (input)="onGeneralCommissionChange($event)"
+      [disabled]="commissionLoading() || commissionSaving()"
+      placeholder="0"
+      class="w-full rounded-xl border border-card-border bg-input-bg px-4 py-3 text-base text-body placeholder:text-muted-light focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-disabled disabled:text-muted disabled:opacity-50"
+    />
+  </div>
+
+  <div modal-footer class="flex gap-3 px-4 pb-4 pt-2">
+    <button
+      type="button"
+      (click)="saveCommission()"
+      [disabled]="commissionLoading() || commissionSaving()"
+      class="flex-1 rounded-lg bg-primary px-4 py-3.5 text-base font-bold text-white transition hover:brightness-95 disabled:bg-disabled disabled:text-muted disabled:cursor-not-allowed"
+    >
+      @if (commissionLoading()) {
+        {{ 'common.loading' | translate }}
+      } @else if (commissionSaving()) {
+        {{ 'common.saving' | translate }}
+      } @else {
+        {{ 'hotelDetails.saveChanges' | translate }}
+      }
+    </button>
+  </div>
+</app-modal>

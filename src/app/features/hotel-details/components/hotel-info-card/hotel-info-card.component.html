@@ -3,8 +3,8 @@
     <!-- Hotel Image -->
     <div class="shrink-0 size-[108px] rounded-lg overflow-hidden max-md:w-full max-md:h-[200px] max-sm:h-[150px]">
       <img
-        [src]="hotel().imageUrl || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=400&fit=crop'"
-        [alt]="hotel().name"
+        [src]="hotel().imageUrl || defaultHotelImage"
+        [alt]="hotel().name || 'Hotel'"
         class="object-cover w-full h-full"
         loading="lazy"
       />
@@ -12,7 +12,7 @@
 
     <!-- Hotel Information -->
     <div class="flex-1 min-w-0">
-      <h2 class="text-lg font-bold text-body mb-3 leading-snug max-md:text-base">{{ hotel().name }}</h2>
+      <h2 class="text-lg font-bold text-body mb-3 leading-snug max-md:text-base">{{ hotel().name || '--' }}</h2>
 
       <div class="flex flex-col gap-2">
         @for (contact of contactInfo(); track contact.icon) {
@@ -28,14 +28,121 @@
       </div>
     </div>
 
-    <!-- Delete Button -->
-    <button
-      class="shrink-0 size-8 flex items-center justify-center bg-red-100 text-status-cancelled rounded-full cursor-pointer hover:bg-red-200 transition-colors border-none max-md:absolute max-md:top-0 max-md:end-0"
-      type="button"
-      (click)="deleteClick.emit()"
-      aria-label="Delete hotel"
-    >
-      <app-icon name="x-circle" size="sm" />
-    </button>
+    <!-- Block/Unblock Button -->
+    @if (hotel().id) {
+      <button
+        class="shrink-0 size-8 flex items-center justify-center transition-colors border-none max-md:absolute max-md:top-0 max-md:end-0 rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        [class]="hotel().isBlocked
+          ? 'bg-input-bg text-muted hover:bg-hover'
+          : 'bg-status-cancelled-bg text-status-cancelled hover:brightness-95'"
+        type="button"
+        (click)="onBlockClick()"
+        [disabled]="toggleLoading()"
+        [attr.aria-label]="hotel().isBlocked ? 'Unblock hotel' : 'Block hotel'"
+        [attr.aria-busy]="toggleLoading()"
+      >
+        @if (hotel().isBlocked) {
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M5.625 6.25L7.66125 7.7775C7.7874 7.87211 7.94465 7.91554 8.10148 7.89908C8.25831 7.88262 8.40312 7.80749 8.50688 7.68875L12.5 3.125" stroke="#00C950" stroke-width="1.25" stroke-linecap="round"/>
+            <path d="M13.125 7.50002C13.125 8.67535 12.7569 9.82116 12.0723 10.7765C11.3877 11.7319 10.421 12.4488 9.30807 12.8266C8.19512 13.2044 6.99178 13.2241 5.86707 12.8829C4.74235 12.5417 3.75277 11.8568 3.0373 10.9243C2.32183 9.99182 1.91642 8.85865 1.87801 7.68395C1.8396 6.50925 2.17011 5.35203 2.82314 4.37481C3.47617 3.39759 4.41889 2.64947 5.51892 2.23553C6.61894 1.82159 7.82099 1.76262 8.95625 2.0669" stroke="#00C950" stroke-width="1.25" stroke-linecap="round"/>
+          </svg>
+        } @else {
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M7.5 13.75C10.9518 13.75 13.75 10.9518 13.75 7.5C13.75 4.04822 10.9518 1.25 7.5 1.25C4.04822 1.25 1.25 4.04822 1.25 7.5C1.25 10.9518 4.04822 13.75 7.5 13.75Z" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3.0625 3.0625L11.9375 11.9375" stroke="#EE3939" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        }
+      </button>
+    }
   </div>
 </app-card>
+
+<app-modal
+  [open]="showConfirmBlockModal()"
+  (closed)="closeConfirmBlockModal()"
+>
+  <div class="flex flex-col items-center text-center px-6 py-4">
+
+    @if (!hotel().isBlocked) {
+
+      <!-- Block -->
+      <img
+        src="assets/booking/block-img.svg"
+        alt="Block Hotel"
+        class="mb-4 h-40 w-auto object-contain"
+      />
+
+      <h2 class="text-2xl font-bold text-primary-text">
+        {{ 'BlockAccess' | translate }}
+      </h2>
+
+      <p class="mt-2 text-sm font-medium text-muted max-w-[260px]">
+        {{ 'blockmessage' | translate }}
+      </p>
+
+    } @else {
+
+      <!-- Unblock -->
+      <img
+        src="assets/booking/unblock-img.svg"
+        alt="Unblock Hotel"
+        class="mb-4 h-40 w-auto object-contain"
+      />
+
+      <h2 class="text-2xl font-bold text-primary-text">
+        {{ 'UnblockAccess' | translate }}
+      </h2>
+
+      <p class="mt-2 text-sm font-medium text-muted max-w-[260px]">
+        {{ 'unblockmessage' | translate }}
+      </p>
+
+    }
+
+    <!-- Buttons -->
+    <div class="mt-6 flex w-full gap-3">
+
+      <!-- Cancel -->
+      <button
+        type="button"
+        (click)="closeConfirmBlockModal()"
+        class="flex-1 rounded-lg border border-card-border bg-panel py-3 text-base font-semibold text-body transition hover:bg-hover"
+      >
+        {{ 'common.cancel' | translate }}
+      </button>
+       @if(hotel().isBlocked) {
+        <!-- Unblock -->
+        <button
+          type="button"
+          (click)="toggleBlockHotel()"
+          [disabled]="toggleLoading()"
+          class="flex-1 rounded-lg bg-primary py-3 text-base font-semibold text-white transition hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          @if (toggleLoading()) {
+            {{ 'common.loading' | translate }}
+          } @else {
+            {{ 'btnUnblock' | translate }}
+          }
+        </button>
+ }
+ @else{
+  <button
+        type="button"
+        (click)="toggleBlockHotel()"
+        [disabled]="toggleLoading()"
+        class="flex-1 rounded-lg bg-danger py-3 text-base font-semibold text-white transition hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        @if (toggleLoading()) {
+          {{ 'common.loading' | translate }}
+        } @else {
+          {{ 'btnBlock' | translate }}
+        }
+      </button>
+ }
+     
+    
+
+    </div>
+
+  </div>
+</app-modal>

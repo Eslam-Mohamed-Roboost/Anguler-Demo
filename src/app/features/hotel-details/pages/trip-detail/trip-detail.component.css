@@ -1,9 +1,0 @@
-:host {
-  display: block;
-  height: 100vh;
-  overflow: hidden;
-}
-
-::ng-deep body.trip-details-active {
-  overflow: auto !important;
-}

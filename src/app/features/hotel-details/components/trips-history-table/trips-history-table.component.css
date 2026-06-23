@@ -1,1 +1,8 @@
-/* Styles moved to Tailwind utility classes in the template */
+/* Keep the phone icon before the number in LTR and after it in RTL. */
+.phone-line {
+  direction: ltr;
+}
+
+:host-context([dir="rtl"]) .phone-line {
+  direction: rtl;
+}

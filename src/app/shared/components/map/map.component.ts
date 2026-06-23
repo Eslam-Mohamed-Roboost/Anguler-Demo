@@ -28,6 +28,9 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
 
+type LeafletModule = typeof import('leaflet');
+type LeafletImport = LeafletModule | { default: LeafletModule };
+
 @Component({
   selector: 'app-map',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,7 +65,7 @@ export class MapComponent {
   private readonly mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapEl');
   private mapInstance: LeafletMap | null = null;
   private markerInstance: LeafletMarker | null = null;
-  private leafletPromise: Promise<typeof import('leaflet')> | null = null;
+  private leafletPromise: Promise<LeafletImport> | null = null;
 
   constructor() {
     // Start loading Leaflet immediately (don't wait for DOM)
@@ -95,7 +98,7 @@ export class MapComponent {
   }
 
   private async initMap(): Promise<void> {
-    const L = await this.leafletPromise!;
+    const L = this.resolveLeafletModule(await this.leafletPromise!);
 
     const container = this.mapContainer()?.nativeElement;
     if (!container) return;
@@ -160,5 +163,13 @@ export class MapComponent {
     // Force resize — call twice to ensure tiles fill after layout settles
     map.invalidateSize();
     setTimeout(() => map.invalidateSize(), 200);
+  }
+
+  private resolveLeafletModule(leafletImport: LeafletImport): LeafletModule {
+    if ('map' in leafletImport) {
+      return leafletImport;
+    }
+
+    return leafletImport.default;
   }
 }

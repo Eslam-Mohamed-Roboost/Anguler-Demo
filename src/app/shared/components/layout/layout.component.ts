@@ -2,7 +2,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  inject,
   input,
   signal,
 } from '@angular/core';
@@ -17,7 +16,6 @@ import {
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { NavbarComponent } from '../navbar/navbar.component';
- 
 
 const ROUTE_ANIMATION = trigger('routeAnimation', [
   transition('* <=> *', [
@@ -44,15 +42,12 @@ const ROUTE_ANIMATION = trigger('routeAnimation', [
   styleUrl: './layout.component.css',
 })
 export class LayoutComponent {
- 
-
   /** Type of navbar to display: 'default' or 'booking' */
   readonly navbarStyle = input<'default' | 'booking'>('default');
 
   protected readonly sidebarOpen = signal(false);
+  protected readonly routeOutletVisible = signal(true);
 
-  /** Whether the user is authenticated (for booking navbar) */
- 
   toggleSidebar(): void {
     this.sidebarOpen.update((v) => !v);
   }

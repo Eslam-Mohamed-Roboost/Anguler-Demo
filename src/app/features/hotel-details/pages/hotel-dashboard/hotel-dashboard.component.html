@@ -1,0 +1,50 @@
+<div class="mx-auto h-full min-h-0 max-w-[1400px] overflow-y-auto overflow-x-hidden bg-page-bg px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="mb-4 flex flex-col gap-3 rounded-btn border border-status-cancelled bg-status-cancelled-bg px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <span class="text-sm text-status-cancelled">{{ error() }}</span>
+      <button class="text-cell font-medium text-status-cancelled border border-status-cancelled rounded-btn px-3 py-1 cursor-pointer bg-transparent hover:bg-status-cancelled-bg transition" type="button" (click)="refreshData()">{{ 'hotelDetails.retry' | translate }}</button>
+    </div>
+  }
+
+  <!-- Page Title -->
+  <h1 class="text-xl font-bold text-body mb-5">{{ 'hotelDetails.title' | translate }}</h1>
+
+  <!-- Statistics Grid -->
+  <section class="mb-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-sm:gap-2">
+      @for (stat of statistics(); track stat.label) {
+        <app-statistics-card [statistic]="stat" />
+      }
+    </div>
+  </section>
+
+  <!-- Info Banner -->
+  <div class="mb-5 flex items-center gap-2 rounded-btn border border-warning/30 bg-status-scheduled-bg px-4 py-3 text-cell text-status-scheduled" role="note">
+    <app-icon name="info" size="sm" aria-hidden="true" />
+    <span>{{ 'hotelDetails.payoutInfo' | translate }}</span>
+  </div>
+
+  <!-- Trips History Table -->
+  <section class="mb-6">
+    <app-trips-history-table
+      [trips]="filteredTrips()"
+      [hotels]="hotels()"
+      [loading]="loading()"
+      [searchQuery]="searchQuery()"
+      [totalTrips]="totalTrips()"
+      [totalHotels]="totalHotels()"
+      [currentPage]="currentPage()"
+      [pageSize]="pageSize()"
+      [statusOptions]="statusOptions()"
+      (searchChange)="onSearchChange($event)"
+      (tripAction)="onTripAction($event)"
+      (pageChange)="onPageChange($event)"
+      (sortChange)="onSortChange($event)"
+      (hotelSortChange)="onHotelSortChange($event)"
+      (filterChange)="onFilterChange($event)"
+      (tabChange)="onTabChange($event)"
+      (hotelAction)="onHotelAction($event)"
+    />
+  </section>
+</div>

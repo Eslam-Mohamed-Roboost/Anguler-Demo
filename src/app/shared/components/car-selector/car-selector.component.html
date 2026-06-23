@@ -1,31 +1,49 @@
-<div role="radiogroup" [attr.aria-label]="label()">
+<div [attr.role]="loading() ? undefined : 'radiogroup'" [attr.aria-label]="loading() ? undefined : label()">
   @if (label()) {
-    <p class="mb-2 text-sm font-medium text-gray-700">{{ label() }}</p>
+    <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ label() }}</p>
   }
-  <div class="grid grid-cols-3 gap-2 sm:grid-cols-6">
-    @for (car of options(); track car.id) {
-      <button
-        type="button"
-        role="radio"
-        (click)="selectCar(car.id)"
-        class="flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition"
-        [class]="selected() === car.id
-          ? 'border-primary bg-white shadow-sm'
-          : 'border-transparent hover:border-gray-200'"
-        [attr.aria-checked]="selected() === car.id"
-      >
-        <img [src]="car.image" [alt]="car.label" class="h-9 w-16 object-contain" />
-        <span
-          class="text-xs font-medium"
-          [class]="selected() === car.id ? 'text-primary' : 'text-gray-500'"
-        >{{ car.label }}</span>
-        @if (car.price != null) {
-          <span
-            class="text-[10px] font-semibold"
-            [class]="selected() === car.id ? 'text-primary' : 'text-gray-400'"
-          >{{ car.price }} EGP</span>
-        }
-      </button>
-    }
-  </div>
+
+  @if (loading()) {
+    <!-- Skeleton grid while vehicle types are loading -->
+    <div class="grid grid-cols-3 gap-2 sm:grid-cols-6" aria-hidden="true">
+      @for (_ of skeletonItems(); track $index) {
+        <div class="flex flex-col items-center gap-1 rounded-lg border-2 border-transparent p-2">
+          <div class="h-9 w-16 animate-pulse rounded bg-gray-200"></div>
+          <div class="h-3 w-10 animate-pulse rounded bg-gray-200"></div>
+          <div class="h-2.5 w-8 animate-pulse rounded bg-gray-100 dark:bg-gray-600"></div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      @for (car of options(); track car.id) {
+        <div class="relative">
+          <button
+            type="button"
+            role="radio"
+            (click)="selectCar(car.id)"
+            [disabled]="disabled()"
+            class="group flex w-full flex-col items-center gap-1 rounded-lg border-2 p-2 transition"
+            [class]="disabled()
+              ? selected() === car.id
+                ? 'border-2 border-primary shadow-md'
+                : 'border-2 border-gray-300 opacity-60 cursor-not-allowed'
+              : selected() === car.id
+                ? 'border-2 border-primary shadow-md'
+                : 'border-2 border-transparent hover:border-primary'"
+            [attr.aria-checked]="selected() === car.id"
+            [attr.aria-disabled]="disabled()"
+          >
+            <img [src]="car.image" [alt]="car.label" class="h-9 w-16 object-contain" />
+            <span
+              class="text-[10px] font-medium transition-colors"
+              [class]="selected() === car.id
+                ? 'text-primary font-bold'
+                : 'text-gray-500 group-hover:text-primary'"
+            >{{ car.label }}</span>
+          </button>
+        </div>
+      }
+    </div>
+  }
 </div>

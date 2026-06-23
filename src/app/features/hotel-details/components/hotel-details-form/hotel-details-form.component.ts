@@ -5,6 +5,7 @@ import {
   input,
   output,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { required, email, pattern } from '@angular/forms/signals';
 import type { SchemaPathTree } from '@angular/forms/signals';
 import { CardComponent } from '../../../../shared/components/card/card.component';
@@ -16,14 +17,15 @@ import type { HotelFormData } from '../../types/hotel-details.types';
 @Component({
   selector: 'app-hotel-details-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CardComponent, IconComponent, InputComponent],
+  imports: [CommonModule, CardComponent, IconComponent, InputComponent],
   templateUrl: './hotel-details-form.component.html',
   styleUrl: './hotel-details-form.component.css',
 })
 export class HotelDetailsFormComponent extends BaseFormComponent<HotelFormData> {
-  readonly initialData = input<Partial<HotelFormData>>();
-  readonly formSubmit = output<HotelFormData>();
-  readonly formCancel = output<void>();
+  initialData = input<Partial<HotelFormData>>();
+  loading = input(false);
+  formSubmit = output<HotelFormData>();
+  formCancel = output<void>();
 
   constructor() {
     super();

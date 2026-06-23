@@ -34,6 +34,8 @@ export type IconName =
   | 'search'
   | 'sun'
   | 'moon'
+  | 'theme-dark'
+  | 'monitor'
   | 'menu'
   | 'home'
   | 'users'
@@ -59,6 +61,7 @@ export type IconName =
   | 'phone'
   | 'mail'
   | 'map-pin'
+  | 'truck'
   | 'bank-notes'
   | 'dashboard'
   | 'car'
@@ -105,6 +108,11 @@ const ICON_PATHS: Record<string, string[]> = {
   ],
   moon: [
     'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z',
+  ],
+  monitor: [
+    'M3 5.25A2.25 2.25 0 0 1 5.25 3h13.5A2.25 2.25 0 0 1 21 5.25v9.5A2.25 2.25 0 0 1 18.75 17H5.25A2.25 2.25 0 0 1 3 14.75v-9.5Z',
+    'M8 21h8',
+    'M12 17v4',
   ],
   menu: ['M3 12h18M3 6h18M3 18h18'],
   home: [
@@ -211,6 +219,12 @@ const ICON_PATHS: Record<string, string[]> = {
     'M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
     'M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z',
   ],
+  truck: [
+    'M8 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z',
+    'M18 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z',
+    'M2 7h11v10H8m-6 0h4m7 0h3m4 0h2v-5l-3-5h-6',
+    'M16 7v5h6',
+  ],
   'bank-notes': [
     'M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z',
   ],
@@ -261,6 +275,7 @@ const SIZE_MAP: Record<string, string> = {
   sm: 'size-4',
   md: 'size-5',
   lg: 'size-6',
+  xl: 'size-12',
 };
 
 @Component({
@@ -275,9 +290,10 @@ const SIZE_MAP: Record<string, string> = {
 })
 export class IconComponent {
   readonly name = input.required<IconName>();
-  readonly size = input<'xs' | 'sm' | 'md' | 'lg'>('md');
+  readonly size = input<'xs' | 'sm' | 'md' | 'lg' | 'xl'>('md');
 
   protected readonly sizeClass = computed(() => SIZE_MAP[this.size()] ?? 'size-5');
   protected readonly paths = computed(() => ICON_PATHS[this.name()] ?? []);
   protected readonly isSpinner = computed(() => this.name() === 'spinner');
+  protected readonly isThemeDark = computed(() => this.name() === 'theme-dark');
 }

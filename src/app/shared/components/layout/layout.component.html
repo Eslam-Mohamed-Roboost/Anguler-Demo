@@ -1,11 +1,11 @@
-<div class="flex h-screen bg-gray-50 dark:bg-gray-900">
+<div class="flex h-dvh min-h-0 overflow-hidden bg-page-bg text-body">
   <!-- Sidebar -->
   @if (navbarStyle() === 'default') {
     <app-sidebar [open]="sidebarOpen()" (closed)="closeSidebar()" />
   }
 
   <!-- Main content area -->
-  <div class="flex flex-1 flex-col overflow-hidden">
+  <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
     <!-- Conditional navbar -->
     @if (navbarStyle() === 'default') {
       <app-navbar (menuToggle)="toggleSidebar()" />
@@ -16,12 +16,16 @@
 
     <!-- Main content -->
     @if (navbarStyle() === 'booking') {
-      <div class="flex-1 overflow-hidden font-sans">
-        <router-outlet />
+      <div class="min-h-0 min-w-0 flex-1 overflow-hidden font-sans">
+        @if (routeOutletVisible()) {
+          <router-outlet />
+        }
       </div>
     } @else {
-      <main id="main-content" class="flex-1 overflow-y-auto" @routeAnimation>
-        <router-outlet />
+      <main id="main-content" class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-page-bg" @routeAnimation>
+        @if (routeOutletVisible()) {
+          <router-outlet />
+        }
       </main>
     }
   </div>

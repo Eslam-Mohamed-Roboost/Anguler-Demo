@@ -12,13 +12,6 @@ import { ThemeService } from './core/services/theme.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, ToastComponent, SpinnerComponent, ConfirmDialogComponent],
   template: `
-    <a
-      href="#main-content"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:shadow"
-      i18n="@@app.skipNav"
-    >
-      Skip to main content
-    </a>
     <router-outlet />
     <app-toast />
     <app-spinner />

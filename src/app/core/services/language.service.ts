@@ -10,11 +10,13 @@ export class LanguageService {
 
   private readonly _lang = signal<Lang>('en');
   readonly lang = this._lang.asReadonly();
+  private readonly _refreshVersion = signal(0);
+  readonly refreshVersion = this._refreshVersion.asReadonly();
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       const saved = localStorage.getItem('lang') as Lang | null;
-      if (saved === 'en' || saved === 'ar') {
+      if (saved === 'en' || saved === 'ar' || saved === 'de') {
         this._lang.set(saved);
       }
     }
@@ -30,15 +32,22 @@ export class LanguageService {
     });
   }
 
-  translate(key: TranslationKey): string {
-    return TRANSLATIONS[this._lang()][key];
+  translate(key: TranslationKey | string): string {
+    const translations = TRANSLATIONS[this._lang()] as Record<string, string>;
+    return translations[key] ?? key;
   }
 
   setLang(lang: Lang): void {
+    if (this._lang() === lang) return;
+
     this._lang.set(lang);
+    this._refreshVersion.update((version) => version + 1);
   }
 
   toggleLang(): void {
-    this.setLang(this._lang() === 'en' ? 'ar' : 'en');
+    const current = this._lang();
+    if (current === 'en') this.setLang('ar');
+    else if (current === 'ar') this.setLang('de');
+    else this.setLang('en');
   }
 }

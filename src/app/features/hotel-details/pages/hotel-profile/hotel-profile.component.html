@@ -1,0 +1,463 @@
+<div class="mx-auto h-full min-h-0 max-w-[1400px] overflow-y-auto overflow-x-hidden bg-page-bg px-4 py-4 sm:px-5 sm:py-5 lg:px-8 lg:py-6">
+
+  <!-- Breadcrumb -->
+  <nav class="mb-4 flex flex-wrap items-center gap-1.5 text-cell" aria-label="Breadcrumb">
+    <a class="text-muted no-underline hover:text-body-soft hover:underline transition-colors" routerLink="/hotel-details">{{ 'hotelDetails.title' | translate }}</a>
+    <span class="text-muted-light" aria-hidden="true">/</span>
+    <span class="text-body font-medium">{{ 'hotelDetails.titlemain' | translate }} #{{ hotelId() }}</span>
+  </nav>
+
+  <!-- Error banner -->
+  @if (error()) {
+    <div class="mb-4 rounded-lg border border-status-cancelled/30 bg-status-cancelled-bg px-4 py-3 text-sm text-status-cancelled" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Hotel Info Card -->
+  <section class="mb-4">
+    @if (loading()) {
+      <div class="h-32 animate-pulse rounded-xl bg-gray-100"></div>
+    } @else {
+      <app-hotel-info-card
+        [hotel]="hotel()"
+        (deleteClick)="onHotelDelete()"
+      />
+    }
+  </section>
+
+  <!-- Statistics Grid -->
+  <section class="mb-4">
+    @if (loading()) {
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-md:gap-2">
+        @for (_ of [1,2,3,4,5,6,7,8]; track $index) {
+          <div class="h-24 animate-pulse rounded-xl bg-gray-100"></div>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-md:gap-2">
+        @for (stat of statistics(); track stat.label) {
+          <app-statistics-card [statistic]="stat" />
+        }
+      </div>
+    }
+  </section>
+
+  <!-- Hotel Details Form -->
+  <section class="mb-4">
+    @if (loading()) {
+      <div class="h-64 animate-pulse rounded-xl bg-gray-100"></div>
+    } @else {
+      <!-- <app-hotel-details-form
+        [initialData]="hotelFormData()"
+        [loading]="formLoading()"
+        (formSubmit)="onFormSubmit($event)"
+        (formCancel)="onFormCancel()"
+      /> -->
+      <app-card variant="elevated" class="mb-6">
+  <div class="flex items-center gap-2.5 mb-6">
+    <div class="size-7 bg-primary rounded-full flex items-center justify-center text-white shrink-0">
+      <app-icon name="home" size="sm" />
+    </div>
+    <h3 class="text-base font-semibold text-body max-sm:text-[15px]">{{ 'hotelDetails.titlemain' | translate }}</h3>
+  </div>
+
+  <div class="grid gap-5">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+      <div>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.hotelName' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="text"
+          [value]="hotel().name"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+
+      <div>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.address' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="text"
+          [value]="hotel().address"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+
+      <div>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.email' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="email"
+          [value]="hotel().email"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+      <div>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.phone' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="tel"
+          [value]="hotel().phone"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+
+      <div>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.code' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="text"
+          [value]="hotel().code"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+
+      <div>
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'hotelDetails.joiningDate' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="text"
+          [value]="hotelFormData().joiningDate"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+    </div>
+  </div>
+</app-card>
+
+    }
+  </section>
+
+  <!-- Withdrawal Details -->
+  <section class="mb-4">
+    @if (loading()) {
+      <div class="h-64 animate-pulse rounded-xl bg-gray-100"></div>
+    } @else {
+ 
+<app-card variant="elevated" class="mb-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between flex-wrap gap-3 mb-6 px-4 pt-4">
+    <div class="flex items-center gap-2.5">
+      <div class="size-7 bg-primary rounded-full flex items-center justify-center text-white shrink-0">
+        <app-icon name="bank-notes" size="sm" />
+      </div>
+      <h3 class="text-base font-semibold text-body max-sm:text-[15px]">{{ 'withdrawal.title' | translate }}</h3>
+    </div>
+    <div
+      class="rounded-lg px-3 py-1 text-sm font-semibold max-sm:text-cell"
+      [class]="settlementBadgeClass()"
+    >
+      {{ settlementBadgeLabel() }}
+    </div>
+  </div>
+
+  <form class="flex flex-col gap-5 px-4 pb-4">
+    <!-- Row 1: Account Holder Name | Bank Name -->
+    <div class="flex gap-5 items-start max-md:flex-col max-md:gap-4">
+      <div class="flex-1 min-w-0">
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'withdrawal.accountHolder' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="text"
+          [value]="withdrawalData().accountHolderName"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+         <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'withdrawal.bankName' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="text"
+          [value]="withdrawalData().bankName"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+    </div>
+
+    <!-- Row 2: IBAN | Swift Code / BIC -->
+    <div class="flex gap-5 items-start max-md:flex-col max-md:gap-4">
+      <div class="flex-1 min-w-0">
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'withdrawal.iban' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="text"
+          [value]="withdrawalData().iban"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ 'withdrawal.swiftCode' | translate }}</label>
+        <input
+          class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:border-orange-500"
+          type="text"
+          [value]="withdrawalData().swiftCode"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
+    </div>
+
+    <!-- Settle Balance Button at bottom right -->
+    @if (canSettlePayout()) {
+    <div class="flex justify-end pt-2">
+      <button
+        type="button"
+        (click)="openSettleConfirmModal()"
+        [disabled]="settleLoading()"
+        class="px-5 py-2 rounded-btn bg-warning text-white text-sm font-medium hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        [attr.aria-busy]="settleLoading()"
+      >
+        @if (settleLoading()) {
+          <span>{{ 'common.settling' | translate }}</span>
+        } @else {
+          <span>Settle Balance: {{ formatCurrency(awaitingAmount()) }}</span>
+        }
+      </button>
+    </div>
+    }
+  </form>
+</app-card>
+
+    }
+  </section>
+
+  <app-modal
+    [open]="showSettleConfirmModal()"
+    [closeOnBackdrop]="!settleLoading()"
+    (closed)="closeSettleConfirmModal()"
+  >
+    <div class="flex flex-col items-center px-2 pb-1 pt-2 text-center">
+      <div class="mb-4 flex size-14 items-center justify-center rounded-full bg-status-scheduled-bg text-warning">
+        <app-icon name="bank-notes" size="lg" aria-hidden="true" />
+      </div>
+      <h2 class="mb-2 text-xl font-bold text-body">
+        {{ 'settleConfirm.title' | translate }}
+      </h2>
+      <p class="max-w-[360px] text-sm leading-6 text-muted">
+        {{ 'settleConfirm.description' | translate }}
+      </p>
+      <div class="mt-5 w-full rounded-2xl border border-warning/30 bg-status-scheduled-bg px-4 py-3">
+        <p class="mb-1 text-xs font-medium text-muted">
+          {{ 'settleConfirm.amountLabel' | translate }}
+        </p>
+        <p class="text-2xl font-bold text-warning">
+          {{ awaitingAmountLabel() }}
+        </p>
+      </div>
+    </div>
+
+    <div modal-footer class="flex gap-3 px-4 pb-4 pt-2">
+      <button
+        type="button"
+        class="flex-1 rounded-xl border border-card-border bg-panel px-4 py-3 text-sm font-semibold text-body transition hover:bg-hover disabled:cursor-not-allowed disabled:opacity-60"
+        [disabled]="settleLoading()"
+        (click)="closeSettleConfirmModal()"
+      >
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button
+        type="button"
+        class="flex-1 rounded-xl bg-warning px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+        [disabled]="settleLoading()"
+        [attr.aria-busy]="settleLoading()"
+        (click)="settlePayouts()"
+      >
+        @if (settleLoading()) {
+          <span>{{ 'common.settling' | translate }}</span>
+        } @else {
+          <span>{{ 'settleConfirm.confirmButton' | translate }}</span>
+        }
+      </button>
+    </div>
+  </app-modal>
+
+  <!-- Trips History -->
+  <section class="mb-4">
+    <app-card variant="elevated">
+      <!-- Section Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 px-4 pt-4 max-xl:flex-col max-xl:items-start">
+        <div class="flex items-center gap-2.5">
+          <div class="flex items-center justify-center size-8 rounded-full bg-icon-circle-bg text-icon-circle shrink-0">
+            <app-icon name="calendar" size="sm" aria-hidden="true" />
+          </div>
+          <h3 class="text-[15px] font-semibold text-body m-0"> {{ 'riderHistory.title' | translate }}</h3>
+        </div>
+
+        <div class="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center xl:w-auto">
+          <div class="relative flex min-w-0 flex-1 items-center sm:min-w-[220px]">
+            <app-icon name="search" class="absolute start-3 text-muted-light z-[1] pointer-events-none" size="sm" aria-hidden="true" />
+            <input
+              class="w-full py-[7px] ps-8 pe-3 border border-card-border rounded-btn text-cell text-body-soft bg-white outline-none focus:border-warning focus:ring-2 focus:ring-warning/10"
+              type="text"
+              placeholder="{{ 'Search' | translate }}"
+              [value]="searchQuery()"
+              (input)="onSearchChange($event)"
+              aria-label="Search trips"
+            />
+          </div>
+          <div
+            class="relative flex items-center gap-1.5 rounded-btn border border-card-border bg-panel px-3.5 py-[7px] text-cell font-medium text-body-soft transition hover:bg-hover whitespace-nowrap"
+          >
+            <app-icon name="filter" size="sm" aria-hidden="true" />
+            <span>{{ 'filter.Filter' | translate }}</span>
+            <select
+              class="absolute inset-0 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+              [value]="selectedStatus()"
+              [disabled]="statusesLoading()"
+              (change)="onStatusChange($event)"
+              [attr.aria-label]="'hotelTrip.statusFilter' | translate"
+            >
+              <option value="">{{ 'hotelTrip.allStatuses' | translate }}</option>
+              @for (status of statusOptions(); track status.id) {
+                <option [value]="status.name">{{ statusTranslationKey(status.name) | translate }}</option>
+              }
+            </select>
+          </div>
+          <!-- <button class="flex items-center gap-1.5 rounded-btn border border-card-border bg-panel px-3.5 py-[7px] text-cell font-medium text-body-soft transition hover:bg-hover whitespace-nowrap" type="button">
+            <app-icon name="download" size="sm" aria-hidden="true" />
+            <span>Export</span>
+          </button> -->
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="px-4 py-3 overflow-x-auto">
+        @if (tripsLoading()) {
+          <div class="space-y-2 py-2" aria-hidden="true">
+            @for (_ of [1,2,3,4,5]; track $index) {
+              <div class="h-12 animate-pulse rounded-lg bg-gray-100"></div>
+            }
+          </div>
+        }
+        <app-data-table
+          [data]="filteredTrips()"
+          [columns]="columns()"
+          ariaLabel="Hotel trips history"
+          trackByKey="id"
+        >
+          <ng-template cellDef="tripId" let-row>
+            <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.tripCode ?? '--' }}</span>
+          </ng-template>
+
+          <!-- Guest Name Cell -->
+          <ng-template cellDef="guestName" let-row>
+            <div class="flex flex-col items-start gap-0.5 text-left">
+              <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.customerName }}</span>
+              @if (row.room) {
+                <span class="text-xs text-muted">{{ row.room }}</span>
+              }
+            </div>
+          </ng-template>
+
+          <!-- Driver Name Cell -->
+          <ng-template cellDef="driverName" let-row>
+            <div class="flex flex-col items-start gap-0.5 text-left">
+              <span class="text-cell font-medium text-body max-sm:text-xs">{{ row.driverName ?? '--' }}</span>
+              @if (row.driverPhoneNumber) {
+                <span class="inline-flex items-center gap-1 text-xs text-muted" dir="ltr">
+                  <svg class="size-3 shrink-0" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M4.751 2.1285C4.67679 1.94303 4.54873 1.78404 4.38333 1.67202C4.21793 1.56 4.02276 1.50009 3.823 1.5H2.4475C2.19621 1.5 1.95521 1.59983 1.77752 1.77752C1.59983 1.95521 1.5 2.19621 1.5 2.4475C1.5 6.8945 5.105 10.5 9.553 10.5C9.80421 10.4999 10.0451 10.4 10.2227 10.2223C10.4002 10.0446 10.5 9.80371 10.5 9.5525V8.177C10.5 7.97715 10.4401 7.78188 10.3281 7.61638C10.2161 7.45088 10.057 7.32274 9.8715 7.2485L8.5535 6.7215C8.38613 6.65452 8.20377 6.63403 8.02571 6.66219C7.84766 6.69036 7.68052 6.76613 7.542 6.8815L7.202 7.1655C7.01026 7.32547 6.76561 7.40792 6.51616 7.39663C6.26671 7.38534 6.03051 7.28113 5.854 7.1045L4.896 6.145C4.71957 5.96861 4.61545 5.73264 4.60407 5.48342C4.59269 5.2342 4.67488 4.98973 4.8345 4.798L5.118 4.458C5.23362 4.31952 5.30963 4.15235 5.33798 3.97419C5.36632 3.79603 5.34594 3.61352 5.279 3.446L4.751 2.1285Z" stroke="#5B738B" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  {{ row.driverPhoneNumber }}
+                </span>
+              }
+            </div>
+          </ng-template>
+
+          <!-- Route Cell -->
+          <ng-template cellDef="route" let-row>
+            <div class="flex flex-col items-start gap-1 text-left">
+              <div class="flex items-center justify-start gap-1.5">
+                <span class="inline-block size-2 rounded-full shrink-0 bg-status-completed" aria-hidden="true"></span>
+                <span class="text-cell text-body-soft">{{ row.pickupLocation }}</span>
+              </div>
+              <div class="flex items-center justify-start gap-1.5">
+                <span class="inline-block size-2 rounded-full shrink-0 bg-status-cancelled" aria-hidden="true"></span>
+                <span class="text-cell text-body-soft">{{ row.dropoffLocation }}</span>
+              </div>
+            </div>
+          </ng-template>
+
+          <!-- Request Status Cell -->
+          <ng-template cellDef="requestStatus" let-row>
+            <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium capitalize max-sm:px-2 max-sm:text-2xs"
+                  [class]="statusColorClass(row.requestStatusKey)">
+              {{ statusTranslationKey(row.requestStatus) | translate }}
+            </span>
+          </ng-template>
+
+          <!-- Trip Status Cell -->
+          <ng-template cellDef="tripStatus" let-row>
+            <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium capitalize max-sm:px-2 max-sm:text-2xs"
+                  [class]="statusColorClass(row.tripStatusKey)">
+              {{ statusTranslationKey(row.tripStatus) | translate }}
+            </span>
+          </ng-template>
+
+          <!-- Fare Cell -->
+          <ng-template cellDef="fare" let-row>
+            <div class="flex flex-col items-start gap-0.5 text-left">
+              <span class="text-cell font-medium text-body max-sm:text-xs">{{ formatCurrency(row.price) }}</span>
+              @if (row.commission != null) {
+                <span class="text-xs text-muted">Comm.: {{ row.commission.toFixed(2) }}</span>
+              }
+            </div>
+          </ng-template>
+
+          <!-- Start/End Date Cell -->
+          <ng-template cellDef="startEndDate" let-row>
+            <div class="flex flex-col items-start gap-0.5 text-left">
+              <span class="text-cell font-medium text-body max-sm:text-xs">{{ formatDate(row.date) }}</span>
+              <span class="text-xs text-muted">
+                @if (row.endDate) {
+                  {{ formatDate(row.endDate) }}
+                } @else {
+                  {{ 'admin.pendingRequests.requestedAt' | translate }}: {{ formatDate(row.requestedAt) }}
+                }
+              </span>
+            </div>
+          </ng-template>
+
+          <!-- Actions Cell -->
+          <ng-template cellDef="actions" let-row>
+            <a
+              class="flex items-center justify-center size-[30px] rounded-btn cursor-pointer transition border-none bg-status-completed-bg text-status-completed hover:bg-green-100"
+              [routerLink]="['/hotel-details', routeHotelId(), 'trip', row.id]"
+              aria-label="View trip details"
+            >
+              <app-icon name="eye" size="sm" aria-hidden="true" />
+            </a>
+          </ng-template>
+        </app-data-table>
+      </div>
+
+      <!-- Pagination -->
+      @if (totalTrips() > pageSize()) {
+        <div class="px-4 pb-4">
+          <app-pagination
+            [currentPage]="currentPage()"
+            [totalItems]="totalTrips()"
+            [pageSize]="pageSize()"
+            (pageChange)="onPageChange($event)"
+          />
+        </div>
+      } @else {
+        <div class="h-5" aria-hidden="true"></div>
+      }
+    </app-card>
+  </section>
+
+</div>

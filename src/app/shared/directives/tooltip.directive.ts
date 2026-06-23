@@ -42,7 +42,7 @@ export class TooltipDirective implements OnDestroy {
     const tooltip = document.createElement('div');
     tooltip.textContent = this.appTooltip();
     tooltip.className =
-      'fixed z-[9999] rounded bg-gray-900 px-2 py-1 text-xs text-white shadow-lg pointer-events-none dark:bg-gray-700 whitespace-nowrap transition-opacity duration-150';
+      'fixed z-[9999] rounded bg-surface-dark px-2 py-1 text-xs text-white shadow-lg pointer-events-none whitespace-nowrap transition-opacity duration-150';
     tooltip.style.opacity = '0';
     tooltip.setAttribute('role', 'tooltip');
 

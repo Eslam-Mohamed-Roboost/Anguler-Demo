@@ -1,0 +1,82 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-3 sm:p-4">
+  <div class="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-md flex-col rounded-2xl bg-panel text-body shadow-xl sm:max-h-[90dvh]">
+    <!-- Header -->
+    <div class="flex items-center justify-between gap-3 border-b border-divider px-4 py-4 sm:px-6 sm:py-5">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-blue-light flex items-center justify-center text-blue">
+          <span class="text-lg font-bold">%</span>
+        </div>
+        <h2 class="text-xl font-bold text-body">{{ 'hotel.commission' | translate }}</h2>
+      </div>
+      <button
+        type="button"
+        (click)="onClose()"
+        class="text-muted hover:text-body transition"
+        [attr.aria-label]="'common.close' | translate"
+      >
+        <app-icon name="x-circle" size="md" />
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
+      <!-- Info Banner -->
+      <div class="flex gap-3 p-4 rounded-lg bg-blue-light border border-blue/30 mb-6">
+        <app-icon name="info" size="sm" class="text-blue shrink-0 mt-0.5" />
+        <p class="text-sm text-blue leading-relaxed">
+          {{ 'commission.info' | translate }}
+        </p>
+      </div>
+
+      <!-- Form -->
+      <form class="space-y-5">
+        <!-- Commission Input -->
+        <div>
+          <label for="commission" class="block text-sm font-medium text-body mb-2">
+            {{ 'GeneralCommission' | translate }}
+          </label>
+          <div class="relative">
+            <input
+              id="commission"
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              [value]="commission()"
+              (change)="onCommissionChange($event)"
+              [disabled]="loading() || saving()"
+              class="w-full px-4 py-3 rounded-lg border border-card-border bg-input-bg text-body placeholder:text-muted-light focus:border-primary focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-disabled disabled:text-muted disabled:cursor-not-allowed transition"
+              [placeholder]="'commission.placeholder' | translate"
+              [attr.aria-label]="'commission.percentage' | translate"
+            />
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none">
+              %
+            </span>
+          </div>
+          <p class="text-xs text-muted mt-1.5">
+            {{ 'commission.value' | translate }}: <span class="font-semibold text-body">{{ commission() }}%</span>
+          </p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex flex-shrink-0 gap-3 border-t border-divider bg-input-bg px-4 py-4 sm:px-6 sm:py-5">
+   
+      <button
+        type="button"
+        (click)="saveChanges()"
+        [disabled]="loading() || saving()"
+        class="flex-1 px-4 py-3.5 rounded-lg bg-primary text-white font-bold text-base hover:brightness-95 disabled:bg-disabled disabled:text-muted disabled:cursor-not-allowed transition"
+      >
+        @if (loading()) {
+          {{ 'common.loading' | translate }}
+        } @else if (saving()) {
+          {{ 'common.saving' | translate }}
+        } @else {
+          {{ 'hotelDetails.saveChanges' | translate }}
+        }
+      </button>
+    </div>
+  </div>
+</div>

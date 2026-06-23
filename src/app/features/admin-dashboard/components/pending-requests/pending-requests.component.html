@@ -1,0 +1,95 @@
+<div class="flex min-w-0 flex-col gap-4">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <h2 class="text-lg font-semibold text-body">{{ 'admin.pendingRequests.title' | translate }}</h2>
+    <button
+      type="button"
+      (click)="showCommissionsModal.set(true)"
+      class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary-dark sm:w-auto"
+      aria-label="Set global commission"
+    >
+      <span>%</span>
+      <span>Set Commission</span>
+    </button>
+  </div>
+
+  <app-data-table
+    [data]="items()"
+    [columns]="columns"
+    trackByKey="tripRequestId"
+    [loading]="loading()"
+    [attr.aria-label]="'admin.pendingRequests.tableLabel' | translate"
+  >
+    <!-- Route -->
+    <ng-template cellDef="route" let-row>
+      <div class="flex flex-col gap-0.5 text-xs">
+        <span class="flex items-center gap-1">
+          <span class="inline-block size-2 rounded-full bg-emerald-500"></span>
+          {{ row.startLocation?.address }}
+        </span>
+        <span class="flex items-center gap-1">
+          <span class="inline-block size-2 rounded-full bg-red-500"></span>
+          {{ row.endLocation?.address }}
+        </span>
+      </div>
+    </ng-template>
+
+    <!-- Requested At -->
+    <ng-template cellDef="requestedAt" let-row>
+      <span class="text-xs text-gray-600">{{ formatDate(row.requestedAt) }}</span>
+    </ng-template>
+
+    <!-- Actions: assign driver inline -->
+    <ng-template cellDef="actions" let-row>
+      <div class="flex min-w-[300px] flex-wrap items-center gap-2">
+        <select
+          class="min-w-36 flex-1 rounded-lg border border-gray-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 disabled:opacity-50"
+          [value]="assignDriverId()[row.tripRequestId]"
+          [disabled]="driversLoading()"
+          (change)="setDriverId(row.tripRequestId, $any($event.target).value)"
+          [attr.aria-label]="'Select driver for trip ' + row.tripRequestId"
+        >
+          <option value="" disabled>
+            @if (driversLoading()) { Loading… } @else { Select driver }
+          </option>
+          @for (driver of drivers(); track driver.driverId) {
+            <option [value]="driver.driverId">{{ driver.fullName }}</option>
+          }
+        </select>
+        <button
+          type="button"
+          (click)="assignDriver(row.tripRequestId)"
+          [disabled]="assignLoading() === row.tripRequestId || !assignDriverId()[row.tripRequestId]"
+          class="flex items-center gap-1 rounded-lg bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary-dark disabled:opacity-50"
+        >
+          @if (assignLoading() === row.tripRequestId) {
+            <span class="size-3 animate-spin rounded-full border-2 border-white/40 border-t-white block"></span>
+          } @else {
+            <app-icon name="check" size="xs" />
+          }
+          {{ 'admin.pendingRequests.assign' | translate }}
+        </button>
+        <a
+          [routerLink]="['/admin/trip', row.tripRequestId]"
+          class="flex size-7 items-center justify-center rounded-full text-primary transition hover:bg-hover"
+          [attr.aria-label]="'admin.pendingRequests.viewTripDetails' | translate"
+        >
+          <app-icon name="eye" size="sm" />
+        </a>
+      </div>
+    </ng-template>
+  </app-data-table>
+
+  <app-pagination
+    [currentPage]="currentPage()"
+    [totalItems]="totalItems()"
+    [pageSize]="pageSize()"
+    (pageChange)="onPageChange($event)"
+  />
+
+  <!-- Hotels Commissions Modal -->
+  @if (showCommissionsModal()) {
+    <app-hotels-commissions
+      (closeClick)="showCommissionsModal.set(false)"
+    />
+  }
+</div>

@@ -4,8 +4,12 @@ import type { HttpInterceptorFn } from '@angular/common/http';
  import { environment } from '../../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // Only attach token for requests going to our API
-  if (!req.url.startsWith(environment.apiUrl)) {
+  // Only attach token for requests going to our APIs (main or admin)
+  const isOurApi =
+    req.url.startsWith(environment.apiUrl) ||
+    req.url.startsWith(environment.adminApiUrl);
+
+  if (!isOurApi) {
     return next(req);
   }
 

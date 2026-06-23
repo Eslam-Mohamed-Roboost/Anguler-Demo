@@ -60,7 +60,7 @@ export class SkeletonDirective {
     const count = this.appSkeletonCount();
     for (let i = 0; i < count; i++) {
       const el = this.renderer.createElement('div') as HTMLElement;
-      el.className = 'animate-pulse rounded bg-gray-200 dark:bg-gray-700';
+      el.className = 'animate-pulse rounded bg-skeleton';
       el.style.width = this.appSkeletonWidth();
       el.style.height = this.appSkeletonHeight();
       if (i > 0) el.style.marginTop = '0.5rem';
