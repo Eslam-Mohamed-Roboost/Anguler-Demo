@@ -7,15 +7,16 @@
       [zoom]="13"
       height="100%"
       tileStyle="voyager"
-      [interactive]="false"
+      [interactive]="true"
+      [showMarker]="false"
     />
   </div>
 
   <!-- Content overlay — scrollable on mobile, fixed on desktop -->
-  <div class="relative z-10 flex h-full flex-col overflow-y-auto p-3 sm:p-5 lg:p-8 xl:flex-row xl:items-start xl:justify-between xl:overflow-hidden xl:p-10">
+  <div class="pointer-events-none relative z-10 flex h-full flex-col overflow-y-auto p-3 sm:p-5 lg:p-8 xl:flex-row xl:items-start xl:justify-between xl:overflow-hidden xl:p-10">
 
     <!-- ═══════ LEFT COLUMN — Form + Bottom bar ═══════ -->
-    <div class="mt-5 w-full shrink-0 space-y-2 sm:space-y-3 xl:max-w-[520px]">
+    <div class="pointer-events-auto mt-5 w-full shrink-0 space-y-2 sm:space-y-3 xl:max-w-[520px]">
 
       <!-- ── Booking form card ── -->
       <app-card variant="booking" bodyClass="space-y-3 sm:space-y-4 lg:space-y-5" [showHeader]="false">
@@ -195,7 +196,7 @@
     </div>
 
     <!-- ═══════ Weather widget ═══════ -->
-    <div class="order-first mb-2 mt-5 self-end sm:mb-0 xl:order-none xl:self-auto">
+    <div class="pointer-events-auto order-first mb-2 mt-5 self-end sm:mb-0 xl:order-none xl:self-auto">
       <app-weather-widget [lat]="weatherLat()" [lng]="weatherLng()" />
     </div>
   </div>

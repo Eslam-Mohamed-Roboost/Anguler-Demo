@@ -56,6 +56,9 @@ export class MapComponent {
   /** Whether the map is interactive (dragging, zooming, scrolling). Defaults to true. */
   readonly interactive = input(true);
 
+  /** Whether to render a marker at the center. Defaults to true. */
+  readonly showMarker = input(true);
+
   /** Emitted when map is ready with the Leaflet map instance */
   readonly mapReady = output<unknown>();
 
@@ -148,8 +151,10 @@ export class MapComponent {
     });
     L.Marker.prototype.options.icon = iconDefault;
 
-    // Add a marker at center
-    this.markerInstance = L.marker([lat, lng]).addTo(map);
+    // Add a marker at center (opt-out via showMarker for plain background maps)
+    if (this.showMarker()) {
+      this.markerInstance = L.marker([lat, lng]).addTo(map);
+    }
 
     // Emit center changes on map move
     map.on('moveend', () => {
