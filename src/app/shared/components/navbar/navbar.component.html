@@ -53,7 +53,7 @@
     <!-- Theme toggle -->
     <button
       type="button"
-      (click)="themeService.cycleTheme()"
+      (click)="themeService.toggleTheme()"
       class="flex size-10 shrink-0 items-center justify-center rounded-full border bg-panel text-primary transition focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-page-bg"
       [class]="themeSwitchClass()"
       [appTooltip]="themeService.themeTooltip()"
