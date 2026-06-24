@@ -54,13 +54,13 @@
     <button
       type="button"
       (click)="themeService.toggleTheme()"
-      class="flex size-10 shrink-0 items-center justify-center rounded-full border bg-panel text-primary transition focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-page-bg"
+      class="flex size-9 shrink-0 items-center justify-center rounded-full border bg-panel text-primary transition focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-page-bg sm:size-10"
       [class]="themeSwitchClass()"
       [appTooltip]="themeService.themeTooltip()"
       aria-label="Toggle theme"
       i18n-aria-label="@@nav.toggleTheme"
     >
-      <app-icon [name]="themeService.themeIcon()" size="lg" />
+      <app-icon class="size-full" [name]="themeService.themeIcon()" size="full" />
     </button>
 
     <!-- Auth info -->

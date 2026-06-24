@@ -228,6 +228,7 @@ const SIZE_MAP: Record<string, string> = {
   md: 'size-5',
   lg: 'size-6',
   xl: 'size-12',
+  full: 'size-full',
 };
 
 @Component({
@@ -242,7 +243,7 @@ const SIZE_MAP: Record<string, string> = {
 })
 export class IconComponent {
   readonly name = input.required<IconName>();
-  readonly size = input<'xs' | 'sm' | 'md' | 'lg' | 'xl'>('md');
+  readonly size = input<'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>('md');
 
   protected readonly sizeClass = computed(() => SIZE_MAP[this.size()] ?? 'size-5');
   protected readonly paths = computed(() => ICON_PATHS[this.name()] ?? []);
