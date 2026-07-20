@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - lines-admin
-
+      - lines-responsive
 env:
   IMAGE_NAME: triplines/trip-line-admin
   PROJECT_LABEL: Trip Line Admin
