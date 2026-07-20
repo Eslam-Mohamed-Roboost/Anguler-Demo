@@ -9,6 +9,8 @@
 export const environment = {
   production: false,
   apiUrl: 'https://api-dev.lines-trips.com/api',
+  ImageUrl: 'https://api-dev.lines-trips.com',
+
   adminApiUrl: 'https://api-admin-dev.lines-trips.com/api',
   chatApiUrl: 'https://api-dev.lines-trips.com/chat',
   /** OpenWeatherMap API key — get a free key at https://openweathermap.org/api */

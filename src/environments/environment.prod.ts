@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  ImageUrl: 'https://api-dev.lines-trips.com',
   apiUrl: 'https://api-dev.lines-trips.com/api',
   adminApiUrl: 'https://api-admin-dev.lines-trips.com/api',
   chatApiUrl: 'https://api-dev.lines-trips.com/chat',

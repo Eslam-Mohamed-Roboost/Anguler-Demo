@@ -256,14 +256,14 @@ export class BookingComponent extends BaseComponent {
     });
   }
    private static readonly fallbackImages: Record<string, string> = {
-    classic:  `${environment.apiUrl}/uploads/vehicle-documents/car-taxi.webp`,
-    sport:    `${environment.apiUrl}/uploads/vehicle-documents/car-premium.webp`,
-    van:      `${environment.apiUrl}/uploads/vehicle-documents/car-van.webp`,
-    comfort:  `${environment.apiUrl}/uploads/vehicle-documents/car-comfort.webp`,
-    pet:      `${environment.apiUrl}/uploads/vehicle-documents/car-pet.webp`,
-    kids:     `${environment.apiUrl}/uploads/vehicle-documents/car-kids.webp`,
-    taxi:     `${environment.apiUrl}/uploads/vehicle-documents/car-taxi.webp`,
-    premium:  `${environment.apiUrl}/uploads/vehicle-documents/car-premium.webp`,
+    classic:  `${environment.ImageUrl}/uploads/vehicle-documents/car-taxi.webp`,
+    sport:    `${environment.ImageUrl}/uploads/vehicle-documents/car-premium.webp`,
+    van:      `${environment.ImageUrl}/uploads/vehicle-documents/car-van.webp`,
+    comfort:  `${environment.ImageUrl}/uploads/vehicle-documents/car-comfort.webp`,
+    pet:      `${environment.ImageUrl}/uploads/vehicle-documents/car-pet.webp`,
+    kids:     `${environment.ImageUrl}/uploads/vehicle-documents/car-kids.webp`,
+    taxi:     `${environment.ImageUrl}/uploads/vehicle-documents/car-taxi.webp`,
+    premium:  `${environment.ImageUrl}/uploads/vehicle-documents/car-premium.webp`,
   };
   private loadVehicleTypes(km: number, latitude?: number, longitude?: number): void {
     const requestKey = `${km}:${latitude ?? ''}:${longitude ?? ''}`;
@@ -277,7 +277,7 @@ export class BookingComponent extends BaseComponent {
         if (result.isSuccess && result.data) {
           const options: CarOption[] = result.data.map(v => {
             const key = v.name.toLowerCase().split(' ')[0];
-            const image = BookingComponent.fallbackImages[key] ?? `${environment.apiUrl}/uploads/vehicle-documents/car-taxi.webp`;
+            const image = BookingComponent.fallbackImages[key] ?? `${environment.ImageUrl}/uploads/vehicle-documents/car-taxi.webp`;
             const price = v.expectedPriceAfterDiscount ?? v.expectedPrice;
             return { id: v.id, label: v.name, image, price, estimatedMinutes: v.estimatedTimeInMinutes };
           });
@@ -1282,7 +1282,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       isScheduled,
       scheduledAt,
       vehicleTypeId: this.selectedCar(),
-      paymentMethodId: '168ac692-3a98-8cb0-8934-019b1e8abaa8',
+      paymentMethodId:null, //'168ac692-3a98-8cb0-8934-019b1e8abaa8',
       userRewardId: null,
       paymentMethodType: 0,
       roomNumber: parseInt(roomNo, 10) || 0,
