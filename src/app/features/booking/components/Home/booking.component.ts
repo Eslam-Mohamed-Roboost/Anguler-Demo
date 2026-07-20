@@ -51,6 +51,7 @@ import {
   LocationSelection,
 } from '../services/google-maps-loader.service';
 import { LocationPickerComponent } from '../location-picker/location-picker.component';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-booking',
@@ -254,16 +255,15 @@ export class BookingComponent extends BaseComponent {
       }
     });
   }
-
-  private static readonly fallbackImages: Record<string, string> = {
-    classic:  'https://api.lines-trips.com/uploads/vehicle-documents/car-taxi.webp',
-    sport:    'https://api.lines-trips.com/uploads/vehicle-documents/car-premium.webp',
-    van:      'https://api.lines-trips.com/uploads/vehicle-documents/car-van.webp',
-    comfort:  'https://api.lines-trips.com/uploads/vehicle-documents/car-comfort.webp',
-    pet:      'https://api.lines-trips.com/uploads/vehicle-documents/car-pet.webp',
-    kids:     'https://api.lines-trips.com/uploads/vehicle-documents/car-kids.webp',
-    taxi:     'https://api.lines-trips.com/uploads/vehicle-documents/car-taxi.webp',
-    premium:  'https://api.lines-trips.com/uploads/vehicle-documents/car-premium.webp',
+   private static readonly fallbackImages: Record<string, string> = {
+    classic:  `${environment.apiUrl}/uploads/vehicle-documents/car-taxi.webp`,
+    sport:    `${environment.apiUrl}/uploads/vehicle-documents/car-premium.webp`,
+    van:      `${environment.apiUrl}/uploads/vehicle-documents/car-van.webp`,
+    comfort:  `${environment.apiUrl}/uploads/vehicle-documents/car-comfort.webp`,
+    pet:      `${environment.apiUrl}/uploads/vehicle-documents/car-pet.webp`,
+    kids:     `${environment.apiUrl}/uploads/vehicle-documents/car-kids.webp`,
+    taxi:     `${environment.apiUrl}/uploads/vehicle-documents/car-taxi.webp`,
+    premium:  `${environment.apiUrl}/uploads/vehicle-documents/car-premium.webp`,
   };
   private loadVehicleTypes(km: number, latitude?: number, longitude?: number): void {
     const requestKey = `${km}:${latitude ?? ''}:${longitude ?? ''}`;
@@ -277,7 +277,7 @@ export class BookingComponent extends BaseComponent {
         if (result.isSuccess && result.data) {
           const options: CarOption[] = result.data.map(v => {
             const key = v.name.toLowerCase().split(' ')[0];
-            const image = BookingComponent.fallbackImages[key] ?? 'https://api.lines-trips.com/uploads/vehicle-documents/car-taxi.webp';
+            const image = BookingComponent.fallbackImages[key] ?? `${environment.apiUrl}/uploads/vehicle-documents/car-taxi.webp`;
             const price = v.expectedPriceAfterDiscount ?? v.expectedPrice;
             return { id: v.id, label: v.name, image, price, estimatedMinutes: v.estimatedTimeInMinutes };
           });
