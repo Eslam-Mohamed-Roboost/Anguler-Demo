@@ -352,7 +352,6 @@ export class NavbarBookingComponent extends BaseComponent implements OnInit {
   }
 
   protected logout(): void {
-    this.loginService.clearSession();
     this.coreAuth.logout();
     this.closeProfileDropdown();
     this.router.navigate(['/home']);

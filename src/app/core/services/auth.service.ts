@@ -4,6 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
+import { LoginService } from '../../features/booking/components/services/login.service';
 import { Result } from '../models/result.model';
 
 export interface AuthUser {
@@ -45,6 +46,7 @@ interface LoginResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(ApiService);
+  private readonly loginService = inject(LoginService);
   private readonly platformId = inject(PLATFORM_ID);
 
   private readonly _user = signal<AuthUser | null>(null);
@@ -160,6 +162,7 @@ export class AuthService {
     );
   }
 
+  /** Single exit point for a session — clears core auth state and the booking login keys. */
   logout(): void {
     this._token.set(null);
     this._user.set(null);
@@ -168,6 +171,7 @@ export class AuthService {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');
       localStorage.removeItem('auth_profile');
+      this.loginService.clearSession();
     }
   }
 

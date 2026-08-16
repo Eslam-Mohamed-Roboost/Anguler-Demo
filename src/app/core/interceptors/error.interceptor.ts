@@ -1,26 +1,62 @@
 // Centralized API error handling — maps HTTP errors to user-friendly messages
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { NotificationStore } from '../stores/notification.store';
+import { AuthService } from '../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { SKIP_ERROR_NOTIFICATION } from '../tokens/skip-error-notification.token';
 
+// A 401 from these means "wrong credentials", not "expired session"
+const CREDENTIAL_ENDPOINTS = ['/users/login', '/users/reset-password', '/users/change-password'];
+
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const notifications = inject(NotificationStore);
+  // AuthService issues requests from its own constructor, so it is resolved
+  // lazily on failure instead of eagerly here (circular dependency otherwise).
+  const injector = inject(Injector);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       const endpoint = req.urlWithParams;
       console.error('API Error:', { endpoint, error });
-      if (!req.context.get(SKIP_ERROR_NOTIFICATION)) {
-        const message = withDevelopmentEndpoint(getErrorMessage(error), endpoint);
-        notifications.showError(message);
+
+      // Ends the session at most once, even when several requests fail together
+      const sessionEnded = error.status === 401 && endExpiredSession(injector, req.url);
+
+      if (sessionEnded) {
+        notifications.showError(withDevelopmentEndpoint(mapErrorMessage(error.status), endpoint));
+      } else if (!req.context.get(SKIP_ERROR_NOTIFICATION)) {
+        notifications.showError(withDevelopmentEndpoint(getErrorMessage(error), endpoint));
       }
+
       return throwError(() => error);
     }),
   );
 };
+
+/**
+ * Clears the stored session and sends the user home with the sign-in modal open.
+ * Returns `false` — leaving the error to the generic handler — when the 401 is
+ * not a session expiry: foreign hosts, credential checks, or no session at all.
+ */
+function endExpiredSession(injector: Injector, url: string): boolean {
+  if (!isOwnApi(url)) return false;
+  if (CREDENTIAL_ENDPOINTS.some((endpoint) => url.includes(endpoint))) return false;
+
+  const authService = injector.get(AuthService);
+  if (!authService.isAuthenticated()) return false;
+
+  authService.logout();
+  injector.get(Router).navigate(['/home'], { queryParams: { signin: '1' } });
+
+  return true;
+}
+
+function isOwnApi(url: string): boolean {
+  return url.startsWith(environment.apiUrl) || url.startsWith(environment.adminApiUrl);
+}
 
 function withDevelopmentEndpoint(message: string, endpoint: string): string {
   if (environment.production) {
