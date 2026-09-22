@@ -124,10 +124,10 @@ export class MapComponent {
     });
 
     // Choose tile layer based on style
-    const tileUrl =
-      this.tileStyle() === 'voyager'
-        ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
-        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+      //this.tileStyle() === 'voyager'
+        //? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+        //: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
     const attribution =
       this.tileStyle() === 'voyager'
