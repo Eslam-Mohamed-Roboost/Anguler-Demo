@@ -12,10 +12,11 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, switchMap, timer } from 'rxjs';
-import type { HotelRecord, TripRecord } from '../../types/hotel-details.types';
+import type { HotelRecord, TripRecord, TripSearchFilters } from '../../types/hotel-details.types';
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
 import { TripsHistoryTableComponent } from '../../components/trips-history-table/trips-history-table.component';
 import { HotelDetailsService } from '../../services/hotel-details.service';
+import { BookingType, bookingTypeOf, unifiedTripStatus } from '../../models/trip-status';
 import { HotelFinancialsItem, HotelTripItem, DashboardStatsResponse, HotelFinancialSortBy, HotelTripSortBy, SortDirection } from '../../models/dto';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -65,6 +66,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   readonly hotelSortBy = signal<HotelFinancialSortBy>(HotelFinancialSortBy.CreatedDate);
   readonly hotelSortDirection = signal<SortDirection>(SortDirection.Descending);
   readonly statusFilter = signal('');
+  readonly bookingTypeFilter = signal<BookingType | ''>('');
   readonly activeTab = signal<'trips' | 'hotels'>('trips');
   readonly statusOptions = signal<string[]>([]);
 
@@ -205,6 +207,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
         this.statusFilter() || undefined,
         search,
         skipGlobalLoading,
+        this.bookingTypeFilter() || undefined,
       )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -345,6 +348,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     const tripStatus = isScheduledTrip ? 'Scheduled' : item.tripStatusString || '';
     const effectiveTripStatus = this.resolveTripStatusText(tripStatus, requestStatus);
     const status = this.toUiTripStatus(effectiveTripStatus, isScheduledTrip);
+    const displayStatus = unifiedTripStatus(item) ?? (effectiveTripStatus || 'Not Started');
     return {
       id: item.tripRequestId,
       tripId: item.tripId ?? undefined,
@@ -358,11 +362,12 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
       date: item.scheduledAt ?? item.startedAt ?? item.requestedAt ?? undefined,
       endDate: item.endedAt,
       status,
-      tripStatus: effectiveTripStatus || 'Not Started',
-      tripStatusKey: this.normalizeStatus(effectiveTripStatus || 'not-started'),
+      tripStatus: displayStatus,
+      tripStatusKey: this.normalizeStatus(displayStatus),
       requestStatus,
       requestStatusKey: this.normalizeStatus(requestStatus),
       isScheduled: item.isScheduled,
+      bookingType: bookingTypeOf(item),
       price: item.fare ?? 0,
       currency: item.currency,
       distance: item.distanceInKm,
@@ -444,8 +449,9 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFilterChange(filter: { status?: string }): void {
+  onFilterChange(filter: TripSearchFilters): void {
     this.statusFilter.set(filter.status ?? '');
+    this.bookingTypeFilter.set(filter.bookingType ?? '');
     this.currentPage.set(1);
     if (this.activeTab() === 'trips') {
       this.loadTrips(this.searchQuery() || undefined, true, true);
@@ -457,6 +463,7 @@ export class HotelDashboardComponent implements OnInit, OnDestroy {
   onTabChange(tab: 'trips' | 'hotels'): void {
     this.activeTab.set(tab);
     this.statusFilter.set('');
+    this.bookingTypeFilter.set('');
     this.currentPage.set(1);
     this.loadStatusOptions(tab);
     if (tab === 'trips') {

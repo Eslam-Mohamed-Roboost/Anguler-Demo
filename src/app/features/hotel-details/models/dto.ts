@@ -26,6 +26,10 @@ export interface HotelTripItem {
   tripStatusString: string;
   tripStatusEnum: number | null;
   isScheduled?: boolean;
+  statusString?: string | null;
+  statusEnum?: number | null;
+  bookingTypeString?: string | null;
+  bookingTypeEnum?: number | null;
   durationMinutes: number | null;
   distanceInKm: number | null;
   fare: number | null;

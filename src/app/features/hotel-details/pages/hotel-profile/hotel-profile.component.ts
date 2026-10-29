@@ -23,7 +23,8 @@ import { HotelInfoCardComponent } from '../../components/hotel-info-card/hotel-i
 import { StatisticsCardComponent, StatisticItem } from '../../components/statistics-card/statistics-card.component';
   import type { HotelFormData, HotelInfo, TripRecord, WithdrawalFormData } from '../../types/hotel-details.types';
 import { HotelDetailsService, SettlementInfo, SettlementStatus } from '../../services/hotel-details.service';
-import { HotelApiItem, HotelTripItem, TripRequestStatusItem } from '../../models/dto';
+import { HotelApiItem, HotelTripItem } from '../../models/dto';
+import { BOOKING_TYPE_FILTERS, BookingType, TRIP_STATUS_FILTERS, bookingTypeOf, tripStatusKey, unifiedTripStatus } from '../../models/trip-status';
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { BaseComponent } from '../../../../shared/base/base.component';
 import { TranslatePipe } from "../../../../shared/pipes/translate.pipe";
@@ -59,13 +60,14 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   readonly routeHotelId = signal('');
   readonly searchQuery = signal('');
   readonly selectedStatus = signal('');
-  readonly statusOptions = signal<TripRequestStatusItem[]>([]);
+  readonly selectedBookingType = signal<BookingType | ''>('');
+  protected readonly statusOptions = TRIP_STATUS_FILTERS;
+  protected readonly bookingTypeOptions = BOOKING_TYPE_FILTERS;
   readonly awaitingAmount = signal(0);
   readonly settlementInfo = signal<SettlementInfo | null>(null);
 
   readonly loading = signal(false);
   readonly tripsLoading = signal(false);
-  readonly statusesLoading = signal(false);
   readonly formLoading = signal(false);
   readonly withdrawalLoading = signal(false);
   readonly settleLoading = signal(false);
@@ -154,6 +156,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     { key: 'guestName', header: 'Guest Name', sortable: true, headerClass: 'w-32' },
     { key: 'driverName', header: 'Driver Name', sortable: true, headerClass: 'w-32' },
     { key: 'route', header: 'Route', sortable: false, headerClass: 'w-40' },
+    { key: 'bookingType', header: 'Booking Type', sortable: false, headerClass: 'w-32' },
     { key: 'requestStatus', header: 'Request Status', sortable: true, headerClass: 'w-36' },
     { key: 'tripStatus', header: 'Trip Status', sortable: true, headerClass: 'w-32' },
     { key: 'fare', header: 'Fare (CHF)', sortable: true, headerClass: 'w-28' },
@@ -162,14 +165,19 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   ]);
 
   protected readonly tripStatusColorMap: Record<string, string> = {
-    completed: 'text-status-completed bg-status-completed-bg',
-    active: 'text-status-active bg-status-active-bg',
+    completed: 'text-body-soft bg-input-bg',
+    active: 'text-status-completed bg-status-completed-bg',
+    'in-progress': 'text-status-completed bg-status-completed-bg',
     pending: 'text-status-scheduled bg-status-scheduled-bg',
     scheduled: 'text-status-scheduled bg-status-scheduled-bg',
     cancelled: 'text-status-cancelled bg-status-cancelled-bg',
     'cancelled-by-driver': 'text-status-cancelled bg-status-cancelled-bg',
     'cancelled-by-passenger': 'text-status-cancelled bg-status-cancelled-bg',
     'not-started': 'text-muted bg-gray-100',
+    searching: 'text-status-scheduled bg-status-scheduled-bg',
+    assigned: 'text-body-soft bg-input-bg',
+    enroute: 'text-status-scheduled bg-status-scheduled-bg',
+    onsite: 'text-status-scheduled bg-status-scheduled-bg',
   };
 
   ngOnInit(): void {
@@ -178,8 +186,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     if (id && !this.dataLoaded) {
       this.dataLoaded = true;
       this.routeHotelId.set(id);
-      this.loadTripStatuses();
-      this.loadHotel(id);
+        this.loadHotel(id);
       this.loadTrips(id);
       this.startTripsRefresh(id);
       this.loadWithdrawalDetails(id);
@@ -274,24 +281,6 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     return this.route.snapshot.paramMap.get('id') ?? this.hotelId();
   }
 
-  private loadTripStatuses(): void {
-    this.statusesLoading.set(true);
-    this.service
-      .getTripRequestStatuses()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (result) => {
-          this.statusesLoading.set(false);
-          if (result.isSuccess && result.data) {
-            this.statusOptions.set(result.data.status);
-          }
-        },
-        error: () => {
-          this.statusesLoading.set(false);
-          this.notifications.showError('Failed to load trip statuses.');
-        },
-      });
-  }
 
   private startTripsRefresh(id: string): void {
     timer(TABLE_REFRESH_MS, TABLE_REFRESH_MS)
@@ -302,7 +291,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   private loadTrips(id: string, showLoading = true, skipGlobalLoading = false): void {
     if (showLoading) this.tripsLoading.set(true);
     this.service
-      .getHotelTripsById(id, this.currentPage(), this.pageSize(), this.selectedStatus(), skipGlobalLoading)
+      .getHotelTripsById(id, this.currentPage(), this.pageSize(), this.selectedStatus(), this.selectedBookingType(), skipGlobalLoading)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
@@ -354,6 +343,7 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     const tripStatus = isScheduledTrip ? 'Scheduled' : item.tripStatusString || '';
     const effectiveTripStatus = this.resolveTripStatusText(tripStatus, requestStatus);
     const status = this.toUiTripStatus(effectiveTripStatus, isScheduledTrip);
+    const displayStatus = unifiedTripStatus(item) ?? (effectiveTripStatus || 'Not Started');
     return {
       id: item.tripRequestId,
       tripId: item.tripId ?? undefined,
@@ -366,10 +356,12 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
       date: item.scheduledAt ?? item.startedAt ?? item.requestedAt ?? undefined,
       endDate: item.endedAt,
       status,
-      tripStatus: effectiveTripStatus || 'Not Started',
-      tripStatusKey: this.normalizeStatus(effectiveTripStatus || 'not-started'),
+      tripStatus: displayStatus,
+      tripStatusKey: this.normalizeStatus(displayStatus),
       requestStatus,
       requestStatusKey: this.normalizeStatus(requestStatus),
+      isScheduled: item.isScheduled,
+      bookingType: bookingTypeOf(item),
       price: item.fare ?? 0,
       currency: item.currency,
       distance: item.distanceInKm,
@@ -428,6 +420,12 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
     this.searchQuery.set((event.target as HTMLInputElement).value);
   }
 
+  protected onBookingTypeChange(event: Event): void {
+    this.selectedBookingType.set((event.target as HTMLSelectElement).value as BookingType | '');
+    this.currentPage.set(1);
+    this.loadTrips(this.getCurrentHotelRouteId(), true, true);
+  }
+
   protected onStatusChange(event: Event): void {
     this.selectedStatus.set((event.target as HTMLSelectElement).value);
     this.currentPage.set(1);
@@ -462,6 +460,9 @@ export class HotelProfileComponent extends BaseComponent implements OnInit, OnDe
   }
 
   protected statusTranslationKey(status: string): string {
+    const unifiedKey = tripStatusKey(status);
+    if (unifiedKey) return unifiedKey;
+
     const normalized = this.normalizeStatus(this.formatStatus(status));
     const map: Record<string, string> = {
       pending: 'tripDetails.status.Pending',

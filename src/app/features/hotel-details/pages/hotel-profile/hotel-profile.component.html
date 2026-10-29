@@ -316,13 +316,29 @@
             <select
               class="absolute inset-0 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
               [value]="selectedStatus()"
-              [disabled]="statusesLoading()"
               (change)="onStatusChange($event)"
               [attr.aria-label]="'hotelTrip.statusFilter' | translate"
             >
               <option value="">{{ 'hotelTrip.allStatuses' | translate }}</option>
-              @for (status of statusOptions(); track status.id) {
-                <option [value]="status.name">{{ statusTranslationKey(status.name) | translate }}</option>
+              @for (status of statusOptions; track status) {
+                <option [value]="status">{{ statusTranslationKey(status) | translate }}</option>
+              }
+            </select>
+          </div>
+          <div
+            class="relative flex items-center gap-1.5 rounded-btn border border-card-border bg-panel px-3.5 py-[7px] text-cell font-medium text-body-soft transition hover:bg-hover whitespace-nowrap"
+          >
+            <app-icon name="layers" size="sm" aria-hidden="true" />
+            <span>{{ (selectedBookingType() ? (selectedBookingType() === 'scheduled' ? 'hotelTrip.bookingScheduled' : 'hotelTrip.bookingDirect') : 'hotelTrip.bookingType') | translate }}</span>
+            <select
+              class="absolute inset-0 size-full cursor-pointer opacity-0"
+              [value]="selectedBookingType()"
+              (change)="onBookingTypeChange($event)"
+              [attr.aria-label]="'hotelTrip.bookingTypeFilter' | translate"
+            >
+              <option value="">{{ 'hotelTrip.allBookingTypes' | translate }}</option>
+              @for (type of bookingTypeOptions; track type) {
+                <option [value]="type">{{ (type === 'scheduled' ? 'hotelTrip.bookingScheduled' : 'hotelTrip.bookingDirect') | translate }}</option>
               }
             </select>
           </div>
@@ -389,6 +405,13 @@
                 <span class="text-cell text-body-soft">{{ row.dropoffLocation }}</span>
               </div>
             </div>
+          </ng-template>
+
+          <!-- Booking Type Cell -->
+          <ng-template cellDef="bookingType" let-row>
+            <span class="inline-flex items-center px-2.5 py-[3px] rounded-badge text-xs font-medium bg-gray-100 text-body max-sm:px-2 max-sm:text-2xs">
+              {{ (row.bookingType === 'scheduled' ? 'hotelTrip.bookingScheduled' : 'hotelTrip.bookingDirect') | translate }}
+            </span>
           </ng-template>
 
           <!-- Request Status Cell -->

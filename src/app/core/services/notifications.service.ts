@@ -9,6 +9,7 @@ export interface NotificationItem {
   id: string;
   tripRequestId?: string | null;
   hotelId?: string | null;
+  notificationType?: string | number | null;
   message: string;
   createdDate: string;
   isRead: boolean;

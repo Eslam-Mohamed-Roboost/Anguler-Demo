@@ -6,11 +6,13 @@
       {{ 'tripDetails.title' | translate }}
     </h2>
     <div class="relative flex items-center gap-3">
-      @if (canShowScheduledActions()) {
+      <app-badge variant="neutral">{{ bookingTypeKey() | translate }}</app-badge>
+      <app-badge [variant]="statusVariant()">{{ statusLabelKey() | translate }}</app-badge>
+      @if (showActionsMenu()) {
         <button
           type="button"
           class="flex size-9 items-center justify-center rounded-xl text-body transition hover:bg-hover focus:outline-none focus:ring-2 focus:ring-warning/30"
-          [attr.aria-label]="'tripDetails.scheduledActions' | translate"
+          [attr.aria-label]="'tripDetails.tripActions' | translate"
           [attr.aria-expanded]="showScheduledMenu()"
           (click)="toggleScheduledMenu()"
         >
@@ -23,6 +25,17 @@
 
         @if (showScheduledMenu()) {
           <div class="absolute end-0 top-11 z-20 w-[210px] rounded-sm border border-card-border bg-panel py-1 shadow-lg">
+            @if (canRateTrip()) {
+              <button
+                type="button"
+                class="flex w-full items-center gap-2 px-4 py-3 text-start text-sm font-medium text-body transition hover:bg-hover"
+                (click)="openRateModal()"
+              >
+                <app-icon name="star" size="xs" class="text-warning" />
+                {{ 'tripDetails.rateTripAction' | translate }}
+              </button>
+            }
+            @if (canShowScheduledActions()) {
             <button
               type="button"
               class="flex w-full items-center gap-2 px-4 py-3 text-start text-sm font-medium text-body transition hover:bg-hover"
@@ -41,10 +54,10 @@
               <app-icon name="close" size="xs" class="text-red-500" />
               {{ 'tripDetails.cancelTrip' | translate }}
             </button>
+            }
           </div>
         }
       }
-      <app-badge [variant]="statusVariant()">{{ statusLabelKey() | translate }}</app-badge>
     </div>
   </div>
 
@@ -102,7 +115,13 @@
       <div>
         <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.tripRate' | translate }}</label>
         <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
-          {{ data().driver?.rating ?? '--' }}
+          @if (tripRating(); as rating) {
+            <span class="inline-flex items-center gap-1">
+              <app-icon name="star" size="xs" class="text-warning" aria-hidden="true" />{{ rating }}
+            </span>
+          } @else {
+            {{ 'tripDetails.notYet' | translate }}
+          }
         </div>
       </div>
     </div>
@@ -220,3 +239,13 @@
 
   </div>
 </section>
+
+@if (data().tripId; as tripId) {
+  <app-rate-trip-modal
+    [open]="showRateModal()"
+    [tripId]="tripId"
+    [driver]="data().driver"
+    (closed)="closeRateModal()"
+    (submitted)="onRatingSubmitted($event)"
+  />
+}

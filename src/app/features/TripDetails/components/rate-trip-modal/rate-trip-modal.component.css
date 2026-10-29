@@ -1,0 +1,39 @@
+:host {
+  display: contents;
+}
+
+.rate-star {
+  color: var(--color-status-completed-bg);
+  transition: color 150ms ease, transform 150ms ease;
+}
+
+.rate-star:hover {
+  transform: scale(1.08);
+}
+
+.rate-star--on {
+  color: #f5b301;
+}
+
+.rate-chip {
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  background: var(--color-warning-light);
+  color: var(--color-body);
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  transition: border-color 150ms ease;
+}
+
+.rate-chip:hover {
+  border-color: color-mix(in srgb, var(--color-warning) 40%, transparent);
+}
+
+.rate-chip:focus-visible {
+  outline: 2px solid var(--color-warning);
+  outline-offset: 2px;
+}
+
+.rate-chip--on {
+  border-color: var(--color-warning);
+}

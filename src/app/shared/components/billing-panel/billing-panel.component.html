@@ -76,8 +76,30 @@
 
                 <!-- Content -->
                 <div class="min-w-0 flex-1">
+                  @switch (notificationKind(item)) {
+                    @case ('cancelled') {
+                      <span class="mb-1 inline-flex items-center gap-1 rounded-full bg-status-cancelled-bg px-2 py-0.5 text-xs font-medium text-status-cancelled">
+                        <app-icon name="x-circle" size="xs" aria-hidden="true" />{{ 'notifications.type.cancelled' | translate }}
+                      </span>
+                    }
+                    @case ('driverArrived') {
+                      <span class="mb-1 inline-flex items-center gap-1 rounded-full bg-status-scheduled-bg px-2 py-0.5 text-xs font-medium text-status-scheduled">
+                        <app-icon name="map-pin" size="xs" aria-hidden="true" />{{ 'notifications.type.driverArrived' | translate }}
+                      </span>
+                    }
+                    @case ('completed') {
+                      <span class="mb-1 inline-flex items-center gap-1 rounded-full bg-status-completed-bg px-2 py-0.5 text-xs font-medium text-status-completed">
+                        <app-icon name="check-circle" size="xs" aria-hidden="true" />{{ 'notifications.type.completed' | translate }}
+                      </span>
+                    }
+                  }
                   <p class="text-sm leading-relaxed text-body">{{ item.message }}</p>
                   <p class="mt-1 text-xs text-muted">{{ formatDate(item.createdDate) }}</p>
+                  @if (notificationKind(item) === 'completed' && item.tripRequestId) {
+                    <span class="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-status-scheduled">
+                      <app-icon name="star" size="xs" aria-hidden="true" />{{ 'notifications.rateTrip' | translate }}
+                    </span>
+                  }
                 </div>
               </div>
             }

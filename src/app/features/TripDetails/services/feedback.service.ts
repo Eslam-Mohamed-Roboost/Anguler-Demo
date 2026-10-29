@@ -6,6 +6,6 @@ import type { Result } from '../../../core/models/result.model';
 @Injectable({ providedIn: 'root' })
 export class FeedbackService extends ApiService {
   submitFeedback(tripId: string, rating: number, comment: string): Observable<Result<void>> {
-    return this.post<void>('/feedbacks', { tripId, rating, comment });
+    return this.post<void>('/Feedback/Create', { tripId, rating, comment });
   }
 }

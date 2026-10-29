@@ -1,0 +1,91 @@
+<section
+  class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-warning/30 bg-status-scheduled-bg px-4 py-3 sm:px-5"
+  [attr.aria-label]="'tripDetails.title' | translate"
+>
+  <!-- Driver -->
+  <div class="flex min-w-0 items-center gap-3">
+    @if (driver()?.avatarUrl; as avatarUrl) {
+      <img
+        class="size-10 shrink-0 rounded-full object-cover"
+        [ngSrc]="avatarUrl"
+        width="40"
+        height="40"
+        [alt]="driver()?.fullName ?? ''"
+      />
+    } @else {
+      <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-panel text-sm font-semibold text-body" aria-hidden="true">
+        @if (driver()) {
+          {{ driverInitial() }}
+        } @else {
+          <app-icon name="user" size="sm" />
+        }
+      </span>
+    }
+    <div class="flex min-w-0 flex-col">
+      @if (driver(); as driver) {
+        <span class="truncate text-sm font-semibold text-primary-text">{{ driver.fullName }}</span>
+      } @else {
+        <span class="truncate text-sm font-semibold text-status-scheduled" role="status">{{ 'tripDetails.searchingDriver' | translate }}</span>
+      }
+      <span class="inline-flex items-center gap-1 text-xs text-body-soft">
+        <app-icon name="star" size="xs" class="text-warning" aria-hidden="true" />
+        <span class="sr-only">{{ 'tripDetails.driverRating' | translate }}:</span>
+        {{ driverRating() }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <dl class="trip-banner-metrics flex flex-wrap items-center">
+    <div class="trip-banner-metric">
+      <dt class="order-2 text-xs text-body-soft">{{ 'tripDetails.timeToArrival' | translate }}</dt>
+      <dd class="order-1 flex items-center gap-1.5 text-lg font-bold text-status-scheduled" dir="ltr">
+        <span aria-hidden="true">⌛</span>{{ arrivalTime() }}
+      </dd>
+    </div>
+    <div class="trip-banner-metric">
+      <dt class="order-2 text-xs text-body-soft">{{ 'tripDetails.estimatedTripTime' | translate }}</dt>
+      <dd class="order-1 flex items-center gap-1.5 text-lg font-bold text-status-scheduled" dir="ltr">
+        <span aria-hidden="true">⌛</span>{{ tripTime() }}
+      </dd>
+    </div>
+    <div class="trip-banner-metric">
+      <dt class="order-2 text-xs text-body-soft">{{ 'tripDetails.carNumber' | translate }}</dt>
+      <dd class="order-1 flex items-center gap-1.5 text-lg font-bold text-body" dir="ltr">
+        <app-icon name="truck" size="xs" class="text-body-soft" aria-hidden="true" />{{ carNumber() }}
+      </dd>
+    </div>
+    <div class="trip-banner-metric relative">
+      <dt class="order-2 flex items-center gap-1 text-xs text-body-soft">
+        {{ 'tripDetails.tripCode' | translate }}
+        <button
+          type="button"
+          class="inline-flex rounded-full text-status-scheduled focus:outline-none focus-visible:ring-2 focus-visible:ring-warning"
+          [attr.aria-label]="'tripDetails.tripCodeInfoLabel' | translate"
+          [attr.aria-expanded]="showTripCodeInfo()"
+          aria-describedby="trip-code-info"
+          (click)="toggleTripCodeInfo()"
+          (blur)="hideTripCodeInfo()"
+          (mouseenter)="showTripCodeInfo.set(true)"
+          (mouseleave)="hideTripCodeInfo()"
+        >
+          <app-icon name="info" size="xs" aria-hidden="true" />
+        </button>
+      </dt>
+      <dd class="order-1 flex items-center gap-1.5 text-lg font-bold text-status-scheduled" dir="ltr">
+        <app-icon name="clipboard" size="xs" aria-hidden="true" />{{ tripCode() }}
+      </dd>
+      <div
+        id="trip-code-info"
+        role="tooltip"
+        class="trip-code-info absolute end-0 top-full z-30 mt-2 w-72 rounded-xl bg-panel p-3 text-xs leading-relaxed text-body-soft shadow-lg"
+        [class.hidden]="!showTripCodeInfo()"
+      >
+        <p class="flex gap-2">
+          <app-icon name="info" size="xs" class="mt-0.5 shrink-0 text-status-scheduled" aria-hidden="true" />
+          <span>{{ 'tripDetails.tripCodeInfo' | translate }}</span>
+        </p>
+      </div>
+    </div>
+  </dl>
+</section>

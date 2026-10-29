@@ -1,3 +1,5 @@
+import type { BookingType } from '../models/trip-status';
+
 export interface HotelInfo {
   id: string;
   code: string;
@@ -40,6 +42,7 @@ export interface TripRecord {
   requestStatus: string;
   requestStatusKey: string;
   isScheduled?: boolean;
+  bookingType: BookingType;
   price: number;
   currency: string;
   distance: number | null;
@@ -108,6 +111,7 @@ export interface HotelRecord {
 
 export interface TripSearchFilters {
   status?: string;
+  bookingType?: BookingType | '';
   driver?: string;
   dateRange?: {
     start: Date;

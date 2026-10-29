@@ -5,6 +5,7 @@ import { TripDetailsService } from '../../services/trip-details.service';
 import type { HotelInfo, TripDetailsResponse } from '../../models/trip-details.model';
 import { DetailsComponent } from '../details/details.component';
 import { ChatComponent } from '../chat/chat.component';
+import { TripBannerComponent } from '../trip-banner/trip-banner.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { SkeletonBlockComponent } from '../../../../shared/components/skeleton/skeleton-block.component';
 import { BaseComponent } from '../../../../shared/base/base.component';
@@ -12,7 +13,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-trip-details',
-  imports: [DetailsComponent, ChatComponent, SkeletonBlockComponent, TranslatePipe],
+  imports: [DetailsComponent, ChatComponent, TripBannerComponent, SkeletonBlockComponent, TranslatePipe],
   templateUrl: './trip-details.component.html',
   styleUrl: './trip-details.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -46,6 +46,9 @@
 } @else if (tripData(); as data) {
   <div class="trip-details-page">
     <div class="trip-details-shell">
+      <!-- Driver / Trip Banner -->
+      <app-trip-banner [data]="data" />
+
       <!-- Trip Details Card -->
       <section class="trip-details-card">
         <app-details

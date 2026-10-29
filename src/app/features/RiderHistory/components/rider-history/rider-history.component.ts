@@ -52,6 +52,7 @@ export class RiderHistoryComponent extends BaseComponent {
     { key: 'guestName', header: 'Guest Name' },
     { key: 'roomNumber', header: 'Room No.' },
     { key: 'route', header: 'Route' },
+    { key: 'bookingType', header: 'Booking Type' },
     { key: 'requestStatus', header: 'Request Status' },
     { key: 'tripStatus', header: 'Trip Status' },
     { key: 'duration', header: 'Duration' },
@@ -154,11 +155,11 @@ export class RiderHistoryComponent extends BaseComponent {
 
   getStatusVariant(status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' | 'scheduled' {
     const normalized = status.toLowerCase();
-    if (normalized === 'completed') return 'success';
+    if (normalized === 'completed') return 'neutral';
     if (normalized === 'cancelled') return 'danger';
     if (normalized === 'scheduled' || normalized === 'schedualed') return 'scheduled';
-    if (normalized === 'waiting driver' || normalized === 'pending') return 'warning';
-    if (normalized === 'active' || normalized === 'in progress' || normalized === 'accepted') return 'success';
+    if (normalized === 'waiting driver' || normalized === 'pending' || normalized === 'accepted') return 'warning';
+    if (normalized === 'active' || normalized === 'in progress' || normalized === 'inprogress') return 'success';
     return 'neutral';
   }
 
@@ -237,6 +238,19 @@ export class RiderHistoryComponent extends BaseComponent {
     return status.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
 
+  /** Several API statuses share one label (e.g. CancelledByDriver / CancelledByPassenger) — keep one per label, preferring the generic name. */
+  private uniqueStatusOptions(names: string[]): string[] {
+    const byLabel = new Map<string, string>();
+    for (const name of names) {
+      const label = this.statusTranslationKey(name);
+      const current = byLabel.get(label);
+      if (!current || name.length < current.length) {
+        byLabel.set(label, name);
+      }
+    }
+    return [...byLabel.values()];
+  }
+
   private loadStatusOptions(): void {
     this.riderHistoryService
       .getTripRequestStatuses()
@@ -244,7 +258,7 @@ export class RiderHistoryComponent extends BaseComponent {
       .subscribe({
         next: (result) => {
           if (result.isSuccess && result.data) {
-            this.statusOptions.set(result.data.status.map(status => status.name));
+            this.statusOptions.set(this.uniqueStatusOptions(result.data.status.map(status => status.name)));
           } else {
             this.statusOptions.set([]);
           }

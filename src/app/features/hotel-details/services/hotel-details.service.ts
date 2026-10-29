@@ -40,6 +40,7 @@ export class HotelDetailsService extends ApiService {
     status?: string,
     search?: string,
     skipLoading = false,
+    bookingType?: string,
   ): Observable<Result<HotelTripsResponse>> {
     let params = new HttpParams()
       .set('SortBy', sortBy)
@@ -48,6 +49,10 @@ export class HotelDetailsService extends ApiService {
 
     if (status) {
       params = params.set('status', status);
+    }
+
+    if (bookingType) {
+      params = params.set('bookingType', bookingType);
     }
 
     if (search) {
@@ -101,6 +106,7 @@ export class HotelDetailsService extends ApiService {
     pageNumber: number,
     pageSize: number,
     status?: string,
+    bookingType?: string,
     skipLoading = false,
   ): Observable<Result<HotelTripsResponse>> {
     let params = new HttpParams()
@@ -110,6 +116,10 @@ export class HotelDetailsService extends ApiService {
 
     if (status) {
       params = params.set('status', status);
+    }
+
+    if (bookingType) {
+      params = params.set('bookingType', bookingType);
     }
 
     return this.get<HotelTripsResponse>('/hotels/trips', params, this.loadingContext(skipLoading));

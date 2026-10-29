@@ -35,6 +35,10 @@ export interface TripDetailsResponse {
   requestStatusString?: string | null;
   tripRequestStatusString?: string | null;
   tripStatusString?: string | null;
+  statusString?: string | null;
+  statusEnum?: number | null;
+  bookingTypeString?: string | null;
+  bookingTypeEnum?: number | null;
   startLocation: Location;
   endLocation: Location;
   guestName: string;
@@ -64,6 +68,10 @@ export interface TripDetailsResponse {
   arrivedAt: string | null;
   durationMinutes: number | null;
   distanceInKm: number | null;
+  vehicleName?: string | null;
+  vehiclePlateNumber?: string | null;
+  estimatedArrivalMinutes?: number | null;
+  tripRating?: number | null;
   notes?: string;
   specialRequests?: string;
 }
@@ -93,7 +101,8 @@ export function getTripStatusLabel(status: string | null | undefined): string {
 
 export function getTripStatusVariant(status: string | null | undefined): 'success' | 'danger' | 'warning' | 'info' | 'neutral' | 'scheduled' {
   switch (status) {
-    case 'Completed': return 'success';
+    case 'Completed':
+    case 'Assigned': return 'neutral';
     case 'Canceled':
     case 'Cancelled':
     case 'CanceledByDriver':
@@ -103,7 +112,7 @@ export function getTripStatusVariant(status: string | null | undefined): 'succes
     case 'CanceledByHotel':
     case 'CancelledByHotel':
     case 'Rejected': return 'danger';
-    case 'InProgress': return 'info';
+    case 'InProgress': return 'success';
     case 'Scheduled': return 'scheduled';
     case 'Schedualed': return 'scheduled';
     case 'Pending':

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, OnInit, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { getTripStatusLabel, getTripStatusVariant, HotelInfo, TripDetailsResponse } from '../../models/trip-details.model';
@@ -10,11 +10,24 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import type { TranslationKey } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
+import { RateTripModalComponent } from '../rate-trip-modal/rate-trip-modal.component';
+import { bookingTypeKey, bookingTypeOf, compactStatus, unifiedTripStatus } from '../../../hotel-details/models/trip-status';
+
+/** Maps the unified `statusString` onto the legacy status names the badge helpers understand. */
+const UNIFIED_TO_LEGACY: Record<string, string> = {
+  searching: 'Pending',
+  assigned: 'Assigned',
+  enroute: 'Accepted',
+  onsite: 'Arrived',
+  active: 'InProgress',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+};
 
 @Component({
   selector: 'app-details',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BadgeComponent, IconComponent, TranslatePipe],
+  imports: [BadgeComponent, IconComponent, TranslatePipe, RateTripModalComponent],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css',
 })
@@ -25,6 +38,7 @@ export class DetailsComponent implements OnInit {
   private readonly notifications = inject(NotificationStore);
   private readonly language = inject(LanguageService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly data = input.required<TripDetailsResponse>();
   readonly tripRequestId = input.required<string>();
@@ -33,12 +47,29 @@ export class DetailsComponent implements OnInit {
 
   readonly statusChanged = output<void>();
 
-  protected readonly statusLabel = computed(() => {
-    const trip = this.data();
-    return getTripStatusLabel(this.currentDisplayStatus(trip));
+  private readonly displayStatus = computed(() => {
+    const unified = compactStatus(unifiedTripStatus(this.data()));
+    if (unified) return UNIFIED_TO_LEGACY[unified] ?? (unified.includes('cancel') ? 'Cancelled' : this.canonicalStatus(unified));
+
+    const status = this.currentDisplayStatus(this.data());
+    if (status === 'Scheduled') return this.data().driver ? 'Assigned' : 'Pending';
+    return status;
   });
-  protected readonly statusLabelKey = computed(() => this.statusTranslationKey(this.statusLabel()));
-  protected readonly statusVariant = computed(() => getTripStatusVariant(this.statusLabel()));
+  protected readonly statusLabel = computed(() => getTripStatusLabel(this.displayStatus()));
+  protected readonly statusLabelKey = computed<TranslationKey>(() =>
+    this.displayStatus() === 'InProgress' ? 'hotelTrip.statusActive' : this.statusTranslationKey(this.statusLabel())
+  );
+  protected readonly statusVariant = computed(() => getTripStatusVariant(this.displayStatus()));
+  protected readonly bookingTypeKey = computed<TranslationKey>(() => bookingTypeKey(bookingTypeOf(this.data())));
+  protected readonly submittedRating = signal<number | null>(null);
+  protected readonly tripRating = computed(() => this.submittedRating() ?? this.data().tripRating ?? null);
+  protected readonly canRateTrip = computed(() =>
+    !!this.data().tripId &&
+    !!this.data().driver &&
+    this.tripRating() == null &&
+    this.displayStatus() === 'Completed'
+  );
+  protected readonly showRateModal = signal(false);
   protected readonly actionStatus = computed(() => this.currentDisplayStatus(this.data()));
   protected readonly hotelProfit = computed(() => {
     const actualFare = this.data().actualFare;
@@ -60,6 +91,7 @@ export class DetailsComponent implements OnInit {
     !this.data().endedAt &&
     !this.isFinishedTrip(this.data())
   );
+  protected readonly showActionsMenu = computed(() => this.canShowScheduledActions() || this.canRateTrip());
   protected readonly canShowStatusActions = computed(() =>
     this.isAdmin() &&
     !this.data().endedAt &&
@@ -78,6 +110,10 @@ export class DetailsComponent implements OnInit {
   protected readonly assignLoading = signal(false);
 
   ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.get('rate') === '1' && this.canRateTrip()) {
+      this.showRateModal.set(true);
+    }
+
     if (this.canAssignDriver()) {
       this.loadDrivers();
     }
@@ -146,6 +182,20 @@ export class DetailsComponent implements OnInit {
 
   protected closeScheduledMenu(): void {
     this.showScheduledMenu.set(false);
+  }
+
+  protected openRateModal(): void {
+    this.closeScheduledMenu();
+    this.showRateModal.set(true);
+  }
+
+  protected closeRateModal(): void {
+    this.showRateModal.set(false);
+  }
+
+  protected onRatingSubmitted(rating: number): void {
+    this.submittedRating.set(rating);
+    this.showRateModal.set(false);
   }
 
   protected openRescheduleModal(): void {

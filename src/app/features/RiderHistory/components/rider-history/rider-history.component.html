@@ -113,6 +113,13 @@
         </div>
       </ng-template>
 
+      <!-- Custom cell: Booking Type badge -->
+      <ng-template cellDef="bookingType" let-row>
+        <app-badge variant="neutral">
+          {{ (row.isScheduled ? 'hotelTrip.bookingScheduled' : 'hotelTrip.bookingDirect') | translate }}
+        </app-badge>
+      </ng-template>
+
       <!-- Custom cell: Request Status badge -->
       <ng-template cellDef="requestStatus" let-row>
         <app-badge [variant]="getStatusVariant(requestStatus(row))">

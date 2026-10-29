@@ -107,6 +107,15 @@ export class BillingPanelComponent {
     this.closePanel.emit();
   }
 
+  /** 4 TripRequestCancelled · 12 DriverArrived · 13 TripCompleted */
+  protected notificationKind(item: NotificationItem): 'cancelled' | 'driverArrived' | 'completed' | null {
+    const type = String(item.notificationType ?? '').trim().toLowerCase();
+    if (type === '4' || type === 'triprequestcancelled') return 'cancelled';
+    if (type === '12' || type === 'driverarrived') return 'driverArrived';
+    if (type === '13' || type === 'tripcompleted') return 'completed';
+    return null;
+  }
+
   protected onNotificationClick(item: NotificationItem): void {
     const route = this.tripDetailsRoute(item);
 
@@ -115,7 +124,7 @@ export class BillingPanelComponent {
       return;
     }
 
-    this.navigateToRoute(route);
+    this.navigateToRoute(route, item);
   }
 
   private markAsRead(item: NotificationItem, redirectRoute: string[] | null): void {
@@ -131,16 +140,16 @@ export class BillingPanelComponent {
         if (result.isSuccess) {
           this.refreshUnreadCount();
           this.notificationRead.emit();
-          this.navigateToRoute(redirectRoute);
+          this.navigateToRoute(redirectRoute, item);
           return;
         }
 
         this.restoreUnreadNotification(item.id);
-        this.navigateToRoute(redirectRoute);
+        this.navigateToRoute(redirectRoute, item);
       },
       error: () => {
         this.restoreUnreadNotification(item.id);
-        this.navigateToRoute(redirectRoute);
+        this.navigateToRoute(redirectRoute, item);
       },
     });
   }
@@ -167,11 +176,12 @@ export class BillingPanelComponent {
     return typeof value === 'string' ? value.trim() : '';
   }
 
-  private navigateToRoute(route: string[] | null): void {
+  private navigateToRoute(route: string[] | null, item?: NotificationItem): void {
     if (!route) return;
 
     this.closePanel.emit();
-    void this.router.navigate(route);
+    const rate = item && this.notificationKind(item) === 'completed';
+    void this.router.navigate(route, rate ? { queryParams: { rate: 1 } } : undefined);
   }
 
   protected formatDate(dateStr: string): string {

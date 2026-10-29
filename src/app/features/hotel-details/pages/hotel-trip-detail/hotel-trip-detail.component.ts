@@ -26,6 +26,7 @@ import { HotelRequestsService, type DriverItem } from '../../../admin-dashboard/
 import { NotificationStore } from '../../../../core/stores/notification.store';
 import { HotelFinancialSortBy, SortDirection } from '../../models/dto';
 import { LanguageService } from '../../../../core/services/language.service';
+import { RateTripModalComponent } from '../../../TripDetails/components/rate-trip-modal/rate-trip-modal.component';
 
 export interface TripDetail {
   tripId: string;
@@ -57,6 +58,7 @@ export interface TripDetail {
     HotelInfoCardComponent,
     TranslatePipe,
     SkeletonBlockComponent,
+    RateTripModalComponent,
   ],
   templateUrl: './hotel-trip-detail.component.html',
   styleUrl: './hotel-trip-detail.component.css',
@@ -112,6 +114,14 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   });
 
   readonly trip = signal<TripDetail | null>(null);
+  readonly tripResponse = signal<TripDetailsResponse | null>(null);
+  readonly showRateModal = signal(false);
+  readonly submittedRating = signal<number | null>(null);
+  readonly canRateTrip = computed(() => {
+    const trip = this.tripResponse();
+    return !!trip?.tripId && !!trip.driver && this.submittedRating() == null && (trip.tripRating ?? null) == null &&
+      this.normalizeStatus(this.rawStatus()).includes('complete');
+  });
 
   readonly statusLabel = computed(() => {
     const status = this.trip()?.status;
@@ -180,6 +190,19 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
     const status = this.normalizeStatus(this.rawStatus());
     return status === 'accepted' || status === 'inprogress' || status === 'arrived';
   });
+
+  protected openRateModal(): void {
+    this.showRateModal.set(true);
+  }
+
+  protected closeRateModal(): void {
+    this.showRateModal.set(false);
+  }
+
+  protected onRatingSubmitted(rating: number): void {
+    this.submittedRating.set(rating);
+    this.showRateModal.set(false);
+  }
 
   ngOnInit(): void {
     this.renderer.addClass(document.body, 'hotel-details-active');
@@ -291,6 +314,10 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
           if (result.isSuccess && result.data) {
             this.rawStatus.set(this.resolveEffectiveStatus(result.data));
             this.trip.set(this.toTripDetail(result.data));
+            this.tripResponse.set(result.data);
+            if (this.route.snapshot.queryParamMap.get('rate') === '1' && this.canRateTrip()) {
+              this.showRateModal.set(true);
+            }
             this.syncHotelFromTrip(result.data, tripRequestId);
 
             const status = this.normalizeStatus(this.rawStatus());

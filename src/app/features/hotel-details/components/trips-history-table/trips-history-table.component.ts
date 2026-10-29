@@ -20,6 +20,7 @@ import { ModalComponent } from "../../../../shared/components/modal/modal.compon
 import { HotelDetailsService } from '../../services/hotel-details.service';
 import { AppConfigService } from '../../../../core/services/app-config.service';
 import { HotelFinancialSortBy, HotelTripSortBy, SortDirection } from '../../models/dto';
+import { BOOKING_TYPE_FILTERS, BookingType, TRIP_STATUS_FILTERS, tripStatusKey } from '../../models/trip-status';
 
 interface HotelFinancialSortOption {
   sortBy: HotelFinancialSortBy;
@@ -80,6 +81,11 @@ export class TripsHistoryTableComponent {
   readonly showSortDropdown = signal(false);
   readonly showFilterDropdown = signal(false);
   readonly statusFilter = signal('');
+  readonly bookingTypeFilter = signal<BookingType | ''>('');
+  protected readonly bookingTypeFilters = BOOKING_TYPE_FILTERS;
+  protected readonly visibleStatusOptions = computed<readonly string[]>(() =>
+    this.activeTab() === 'trips' ? TRIP_STATUS_FILTERS : this.statusOptions()
+  );
   readonly hotelActionMenu = signal<HotelActionMenuState | null>(null);
   readonly selectedHotelIds = signal<Set<string>>(new Set<string>());
   protected readonly searchPlaceholderKey = computed(() =>
@@ -144,6 +150,7 @@ export class TripsHistoryTableComponent {
     { key: 'guestName', header: 'Guest Name', sortable: false, headerClass: 'w-32' },
     { key: 'driverName', header: 'Driver Name', sortable: false, headerClass: 'w-32' },
     { key: 'route', header: 'Route', sortable: false, headerClass: 'w-40' },
+    { key: 'bookingType', header: 'Booking Type', sortable: false, headerClass: 'w-32' },
     { key: 'requestStatus', header: 'Request Status', sortable: false, headerClass: 'w-36' },
     { key: 'tripStatus', header: 'Trip Status', sortable: false, headerClass: 'w-32' },
     { key: 'fare', header: 'Fare (CHF)', sortable: false, headerClass: 'w-28' },
@@ -165,14 +172,19 @@ export class TripsHistoryTableComponent {
   ]);
 
   protected readonly tripStatusColorMap: Record<string, string> = {
-    completed: 'text-status-completed bg-status-completed-bg',
-    active: 'text-status-active bg-status-active-bg',
+    completed: 'text-body-soft bg-input-bg',
+    active: 'text-status-completed bg-status-completed-bg',
+    'in-progress': 'text-status-completed bg-status-completed-bg',
     pending: 'text-status-scheduled bg-status-scheduled-bg',
     scheduled: 'text-status-scheduled bg-status-scheduled-bg',
     cancelled: 'text-status-cancelled bg-status-cancelled-bg',
     'cancelled-by-driver': 'text-status-cancelled bg-status-cancelled-bg',
     'cancelled-by-passenger': 'text-status-cancelled bg-status-cancelled-bg',
     'not-started': 'text-muted bg-gray-100',
+    searching: 'text-status-scheduled bg-status-scheduled-bg',
+    assigned: 'text-body-soft bg-input-bg',
+    enroute: 'text-status-scheduled bg-status-scheduled-bg',
+    onsite: 'text-status-scheduled bg-status-scheduled-bg',
   };
 
   readonly showCommissionsModal = signal(false);
@@ -219,6 +231,7 @@ export class TripsHistoryTableComponent {
   protected setTab(tab: 'trips' | 'hotels'): void {
     this.activeTab.set(tab);
     this.statusFilter.set('');
+    this.bookingTypeFilter.set('');
     this.showFilterDropdown.set(false);
     this.showSortDropdown.set(false);
     this.hotelActionMenu.set(null);
@@ -268,7 +281,13 @@ export class TripsHistoryTableComponent {
   protected onStatusFilter(status: string): void {
     this.statusFilter.set(status);
     this.showFilterDropdown.set(false);
-    this.filterChange.emit({ status });
+    this.filterChange.emit({ status, bookingType: this.bookingTypeFilter() });
+  }
+
+  protected onBookingTypeFilter(bookingType: BookingType | ''): void {
+    this.bookingTypeFilter.set(bookingType);
+    this.showFilterDropdown.set(false);
+    this.filterChange.emit({ status: this.statusFilter(), bookingType });
   }
 
   protected onSearchChange(event: Event): void {
@@ -403,6 +422,9 @@ export class TripsHistoryTableComponent {
   }
 
   protected statusTranslationKey(status: string): string {
+    const unifiedKey = tripStatusKey(status);
+    if (unifiedKey) return unifiedKey;
+
     const normalized = this.normalizeStatus(this.formatStatus(status));
     const map: Record<string, string> = {
       pending: 'tripDetails.status.Pending',

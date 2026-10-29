@@ -1,0 +1,102 @@
+<app-modal [open]="open()" [closeOnBackdrop]="!saving()" (closed)="close()">
+  <div class="relative mx-auto flex w-full max-w-sm flex-col gap-4 px-5 pb-5 pt-5">
+    <button
+      type="button"
+      class="absolute end-3 top-3 flex size-7 items-center justify-center rounded-full border border-card-border text-muted transition hover:text-body focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+      [attr.aria-label]="'tripDetails.closeRating' | translate"
+      (click)="close()"
+    >
+      <app-icon name="close" size="xs" aria-hidden="true" />
+    </button>
+
+    @if (step() === 'tags') {
+      <!-- Driver -->
+      <div class="flex flex-col items-center gap-2">
+        @if (driver()?.avatarUrl; as avatarUrl) {
+          <img
+            class="size-20 rounded-full border-4 border-panel object-cover shadow"
+            [ngSrc]="avatarUrl"
+            width="80"
+            height="80"
+            [alt]="driver()?.fullName ?? ''"
+          />
+        }
+        @if (driver()?.fullName; as fullName) {
+          <span class="text-sm text-body-soft">{{ fullName }}</span>
+        }
+        <h2 class="text-base font-bold text-status-completed">{{ 'tripDetails.howIsTrip' | translate }}</h2>
+      </div>
+    }
+
+    <!-- Stars -->
+    <div class="flex justify-center gap-2" role="radiogroup" [attr.aria-label]="'tripDetails.ratingAria' | translate">
+      @for (star of stars; track star) {
+        <button
+          type="button"
+          role="radio"
+          class="rate-star rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-warning"
+          [class.rate-star--on]="star <= rating()"
+          [attr.aria-checked]="star === rating()"
+          [attr.aria-label]="star + ' ' + ((star === 1 ? 'tripDetails.ratingStar' : 'tripDetails.ratingStars') | translate)"
+          (click)="setRating(star)"
+        >
+          <app-icon name="star" size="lg" aria-hidden="true" />
+        </button>
+      }
+    </div>
+
+    @if (step() === 'tags') {
+      <p class="text-xs text-muted">{{ 'tripDetails.additionalComments' | translate }}</p>
+      <div class="flex flex-wrap gap-2">
+        @for (tag of tags; track tag) {
+          <button
+            type="button"
+            class="rate-chip"
+            [class.rate-chip--on]="isTagSelected(tag)"
+            [attr.aria-pressed]="isTagSelected(tag)"
+            (click)="toggleTag(tag)"
+          >
+            {{ tag | translate }}
+          </button>
+        }
+        <button type="button" class="rate-chip" (click)="showComment()">
+          {{ 'tripDetails.tag.other' | translate }}
+        </button>
+      </div>
+    } @else {
+      <label for="rate-trip-comment" class="sr-only">{{ 'tripDetails.additionalComments' | translate }}</label>
+      <textarea
+        id="rate-trip-comment"
+        rows="6"
+        maxlength="500"
+        class="w-full resize-none rounded-lg border border-card-border bg-input-bg px-3 py-2.5 text-sm text-body focus:outline-none focus:ring-2 focus:ring-focus-ring"
+        [placeholder]="'tripDetails.additionalComments' | translate"
+        [formControl]="comment"
+      ></textarea>
+    }
+
+    <!-- Actions -->
+    <div class="flex flex-col gap-2 pt-2">
+      <button
+        type="button"
+        class="flex items-center justify-center gap-2 rounded-lg bg-status-active px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-95 disabled:opacity-60"
+        [disabled]="!canSubmit()"
+        (click)="submit()"
+      >
+        @if (saving()) {
+          <span class="block size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
+        }
+        {{ 'tripDetails.submitReview' | translate }}
+      </button>
+      @if (step() === 'comment') {
+        <button
+          type="button"
+          class="rounded-lg border border-card-border bg-panel px-5 py-2.5 text-sm font-medium text-body transition hover:bg-hover"
+          (click)="showTags()"
+        >
+          {{ 'tripDetails.goBack' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+</app-modal>

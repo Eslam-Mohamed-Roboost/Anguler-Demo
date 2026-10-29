@@ -81,6 +81,16 @@
         <div class="flex items-center gap-2">
           <!-- Trip Actions in header -->
           @if (!tripLoading() && trip()) {
+            @if (canRateTrip()) {
+              <button
+                type="button"
+                (click)="openRateModal()"
+                class="flex items-center gap-1.5 rounded-lg border border-warning bg-panel px-4 py-1.5 text-xs font-semibold text-status-scheduled transition hover:bg-status-scheduled-bg"
+              >
+                <app-icon name="star" size="xs" aria-hidden="true" />
+                {{ 'tripDetails.rateTripAction' | translate }}
+              </button>
+            }
             @if (canCancelTrip()) {
               <button
                 type="button"
@@ -200,3 +210,13 @@
   }
 
 </div>
+
+@if (tripResponse()?.tripId; as ratedTripId) {
+  <app-rate-trip-modal
+    [open]="showRateModal()"
+    [tripId]="ratedTripId"
+    [driver]="tripResponse()?.driver ?? null"
+    (closed)="closeRateModal()"
+    (submitted)="onRatingSubmitted($event)"
+  />
+}
