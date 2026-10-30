@@ -3,7 +3,7 @@
 }
 
 .rate-star {
-  color: var(--color-status-completed-bg);
+  color: var(--color-card-border);
   transition: color 150ms ease, transform 150ms ease;
 }
 
@@ -18,7 +18,7 @@
 .rate-chip {
   border: 1px solid transparent;
   border-radius: 9999px;
-  background: var(--color-warning-light);
+  background: var(--color-status-scheduled-bg);
   color: var(--color-body);
   font-size: 0.75rem;
   padding: 0.375rem 0.75rem;

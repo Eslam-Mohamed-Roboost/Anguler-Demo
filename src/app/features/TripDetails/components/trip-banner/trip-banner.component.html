@@ -4,13 +4,14 @@
 >
   <!-- Driver -->
   <div class="flex min-w-0 items-center gap-3">
-    @if (driver()?.avatarUrl; as avatarUrl) {
+    @if (driver()?.avatarUrl && !avatarFailed()) {
       <img
         class="size-10 shrink-0 rounded-full object-cover"
-        [ngSrc]="avatarUrl"
+        [ngSrc]="driver()!.avatarUrl!"
         width="40"
         height="40"
-        [alt]="driver()?.fullName ?? ''"
+        alt=""
+        (error)="avatarFailed.set(true)"
       />
     } @else {
       <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-panel text-sm font-semibold text-body" aria-hidden="true">

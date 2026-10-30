@@ -18,6 +18,7 @@ export class TripBannerComponent {
   readonly data = input.required<TripDetailsResponse>();
 
   protected readonly showTripCodeInfo = signal(false);
+  protected readonly avatarFailed = signal(false);
   protected readonly driver = computed(() => this.data().driver);
   protected readonly driverInitial = computed(() => this.driver()?.fullName?.trim().charAt(0).toUpperCase() || '?');
   protected readonly driverRating = computed(() => this.driver()?.rating ?? '--');

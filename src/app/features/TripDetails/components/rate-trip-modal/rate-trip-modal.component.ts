@@ -49,12 +49,15 @@ export class RateTripModalComponent {
   protected readonly rating = signal(0);
   protected readonly selectedTags = signal<ReadonlySet<TranslationKey>>(new Set());
   protected readonly saving = signal(false);
+  protected readonly avatarFailed = signal(false);
+  protected readonly driverInitial = computed(() => this.driver()?.fullName?.trim().charAt(0).toUpperCase() || '?');
   protected readonly comment = new FormControl('', { nonNullable: true });
   protected readonly canSubmit = computed(() => this.rating() > 0 && !this.saving());
 
   private readonly resetOnOpen = effect(() => {
     if (this.open()) {
       this.step.set('tags');
+      this.avatarFailed.set(false);
       this.rating.set(0);
       this.selectedTags.set(new Set());
       this.comment.reset('');
