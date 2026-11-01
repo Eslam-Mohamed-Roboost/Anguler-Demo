@@ -6,6 +6,7 @@ import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoginService } from '../../features/booking/components/services/login.service';
 import { Result } from '../models/result.model';
+import { cleanImageUrl } from '../utils/image-url';
 
 export interface AuthUser {
   id: number;
@@ -37,6 +38,8 @@ export interface Configuration {
   createdDate: string
   latitude: number
   longitude: number
+  /** Hotel has a connected payout (bank / Stripe) account. */
+  hasPayoutAccount?: boolean | null
 }
 interface LoginResponse {
   token: string;
@@ -126,10 +129,11 @@ export class AuthService {
 
   setProfile(profile: AuthProfile): void {
     const currentProfile = this._profile();
+    const configuration = profile.configuration ?? currentProfile?.configuration ?? null;
     const mergedProfile: AuthProfile = {
       ...(currentProfile ?? {}),
       ...profile,
-      configuration: profile.configuration ?? currentProfile?.configuration ?? null,
+      configuration: configuration ? { ...configuration, logoUrl: cleanImageUrl(configuration.logoUrl) } : null,
     };
     this._profile.set(mergedProfile);
     this._user.update((user) => {

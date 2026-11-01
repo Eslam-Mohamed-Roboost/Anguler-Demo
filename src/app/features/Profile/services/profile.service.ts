@@ -5,6 +5,7 @@ import { ApiService } from '../../../core/services/api.service';
 import type { Result } from '../../../core/models/result.model';
 import { SKIP_ERROR_NOTIFICATION } from '../../../core/tokens/skip-error-notification.token';
 import type { AuthProfile, Configuration } from '../../../core/services/auth.service';
+import { cleanImageUrl } from '../../../core/utils/image-url';
 
 export interface ChangePasswordRequest {
   currentPassword: string;
@@ -163,7 +164,7 @@ export class ProfileService {
       locationUrl: configuration?.locationUrl ?? '',
       latitude: configuration?.latitude ?? null,
       longitude: configuration?.longitude ?? null,
-      logoUrl: configuration?.logoUrl ?? '',
+      logoUrl: cleanImageUrl(configuration?.logoUrl),
       commissionRate: configuration?.commissionRate ?? 0,
       isActive: profile.isActive,
       isVerified: configuration?.isVerified ?? false,

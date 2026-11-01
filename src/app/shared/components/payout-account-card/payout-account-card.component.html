@@ -21,7 +21,10 @@
         <div>
           <button
             type="button"
-            class="inline-flex items-center gap-2 rounded-full bg-status-active px-8 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-60"
+            class="inline-flex items-center gap-2 rounded-full px-8 py-2.5 text-sm font-semibold shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-60"
+            [class]="connectVariant() === 'soft'
+              ? 'bg-success-light text-primary hover:bg-primary hover:text-white'
+              : 'bg-status-active text-white hover:brightness-95'"
             [disabled]="busy()"
             [attr.aria-busy]="busy()"
             (click)="connect.emit()"

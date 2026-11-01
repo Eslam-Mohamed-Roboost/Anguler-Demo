@@ -7,6 +7,7 @@ import { AdminApiService } from '../../../core/services/admin-api.service';
 import type { Result } from '../../../core/models/result.model';
 import { DashboardStatsResponse, HotelApiItem, HotelFinancialSortBy, HotelKpiResponse, HotelProfileResponse, HotelsListResponse, HotelTripSortBy, HotelTripsResponse, SortDirection, TripRequestStatusesResponse, UserProfileResponse, WithdrawalDetailsResponse, WithdrawalDetailsUpdate } from '../models/dto';
 import { SKIP_LOADING } from '../../../core/tokens/skip-loading.token';
+import { cleanImageUrl } from '../../../core/utils/image-url';
 
 @Injectable({ providedIn: 'root' })
 export class HotelDetailsService extends ApiService {
@@ -200,7 +201,7 @@ export class HotelDetailsService extends ApiService {
       longitude: configuration?.longitude ?? null,
       phoneNumber: profile.phoneNumber,
       email: profile.email,
-      logoUrl: configuration?.logoUrl ?? '',
+      logoUrl: cleanImageUrl(configuration?.logoUrl),
       commissionRate: configuration?.commissionRate ?? 0,
       isActive: profile.isActive,
       isVerified: configuration?.isVerified ?? false,
@@ -218,7 +219,7 @@ export class HotelDetailsService extends ApiService {
       address: configuration?.address ?? '',
       phoneNumber: profile.phoneNumber,
       email: profile.email,
-      imageUrl: configuration?.logoUrl ?? null,
+      imageUrl: cleanImageUrl(configuration?.logoUrl) || null,
       isBlocked: configuration?.isBlocked ?? false,
     };
   }

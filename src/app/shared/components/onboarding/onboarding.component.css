@@ -1,0 +1,18 @@
+:host {
+  display: contents;
+}
+
+.confetti {
+  color: var(--color-warning);
+}
+
+.confetti--green {
+  color: var(--color-status-active);
+}
+
+.confetti-bar {
+  width: 9px;
+  height: 4px;
+  border-radius: 1px;
+  background: currentColor;
+}

@@ -31,6 +31,8 @@ export class PayoutAccountCardComponent {
   readonly canRemove = input(true);
   /** Translation key for the setup button. */
   readonly connectLabel = input('payout.connect');
+  /** `soft` = light green button (used inside the registration modal). */
+  readonly connectVariant = input<'solid' | 'soft'>('solid');
 
   readonly connect = output<void>();
   readonly edit = output<void>();

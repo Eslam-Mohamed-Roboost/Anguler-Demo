@@ -43,8 +43,7 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
 import { AppConfigService } from '../../../../core/services/app-config.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ImageUploadService } from '../../../../core/services/image-upload.service';
-import { PayoutSetupIntentService } from '../../../../core/services/payout-setup-intent.service';
-import { PayoutAccountCardComponent } from '../../../../shared/components/payout-account-card/payout-account-card.component';
+import { OnboardingService } from '../../../../core/services/onboarding.service';
 import { of, switchMap } from 'rxjs';
 import {
   getGoogleMapsSearchErrorMessage,
@@ -53,6 +52,7 @@ import {
   LocationSelection,
 } from '../services/google-maps-loader.service';
 import { LocationPickerComponent } from '../location-picker/location-picker.component';
+import { OnboardingComponent } from '../../../../shared/components/onboarding/onboarding.component';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -72,7 +72,7 @@ import { environment } from '../../../../../environments/environment';
     DriverNoteComponent,
     TranslatePipe,
     LocationPickerComponent,
-    PayoutAccountCardComponent,
+    OnboardingComponent,
   ],
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css',
@@ -96,7 +96,7 @@ export class BookingComponent extends BaseComponent {
   private readonly appConfig = inject(AppConfigService);
   private readonly languageService = inject(LanguageService);
   private readonly imageUploadService = inject(ImageUploadService);
-  private readonly payoutSetupIntent = inject(PayoutSetupIntentService);
+  private readonly onboarding = inject(OnboardingService);
   private readonly googleMapsLoader = inject(GoogleMapsLoaderService);
 
   // Signals
@@ -729,7 +729,7 @@ readonly destinationsData = signal<LocationItem[] | null>(null);
   readonly showVerificationModal = signal(false);
   readonly showWelcomeModal = signal(false);
   readonly otpDigits = signal<string[]>(['', '', '', '', '', '']);
-  readonly joinStep = signal<1 | 2 | 3 | 4>(1);
+  readonly joinStep = signal<1 | 2 | 3>(1);
   readonly ShowComfirmBookingModel = signal(false);
   readonly ShowRideRequestSentModel = signal(false);
   readonly showPickupTimeModal = signal(false);
@@ -933,10 +933,11 @@ readonly activeTab = signal<'login' | 'register'>('register');
     this.joinStep.set(3);
   }
 
-  nextToWithdrawal(): void {
-    if (!this.validateStep3()) return;
-    this.joinStep.set(4);
-  }
+  // Step 4 (Withdrawal) disabled — payout setup now happens after sign-in (OnboardingComponent).
+  // nextToWithdrawal(): void {
+  //   if (!this.validateStep3()) return;
+  //   this.joinStep.set(4);
+  // }
 
   private validateStep1(): boolean {
     const form = this.joinFormModel();
@@ -1018,8 +1019,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
 
   prevStep(): void {
     const step = this.joinStep();
-    if (step === 4) this.joinStep.set(3);
-    else if (step === 3) this.joinStep.set(2);
+    if (step === 3) this.joinStep.set(2);
     else this.joinStep.set(1);
   }
 
@@ -1389,8 +1389,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
     }
     return options;
   }
-  /** @param connectPayout hotel chose "Connect Bank Account" — start the Stripe setup after first sign-in. */
-  public Register(connectPayout = false): void {
+  public Register(): void {
     if (!this.validateStep1()) {
       this.joinStep.set(1);
       return;
@@ -1415,7 +1414,7 @@ readonly activeTab = signal<'login' | 'register'>('register');
       locationUrl: this.getJoinLocationUrl(form),
       latitude,
       longitude,
-      // Bank details are collected later through Stripe (Profile → Withdrawal Details).
+      // Bank details are collected after sign-in (payout prompt → Profile → Withdrawal Details).
       bankAccountHolderName: '',
       bankAccountNumber: '',
       bankRoutingNumber: '',
@@ -1435,9 +1434,6 @@ readonly activeTab = signal<'login' | 'register'>('register');
         this.isRegistering.set(false);
 
         if (result.isSuccess) {
-          if (connectPayout) {
-            this.payoutSetupIntent.remember(form.email);
-          }
           this.closeJoinModal();
           this.showWelcomeModal.set(true);
           this.showSuccess('Hotel registered successfully! You will be redirected to login.');
@@ -1507,9 +1503,10 @@ readonly activeTab = signal<'login' | 'register'>('register');
           this.closeSignInModal();
           this.showSuccess('Login successful! Welcome back.');
           const role = result.data.role.toLowerCase();
-          if (role === 'hotel' && this.payoutSetupIntent.consume(email)) {
-            this.router.navigate(['/profile'], { queryParams: { tab: 'withdrawal', connect: 1 } });
-          } else if (role === 'admin' || role === 'hotel') {
+          if (role === 'hotel') {
+            this.onboarding.markLogin();
+          }
+          if (role === 'admin' || role === 'hotel') {
             this.router.navigate(['/hotel-details']);
           }
         } else {

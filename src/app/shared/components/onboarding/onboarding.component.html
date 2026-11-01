@@ -1,0 +1,64 @@
+<app-modal [open]="open()" (closed)="later()">
+  <div class="relative flex flex-col px-2 pb-2 sm:px-4">
+    <!-- Confetti (decorative) -->
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-40" aria-hidden="true">
+      @for (piece of confetti; track $index) {
+        <span
+          class="confetti absolute"
+          [class.confetti--green]="piece.color === 'green'"
+          [style.left.%]="piece.left"
+          [style.top.%]="piece.top"
+          [style.transform]="'rotate(' + piece.rotate + 'deg)'"
+        >
+          @if (piece.kind === 'curl') {
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 13c0-4 5-4 5-8 0-2-2-3-3.5-2S3 6 6 7.5 12 7 13 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+          } @else {
+            <span class="confetti-bar block"></span>
+          }
+        </span>
+      }
+    </div>
+
+    <img
+      class="relative mx-auto mb-8 h-auto w-full max-w-56 object-contain"
+      ngSrc="assets/onboarding/welcome-cars.png"
+      width="560"
+      height="341"
+      priority
+      alt=""
+    />
+
+    <h2 class="text-2xl font-bold text-primary-text">{{ 'welcome.title' | translate }}</h2>
+    <p class="mt-2 text-sm leading-relaxed text-muted">{{ 'onboarding.welcomeDesc' | translate }}</p>
+
+    <section class="mt-4 flex flex-col gap-2.5 rounded-xl border border-card-border p-3">
+      <h3 class="text-base font-bold text-primary-text">{{ 'onboarding.title' | translate }}</h3>
+      <p class="text-xs leading-relaxed text-body-soft">{{ 'payout.setupDesc' | translate }}</p>
+      <div>
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-success-light mt-1 px-10 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          (click)="connectNow()"
+        >
+          <app-icon name="zap" size="xs" aria-hidden="true" />
+          {{ 'payout.connect' | translate }}
+        </button>
+      </div>
+      <p class="flex items-start gap-1.5 rounded-md border border-warning/30 bg-status-scheduled-bg px-2.5 py-1.5 text-xs text-warning">
+        <app-icon name="info" size="xs" class="mt-0.5 shrink-0" aria-hidden="true" />
+        <span>{{ 'onboarding.hintPrefix' | translate }}{{ commissionPercentage() }}{{ 'onboarding.hintSuffix' | translate }}</span>
+      </p>
+    </section>
+
+    <button
+      type="button"
+      class="mt-10 flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+      (click)="later()"
+    >
+      <app-icon name="zap" size="sm" aria-hidden="true" />
+      {{ 'onboarding.later' | translate }}
+    </button>
+  </div>
+</app-modal>
