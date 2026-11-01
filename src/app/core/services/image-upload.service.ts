@@ -9,10 +9,10 @@ export class ImageUploadService {
 
   uploadImage(file: File): Observable<string> {
     const formData = new FormData();
-    formData.append('Image', file);
+    formData.append('file', file);
 
     return this.http
-      .post(`${environment.apiUrl}/upload-image`, formData, {
+      .post(`${environment.mediaApiUrl}/Media/upload`, formData, {
         responseType: 'text',
       })
       .pipe(map((response) => this.normalizeImageUrl(response)));
@@ -34,7 +34,7 @@ export class ImageUploadService {
 
       if (parsed && typeof parsed === 'object') {
         const record = parsed as Record<string, unknown>;
-        const url = record['url'] ?? record['imageUrl'] ?? record['logoUrl'] ?? record['data'];
+        const url = record['publicUrl'] ?? record['PublicUrl'] ?? record['url'] ?? record['imageUrl'] ?? record['logoUrl'] ?? record['data'];
         return typeof url === 'string' ? url : value;
       }
     } catch {

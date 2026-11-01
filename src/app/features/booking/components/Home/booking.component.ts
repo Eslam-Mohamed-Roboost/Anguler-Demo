@@ -43,6 +43,8 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
 import { AppConfigService } from '../../../../core/services/app-config.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ImageUploadService } from '../../../../core/services/image-upload.service';
+import { PayoutSetupIntentService } from '../../../../core/services/payout-setup-intent.service';
+import { PayoutAccountCardComponent } from '../../../../shared/components/payout-account-card/payout-account-card.component';
 import { of, switchMap } from 'rxjs';
 import {
   getGoogleMapsSearchErrorMessage,
@@ -70,6 +72,7 @@ import { environment } from '../../../../../environments/environment';
     DriverNoteComponent,
     TranslatePipe,
     LocationPickerComponent,
+    PayoutAccountCardComponent,
   ],
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css',
@@ -93,6 +96,7 @@ export class BookingComponent extends BaseComponent {
   private readonly appConfig = inject(AppConfigService);
   private readonly languageService = inject(LanguageService);
   private readonly imageUploadService = inject(ImageUploadService);
+  private readonly payoutSetupIntent = inject(PayoutSetupIntentService);
   private readonly googleMapsLoader = inject(GoogleMapsLoaderService);
 
   // Signals
@@ -1011,30 +1015,6 @@ readonly activeTab = signal<'login' | 'register'>('register');
     return true;
   }
 
-  private validateStep4(): boolean {
-    const form = this.joinFormModel();
-    if (!form.bankAccountHolderName?.trim()) {
-      this.showError('Please enter the account holder name.');
-      return false;
-    }
-    if (!form.bankName?.trim()) {
-      this.showError('Please select a bank.');
-      return false;
-    }
-    if (
-      this.isOtherBankValue(form.bankName) &&
-      !this.savedOtherBankName().trim() &&
-      !this.otherBankName().trim()
-    ) {
-      this.showError('Please enter the bank name.');
-      return false;
-    }
-    if (!form.bankAccountNumber?.trim()) {
-      this.showError('Please enter your IBAN.');
-      return false;
-    }
-    return true;
-  }
 
   prevStep(): void {
     const step = this.joinStep();
@@ -1409,7 +1389,8 @@ readonly activeTab = signal<'login' | 'register'>('register');
     }
     return options;
   }
-  public Register(): void {
+  /** @param connectPayout hotel chose "Connect Bank Account" — start the Stripe setup after first sign-in. */
+  public Register(connectPayout = false): void {
     if (!this.validateStep1()) {
       this.joinStep.set(1);
       return;
@@ -1422,11 +1403,6 @@ readonly activeTab = signal<'login' | 'register'>('register');
       this.joinStep.set(3);
       return;
     }
-    if (!this.validateStep4()) {
-      this.joinStep.set(4);
-      return;
-    }
-
     const form = this.joinFormModel();
 
     this.isRegistering.set(true);
@@ -1439,10 +1415,11 @@ readonly activeTab = signal<'login' | 'register'>('register');
       locationUrl: this.getJoinLocationUrl(form),
       latitude,
       longitude,
-      bankRoutingNumber: form.bankRoutingNumber?.trim() ?? '',
-      bankName: this.isOtherBankValue(form.bankName)
-        ? this.savedOtherBankName().trim() || this.otherBankName().trim()
-        : form.bankName,
+      // Bank details are collected later through Stripe (Profile → Withdrawal Details).
+      bankAccountHolderName: '',
+      bankAccountNumber: '',
+      bankRoutingNumber: '',
+      bankName: '',
       selectedPreferenceIds: allServices
         .filter(service => preferences[service.serviceCode as keyof Omit<ServicePreferencesModel, 'additionalNote'>])
         .map(service => service.serviceId),
@@ -1458,6 +1435,9 @@ readonly activeTab = signal<'login' | 'register'>('register');
         this.isRegistering.set(false);
 
         if (result.isSuccess) {
+          if (connectPayout) {
+            this.payoutSetupIntent.remember(form.email);
+          }
           this.closeJoinModal();
           this.showWelcomeModal.set(true);
           this.showSuccess('Hotel registered successfully! You will be redirected to login.');
@@ -1527,7 +1507,9 @@ readonly activeTab = signal<'login' | 'register'>('register');
           this.closeSignInModal();
           this.showSuccess('Login successful! Welcome back.');
           const role = result.data.role.toLowerCase();
-          if (role === 'admin' || role === 'hotel') {
+          if (role === 'hotel' && this.payoutSetupIntent.consume(email)) {
+            this.router.navigate(['/profile'], { queryParams: { tab: 'withdrawal', connect: 1 } });
+          } else if (role === 'admin' || role === 'hotel') {
             this.router.navigate(['/hotel-details']);
           }
         } else {

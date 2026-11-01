@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DOCUMENT, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InputComponent } from '../../../../shared/components/input/input.component';
@@ -21,11 +22,13 @@ import { ModalComponent } from '../../../../shared/components/modal/modal.compon
 import { LocationPickerComponent } from '../../../booking/components/location-picker/location-picker.component';
 import { LocationSelection } from '../../../booking/components/services/google-maps-loader.service';
 import { AuthService as CoreAuthService } from '../../../../core/services/auth.service';
+import { PayoutAccountCardComponent, PayoutAccountState, PayoutAccountSummary } from '../../../../shared/components/payout-account-card/payout-account-card.component';
+import { HotelStripeStatusResult, StripeConnectService } from '../../services/stripe-connect.service';
 
 @Component({
   selector: 'app-profile-tabs',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [InputComponent, PasswordInputComponent, TranslatePipe, SelectComponent, IconComponent, ModalComponent, LocationPickerComponent],
+  imports: [InputComponent, PasswordInputComponent, TranslatePipe, SelectComponent, IconComponent, ModalComponent, LocationPickerComponent, PayoutAccountCardComponent],
   templateUrl: './profile-tabs.component.html',
   styleUrl: './profile-tabs.component.css',
 })
@@ -36,6 +39,10 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   private readonly citiesService = inject(CitiesService);
   private readonly bankService = inject(BankService);
   private readonly coreAuth = inject(CoreAuthService);
+  private readonly stripeConnect = inject(StripeConnectService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
 
   readonly lang = this.langService.lang;
 
@@ -53,6 +60,13 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   protected readonly passwordSuccess = signal(false);
   protected readonly hotelInfoLoading = signal(false);
   protected readonly withdrawalLoading = signal(false);
+  protected readonly payoutVerified = signal<boolean | null>(null);
+  protected readonly showRemovePayout = signal(false);
+  /** `undefined` while loading, `null` when hotel Stripe Connect isn't available (manual bank form). */
+  protected readonly stripeStatus = signal<HotelStripeStatusResult | undefined>(undefined);
+  protected readonly stripeRedirecting = signal(false);
+  protected readonly stripeEnabled = computed(() => !!this.stripeStatus());
+  protected readonly payoutBusy = computed(() => this.withdrawalLoading() || this.stripeRedirecting());
   protected readonly showHotelLocationMap = signal(false);
   protected readonly selectedHotelLocation = signal<LocationSelection | null>(null);
   private readonly currentHotelProfile = signal<HotelProfileData | null>(null);
@@ -72,6 +86,36 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
     const bankName = this.withdrawalModel().bankName;
 
     return this.isOtherBankValue(bankName) ? this.otherBankName() : bankName;
+  });
+  protected readonly payoutAccount = computed<PayoutAccountSummary | null>(() => {
+    const stripe = this.stripeStatus();
+    if (stripe) {
+      if (!stripe.detailsSubmitted || (!stripe.last4 && !stripe.bankName)) return null;
+      return {
+        accountHolderName: stripe.accountHolderName || this.hotelInfoModel().name,
+        bankName: stripe.bankName ?? '',
+        accountNumber: stripe.last4 ? `•••• ${stripe.last4}` : '--',
+      };
+    }
+
+    const model = this.withdrawalModel();
+    if (!model.accountNumber.trim()) return null;
+
+    return {
+      accountHolderName: model.accountHolderName,
+      bankName: this.bankNameDisplay(),
+      accountNumber: model.accountNumber,
+    };
+  });
+  protected readonly payoutState = computed<PayoutAccountState>(() => {
+    const stripe = this.stripeStatus();
+    if (stripe) {
+      if (!stripe.detailsSubmitted) return 'setup';
+      return stripe.payoutsEnabled ? 'ready' : 'pending';
+    }
+
+    if (!this.payoutAccount()) return 'setup';
+    return this.payoutVerified() === false ? 'pending' : 'ready';
   });
   protected readonly cityDisplay = computed(() => {
     const cityId = this.hotelInfoModel().city;
@@ -116,6 +160,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
   protected readonly withdrawalFields = form(this.withdrawalModel);
 
   ngOnInit(): void {
+    this.handleStripeReturn();
     this.loadHotelProfile();
     this.loadWithdrawalDetails();
     this.loadCities();
@@ -164,6 +209,7 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
               accountHolderName: result.data.bankAccountHolderName ?? result.data.accountHolderName,
               swiftCode: result.data.bankRoutingNumber ?? '',
             });
+            this.payoutVerified.set(result.data.isVerified ?? null);
             this.syncCustomBankSelection();
           } else {
             this.notifications.showError(result.error?.description ?? 'Failed to load withdrawal details');
@@ -200,6 +246,123 @@ export class ProfileTabsComponent extends BaseComponent implements OnInit {
 
   ChangeDiableForwithdrawal(): void {
     this.Disablewithdrawal.set(!this.Disablewithdrawal());
+  }
+
+  /** Connect / update the payout account — Stripe-hosted when available, otherwise the manual bank form. */
+  protected connectPayout(): void {
+    if (this.stripeEnabled()) {
+      this.startStripeOnboarding();
+      return;
+    }
+
+    this.ChangeDiableForwithdrawal();
+  }
+
+  private loadStripeStatus(onLoaded?: () => void): void {
+    this.stripeConnect
+      .getStatus()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (status) => {
+          this.stripeStatus.set(status);
+          onLoaded?.();
+        },
+        error: () => this.stripeStatus.set(null),
+      });
+  }
+
+  private startStripeOnboarding(): void {
+    if (this.stripeRedirecting()) return;
+
+    const base = `${this.document.location.origin}/profile?tab=withdrawal`;
+    this.stripeRedirecting.set(true);
+    this.stripeConnect
+      .createOnboardingLink({ returnUrl: `${base}&stripe=return`, refreshUrl: `${base}&stripe=refresh` })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          const url = result.isSuccess ? result.data?.trim() : '';
+          if (url) {
+            this.document.location.assign(url);
+            return;
+          }
+          this.stripeRedirecting.set(false);
+          this.notifications.showError(result.error?.description ?? this.langService.translate('payout.stripeError'));
+        },
+        error: () => {
+          this.stripeRedirecting.set(false);
+          this.notifications.showError(this.langService.translate('payout.stripeError'));
+        },
+      });
+  }
+
+  /** Stripe sends the hotel back with `?tab=withdrawal&stripe=return|refresh`. */
+  private handleStripeReturn(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const stripe = params.get('stripe');
+    const connect = params.get('connect') === '1';
+
+    if (params.get('tab') === 'withdrawal') {
+      this.activeTab.set('withdrawal');
+    }
+
+    this.loadStripeStatus(() => {
+      if (stripe === 'refresh' && this.stripeEnabled()) {
+        this.startStripeOnboarding();
+      } else if (stripe === 'return' && this.stripeEnabled()) {
+        this.notifications.showSuccess(this.langService.translate('payout.stripeReturned'));
+      } else if (connect && this.payoutState() === 'setup') {
+        this.connectPayout();
+      }
+    });
+
+    if (stripe || connect) {
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { stripe: null, connect: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
+  }
+
+  protected openRemovePayout(): void {
+    this.showRemovePayout.set(true);
+  }
+
+  protected closeRemovePayout(): void {
+    this.showRemovePayout.set(false);
+  }
+
+  protected confirmRemovePayout(): void {
+    this.withdrawalLoading.set(true);
+    this.profileService
+      .updateWithdrawalDetails({
+        bankAccountHolderName: '',
+        bankName: '',
+        bankAccountNumber: '',
+        bankRoutingNumber: '',
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.withdrawalLoading.set(false);
+          this.showRemovePayout.set(false);
+          if (result.isSuccess) {
+            this.withdrawalModel.set({ bankName: '', accountNumber: '', accountHolderName: '', swiftCode: '' });
+            this.otherBankName.set('');
+            this.payoutVerified.set(null);
+            this.notifications.showSuccess(this.langService.translate('payout.removed'));
+          } else {
+            this.notifications.showError(result.error?.description ?? this.langService.translate('payout.removeError'));
+          }
+        },
+        error: () => {
+          this.withdrawalLoading.set(false);
+          this.showRemovePayout.set(false);
+          this.notifications.showError(this.langService.translate('payout.removeError'));
+        },
+      });
   }
 
   protected onOtherBankNameInput(event: Event): void {

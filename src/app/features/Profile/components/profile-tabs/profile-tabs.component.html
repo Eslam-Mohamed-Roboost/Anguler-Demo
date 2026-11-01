@@ -169,6 +169,17 @@
 
       <!-- ── Withdrawal tab ── -->
       @case ('withdrawal') {
+        @if (Disablewithdrawal()) {
+          <app-payout-account-card
+            [state]="payoutState()"
+            [account]="payoutAccount()"
+            [busy]="payoutBusy()"
+            [canRemove]="!stripeEnabled()"
+            (connect)="connectPayout()"
+            (edit)="connectPayout()"
+            (remove)="openRemovePayout()"
+          />
+        } @else {
         <div class="space-y-4 w-full">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <div class="space-y-2">
@@ -227,11 +238,7 @@
           </div>
 
           <div class="mt-6 flex flex-col justify-end gap-3 sm:flex-row sm:space-x-3">
-            @if (Disablewithdrawal()) {
-              <button class="rounded-lg border border-warning/30 bg-status-scheduled-bg px-6 py-2 text-warning transition hover:bg-warning hover:text-white" (click)="ChangeDiableForwithdrawal()">
-                {{ 'profile.updateDetails' | translate }}
-              </button>
-            } @else {
+            @if (!Disablewithdrawal()) {
               <button (click)="ChangeDiableForwithdrawal()" class="rounded-lg border border-card-border bg-panel px-6 py-2 text-body transition hover:bg-hover">
                 {{ 'common.cancel' | translate }}
               </button>
@@ -249,10 +256,39 @@
             }
           </div>
         </div>
+        }
       }
     }
   </div>
 </div>
+
+<app-modal [open]="showRemovePayout()" [closeOnBackdrop]="!withdrawalLoading()" (closed)="closeRemovePayout()">
+  <div class="flex flex-col items-center gap-4 p-6 text-center">
+    <div class="flex size-14 items-center justify-center rounded-full bg-status-cancelled-bg text-status-cancelled">
+      <app-icon name="trash" size="md" aria-hidden="true" />
+    </div>
+    <h3 class="text-lg font-bold text-primary-text">{{ 'payout.removeTitle' | translate }}</h3>
+    <p class="text-sm text-body-soft">{{ 'payout.removeDesc' | translate }}</p>
+    <div class="flex w-full flex-col gap-2 sm:flex-row-reverse">
+      <button
+        type="button"
+        class="flex-1 rounded-lg bg-status-cancelled px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-95 disabled:opacity-60"
+        [disabled]="withdrawalLoading()"
+        (click)="confirmRemovePayout()"
+      >
+        {{ 'payout.removeConfirm' | translate }}
+      </button>
+      <button
+        type="button"
+        class="flex-1 rounded-lg border border-card-border bg-panel px-5 py-2.5 text-sm font-medium text-body transition hover:bg-hover"
+        [disabled]="withdrawalLoading()"
+        (click)="closeRemovePayout()"
+      >
+        {{ 'common.cancel' | translate }}
+      </button>
+    </div>
+  </div>
+</app-modal>
 
 @if (showHotelLocationMap()) {
   <app-modal

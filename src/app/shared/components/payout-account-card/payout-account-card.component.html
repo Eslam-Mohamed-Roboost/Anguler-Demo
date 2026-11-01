@@ -1,0 +1,109 @@
+<section class="payout-card flex flex-col items-center gap-6 rounded-2xl border border-card-border bg-panel p-5 sm:flex-row sm:items-stretch sm:gap-0 sm:p-6">
+  <!-- Illustration -->
+  <div class="flex shrink-0 items-center justify-center sm:w-56 sm:pe-6">
+    <img
+      class="h-auto w-48 sm:w-full"
+      [ngSrc]="illustration().src"
+      [width]="illustration().width"
+      [height]="illustration().height"
+      alt=""
+    />
+  </div>
+
+  <div class="hidden w-px self-stretch bg-divider sm:block" aria-hidden="true"></div>
+
+  <!-- Content -->
+  <div class="flex min-w-0 flex-1 flex-col gap-3 text-center sm:ps-6 sm:text-start">
+    @switch (state()) {
+      @case ('setup') {
+        <h3 class="text-base font-bold text-primary-text">{{ 'payout.setupTitle' | translate }}</h3>
+        <p class="text-sm leading-relaxed text-body-soft">{{ 'payout.setupDesc' | translate }}</p>
+        <div>
+          <button
+            type="button"
+            class="inline-flex items-center gap-2 rounded-full bg-status-active px-8 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-60"
+            [disabled]="busy()"
+            [attr.aria-busy]="busy()"
+            (click)="connect.emit()"
+          >
+            @if (busy()) {
+              <span class="block size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
+            } @else {
+              <app-icon name="zap" size="xs" aria-hidden="true" />
+            }
+            {{ connectLabel() | translate }}
+          </button>
+        </div>
+      }
+
+      @case ('pending') {
+        <h3 class="text-lg font-bold text-status-scheduled">{{ 'payout.pendingTitle' | translate }}</h3>
+        <p class="text-sm leading-relaxed text-body-soft">{{ 'payout.pendingDesc' | translate }}</p>
+        @if (account(); as acc) {
+          <ng-container *ngTemplateOutlet="accountBox; context: { $implicit: acc, verified: false }" />
+        } @else {
+          <div>
+            <button
+              type="button"
+              class="inline-flex items-center gap-2 rounded-full border border-warning px-6 py-2 text-sm font-semibold text-status-scheduled transition hover:bg-status-scheduled-bg focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-60"
+              [disabled]="busy()"
+              (click)="connect.emit()"
+            >
+              {{ 'payout.continueSetup' | translate }}
+            </button>
+          </div>
+        }
+      }
+
+      @case ('ready') {
+        <h3 class="text-lg font-bold text-status-completed">{{ 'payout.readyTitle' | translate }}</h3>
+        <p class="text-sm leading-relaxed text-body-soft">{{ 'payout.readyDesc' | translate }}</p>
+        @if (account(); as acc) {
+          <ng-container *ngTemplateOutlet="accountBox; context: { $implicit: acc, verified: true }" />
+        }
+      }
+    }
+  </div>
+</section>
+
+<ng-template #accountBox let-acc let-verified="verified">
+  <div class="flex items-end justify-between gap-4 rounded-lg border border-card-border p-4 text-start">
+    <div class="flex min-w-0 flex-col gap-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="truncate text-base font-bold uppercase text-body">{{ acc.accountHolderName || '--' }}</span>
+        @if (verified) {
+          <span class="rounded-md bg-status-completed-bg px-2 py-0.5 text-xs font-semibold text-status-completed">{{ 'payout.activeVerified' | translate }}</span>
+        } @else {
+          <span class="rounded-md bg-status-scheduled-bg px-2 py-0.5 text-xs font-semibold text-status-scheduled">{{ 'payout.underReview' | translate }}</span>
+        }
+      </div>
+      <p class="break-all text-sm text-body">
+        <span class="font-bold">{{ 'withdrawal.iban' | translate }} :</span>
+        <span dir="ltr">{{ acc.accountNumber }}</span>
+      </p>
+      <p class="text-sm uppercase text-body-soft">{{ acc.bankName }}</p>
+    </div>
+    <div class="flex shrink-0 gap-2">
+      @if (canRemove()) {
+        <button
+          type="button"
+          class="flex size-10 items-center justify-center rounded-lg bg-input-bg text-muted transition hover:text-status-cancelled focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-60"
+          [attr.aria-label]="'payout.remove' | translate"
+          [disabled]="busy()"
+          (click)="remove.emit()"
+        >
+          <app-icon name="trash" size="sm" aria-hidden="true" />
+        </button>
+      }
+      <button
+        type="button"
+        class="flex size-10 items-center justify-center rounded-lg bg-status-scheduled-bg text-status-scheduled transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-60"
+        [attr.aria-label]="'payout.edit' | translate"
+        [disabled]="busy()"
+        (click)="edit.emit()"
+      >
+        <app-icon name="edit" size="sm" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+</ng-template>

@@ -119,7 +119,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
   readonly submittedRating = signal<number | null>(null);
   readonly canRateTrip = computed(() => {
     const trip = this.tripResponse();
-    return !!trip?.tripId && !!trip.driver && this.submittedRating() == null && (trip.tripRating ?? null) == null &&
+    return !!trip?.tripId && !!trip.driver && this.submittedRating() == null && !trip.isRatedByMe &&
       this.normalizeStatus(this.rawStatus()).includes('complete');
   });
 

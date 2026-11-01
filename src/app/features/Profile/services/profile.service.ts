@@ -69,6 +69,8 @@ export interface WithdrawalDetailsData {
   payoutCycle?: string | null;
   payoutMethod?: string | null;
   walletAddress?: string | null;
+  /** Optional verification flag; when the API sends `false` the account shows as under review. */
+  isVerified?: boolean | null;
 }
 
 export interface WithdrawalDetailsUpdate {

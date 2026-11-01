@@ -62,11 +62,17 @@ export class DetailsComponent implements OnInit {
   protected readonly statusVariant = computed(() => getTripStatusVariant(this.displayStatus()));
   protected readonly bookingTypeKey = computed<TranslationKey>(() => bookingTypeKey(bookingTypeOf(this.data())));
   protected readonly submittedRating = signal<number | null>(null);
-  protected readonly tripRating = computed(() => this.submittedRating() ?? this.data().tripRating ?? null);
+  protected readonly passengerRating = computed(() =>
+    this.data().isRatedByPassenger ? this.data().passengerRating ?? null : this.submittedRating()
+  );
+  protected readonly passengerRatingComment = computed(() => this.data().passengerRatingComment?.trim() || null);
+  protected readonly driverRating = computed(() => (this.data().isRatedByDriver ? this.data().driverRatingGiven ?? null : null));
+  protected readonly driverRatingComment = computed(() => this.data().driverRatingComment?.trim() || null);
   protected readonly canRateTrip = computed(() =>
     !!this.data().tripId &&
     !!this.data().driver &&
-    this.tripRating() == null &&
+    !this.data().isRatedByMe &&
+    this.submittedRating() == null &&
     this.displayStatus() === 'Completed'
   );
   protected readonly showRateModal = signal(false);

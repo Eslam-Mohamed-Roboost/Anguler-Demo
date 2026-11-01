@@ -71,7 +71,18 @@ export interface TripDetailsResponse {
   vehicleName?: string | null;
   vehiclePlateNumber?: string | null;
   estimatedArrivalMinutes?: number | null;
-  tripRating?: number | null;
+  /** Rating given by the current user (hotel / passenger viewing the trip). */
+  isRatedByMe?: boolean;
+  myRating?: number | null;
+  myRatingComment?: string | null;
+  /** Passenger → driver. */
+  isRatedByPassenger?: boolean;
+  passengerRating?: number | null;
+  passengerRatingComment?: string | null;
+  /** Driver → passenger. */
+  isRatedByDriver?: boolean;
+  driverRatingGiven?: number | null;
+  driverRatingComment?: string | null;
   notes?: string;
   specialRequests?: string;
 }

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { map, of, switchMap } from 'rxjs';
 import { AuthService as CoreAuthService } from '../../../../core/services/auth.service';
 import { ImageUploadService } from '../../../../core/services/image-upload.service';
 import { NotificationStore } from '../../../../core/stores/notification.store';
@@ -74,36 +75,53 @@ export class ProfileImageComponent {
       });
   }
 
+  /** Saves the uploaded image URL on the hotel profile, then re-reads the profile so every view shows the saved logo. */
   private updateProfileImage(logoUrl: string): void {
-    const profile = this.profile();
-
-    if (!profile) {
+    if (!logoUrl) {
       this.uploading.set(false);
-      this.notifications.showError('Hotel profile is not loaded yet.');
+      this.notifications.showError('Upload did not return an image URL.');
       this.resetImagePreview();
       return;
     }
 
-    this.profileService
-      .updateHotelProfile({ ...profile, logoUrl })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    const profile$ = this.profile()
+      ? of(this.profile()!)
+      : this.profileService.getHotelProfile().pipe(map((result) => result.data));
+
+    profile$
+      .pipe(
+        switchMap((profile) => {
+          if (!profile) throw new Error('Hotel profile is not loaded.');
+          // PUT /hotels/profile answers with `data: true | false`.
+          return this.profileService.updateHotelProfile({ ...profile, logoUrl });
+        }),
+        switchMap((result) => {
+          if (!result.isSuccess || (result.data as unknown) === false) {
+            throw new Error(result.error?.description ?? 'Failed to update profile image');
+          }
+          return this.profileService.getHotelProfile();
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (result) => {
           this.uploading.set(false);
+          const saved = result.data;
+          if (!saved) return;
 
-          if (result.isSuccess && result.data) {
-            const updatedProfile = { ...profile, ...result.data, logoUrl: result.data.logoUrl || logoUrl };
-            this.profile.set(updatedProfile);
-            this.imageSrc.set(updatedProfile.logoUrl || DEFAULT_PROFILE_IMAGE);
-            this.coreAuth.setProfile(toAuthProfileUpdate(updatedProfile, this.coreAuth.profile()?.configuration));
+          this.profile.set(saved);
+          this.imageSrc.set(saved.logoUrl || logoUrl);
+          this.coreAuth.setProfile(toAuthProfileUpdate(saved, this.coreAuth.profile()?.configuration));
+
+          if (saved.logoUrl === logoUrl) {
             this.notifications.showSuccess('Profile image updated successfully');
           } else {
-            this.notifications.showError(result.error?.description ?? 'Failed to update profile image');
-            this.resetImagePreview();
+            this.notifications.showWarning('Image uploaded, but the server did not save it on the profile.');
           }
         },
-        error: () => {
+        error: (error: unknown) => {
           this.uploading.set(false);
+          if (error instanceof Error) this.notifications.showError(error.message);
           this.resetImagePreview();
         },
       });

@@ -115,10 +115,28 @@
       <div>
         <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.tripRate' | translate }}</label>
         <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
-          @if (tripRating(); as rating) {
+          @if (passengerRating(); as rating) {
             <span class="inline-flex items-center gap-1">
               <app-icon name="star" size="xs" class="text-warning" aria-hidden="true" />{{ rating }}
             </span>
+            @if (passengerRatingComment(); as comment) {
+              <p class="mt-1 text-xs text-body-soft">{{ comment }}</p>
+            }
+          } @else {
+            {{ 'tripDetails.notYet' | translate }}
+          }
+        </div>
+      </div>
+      <div>
+        <label class="mb-1 block text-xs font-medium text-muted">{{ 'tripDetails.driverRatingOfPassenger' | translate }}</label>
+        <div class="min-h-10 break-words rounded-lg border border-card-border bg-input-bg px-3.5 py-2.5 text-sm text-body">
+          @if (driverRating(); as rating) {
+            <span class="inline-flex items-center gap-1">
+              <app-icon name="star" size="xs" class="text-warning" aria-hidden="true" />{{ rating }}
+            </span>
+            @if (driverRatingComment(); as comment) {
+              <p class="mt-1 text-xs text-body-soft">{{ comment }}</p>
+            }
           } @else {
             {{ 'tripDetails.notYet' | translate }}
           }
