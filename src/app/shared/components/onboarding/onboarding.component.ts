@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgOptimizedImage } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import { AppConfigService } from '../../../core/services/app-config.service';
@@ -34,7 +34,6 @@ export class OnboardingComponent {
   private readonly intent = inject(OnboardingService);
   private readonly appConfig = inject(AppConfigService);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly open = signal(false);
@@ -57,31 +56,23 @@ export class OnboardingComponent {
     { kind: 'bar', left: 74, top: 22, rotate: -40, color: 'green' },
   ];
   protected readonly commissionPercentage = computed(() => this.appConfig.commissionPercentage());
+  /** `true` once this sign-in was checked against the backend. */
   private checked = false;
 
-  private readonly checkAfterLogin = effect(() => {
-    // `?onboarding=1` previews the popup for any user (design / QA).
-    if (!this.checked && this.route.snapshot.queryParamMap.get('onboarding') === '1') {
-      this.checked = true;
-      this.open.set(true);
-      return;
-    }
-
-    const profile = this.auth.profile();
+  /** On every sign-in (or page load while signed in) ask the backend whether onboarding is pending. */
+  private readonly checkOnSignIn = effect(() => {
     if (!this.auth.isAuthenticated()) {
-      // Signed out — allow the prompt again on the next sign-in without a page reload.
       this.checked = false;
       this.open.set(false);
       return;
     }
-    if (this.checked || !this.auth.hasRole('hotel') || !profile?.configuration) return;
+    if (this.checked) return;
 
-    // Keep watching until the fresh GET /users/profile says `onboarding: true`
-    // (a cached profile from before the flag existed must not end the check).
-    if (profile.configuration.onboarding === true) {
-      this.checked = true;
-      this.open.set(true);
-    }
+    this.checked = true;
+    this.intent
+      .isPending()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({ next: (pending) => this.open.set(pending) });
   });
 
   protected connectNow(): void {
@@ -96,7 +87,6 @@ export class OnboardingComponent {
   /** Closes the popup and tells the backend onboarding is done (finished or skipped). */
   private finish(): void {
     this.open.set(false);
-    if (!this.auth.hasRole('hotel')) return; // `?onboarding=1` preview — nothing to save
 
     this.intent
       .complete()
