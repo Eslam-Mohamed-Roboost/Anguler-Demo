@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgOptimizedImage } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -9,9 +10,9 @@ import { IconComponent } from '../icon/icon.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 /**
- * Home page onboarding: offers a signed-in hotel to connect a payout account.
- * Shown by default to any signed-in hotel (once per browser session, again after each sign-in);
- * hidden only when GET /users/profile returns `configuration.hasPayoutAccount: true`.
+ * Hotel onboarding on first sign-in: offers to connect a payout account.
+ * Shown while GET /users/profile returns `configuration.onboarding: true`;
+ * "Connect" or "Later" calls PUT /hotels/onboarding/complete so it won't show again.
  */
 interface ConfettiPiece {
   kind: 'bar' | 'curl';
@@ -34,6 +35,7 @@ export class OnboardingComponent {
   private readonly appConfig = inject(AppConfigService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly open = signal(false);
   /** Decorative confetti around the illustration (positions in %, matching the design). */
@@ -72,22 +74,37 @@ export class OnboardingComponent {
       this.open.set(false);
       return;
     }
-    if (this.checked || !this.auth.hasRole('hotel') || !profile) return;
-    if (this.intent.isDismissed()) return;
+    if (this.checked || !this.auth.hasRole('hotel') || !profile?.configuration) return;
 
     this.checked = true;
-    // Shown by default; hidden only when the profile says a payout account is already connected.
-    this.open.set(profile.configuration?.hasPayoutAccount !== true);
+    this.open.set(profile.configuration.onboarding === true);
   });
 
   protected connectNow(): void {
-    this.intent.dismiss();
-    this.open.set(false);
+    this.finish();
     void this.router.navigate(['/profile'], { queryParams: { tab: 'withdrawal', connect: 1 } });
   }
 
   protected later(): void {
-    this.intent.dismiss();
+    this.finish();
+  }
+
+  /** Closes the popup and tells the backend onboarding is done (finished or skipped). */
+  private finish(): void {
     this.open.set(false);
+    if (!this.auth.hasRole('hotel')) return; // `?onboarding=1` preview — nothing to save
+
+    this.intent
+      .complete()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (!result.isSuccess) return;
+          const profile = this.auth.profile();
+          if (profile?.configuration) {
+            this.auth.setProfile({ ...profile, configuration: { ...profile.configuration, onboarding: false } });
+          }
+        },
+      });
   }
 }

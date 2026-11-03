@@ -55,7 +55,10 @@ export interface TripDetailsResponse {
   hotelCode?: string | null;
   driver: TripDriver | null;
   estimatedPrice: number;
+  /** Trip fare. */
   actualFare: number | null;
+  /** Hotel profit for this trip. */
+  commissionAmount?: number | null;
   commission?: number | null;
   tips: number | null;
   currency: string;

@@ -62,10 +62,18 @@ export class DetailsComponent implements OnInit {
   protected readonly statusVariant = computed(() => getTripStatusVariant(this.displayStatus()));
   protected readonly bookingTypeKey = computed<TranslationKey>(() => bookingTypeKey(bookingTypeOf(this.data())));
   protected readonly submittedRating = signal<number | null>(null);
-  protected readonly passengerRating = computed(() =>
-    this.data().isRatedByPassenger ? this.data().passengerRating ?? null : this.submittedRating()
-  );
-  protected readonly passengerRatingComment = computed(() => this.data().passengerRatingComment?.trim() || null);
+  /** Trip rate shown in the card: my own rating first, then the passenger's. */
+  protected readonly passengerRating = computed(() => {
+    const trip = this.data();
+    if (this.submittedRating() != null) return this.submittedRating();
+    if (trip.isRatedByMe) return trip.myRating ?? null;
+    return trip.isRatedByPassenger ? trip.passengerRating ?? null : null;
+  });
+  protected readonly passengerRatingComment = computed(() => {
+    const trip = this.data();
+    const comment = trip.isRatedByMe ? trip.myRatingComment : trip.passengerRatingComment;
+    return comment?.trim() || null;
+  });
   protected readonly driverRating = computed(() => (this.data().isRatedByDriver ? this.data().driverRatingGiven ?? null : null));
   protected readonly driverRatingComment = computed(() => this.data().driverRatingComment?.trim() || null);
   protected readonly canRateTrip = computed(() =>
@@ -78,12 +86,12 @@ export class DetailsComponent implements OnInit {
   protected readonly showRateModal = signal(false);
   protected readonly actionStatus = computed(() => this.currentDisplayStatus(this.data()));
   protected readonly hotelProfit = computed(() => {
-    const actualFare = this.data().actualFare;
-    if (actualFare == null || Number.isNaN(actualFare)) {
+    const profit = this.data().commissionAmount;
+    if (profit == null || Number.isNaN(profit)) {
       return undefined;
     }
 
-    return actualFare;
+    return profit;
   });
   protected readonly canAssignDriver = computed(() =>
     this.isAdmin() &&

@@ -1,35 +1,20 @@
-import { Injectable } from '@angular/core';
-
-const DISMISSED_KEY = 'lines.onboardingDismissed';
+import { HttpContext } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
+import { SKIP_LOADING } from '../tokens/skip-loading.token';
+import type { Result } from '../models/result.model';
 
 /**
- * Tracks whether the "Set Up Your Payout Account" prompt was already answered
- * in this browser session, so it shows once per session instead of on every page.
+ * Hotel onboarding (first sign-in).
+ * GET /users/profile → `configuration.onboarding: true` means show it;
+ * PUT /hotels/onboarding/complete (no body) marks it done — the flag then returns `false`.
  */
 @Injectable({ providedIn: 'root' })
 export class OnboardingService {
-  /** Called on sign-in so a fresh login always gets the prompt again. */
-  markLogin(): void {
-    try {
-      sessionStorage.removeItem(DISMISSED_KEY);
-    } catch {
-      // Storage unavailable — prompt simply shows again.
-    }
-  }
+  private readonly api = inject(ApiService);
 
-  isDismissed(): boolean {
-    try {
-      return sessionStorage.getItem(DISMISSED_KEY) === '1';
-    } catch {
-      return false;
-    }
-  }
-
-  dismiss(): void {
-    try {
-      sessionStorage.setItem(DISMISSED_KEY, '1');
-    } catch {
-      // Storage unavailable — prompt may show again on reload.
-    }
+  complete(): Observable<Result<unknown>> {
+    return this.api.put<unknown>('/hotels/onboarding/complete', {}, new HttpContext().set(SKIP_LOADING, true));
   }
 }

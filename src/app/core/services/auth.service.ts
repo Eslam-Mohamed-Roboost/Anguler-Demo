@@ -38,8 +38,8 @@ export interface Configuration {
   createdDate: string
   latitude: number
   longitude: number
-  /** Hotel has a connected payout (bank / Stripe) account. */
-  hasPayoutAccount?: boolean | null
+  /** `true` until the hotel finishes or skips onboarding (PUT /hotels/onboarding/complete). */
+  onboarding?: boolean | null
 }
 interface LoginResponse {
   token: string;

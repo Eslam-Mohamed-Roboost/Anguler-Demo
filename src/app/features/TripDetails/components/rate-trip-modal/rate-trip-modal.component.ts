@@ -119,6 +119,8 @@ export class RateTripModalComponent {
           if (result.isSuccess) {
             this.notifications.showSuccess(this.language.translate('tripDetails.feedbackThanks'));
             this.submitted.emit(rating);
+          } else if (this.isAlreadyRated(result.error?.description)) {
+            this.submitted.emit(rating);
           } else {
             this.notifications.showError(result.error?.description ?? this.language.translate('tripDetails.feedbackError'));
           }
@@ -128,5 +130,10 @@ export class RateTripModalComponent {
           this.notifications.showError(this.language.translate('tripDetails.feedbackError'));
         },
       });
+  }
+
+  /** Backend allows one rating per trip: "You have already rated this trip". */
+  private isAlreadyRated(message: string | null | undefined): boolean {
+    return message?.toLowerCase().includes('already rated') ?? false;
   }
 }

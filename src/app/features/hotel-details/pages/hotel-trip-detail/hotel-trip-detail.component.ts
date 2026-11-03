@@ -40,10 +40,12 @@ export interface TripDetail {
   startDate: string;
   endDate?: string;
   tripRate?: number;
+  tripRateComment?: string;
   status: 'active' | 'completed' | 'cancelled' | 'scheduled' | 'pending';
   hotelNote?: string;
   carType: string;
   actualFare?: number;
+  hotelProfit?: number;
   estimatedPrice?: number;
 }
 
@@ -201,6 +203,7 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
 
   protected onRatingSubmitted(rating: number): void {
     this.submittedRating.set(rating);
+    this.trip.update((trip) => (trip ? { ...trip, tripRate: rating } : trip));
     this.showRateModal.set(false);
   }
 
@@ -438,11 +441,13 @@ export class HotelTripDetailComponent implements OnInit, OnDestroy {
       commissionRate: data.commission,
       startDate: data.scheduledAt ?? data.startedAt ?? data.requestedAt,
       endDate: data.endedAt ?? undefined,
-      tripRate: undefined,
+      tripRate: (data.isRatedByMe ? data.myRating : data.passengerRating) ?? undefined,
+      tripRateComment: (data.isRatedByMe ? data.myRatingComment : data.passengerRatingComment)?.trim() || undefined,
       status: isScheduledTrip ? 'scheduled' : isCompletedTrip ? 'completed' : isCancelledTrip ? 'cancelled' : statusMap[normalizedStatus] ?? 'pending',
       hotelNote: data.notes || data.specialRequests,
       carType: 'Van',
       actualFare: data.actualFare ?? undefined,
+      hotelProfit: data.commissionAmount ?? undefined,
       estimatedPrice: data.estimatedPrice,
     };
   }

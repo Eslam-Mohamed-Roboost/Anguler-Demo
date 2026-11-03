@@ -43,7 +43,6 @@ import { NotificationStore } from '../../../../core/stores/notification.store';
 import { AppConfigService } from '../../../../core/services/app-config.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ImageUploadService } from '../../../../core/services/image-upload.service';
-import { OnboardingService } from '../../../../core/services/onboarding.service';
 import { of, switchMap } from 'rxjs';
 import {
   getGoogleMapsSearchErrorMessage,
@@ -52,7 +51,6 @@ import {
   LocationSelection,
 } from '../services/google-maps-loader.service';
 import { LocationPickerComponent } from '../location-picker/location-picker.component';
-import { OnboardingComponent } from '../../../../shared/components/onboarding/onboarding.component';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -72,7 +70,6 @@ import { environment } from '../../../../../environments/environment';
     DriverNoteComponent,
     TranslatePipe,
     LocationPickerComponent,
-    OnboardingComponent,
   ],
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css',
@@ -96,7 +93,6 @@ export class BookingComponent extends BaseComponent {
   private readonly appConfig = inject(AppConfigService);
   private readonly languageService = inject(LanguageService);
   private readonly imageUploadService = inject(ImageUploadService);
-  private readonly onboarding = inject(OnboardingService);
   private readonly googleMapsLoader = inject(GoogleMapsLoaderService);
 
   // Signals
@@ -1503,9 +1499,6 @@ readonly activeTab = signal<'login' | 'register'>('register');
           this.closeSignInModal();
           this.showSuccess('Login successful! Welcome back.');
           const role = result.data.role.toLowerCase();
-          if (role === 'hotel') {
-            this.onboarding.markLogin();
-          }
           if (role === 'admin' || role === 'hotel') {
             this.router.navigate(['/hotel-details']);
           }
