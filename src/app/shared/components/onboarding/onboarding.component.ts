@@ -76,8 +76,12 @@ export class OnboardingComponent {
     }
     if (this.checked || !this.auth.hasRole('hotel') || !profile?.configuration) return;
 
-    this.checked = true;
-    this.open.set(profile.configuration.onboarding === true);
+    // Keep watching until the fresh GET /users/profile says `onboarding: true`
+    // (a cached profile from before the flag existed must not end the check).
+    if (profile.configuration.onboarding === true) {
+      this.checked = true;
+      this.open.set(true);
+    }
   });
 
   protected connectNow(): void {
